@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' blob:; worker-src blob:; style-src 'self'; connect-src 'none'; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="A tiny game engine that lets you share games as URLs.">
+  <title>Playload</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="src/style.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <canvas id="logo" width="64" height="8" aria-label="Playload" role="img"></canvas>
+      <nav id="views" role="tablist" aria-label="Workspace">
+        <button id="code-tab" data-view="code" role="tab" aria-controls="code">Develop</button>
+        <button id="info-tab" data-view="info" role="tab" aria-controls="info">Info</button>
+      </nav>
+      <p>A tiny game engine that lets you share games as URLs.</p>
+      <div class="share"><output id="size" hidden></output><button id="share" disabled>Copy URL</button></div>
+    </header>
+    <div id="workspace-toolbar">
+      <div id="files">
+        <button id="load">Load</button><button id="save-code" title="Download the editor code as a JavaScript file">Download</button>
+        <input id="file" type="file" accept=".js,text/javascript" hidden>
+      </div>
+      <button id="code-toggle" aria-pressed="true" title="Show or hide the code editor">Code</button>
+      <div class="editor-tools"><button id="run">Run<kbd>Ctrl+Enter</kbd></button><button id="reload" disabled>Reload<kbd>Alt+R</kbd></button></div>
+      <div class="game-tools">
+        <div class="play-tools"><button id="pause" disabled>Pause<kbd>Alt+P</kbd></button><button id="reset" disabled>Reset<kbd>Alt+0</kbd></button></div>
+        <div class="display-tools"><button id="crt" aria-pressed="false">CRT<span class="indicator"></span></button><button id="sound" aria-pressed="true">Sound<span class="indicator"></span></button></div>
+        <div class="capture-tools"><button id="screenshot" disabled>Screenshot<kbd>Alt+1</kbd></button><button id="record" disabled title="Start a new clip now. The game keeps running.">New clip<kbd>Alt+2</kbd></button><button id="video" disabled>Save video<kbd>Alt+3</kbd></button><output id="clip-time" title="Recording">0:00</output></div>
+      </div>
+    </div>
+    <main>
+      <section id="code" role="tabpanel" aria-labelledby="code-tab" hidden>
+        <section id="workbench">
+          <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="JavaScript code" wrap="soft"></textarea>
+        </section>
+        <div id="divider" role="separator" aria-label="Resize editor and game" aria-orientation="vertical" aria-valuemin="15" aria-valuemax="85" aria-valuenow="50" tabindex="0"></div>
+        <section id="game">
+          <div id="viewport"><div class="stage">
+            <div id="screen" tabindex="0" role="application" aria-label="Game: arrows, Z for A, X for B" hidden><canvas id="display" width="640" height="576" aria-label="Game screen, 160 by 144 pixels" role="img"></canvas></div>
+            <div id="empty"><div class="starter"><p>Start in Develop, or Load your JavaScript file.</p><pre><code>function tick() {
+  cls(0); put("👾", 76, 68)
+}</code></pre><button id="copy-code">Copy code</button></div></div>
+            <pre id="error" role="alert" hidden></pre><button id="error-line" hidden></button>
+          </div>
+          </div>
+          <div class="touch" aria-label="Game controls">
+            <div class="dpad"><button data-input="0" aria-label="Up">↑</button><button data-input="2" aria-label="Left">←</button><button data-input="1" aria-label="Down">↓</button><button data-input="3" aria-label="Right">→</button></div>
+            <div class="touch-right"><div class="ab"><button data-input="5">B</button><button data-input="4">A</button></div><div id="touch-screenshot"></div></div>
+          </div>
+        </section>
+        <div class="editor-status"><span id="filename"></span></div>
+        <div class="game-status"><div class="key-hint"><span id="control-hint">Click game to play</span><span id="control-keys"><span>↑↓←→</span><span><kbd>Z</kbd> A · <kbd>X</kbd> B</span></span></div></div>
+      </section>
+      <section id="info" role="tabpanel" aria-labelledby="info-tab">
+        <section id="colors" aria-labelledby="palette-label">
+          <div class="palette-head"><span id="palette-label">DB8 palette</span></div><div id="palette"></div>
+        </section>
+        <nav class="reference-tabs" role="tablist" aria-label="Reference">
+          <button id="characters-tab" data-ref="characters" role="tab" aria-controls="characters">Unicode</button>
+          <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
+        </nav>
+        <section id="characters" role="tabpanel" aria-labelledby="characters-tab">
+          <div class="search-tools"><input id="search" type="search" placeholder="Search Unicode" aria-label="Search characters"><div class="pages"><button id="previous" aria-label="Previous page">←</button><output id="page"></output><button id="next" aria-label="Next page">→</button></div></div>
+          <div id="categories" role="group" aria-label="Character categories">
+            <button data-category="all">All</button><button data-category="letters">Alphabet</button><button data-category="hiragana">Hiragana</button><button data-category="katakana">Katakana</button><button data-category="symbols">Symbols</button><button data-category="emoji">Emoji</button>
+          </div>
+          <div id="catalog"></div>
+        </section>
+        <section id="api" role="tabpanel" aria-labelledby="api-tab" hidden>
+          <dl>
+            <div><dt>cls(c)</dt><dd>Clear the screen.</dd></div>
+            <div><dt>put(text, x, y)</dt><dd>Draw a string. Newlines work.</dd></div>
+            <div><dt>col(ink, paper)</dt><dd>Set default colors.</dd></div>
+            <div><dt>btn(b) / btnp(b)</dt><dd>Held / just pressed.</dd></div>
+            <div><dt>play(ch, score)</dt><dd>Channels 0–2. <a href="https://worldofspectrum.org/ZXSpectrum128Manual/sp128p10.html" target="_blank" rel="noopener">Score notation</a>.<br><code>play(0, "O5N3ceg")</code></dd></div>
+            <div><dt>pcg[ch].pat</dt><dd>8 row bytes or 16 hex digits.</dd></div>
+            <div><dt>pcg[ch].col</dt><dd>[ink, paper]. null inherits.</dd></div>
+            <div><dt>function tick()</dt><dd>Called 60 times per second.</dd></div>
+          </dl>
+          <p class="button-map"><span>0 U</span><span>1 D</span><span>2 L</span><span>3 R</span><span>4 A</span><span>5 B</span></p>
+        </section>
+      </section>
+    </main>
+    <output id="status" role="status" aria-live="polite"></output>
+  </div>
+</body>
+</html>

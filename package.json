@@ -1,0 +1,9 @@
+{
+  "name": "playload",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node dev.js",
+    "test": "node --test"
+  }
+}
