@@ -6,7 +6,10 @@ export async function encode(source) {
   const data = new Uint8Array(await new Response(stream).arrayBuffer());
   let binary = '';
   for (const byte of data) binary += String.fromCharCode(byte);
-  return { hash: '#1.' + btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, ''), bytes: data.length };
+  return {
+    hash: '#1.' + btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, ''),
+    bytes: data.length,
+  };
 }
 
 export async function decode(hash) {
@@ -14,9 +17,11 @@ export async function decode(hash) {
   const body = hash.slice(3);
   if (body.length > 4096 || body.length % 4 === 1) throw new Error('Invalid payload length');
   const binary = atob(body.replaceAll('-', '+').replaceAll('_', '/'));
-  const stream = new Blob([Uint8Array.from(binary, c => c.charCodeAt(0))]).stream()
+  const stream = new Blob([Uint8Array.from(binary, (c) => c.charCodeAt(0))])
+    .stream()
     .pipeThrough(new DecompressionStream('deflate-raw'));
-  const reader = stream.getReader(), chunks = [];
+  const reader = stream.getReader(),
+    chunks = [];
   let length = 0;
   try {
     while (true) {
@@ -26,11 +31,20 @@ export async function decode(hash) {
       if (length > 1024 * 1024) throw new Error('Expanded source exceeds 1 MB');
       chunks.push(value);
     }
-  } finally { await reader.cancel().catch(() => {}); }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
   const bytes = new Uint8Array(length);
   let offset = 0;
-  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.length;
+  }
   return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
 }
 
-export function gameURL(base, hash) { const url = new URL(base); url.hash = hash; return url.href; }
+export function gameURL(base, hash) {
+  const url = new URL(base);
+  url.hash = hash;
+  return url.href;
+}

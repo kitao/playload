@@ -1,0 +1,199 @@
+{
+  "reference": "emu2149",
+  "revision": "441f3dc295a9b82db16921461f0678b483db8304",
+  "soundSourceSHA256": "a6c6a17e42f6b16181fad72194a47a233b9a148af2393a8cb1637fcf142abdff",
+  "clock": 2200000,
+  "toneCases": 8,
+  "envelopeCases": 56,
+  "noisePeriodCases": 4,
+  "periodWriteTicks": 1000,
+  "noiseCycleBits": 131071,
+  "noiseSeedOffset": 113341,
+  "maximumVolumeDifference": 0.013855479386451042,
+  "renderedTones": [
+    {
+      "rate": 44100,
+      "note": "O2c",
+      "period": 3389,
+      "frequency": 32.70507524343464,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.0000014355477427896446
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.0000021045360021343384
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 8.29776066191279e-7
+        }
+      ]
+    },
+    {
+      "rate": 44100,
+      "note": "O5c",
+      "period": 424,
+      "frequency": 261.40919811320754,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 9.068629188702104e-7
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.00001627035331275284
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.00004522940483597804
+        }
+      ]
+    },
+    {
+      "rate": 44100,
+      "note": "O5a",
+      "period": 252,
+      "frequency": 439.8313492063492,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.000005166821996138715
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.000045719327420812306
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.0001275229828707758
+        }
+      ]
+    },
+    {
+      "rate": 44100,
+      "note": "O7a",
+      "period": 63,
+      "frequency": 1759.3253968253969,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.00008198405335790859
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.0007357459458864346
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.0020443246036967455
+        }
+      ]
+    },
+    {
+      "rate": 44100,
+      "note": "O8A",
+      "period": 16,
+      "frequency": 6927.34375,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.0012682057450099649
+        }
+      ]
+    },
+    {
+      "rate": 48000,
+      "note": "O2c",
+      "period": 3389,
+      "frequency": 32.70507524343464,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.0000010901792568684954
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 8.083568221461945e-7
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.000004144263378025315
+        }
+      ]
+    },
+    {
+      "rate": 48000,
+      "note": "O5c",
+      "period": 424,
+      "frequency": 261.40919811320754,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.0000018232612640778356
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.00001431125332529426
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.00003809062732151869
+        }
+      ]
+    },
+    {
+      "rate": 48000,
+      "note": "O5a",
+      "period": 252,
+      "frequency": 439.8313492063492,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.000003995646514098894
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.000039670064047703235
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.00010707563132217324
+        }
+      ]
+    },
+    {
+      "rate": 48000,
+      "note": "O7a",
+      "period": 63,
+      "frequency": 1759.3253968253969,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.00006889347161787018
+        },
+        {
+          "harmonic": 3,
+          "relativeError": 0.0006201643324269535
+        },
+        {
+          "harmonic": 5,
+          "relativeError": 0.0017227271923376808
+        }
+      ]
+    },
+    {
+      "rate": 48000,
+      "note": "O8A",
+      "period": 16,
+      "frequency": 6927.34375,
+      "measurements": [
+        {
+          "harmonic": 1,
+          "relativeError": 0.0010697127272324414
+        }
+      ]
+    }
+  ]
+}

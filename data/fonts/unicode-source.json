@@ -1,0 +1,12 @@
+{
+  "UnicodeData.txt": {
+    "url": "https://www.unicode.org/Public/17.0.0/ucd/UnicodeData.txt",
+    "originalSHA256": "2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c",
+    "selection": "Unmodified source lines for all encoded cells in the fixed source fonts and WGL4 repertoire, including CJK range endpoints for the two Public Pixel ideographs."
+  },
+  "emoji-test.txt": {
+    "url": "https://www.unicode.org/Public/17.0.0/emoji/emoji-test.txt",
+    "originalSHA256": "1d8a944f88d7952f7ef7c5167fef3c67995bcae24543949710231b03a201acda",
+    "selection": "Complete, unmodified Unicode 17.0 emoji-test.txt; used to check all single-code-point fully-qualified emoji supported by the fixed source fonts."
+  }
+}

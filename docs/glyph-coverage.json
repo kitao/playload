@@ -1,0 +1,615 @@
+{
+  "total": 2433,
+  "groups": {
+    "emoji": 108,
+    "symbols": 1196,
+    "letters": 952,
+    "kana": 177
+  },
+  "sources": {
+    "unscii": 1130,
+    "public-pixel": 1126,
+    "misaki": 177
+  },
+  "sizes": {
+    "moduleBytes": 364150,
+    "gzipBytes": 35792,
+    "bitmapBytes": 19464,
+    "catalogFontBytes": 6216
+  },
+  "catalogFont": {
+    "glyphCount": 290,
+    "SHA256": "9c1cec1bd6dbb9482960fd394189ce3f248d462369ad880d494328849da55cc3"
+  },
+  "symbolRepertoire": {
+    "unicodeVersion": "17.0",
+    "category": "S",
+    "sourceAvailableCodePoints": 1237
+  },
+  "emojiRepertoire": {
+    "unicodeVersion": "17.0",
+    "sourceAvailableSingleCodePoints": 108
+  },
+  "emojiColors": {
+    "reference": "Twemoji, PNG at 72px",
+    "revision": "b6b55fef1e8636b540a6d016a4729ca8cdf2e60b",
+    "algorithmSHA256": "a937a060b8225a525c680844e0cf05c9a72f753d73fd38a5fafd5dbf3c417106",
+    "policy": {
+      "minimumChroma": 20,
+      "clusterWidth": 8,
+      "contrastTarget": 3
+    },
+    "selections": [
+      {
+        "ch": "☺",
+        "reference": "#ffcc4d",
+        "ink": 6
+      },
+      {
+        "ch": "☹",
+        "reference": "#ffcc4d",
+        "ink": 6
+      },
+      {
+        "ch": "💀",
+        "reference": "#ccd6dd",
+        "ink": 7
+      },
+      {
+        "ch": "👻",
+        "reference": "#e1e8ed",
+        "ink": 7
+      },
+      {
+        "ch": "👾",
+        "reference": "#553986",
+        "ink": 4
+      },
+      {
+        "ch": "❤",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "💭",
+        "reference": "#bdddf4",
+        "ink": 7
+      },
+      {
+        "ch": "🕴",
+        "reference": "#292f33",
+        "ink": 2
+      },
+      {
+        "ch": "🐈",
+        "reference": "#ffcc4e",
+        "ink": 6
+      },
+      {
+        "ch": "🐪",
+        "reference": "#c1694f",
+        "ink": 3
+      },
+      {
+        "ch": "🐇",
+        "reference": "#99aab5",
+        "ink": 7
+      },
+      {
+        "ch": "🦆",
+        "reference": "#d99e82",
+        "ink": 3
+      },
+      {
+        "ch": "🐍",
+        "reference": "#77b255",
+        "ink": 5
+      },
+      {
+        "ch": "🐟",
+        "reference": "#55acee",
+        "ink": 4
+      },
+      {
+        "ch": "🐙",
+        "reference": "#9266cc",
+        "ink": 4
+      },
+      {
+        "ch": "🦋",
+        "reference": "#55acee",
+        "ink": 4
+      },
+      {
+        "ch": "🕷",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "🌲",
+        "reference": "#5b903a",
+        "ink": 5
+      },
+      {
+        "ch": "🌳",
+        "reference": "#5c913b",
+        "ink": 5
+      },
+      {
+        "ch": "🍄",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "🍎",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "🍏",
+        "reference": "#77b255",
+        "ink": 5
+      },
+      {
+        "ch": "🍅",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "☕",
+        "reference": "#d9e1e6",
+        "ink": 7
+      },
+      {
+        "ch": "🍾",
+        "reference": "#264612",
+        "ink": 5
+      },
+      {
+        "ch": "🍺",
+        "reference": "#ffcc4d",
+        "ink": 6
+      },
+      {
+        "ch": "🪨",
+        "reference": "#ccd6dd",
+        "ink": 7
+      },
+      {
+        "ch": "🛖",
+        "reference": "#ffd983",
+        "ink": 6
+      },
+      {
+        "ch": "🏰",
+        "reference": "#ccd6dd",
+        "ink": 7
+      },
+      {
+        "ch": "🚍",
+        "reference": "#66757f",
+        "ink": 2
+      },
+      {
+        "ch": "🏎",
+        "reference": "#f4900c",
+        "ink": 6
+      },
+      {
+        "ch": "⛽",
+        "reference": "#ffac33",
+        "ink": 6
+      },
+      {
+        "ch": "⛵",
+        "reference": "#55acee",
+        "ink": 4
+      },
+      {
+        "ch": "✈",
+        "reference": "#55acee",
+        "ink": 4
+      },
+      {
+        "ch": "🛸",
+        "reference": "#ffd983",
+        "ink": 6
+      },
+      {
+        "ch": "⌛",
+        "reference": "#ffe8b6",
+        "ink": 6
+      },
+      {
+        "ch": "⌚",
+        "reference": "#dae2e7",
+        "ink": 7
+      },
+      {
+        "ch": "🪐",
+        "reference": "#f4900c",
+        "ink": 6
+      },
+      {
+        "ch": "☁",
+        "reference": "#dce4e9",
+        "ink": 7
+      },
+      {
+        "ch": "⛈",
+        "reference": "#e1e8ed",
+        "ink": 7
+      },
+      {
+        "ch": "☂",
+        "reference": "#855cbd",
+        "ink": 4
+      },
+      {
+        "ch": "☄",
+        "reference": "#6db6ef",
+        "ink": 4
+      },
+      {
+        "ch": "💧",
+        "reference": "#5dadec",
+        "ink": 4
+      },
+      {
+        "ch": "🏐",
+        "reference": "#dde0e2",
+        "ink": 7
+      },
+      {
+        "ch": "🔫",
+        "reference": "#77b255",
+        "ink": 5
+      },
+      {
+        "ch": "🔮",
+        "reference": "#aa8dd8",
+        "ink": 4
+      },
+      {
+        "ch": "♠",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "♥",
+        "reference": "#be1931",
+        "ink": 3
+      },
+      {
+        "ch": "♦",
+        "reference": "#be1931",
+        "ink": 3
+      },
+      {
+        "ch": "♣",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "💍",
+        "reference": "#9aaab4",
+        "ink": 7
+      },
+      {
+        "ch": "💎",
+        "reference": "#6eb8f0",
+        "ink": 4
+      },
+      {
+        "ch": "🔔",
+        "reference": "#ffac33",
+        "ink": 6
+      },
+      {
+        "ch": "📻",
+        "reference": "#99aab5",
+        "ink": 7
+      },
+      {
+        "ch": "☎",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "🖨",
+        "reference": "#55a2df",
+        "ink": 4
+      },
+      {
+        "ch": "💾",
+        "reference": "#31373d",
+        "ink": 2
+      },
+      {
+        "ch": "📜",
+        "reference": "#ffd983",
+        "ink": 6
+      },
+      {
+        "ch": "📄",
+        "reference": "#ccd6dd",
+        "ink": 7
+      },
+      {
+        "ch": "🪙",
+        "reference": "#ffb84c",
+        "ink": 6
+      },
+      {
+        "ch": "💰",
+        "reference": "#fdd888",
+        "ink": 6
+      },
+      {
+        "ch": "📁",
+        "reference": "#55acee",
+        "ink": 4
+      },
+      {
+        "ch": "🗑",
+        "reference": "#9aaab4",
+        "ink": 7
+      },
+      {
+        "ch": "🪓",
+        "reference": "#f4900c",
+        "ink": 6
+      },
+      {
+        "ch": "🧲",
+        "reference": "#be1931",
+        "ink": 3
+      },
+      {
+        "ch": "🪜",
+        "reference": "#662113",
+        "ink": 3
+      },
+      {
+        "ch": "🪦",
+        "reference": "#bcc9ce",
+        "ink": 7
+      },
+      {
+        "ch": "🪧",
+        "reference": "#e1e8ed",
+        "ink": 7
+      },
+      {
+        "ch": "⛔",
+        "reference": "#be1931",
+        "ink": 3
+      },
+      {
+        "ch": "↗",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "↘",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "↙",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "↖",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "↕",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "↔",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "☯",
+        "reference": "#fefeff",
+        "ink": 7
+      },
+      {
+        "ch": "☮",
+        "reference": "#fefeff",
+        "ink": 7
+      },
+      {
+        "ch": "▶",
+        "reference": "#feffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏩",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏯",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "◀",
+        "reference": "#feffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏪",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏫",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏬",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏸",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏹",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏺",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "⏏",
+        "reference": "#ffffff",
+        "ink": 7
+      },
+      {
+        "ch": "♀",
+        "reference": "#fffefe",
+        "ink": 7
+      },
+      {
+        "ch": "♂",
+        "reference": "#fefeff",
+        "ink": 7
+      },
+      {
+        "ch": "‼",
+        "reference": "#be1931",
+        "ink": 3
+      },
+      {
+        "ch": "⁉",
+        "reference": "#be1931",
+        "ink": 3
+      },
+      {
+        "ch": "⭕",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "☑",
+        "reference": "#baddf5",
+        "ink": 7
+      },
+      {
+        "ch": "❌",
+        "reference": "#dd2e44",
+        "ink": 3
+      },
+      {
+        "ch": "✴",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "©",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "®",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "™",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "ℹ",
+        "reference": "#3b88c3",
+        "ink": 4
+      },
+      {
+        "ch": "⚫",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "⚪",
+        "reference": "#e6e7e8",
+        "ink": 7
+      },
+      {
+        "ch": "◼",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "◻",
+        "reference": "#e6e7e8",
+        "ink": 7
+      },
+      {
+        "ch": "◾",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "◽",
+        "reference": "#e6e7e8",
+        "ink": 7
+      },
+      {
+        "ch": "▪",
+        "reference": "#31373d",
+        "ink": 7
+      },
+      {
+        "ch": "▫",
+        "reference": "#e6e7e8",
+        "ink": 7
+      }
+    ]
+  },
+  "inputSHA256": {
+    "selection.json": "f208f2f84e8c298bd1136abd1ccf13c8339109abc2b33fbe67b33b51b38e629f",
+    "wgl4.json": "7fa462bde8377aae5662126f8a24d4c3bb49c2b7e9fa8c6c841b3d118ea8fbcb",
+    "unicode-source.json": "db99969c2dc275af9927a6b0f5973e077037d354825e82697d42b5187e0f5f63",
+    "unicode-LICENSE.txt": "6875c2de1445bdf16095808f261bc95c66384e08f054af0f4508cb754e99ed5d",
+    "unscii-8.hex": "03094f7fbab7085cf6a6b624cee61e47e71ce5d0c2f308c2f4436afdc17f776c",
+    "unscii-REVISION": "39a2c009eb5d00bcfc9473be5d10848c483c1a32cb8e9fc7eced7faa5caac1c8",
+    "unscii-README.md": "687095d7e32c466192a81c9b52ddeeaf99036fa2bc9ae4f818f1cb8b96096b3c",
+    "unscii-sources.txt": "bdd47b3f9ef07555ff0f6e9588a45511c2b35a22770ad5dfee7fdd4e681e5f2f",
+    "PublicPixel.ttf": "931eb4bf9ef25a6d4bb31783b8681712a42b7408988d53971a3070a2f7443ccf",
+    "public-pixel-LICENSE.txt": "f4e7f373b9b996950337e8d41a4a2939c2d90b7725e9baf3d5084a22717ad328",
+    "public-pixel-8.hex": "e2b960ee69e96524013d992ba2a08db2f68b2cc12fb20183862fcdfa4ce8cd12",
+    "public-pixel-conversion.json": "65c35210bc36aa72a7ff57bf53ae733cf06450100de7ca6cc7585bc43bfb2e12",
+    "UnicodeData.txt": "e1345c1a2a1eee4064e88af1eb151afc9b713de4f4fd87c25ce4d28290bccf2f",
+    "emoji-test.txt": "1d8a944f88d7952f7ef7c5167fef3c67995bcae24543949710231b03a201acda",
+    "twemoji-colors.json": "34bc3aa76fef7efa6d08dade540cde17bf91d10866c8de83ef13c379f2986ae8",
+    "twemoji-color-LICENSE.txt": "8ae9438818c26e4873b91d8c6ad620526c011e27e125677f13031eda903f007c",
+    "misaki-kana.hex": "e6d0c934b66970020ec1a0b7d8421396ff7eef37abc6fa3a5a9c53b12fc22438",
+    "misaki-kana.bdf": "1ffd9f6043dc6620d8092d3c202eda52916c4727d46b027697ba5c6535e48b45",
+    "misaki-conversion.json": "9849e7d92b70a25fbe2426bdb975120b8df5bf6e28f8ca620783cc85a9ff2d97",
+    "misaki.txt": "82929cc3b34c79b6a67f21fe137c7bb165589c9e34ba1441611e493afd67dfca",
+    "misaki-bdf-readme.txt": "429ec2de7a856712203ef80bf86fea49f2f611b9b58b87f7ce7709169bdcf0af"
+  },
+  "textRepertoire": {
+    "punctuationBaseline": "Microsoft WGL4 public Unicode repertoire",
+    "punctuationCodePoints": 220,
+    "alphabetFont": "Public Pixel 1.24",
+    "alphabetCodePoints": 945
+  },
+  "outputSHA256": "28b48c76bad66a2b29aceb6051d2667f8059d8df755f8a2588491ac8858948b9"
+}

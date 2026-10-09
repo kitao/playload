@@ -1,0 +1,29 @@
+{
+  "revision": "dd06c01bbbd7d0c1c8aefa477c095861c7f8bf31",
+  "url": "https://raw.githubusercontent.com/mamedev/mame/dd06c01bbbd7d0c1c8aefa477c095861c7f8bf31/src/devices/sound/ay8910.cpp",
+  "originalSHA256": "865e8ea6ff17acf107f00c48f39ee04df48319fc1780aa0ddb635d754fa2d514",
+  "measurementAuthor": "Matthew Westcott",
+  "measurementDate": "2001-12",
+  "retrievedOn": "2026-10-07",
+  "permission": "Measurements placed in the public domain by the measurement author",
+  "volts": [
+    1.147,
+    1.162,
+    1.169,
+    1.178,
+    1.192,
+    1.213,
+    1.238,
+    1.299,
+    1.336,
+    1.457,
+    1.573,
+    1.707,
+    1.882,
+    2.06,
+    2.32,
+    2.58
+  ],
+  "normalization": "(volts[level] - volts[0]) / (volts[15] - volts[0])",
+  "use": "measurement data and behavioral documentation; no MAME emulator code copied"
+}

@@ -1,0 +1,12 @@
+{
+  "font": "Misaki Gothic 2021-05-05",
+  "author": "Num Kadoma",
+  "url": "https://littlelimit.net/arc/misaki/misaki_bdf_2021-05-05.zip",
+  "archiveSHA256": "a275f173cf5935890f84d3e65d05b1bf73028e4d4bf41cb3de0ef3b5ebe8e217",
+  "originalBDFSHA256": "28a8745552c844f7c73f11bdf4470225f5e08645a98c5404b2e25bb326a5cabd",
+  "selection": "All source characters in Unicode Hiragana and Katakana blocks U+3040..U+30FF",
+  "cells": 177,
+  "fontAscent": 6,
+  "croppedOrRescaledCells": 0,
+  "subsetBDFSHA256": "1ffd9f6043dc6620d8092d3c202eda52916c4727d46b027697ba5c6535e48b45"
+}

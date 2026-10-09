@@ -1,0 +1,26 @@
+{
+  "ascii": {
+    "from": 32,
+    "to": 126
+  },
+  "symbols": {
+    "category": "S"
+  },
+  "emoji": {
+    "reference": "emoji-test.txt",
+    "colors": "twemoji-colors.json"
+  },
+  "text": {
+    "punctuationBaseline": "wgl4.json",
+    "alphabetFont": "public-pixel-8.hex",
+    "alphabetCategory": "L"
+  },
+  "kana": {
+    "font": "misaki-kana.hex",
+    "blocks": [
+      "Hiragana",
+      "Katakana"
+    ]
+  },
+  "maximumGzipBytes": 49152
+}

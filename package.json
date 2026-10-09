@@ -3,7 +3,44 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node dev.js",
-    "test": "node --test"
+    "dev": "node scripts/serve.js",
+    "examples": "node scripts/generate-examples.js",
+    "examples:check": "node scripts/generate-examples.js --check",
+    "test": "node --test \"tests/*.test.js\"",
+    "test:coverage": "node --import ./tests/coverage-hooks.js --test --experimental-test-coverage --test-coverage-exclude=\"tests/**\" \"tests/*.test.js\"",
+    "test:browser": "playwright test",
+    "test:reference": "node scripts/check-sound-reference.js",
+    "fonts": "node scripts/generate-glyphs.js",
+    "fonts:colors": "python3 scripts/import-emoji-colors.py && npm run fonts",
+    "fonts:check": "node scripts/generate-glyphs.js --check",
+    "editor": "node scripts/generate-editor-highlighter.js",
+    "editor:check": "node scripts/generate-editor-highlighter.js --check",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "generated:check": "npm run fonts:check && npm run examples:check && npm run editor:check",
+    "check": "npm run lint && npm run format:check && npm run generated:check && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.63.0",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.9",
+    "prismjs": "^1.30.0"
+  },
+  "version": "0.8.0",
+  "description": "A tiny game engine that lets you share games as URLs",
+  "license": "MIT",
+  "author": "Takashi Kitao",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kitao/playload.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kitao/playload/issues"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

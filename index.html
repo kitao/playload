@@ -1,93 +1,480 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' blob:; worker-src blob:; style-src 'self'; connect-src 'none'; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'">
-  <meta name="description" content="A tiny game engine that lets you share games as URLs.">
-  <title>Playload</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="src/style.css">
-  <script type="module" src="src/app.js"></script>
-</head>
-<body>
-  <div id="app">
-    <header>
-      <canvas id="logo" width="64" height="8" aria-label="Playload" role="img"></canvas>
-      <nav id="views" role="tablist" aria-label="Workspace">
-        <button id="code-tab" data-view="code" role="tab" aria-controls="code">Develop</button>
-        <button id="info-tab" data-view="info" role="tab" aria-controls="info">Info</button>
-      </nav>
-      <p>A tiny game engine that lets you share games as URLs.</p>
-      <div class="share"><output id="size" hidden></output><button id="share" disabled>Copy URL</button></div>
-    </header>
-    <div id="workspace-toolbar">
-      <div id="files">
-        <button id="load">Load</button><button id="save-code" title="Download the editor code as a JavaScript file">Download</button>
-        <input id="file" type="file" accept=".js,text/javascript" hidden>
-      </div>
-      <button id="code-toggle" aria-pressed="true" title="Show or hide the code editor">Code</button>
-      <div class="editor-tools"><button id="run">Run<kbd>Ctrl+Enter</kbd></button><button id="reload" disabled>Reload<kbd>Alt+R</kbd></button></div>
-      <div class="game-tools">
-        <div class="play-tools"><button id="pause" disabled>Pause<kbd>Alt+P</kbd></button><button id="reset" disabled>Reset<kbd>Alt+0</kbd></button></div>
-        <div class="display-tools"><button id="crt" aria-pressed="false">CRT<span class="indicator"></span></button><button id="sound" aria-pressed="true">Sound<span class="indicator"></span></button></div>
-        <div class="capture-tools"><button id="screenshot" disabled>Screenshot<kbd>Alt+1</kbd></button><button id="record" disabled title="Start a new clip now. The game keeps running.">New clip<kbd>Alt+2</kbd></button><button id="video" disabled>Save video<kbd>Alt+3</kbd></button><output id="clip-time" title="Recording">0:00</output></div>
-      </div>
-    </div>
-    <main>
-      <section id="code" role="tabpanel" aria-labelledby="code-tab" hidden>
-        <section id="workbench">
-          <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="JavaScript code" wrap="soft"></textarea>
-        </section>
-        <div id="divider" role="separator" aria-label="Resize editor and game" aria-orientation="vertical" aria-valuemin="15" aria-valuemax="85" aria-valuenow="50" tabindex="0"></div>
-        <section id="game">
-          <div id="viewport"><div class="stage">
-            <div id="screen" tabindex="0" role="application" aria-label="Game: arrows, Z for A, X for B" hidden><canvas id="display" width="640" height="576" aria-label="Game screen, 160 by 144 pixels" role="img"></canvas></div>
-            <div id="empty"><div class="starter"><p>Start in Develop, or Load your JavaScript file.</p><pre><code>function tick() {
-  cls(0); put("👾", 76, 68)
-}</code></pre><button id="copy-code">Copy code</button></div></div>
-            <pre id="error" role="alert" hidden></pre><button id="error-line" hidden></button>
-          </div>
-          </div>
-          <div class="touch" aria-label="Game controls">
-            <div class="dpad"><button data-input="0" aria-label="Up">↑</button><button data-input="2" aria-label="Left">←</button><button data-input="1" aria-label="Down">↓</button><button data-input="3" aria-label="Right">→</button></div>
-            <div class="touch-right"><div class="ab"><button data-input="5">B</button><button data-input="4">A</button></div><div id="touch-screenshot"></div></div>
-          </div>
-        </section>
-        <div class="editor-status"><span id="filename"></span></div>
-        <div class="game-status"><div class="key-hint"><span id="control-hint">Click game to play</span><span id="control-keys"><span>↑↓←→</span><span><kbd>Z</kbd> A · <kbd>X</kbd> B</span></span></div></div>
-      </section>
-      <section id="info" role="tabpanel" aria-labelledby="info-tab">
-        <section id="colors" aria-labelledby="palette-label">
-          <div class="palette-head"><span id="palette-label">DB8 palette</span></div><div id="palette"></div>
-        </section>
-        <nav class="reference-tabs" role="tablist" aria-label="Reference">
-          <button id="characters-tab" data-ref="characters" role="tab" aria-controls="characters">Unicode</button>
-          <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' 'unsafe-eval' blob:; worker-src blob:; style-src 'self'; font-src 'self'; connect-src 'none'; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="description" content="A tiny game engine that lets you share games as URLs" />
+    <title>Playload</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="src/style.css?v=69" />
+    <script type="module" src="src/app.js?v=69"></script>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="brand">
+          <img id="logo" src="logo.svg" width="64" height="8" alt="Playload" /><small
+            id="version"
+            aria-label="Version 0.8.0"
+            >0.8.0</small
+          >
+        </div>
+        <nav id="views" role="tablist" aria-label="Workspace">
+          <button id="code-tab" data-view="code" role="tab" aria-controls="code">Play</button>
+          <button id="info-tab" data-view="info" role="tab" aria-controls="info">Info</button>
         </nav>
-        <section id="characters" role="tabpanel" aria-labelledby="characters-tab">
-          <div class="search-tools"><input id="search" type="search" placeholder="Search Unicode" aria-label="Search characters"><div class="pages"><button id="previous" aria-label="Previous page">←</button><output id="page"></output><button id="next" aria-label="Next page">→</button></div></div>
-          <div id="categories" role="group" aria-label="Character categories">
-            <button data-category="all">All</button><button data-category="letters">Alphabet</button><button data-category="hiragana">Hiragana</button><button data-category="katakana">Katakana</button><button data-category="symbols">Symbols</button><button data-category="emoji">Emoji</button>
+        <div class="intro">
+          <p>A tiny game engine that lets you share games as URLs</p>
+          <a
+            id="repository"
+            href="https://github.com/kitao/playload"
+            target="_blank"
+            rel="noopener"
+            aria-label="Playload on GitHub"
+            >GitHub</a
+          >
+        </div>
+      </header>
+      <div id="workspace-toolbar">
+        <div id="files" class="toolbar-group" role="group" aria-label="File">
+          <button id="load" aria-keyshortcuts="Control+O Meta+O">
+            Load<kbd aria-hidden="true">Ctrl+O</kbd>
+          </button>
+          <button id="reload" aria-keyshortcuts="Alt+R" disabled>
+            Reload<kbd aria-hidden="true">Alt+R</kbd>
+          </button>
+          <input id="file" type="file" accept=".js,text/javascript" hidden />
+        </div>
+        <div class="game-tools">
+          <div class="play-tools toolbar-group" role="group" aria-label="Play">
+            <button id="run" aria-keyshortcuts="Control+Enter Meta+Enter">
+              Run<kbd aria-hidden="true">Ctrl+Enter</kbd></button
+            ><button id="pause" aria-keyshortcuts="Alt+P" disabled>
+              Pause<kbd aria-hidden="true">Alt+P</kbd>
+            </button>
           </div>
-          <div id="catalog"></div>
+          <div class="display-tools toolbar-group" role="group" aria-label="Display">
+            <button id="code-toggle" aria-pressed="true">
+              JS<span class="indicator" aria-hidden="true"></span></button
+            ><button id="crt" aria-pressed="true">
+              CRT<span class="indicator" aria-hidden="true"></span></button
+            ><button id="sound" aria-pressed="true">
+              Sound<span class="indicator" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="export-tools toolbar-group" role="group" aria-label="Capture">
+            <div class="capture-tools">
+              <button id="screenshot" aria-label="Screenshot" aria-keyshortcuts="Alt+1" disabled>
+                Screenshot<kbd aria-hidden="true">Alt+1</kbd></button
+              ><button id="record" aria-keyshortcuts="Alt+2" disabled>
+                New clip<kbd aria-hidden="true">Alt+2</kbd></button
+              ><button id="video" aria-keyshortcuts="Alt+3" disabled>
+                Save video<kbd aria-hidden="true">Alt+3</kbd>
+              </button>
+            </div>
+          </div>
+          <output id="size" aria-label="Compressed payload size" hidden
+            ><span class="size-label">Payload</span><span id="size-current"></span
+            ><span class="size-limit">/ 3 KB</span></output
+          >
+        </div>
+        <p id="keyboard-controls" aria-label="Keyboard controls: arrow keys, A on Z, B on X">
+          <span class="controls-label">Keys</span><span>↑↓←→</span><span>A: <kbd>Z</kbd></span
+          ><span>B: <kbd>X</kbd></span>
+        </p>
+      </div>
+      <main>
+        <section id="code" role="tabpanel" aria-labelledby="code-tab">
+          <section id="workbench">
+            <pre id="editor-highlight" aria-hidden="true"></pre>
+            <div id="editor-lines" aria-hidden="true"><pre id="editor-line-numbers"></pre></div>
+            <textarea
+              id="editor"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              aria-label="JavaScript code"
+              wrap="off"
+            ></textarea>
+          </section>
+          <div
+            id="divider"
+            role="separator"
+            aria-label="Resize editor and game"
+            aria-orientation="vertical"
+            aria-valuemin="15"
+            aria-valuemax="85"
+            aria-valuenow="50"
+            tabindex="0"
+          ></div>
+          <section id="game">
+            <div id="viewport">
+              <div id="picture">
+                <div class="stage">
+                  <div
+                    id="screen"
+                    tabindex="0"
+                    role="application"
+                    aria-label="Game: arrows, Z for A, X for B"
+                    hidden
+                  >
+                    <canvas
+                      id="display"
+                      width="640"
+                      height="576"
+                      aria-label="Game screen, 160 by 144 pixels"
+                      role="img"
+                    ></canvas>
+                  </div>
+                  <div id="empty"></div>
+                  <div id="error-notice" role="alert" hidden>
+                    <button id="error-line" aria-keyshortcuts="Alt+E" hidden>Line</button>
+                    <pre id="error" tabindex="0" hidden></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="touch" aria-label="Game controls">
+              <div class="dpad">
+                <button data-input="0" aria-label="Up">↑</button
+                ><button data-input="2" aria-label="Left">←</button
+                ><button data-input="1" aria-label="Down">↓</button
+                ><button data-input="3" aria-label="Right">→</button>
+              </div>
+              <div class="touch-right">
+                <div class="ab">
+                  <button data-input="5">B</button><button data-input="4">A</button>
+                </div>
+                <div id="touch-screenshot"></div>
+              </div>
+            </div>
+          </section>
+          <div class="editor-status"><span id="filename"></span></div>
         </section>
-        <section id="api" role="tabpanel" aria-labelledby="api-tab" hidden>
-          <dl>
-            <div><dt>cls(c)</dt><dd>Clear the screen.</dd></div>
-            <div><dt>put(text, x, y)</dt><dd>Draw a string. Newlines work.</dd></div>
-            <div><dt>col(ink, paper)</dt><dd>Set default colors.</dd></div>
-            <div><dt>btn(b) / btnp(b)</dt><dd>Held / just pressed.</dd></div>
-            <div><dt>play(ch, score)</dt><dd>Channels 0–2. <a href="https://worldofspectrum.org/ZXSpectrum128Manual/sp128p10.html" target="_blank" rel="noopener">Score notation</a>.<br><code>play(0, "O5N3ceg")</code></dd></div>
-            <div><dt>pcg[ch].pat</dt><dd>8 row bytes or 16 hex digits.</dd></div>
-            <div><dt>pcg[ch].col</dt><dd>[ink, paper]. null inherits.</dd></div>
-            <div><dt>function tick()</dt><dd>Called 60 times per second.</dd></div>
-          </dl>
-          <p class="button-map"><span>0 U</span><span>1 D</span><span>2 L</span><span>3 R</span><span>4 A</span><span>5 B</span></p>
+        <section id="info" role="tabpanel" aria-labelledby="info-tab" hidden>
+          <section id="colors" aria-label="Color palette">
+            <div id="palette"></div>
+          </section>
+          <nav class="reference-tabs" role="tablist" aria-label="Reference">
+            <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
+            <button
+              id="emoji-tab"
+              data-ref="emoji"
+              data-category="emoji"
+              role="tab"
+              aria-controls="characters"
+            >
+              Emoji
+            </button>
+            <button
+              id="symbols-tab"
+              data-ref="symbols"
+              data-category="symbols"
+              role="tab"
+              aria-controls="characters"
+            >
+              Symbols
+            </button>
+            <button
+              id="letters-tab"
+              data-ref="letters"
+              data-category="letters"
+              role="tab"
+              aria-controls="characters"
+            >
+              Alphabet
+            </button>
+            <button
+              id="kana-tab"
+              data-ref="kana"
+              data-category="kana"
+              role="tab"
+              aria-controls="characters"
+            >
+              Kana
+            </button>
+            <button id="examples-tab" data-ref="examples" role="tab" aria-controls="examples">
+              Examples
+            </button>
+          </nav>
+          <section id="characters" role="tabpanel" aria-labelledby="emoji-tab" hidden>
+            <div id="catalog" tabindex="0" aria-label="Unicode characters">
+              <div id="catalog-space"><div id="catalog-window"></div></div>
+            </div>
+          </section>
+          <section id="examples" role="tabpanel" aria-labelledby="examples-tab" hidden>
+            <ul class="example-links"></ul>
+          </section>
+          <section id="api" role="tabpanel" aria-labelledby="api-tab">
+            <div class="api-columns">
+              <section class="api-guide" aria-label="Game API">
+                <h3>Functions</h3>
+                <dl class="api-group">
+                  <div>
+                    <dt>cls(col = 0)</dt>
+                    <dd>
+                      <p class="reference-description">Fill the character screen with col.</p>
+                      <pre class="api-example"><code>cls(0)</code></pre>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>put(cx, cy, str, col1?, col2?)</dt>
+                    <dd>
+                      <p class="reference-description">8px-cell text; foreground / background.</p>
+                      <pre class="api-example"><code>put(1, 1, &quot;HI\n👾&quot;)
+put(1, 1, &quot;HI\n👾&quot;, 6)
+put(1, 1, &quot;HI\n👾&quot;, 6, 0)</code></pre>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>spr(x, y, chr, col)</dt>
+                    <dd>
+                      <p class="reference-description">
+                        Draw above text for this tick; later calls draw in front.
+                      </p>
+                      <pre class="api-example"><code>spr(76, 68, &quot;👾&quot;, 6)</code></pre>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>btn(id)</dt>
+                    <dd>
+                      <p class="reference-description">True while the button is held.</p>
+                      <p class="button-map">
+                        <span>0 ↑ · 1 ↓ · 2 ← · 3 →</span><span>4 A (Z) · 5 B (X)</span>
+                      </p>
+                      <pre
+                        class="api-example"
+                      ><code>if (btn(3)) put(1, 1, &quot;→&quot;) <span class="code-comment">// Held</span></code></pre>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>btnp(id)</dt>
+                    <dd>
+                      <p class="reference-description">New press; same IDs as btn.</p>
+                      <pre
+                        class="api-example"
+                      ><code>if (btnp(4)) play(1, &quot;O6N1C&quot;)</code></pre>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>play(ch, str)</dt>
+                    <dd>
+                      <p class="reference-description">Play on channel 0–2; empty stops.</p>
+                      <pre class="api-example"><code>play(0, &quot;T150O5N3ceg))&quot;)
+play(0, &quot;&quot;) <span class="code-comment">// Stop</span></code></pre>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Variables</h3>
+                <dl class="api-group">
+                  <div>
+                    <dt>pcg[chr]</dt>
+                    <dd>
+                      <p class="reference-description">
+                        8-byte patterns and shared foreground/background colors.
+                      </p>
+                      <pre class="api-example"><code>pcg[&quot;↑&quot;].pat[0] = 0x18
+pcg[&quot;↑&quot;].pat = &quot;183c7e1818181800&quot;
+pcg[&quot;👾&quot;].col = [6, 0]</code></pre>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>scr[cy][cx]</dt>
+                    <dd>
+                      <p class="reference-description">
+                        Cell characters and colors; null follows PCG.
+                      </p>
+                      <pre
+                        class="api-example"
+                      ><code>scr[4][3].chr = &quot;👾&quot; <span class="code-comment">// [cy][cx]</span>
+scr[4][3].col = [null, 1]</code></pre>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Callback</h3>
+                <dl class="api-group">
+                  <div>
+                    <dt>tick()</dt>
+                    <dd>
+                      <p class="reference-description">Update the game at 60 Hz.</p>
+                      <pre
+                        class="api-example"
+                      ><code>function tick() { <span class="code-comment">// 60 Hz</span>
+  cls(0)
+  spr(76, 68, &quot;👾&quot;, 6)
+}</code></pre>
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+              <section class="score-guide" aria-labelledby="score-heading">
+                <h2 id="score-heading">ZX 128 PLAY</h2>
+                <h3>Notes</h3>
+                <dl class="mml-group">
+                  <div>
+                    <dt>cdefgab</dt>
+                    <dd>
+                      <p class="reference-description">Notes in the current octave.</p>
+                      <code>&quot;ceg&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>CDEFGAB</dt>
+                    <dd>
+                      <p class="reference-description">Notes one octave higher.</p>
+                      <code>&quot;CEG&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>O0–O8</dt>
+                    <dd>
+                      <p class="reference-description">Set octave; O5c is middle C.</p>
+                      <code>&quot;O5c&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt># · $ · &amp;</dt>
+                    <dd>
+                      <p class="reference-description">Sharp, flat and rest.</p>
+                      <code>&quot;#c $b &amp;&quot;</code>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Lengths</h3>
+                <p class="length-note">
+                  Write the length before notes: 5ceg = quarter notes. Default: 5.
+                </p>
+                <div class="note-lengths" aria-label="Note length codes">
+                  <span><code>1</code> 1/16</span>
+                  <span><code>2</code> 3/32</span>
+                  <span><code>3</code> 1/8</span>
+                  <span><code>4</code> 3/16</span>
+                  <span><code>5</code> 1/4</span>
+                  <span><code>6</code> 3/8</span>
+                  <span><code>7</code> 1/2</span>
+                  <span><code>8</code> 3/4</span>
+                  <span><code>9</code> 1</span>
+                  <span><code>10</code> 1/16 triplet</span>
+                  <span><code>11</code> 1/8 triplet</span>
+                  <span><code>12</code> 1/4 triplet</span>
+                </div>
+                <dl class="mml-group">
+                  <div>
+                    <dt>10–12</dt>
+                    <dd>
+                      <p class="reference-description">Triplets apply to the next three notes.</p>
+                      <code>&quot;10cde&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>_</dt>
+                    <dd>
+                      <p class="reference-description">Tie by adding note lengths together.</p>
+                      <code>&quot;3_5c&quot;</code>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Tempo</h3>
+                <dl class="mml-group">
+                  <div>
+                    <dt>T60–T240</dt>
+                    <dd>
+                      <p class="reference-description">Tempo in BPM; set on channel 0.</p>
+                      <code>&quot;T150&quot;</code>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Volume &amp; Envelope</h3>
+                <dl class="mml-group">
+                  <div>
+                    <dt>V0–V15</dt>
+                    <dd>
+                      <p class="reference-description">Set volume, from silent to loud.</p>
+                      <code>&quot;V12&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>U · X0–X65535</dt>
+                    <dd>
+                      <p class="reference-description">
+                        U: envelope unless V is used. X: period (X0 = X1/2).
+                      </p>
+                      <!-- Each line is a separate executable example. -->
+                      <!-- prettier-ignore -->
+                      <code>&quot;UX1000W6&quot;
+&quot;X0&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>W0–W7</dt>
+                    <dd>
+                      <p class="reference-description">Select a volume envelope shape.</p>
+                      <div class="envelope-shapes">
+                        <span><code>W0</code> decay → 0</span><span><code>W1</code> attack → 0</span
+                        ><span><code>W2</code> decay; hold 0</span
+                        ><span><code>W3</code> attack; hold 15</span
+                        ><span><code>W4</code> repeat decay</span
+                        ><span><code>W5</code> repeat attack</span
+                        ><span><code>W6</code> attack / decay</span
+                        ><span><code>W7</code> decay / attack</span>
+                      </div>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Mixer</h3>
+                <dl class="mml-group">
+                  <div>
+                    <dt>M1–M63</dt>
+                    <dd>
+                      <p class="reference-description">Tone bits 1/2/4; noise bits 8/16/32.</p>
+                      <!-- Each line is a separate executable example. -->
+                      <!-- prettier-ignore -->
+                      <code>&quot;M7&quot;
+&quot;M56&quot;</code>
+                    </dd>
+                  </div>
+                </dl>
+                <h3>Control</h3>
+                <dl class="mml-group">
+                  <div>
+                    <dt>(…) · ))</dt>
+                    <dd>
+                      <p class="reference-description">Repeat twice / loop forever.</p>
+                      <code>&quot;(ceg) ceg))&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>H</dt>
+                    <dd>
+                      <p class="reference-description">Stop all channels at this point.</p>
+                      <code>&quot;cegH&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>N</dt>
+                    <dd>
+                      <p class="reference-description">Separate adjacent numbers.</p>
+                      <code>&quot;O5N3ceg&quot;</code>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>!…!</dt>
+                    <dd>
+                      <p class="reference-description">Ignore text between ! marks.</p>
+                      <code>&quot;!intro!ceg&quot;</code>
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+            </div>
+          </section>
         </section>
-      </section>
-    </main>
-    <output id="status" role="status" aria-live="polite"></output>
-  </div>
-</body>
+      </main>
+      <output id="status" role="status" aria-live="polite"></output>
+    </div>
+  </body>
 </html>

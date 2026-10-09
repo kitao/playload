@@ -1,18 +1,3 @@
-# Glyph sources
-
-The initial preset bank in `src/glyphs.js` uses these sources, plus original prototype pictograms and symbols. Glyphs have been converted to eight row bytes, with the most significant bit on the left. Color pairs are Playload data.
-
-| Source | Used for | Permission |
-| --- | --- | --- |
-| [font8x8](https://github.com/dhepper/font8x8) by Daniel Hepper, derived from Marcel Sondaar / IBM public-domain VGA fonts | Basic Latin U+0020–U+007E | Public domain. |
-| [Misaki](https://littlelimit.net/misaki.htm) by Little Limit | Hiragana and katakana | Use, copying and redistribution, modified or unmodified, commercial or noncommercial, are permitted without warranty. [Original terms](https://littlelimit.net/font.htm#license). |
-| [Unscii-8](https://github.com/viznut/unscii) by Ville-Matias Heikkilä and contributors | 8×8 pictograms | Public domain / CC0. This bank uses `unscii-8.hex`, not the GPL-covered Unifont-derived full font. |
-| [Unicode emoji-test](https://www.unicode.org/Public/emoji/latest/emoji-test.txt) | Emoji names and ordering | [Unicode terms](https://www.unicode.org/terms_of_use.html). |
-
-The bitmap coverage and artwork are an initial selection, not a claim of full Unicode support.
-
-## Unicode License v3
-
 COPYRIGHT AND PERMISSION NOTICE
 
 Copyright © 1991-2026 Unicode, Inc.

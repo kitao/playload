@@ -1,97 +1,275 @@
-export const palette = ['#000000', '#55415f', '#646964', '#d77355', '#508cd7', '#64b964', '#e6c86e', '#dcf5ff'];
+export const palette = [
+  '#000000',
+  '#55415f',
+  '#646964',
+  '#d77355',
+  '#508cd7',
+  '#64b964',
+  '#e6c86e',
+  '#dcf5ff',
+];
 
-// This function also runs in the game worker. Keep its dependencies explicit.
-export function createEngine(presets = [], compileScore = s => s) {
-  const width = 160, height = 144;
+// This factory is also serialized into the game worker. Keep dependencies inside it.
+export function createEngine(presets = [], compileScore = (s) => s) {
+  const width = 160,
+    height = 144,
+    columns = 20,
+    lines = 18;
   const pixels = new Uint8Array(width * height);
-  const characters = Object.create(null), cache = new Map();
+  const characters = Object.create(null),
+    sprites = [],
+    cache = new Map();
   const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
-  let ink = 7, paper = 0, held = 0, pressed = 0;
-  let sounds = [];
-  const key = s => s.normalize('NFC').replace(/[\ufe0e\ufe0f]/g, '');
-  const color = c => {
-    if (!Number.isInteger(c) || c < 0 || c > 7) throw new RangeError('Color must be 0–7');
-    return c;
+  let held = 0,
+    pressed = 0,
+    sounds = [];
+  const color = (col) => {
+    if (!Number.isInteger(col) || col < 0 || col > 7) throw new RangeError('Color must be 0–7');
+    return col;
   };
-  const button = b => {
-    if (!Number.isInteger(b) || b < 0 || b > 5) throw new RangeError('Button must be 0–5 (UDLRAB)');
-    return 1 << b;
+  const coordinate = (value) => {
+    if (!Number.isFinite(value)) throw new TypeError('Coordinates must be finite numbers');
+    return Math.trunc(value);
   };
-  function character() {
-    const rows = new Uint8Array(8);
-    const colors = new Proxy([null, null], {
+  const characterKey = (chr) => {
+    if (typeof chr !== 'string') throw new TypeError('Character must be a string');
+    const normalized = chr.normalize('NFC').replace(/[\ufe0e\ufe0f]/g, '');
+    if (
+      !normalized ||
+      /[\r\n]/.test(normalized) ||
+      [...segmenter.segment(normalized)].length !== 1
+    ) {
+      throw new TypeError('Character must contain one grapheme');
+    }
+    return normalized;
+  };
+  const button = (id) => {
+    if (!Number.isInteger(id) || id < 0 || id > 5)
+      throw new RangeError('Button must be 0–5 (UDLRAB)');
+    return 1 << id;
+  };
+  function colorPair(initial, inherit = false) {
+    const validate = (value) => (inherit && value == null ? null : color(value));
+    const values = initial.map(validate);
+    const pair = new Proxy(values, {
       set(target, index, value) {
-        if (index !== '0' && index !== '1') throw new RangeError('Glyph colors have two entries');
-        target[index] = value == null ? null : color(value);
+        if (index !== '0' && index !== '1') throw new RangeError('Colors have two entries');
+        target[index] = validate(value);
         return true;
-      }
+      },
+      deleteProperty() {
+        throw new TypeError('Colors have two entries');
+      },
+      defineProperty() {
+        throw new TypeError('Set col[0] or col[1]');
+      },
     });
-    return Object.defineProperties({}, {
-      pat: { enumerable: true, get: () => rows, set(value) {
-        if (typeof value === 'string') {
-          if (!/^[0-9a-f]{16}$/i.test(value)) throw new TypeError('Pattern needs 16 hex digits');
-          value = Array.from({ length: 8 }, (_, i) => parseInt(value.slice(i * 2, i * 2 + 2), 16));
-        }
-        if (!value || value.length !== 8 || !Array.from(value).every(v => Number.isInteger(v) && v >= 0 && v <= 255)) {
-          throw new TypeError('Pattern needs 8 row bytes');
-        }
-        rows.set(value);
-      } },
-      col: { enumerable: true, get: () => colors, set(value) {
-        if (value == null) value = [null, null];
-        if (!Array.isArray(value) || value.length !== 2) throw new TypeError('Colors need [ink, paper]');
-        const next = value.map(v => v == null ? null : color(v));
-        colors[0] = next[0]; colors[1] = next[1];
-      } }
-    });
+    return {
+      enumerable: true,
+      get: () => pair,
+      set(value) {
+        if (!Array.isArray(value) || value.length !== 2)
+          throw new TypeError('Colors need [col1, col2]');
+        const next = Array.from(value, validate);
+        values[0] = next[0];
+        values[1] = next[1];
+      },
+    };
   }
-  function lookup(ch) {
-    const k = key(ch);
-    return characters[k] ??= character();
+  class PcgElem {
+    constructor(rows = new Uint8Array(8), col = [7, 0]) {
+      const pattern = new Uint8Array(rows);
+      Object.defineProperties(this, {
+        pat: {
+          enumerable: true,
+          get: () => pattern,
+          set(value) {
+            if (typeof value === 'string') {
+              if (!/^[0-9a-f]{16}$/i.test(value))
+                throw new TypeError('Pattern needs 16 hex digits');
+              value = Array.from({ length: 8 }, (_, i) =>
+                parseInt(value.slice(i * 2, i * 2 + 2), 16),
+              );
+            }
+            if (
+              !value ||
+              value.length !== 8 ||
+              !Array.from(value).every((v) => Number.isInteger(v) && v >= 0 && v <= 255)
+            ) {
+              throw new TypeError('Pattern needs 8 row bytes');
+            }
+            pattern.set(value);
+          },
+        },
+        col: colorPair(col),
+      });
+      Object.preventExtensions(this);
+    }
+  }
+  class ScrElem {
+    constructor() {
+      let chr = ' ';
+      Object.defineProperties(this, {
+        chr: {
+          enumerable: true,
+          get: () => chr,
+          set(value) {
+            chr = characterKey(value);
+          },
+        },
+        col: colorPair([null, null], true),
+      });
+      Object.preventExtensions(this);
+    }
+  }
+  function lookup(chr) {
+    return (characters[chr] ??= new PcgElem());
   }
   for (const preset of presets) {
-    const g = lookup(preset.ch);
-    g.pat = preset.rows; g.col = [preset.ink ?? null, preset.paper ?? null];
+    // Copy source data; create editable patterns lazily for each game.
+    const rows = Uint8Array.from(preset.rows),
+      col = [preset.ink ?? 7, preset.paper ?? 0];
+    const chr = characterKey(preset.ch);
+    Object.defineProperty(characters, chr, {
+      configurable: true,
+      enumerable: true,
+      get() {
+        const element = new PcgElem(rows, col);
+        Object.defineProperty(characters, chr, {
+          value: element,
+          writable: true,
+          configurable: true,
+          enumerable: true,
+        });
+        return element;
+      },
+    });
   }
   const pcg = new Proxy(characters, {
-    get: (target, ch) => typeof ch === 'string' ? lookup(ch) : Reflect.get(target, ch),
-    set() { throw new TypeError('Set pcg[ch].pat or pcg[ch].col'); }
+    get: (target, chr) =>
+      typeof chr === 'string' ? lookup(characterKey(chr)) : Reflect.get(target, chr),
+    set() {
+      throw new TypeError('Set pcg[chr].pat or pcg[chr].col');
+    },
+    deleteProperty() {
+      throw new TypeError('PCG elements cannot be deleted');
+    },
+    defineProperty() {
+      throw new TypeError('Set pcg[chr].pat or pcg[chr].col');
+    },
   });
-  function cls(c = 0) { pixels.fill(color(c)); }
-  function col(foreground = 7, background = 0) { const nextInk = color(foreground), nextPaper = color(background); ink = nextInk; paper = nextPaper; }
-  function put(text, x, y) {
-    if (!Number.isFinite(x) || !Number.isFinite(y)) throw new TypeError('Coordinates must be finite numbers');
-    const origin = Math.trunc(x);
-    x = origin; y = Math.trunc(y);
-    for (const { segment: ch } of segmenter.segment(String(text).replace(/\r\n/g, '\n'))) {
-      if (ch === '\n') { x = origin; y += 8; continue; }
-      const g = lookup(ch), foreground = g.col[0] ?? ink, background = g.col[1] ?? paper;
-      for (let row = 0; row < 8; row++) {
-        const py = y + row;
-        if (py < 0 || py >= height) continue;
-        for (let bit = 0; bit < 8; bit++) {
-          const px = x + bit;
-          if (px >= 0 && px < width) pixels[py * width + px] = g.pat[row] & (128 >> bit) ? foreground : background;
-        }
+  const scr = Object.freeze(
+    Array.from({ length: lines }, () =>
+      Object.freeze(Array.from({ length: columns }, () => new ScrElem())),
+    ),
+  );
+
+  function cls(col = 0) {
+    col = color(col);
+    for (const row of scr)
+      for (const element of row) {
+        element.chr = ' ';
+        element.col = [null, col];
       }
-      x += 8;
+  }
+  function put(cx, cy, str, col1, col2) {
+    const origin = coordinate(cx);
+    cx = origin;
+    cy = coordinate(cy);
+    if (typeof str !== 'string') throw new TypeError('Text must be a string');
+    const pair = [col1 === undefined ? null : color(col1), col2 === undefined ? null : color(col2)];
+    for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
+      if (segment === '\n') {
+        cx = origin;
+        cy++;
+        continue;
+      }
+      const chr = characterKey(segment);
+      if (cx >= 0 && cx < columns && cy >= 0 && cy < lines) {
+        const element = scr[cy][cx];
+        element.chr = chr;
+        element.col = pair;
+      }
+      cx++;
     }
   }
-  function play(ch, score) {
-    if (!Number.isInteger(ch) || ch < 0 || ch > 2) throw new RangeError('Sound channel must be 0–2');
-    if (typeof score !== 'string') throw new TypeError('Score must be a string');
-    if (!cache.has(score)) {
-      const compiled = compileScore(score);
+  function spr(x, y, chr, col) {
+    sprites.push({ x: coordinate(x), y: coordinate(y), chr: characterKey(chr), col: color(col) });
+  }
+  function play(ch, str) {
+    if (!Number.isInteger(ch) || ch < 0 || ch > 2)
+      throw new RangeError('Sound channel must be 0–2');
+    if (typeof str !== 'string') throw new TypeError('Sound must be a string');
+    if (!cache.has(str)) {
+      const compiled = compileScore(str);
       if (cache.size >= 256) cache.delete(cache.keys().next().value);
-      cache.set(score, compiled);
+      cache.set(str, compiled);
     }
-    sounds.push({ ch, score: cache.get(score) });
+    sounds.push({ ch, score: cache.get(str) });
   }
-  const api = { cls, put, col, btn: b => !!(held & button(b)), btnp: b => !!(pressed & button(b)), play, pcg };
+  function draw(chr, x, y, col1, col2) {
+    const pattern = lookup(chr).pat;
+    for (let row = 0; row < 8; row++) {
+      const py = y + row;
+      if (py < 0 || py >= height) continue;
+      for (let bit = 0; bit < 8; bit++) {
+        const px = x + bit;
+        if (px < 0 || px >= width) continue;
+        if (pattern[row] & (128 >> bit)) pixels[py * width + px] = col1;
+        else if (col2 !== null) pixels[py * width + px] = col2;
+      }
+    }
+  }
+  function render() {
+    for (let cy = 0; cy < lines; cy++)
+      for (let cx = 0; cx < columns; cx++) {
+        const element = scr[cy][cx],
+          standard = lookup(element.chr).col;
+        draw(
+          element.chr,
+          cx * 8,
+          cy * 8,
+          element.col[0] ?? standard[0],
+          element.col[1] ?? standard[1],
+        );
+      }
+    for (const sprite of sprites) {
+      draw(sprite.chr, sprite.x, sprite.y, sprite.col, null);
+    }
+    return pixels;
+  }
+  const api = {
+    cls,
+    put,
+    spr,
+    btn: (id) => !!(held & button(id)),
+    btnp: (id) => !!(pressed & button(id)),
+    play,
+    scr,
+    pcg,
+  };
   return {
-    api, pixels,
-    input(mask) { mask &= 63; pressed |= mask & ~held; held = mask; },
-    step(tick) { try { tick(); } finally { pressed = 0; } },
-    sounds() { const result = sounds; sounds = []; return result; }
+    api,
+    get pixels() {
+      return render();
+    },
+    input(mask) {
+      mask &= 63;
+      pressed |= mask & ~held;
+      held = mask;
+    },
+    step(tick) {
+      sprites.length = 0;
+      try {
+        tick();
+      } finally {
+        pressed = 0;
+      }
+    },
+    sounds() {
+      const result = sounds;
+      sounds = [];
+      return result;
+    },
   };
 }
