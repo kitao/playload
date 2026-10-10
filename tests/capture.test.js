@@ -140,6 +140,83 @@ test('partial WebM elements retain encoded blocks and export whole audio packets
   );
 });
 
+test('WebM timestamps retain a nondefault time scale through export', async () => {
+  const source = Buffer.from(recording),
+    scale = source.indexOf(Buffer.from('2ad7b1830f4240', 'hex'));
+  assert.notEqual(scale, -1);
+  source.writeUIntBE(500000, scale + 4, 3);
+
+  const buffer = new VideoBuffer();
+  buffer.begin(0);
+  buffer.append(source);
+  assert.deepEqual(
+    buffer.frames.map((frame) => [frame.time, frame.kind]),
+    [
+      [0, 1],
+      [0, 2],
+      [500, 1],
+      [500, 2],
+      [1000, 1],
+      [1000, 2],
+    ],
+  );
+
+  const exported = Buffer.from(await video(buffer, 'video/webm', 1010).arrayBuffer());
+  assert(exported.includes(Buffer.from('2ad7b18307a120', 'hex')));
+  const saved = new VideoBuffer();
+  saved.begin(0);
+  saved.append(exported);
+  assert.deepEqual(
+    saved.frames.map((frame) => [frame.time, frame.kind]),
+    [
+      [0, 1],
+      [0, 2],
+      [500, 1],
+      [500, 2],
+      [1000, 1],
+    ],
+  );
+});
+
+test('restarted WebM remaps retained packets to the latest track numbers', async () => {
+  const restarted = Buffer.from(
+    recording
+      .toString('hex')
+      .replaceAll('d78101838101', 'd78103838101')
+      .replaceAll('d78102838102', 'd78104838102')
+      .replaceAll('a38581000080', 'a38583000080')
+      .replaceAll('a38682000080', 'a38684000080'),
+    'hex',
+  );
+  const buffer = new VideoBuffer();
+  buffer.begin(0);
+  buffer.append(recording);
+  buffer.begin(3000);
+  buffer.append(restarted);
+
+  const exported = Buffer.from(await video(buffer, 'video/webm', 6000).arrayBuffer());
+  // The first retained packets must use tracks 3/4 while keeping their payloads.
+  assert(exported.includes(Buffer.from('a38583000080aa', 'hex')));
+  assert(exported.includes(Buffer.from('a38684000080f800', 'hex')));
+  assert(!exported.includes(Buffer.from('a38581000080aa', 'hex')));
+  assert(!exported.includes(Buffer.from('a38682000080f800', 'hex')));
+
+  const saved = new VideoBuffer();
+  saved.begin(0);
+  saved.append(exported);
+  assert.deepEqual(
+    saved.frames.map((frame) => [frame.time, frame.kind]),
+    Array.from({ length: 6 }, (_, i) => [
+      [i * 1000, 1],
+      [i * 1000, 2],
+    ]).flat(),
+  );
+  assert.deepEqual(
+    saved.frames.filter((frame) => frame.kind === 1).map((frame) => frame.data.at(-1)),
+    [0xaa, 0xbb, 0xcc, 0xaa, 0xbb, 0xcc],
+  );
+});
+
 test('the rolling video buffer advances to a keyframe within the latest ten seconds', () => {
   const buffer = new VideoBuffer();
   buffer.frames = Array.from({ length: 13 }, (_, i) => ({

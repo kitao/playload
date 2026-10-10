@@ -112,6 +112,20 @@ test('scr can be read for collision and changed directly without reissuing put',
   assert.equal(pixel(engine, 24, 32), 2);
 });
 
+test('characters and pixel sprites draw all eight pattern rows from left to right', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.pcg.X.pat = [128, 64, 32, 16, 8, 4, 2, 1];
+  api.put(2, 3, 'X', 6, 1);
+  engine.step(() => api.spr(35, 41, 'X', 5));
+
+  for (let y = 0; y < 8; y++)
+    for (let x = 0; x < 8; x++) {
+      assert.equal(pixel(engine, 16 + x, 24 + y), x === y ? 6 : 1);
+      assert.equal(pixel(engine, 35 + x, 41 + y), x === y ? 5 : 0);
+    }
+});
+
 test('cls fills spaces, preserves cell references and sprites, and uses the shared space pattern', () => {
   const engine = createEngine(),
     { api } = engine,

@@ -1,6 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { AY, compileScore } from '../src/sound.js';
+
+test('all sixteen AY volume levels preserve the pinned Westcott measurements', () => {
+  const { volts } = JSON.parse(readFileSync('data/ay-volume-source.json', 'utf8'));
+  assert.equal(volts.length, 16);
+
+  const baseline = volts[0],
+    range = volts.at(-1) - baseline,
+    expected = volts.map((voltage) => (voltage - baseline) / range),
+    ay = new AY();
+
+  assert.equal(ay.levels[0], 0);
+  assert.equal(ay.levels.at(-1), 1);
+  assert.deepEqual(ay.levels, expected);
+});
 
 test('ZX octaves, upper-case notes, accidentals, lengths, ties and triplets', () => {
   const notes = compileScore('O5N5cC#c$d3_5a11cde5f').code;

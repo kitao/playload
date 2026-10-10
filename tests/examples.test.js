@@ -411,10 +411,11 @@ test('Lights Out retains its screen-cell board, solves, and resets', async () =>
     [4, 2],
     [2, 2],
   ]) {
-    while (game.state().x < tx) press(3);
-    while (game.state().x > tx) press(2);
-    while (game.state().y < ty) press(1);
-    while (game.state().y > ty) press(0);
+    const dx = tx - game.state().x,
+      dy = ty - game.state().y;
+    for (let i = 0; i < Math.abs(dx); i++) press(dx > 0 ? 3 : 2);
+    for (let i = 0; i < Math.abs(dy); i++) press(dy > 0 ? 1 : 0);
+    assert.deepEqual([game.state().x, game.state().y], [tx, ty]);
     press(4);
   }
   assert.equal(game.state().moves, 4);

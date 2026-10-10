@@ -39,7 +39,9 @@ let editRevision = 0,
   fileHandle;
 let checkingFile = false,
   fileError = '';
-let editorErrorLine = null;
+let editorErrorLine = null,
+  gameError = '',
+  urlError = '';
 let touch = touchLayout();
 let compact = touch;
 let editorOpen = !touch && innerWidth >= 600;
@@ -55,9 +57,8 @@ const runtime = new Runtime(frame, (error) => {
   awaitingStart = false;
   syncPlayback();
   release();
-  $('error').textContent = error.message || 'Game error';
-  $('error').hidden = false;
-  $('error-notice').hidden = false;
+  gameError = error.message || 'Game error';
+  updateError();
   editorErrorLine = $('editor').value === pendingSource ? error.line : null;
   updateEditorLines();
   $('error-line').hidden = !error.line;
@@ -92,6 +93,14 @@ const runtime = new Runtime(frame, (error) => {
   controls();
   focusAfterRun();
 });
+
+function updateError() {
+  const message = gameError || urlError;
+  $('error').textContent = message;
+  $('error').hidden = !message;
+  $('error-notice').hidden = !message;
+  if (!gameError) $('error-line').hidden = true;
+}
 
 let statusTimer,
   copyRevision = 0;
@@ -192,9 +201,8 @@ async function frame(pixels, sounds, ready) {
   running = true;
   paused = awaitingStart;
   syncPlayback();
-  $('error').hidden = true;
-  $('error-notice').hidden = true;
-  $('error-line').hidden = true;
+  gameError = '';
+  updateError();
   controls();
   focusAfterRun();
   const version = revision;
@@ -238,9 +246,8 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForTa
   syncPlayback();
   pendingSource = code;
   scheduleURL(0);
-  $('error').hidden = true;
-  $('error-notice').hidden = true;
-  $('error-line').hidden = true;
+  gameError = '';
+  updateError();
   editorErrorLine = null;
   updateEditorLines();
   if (compact && takeFocus && focusGeneration === focusRevision) {
@@ -514,10 +521,15 @@ function scheduleURL(delay = 250) {
       payload = encoded;
       $('size-current').textContent = (encoded.bytes / 1024).toFixed(2) + ' KB';
       $('size').title = encoded.bytes + ' bytes · ' + url.href.length + ' URL characters';
+      urlError = '';
       if (encoded.bytes > 3072 || url.href.length > 4096) {
         url.hash = '';
-        status('Code is too large for a bookmark URL (3 KB compressed).');
+        urlError =
+          encoded.bytes > 3072
+            ? 'Code exceeds 3 KB compressed.'
+            : 'Bookmark URL exceeds 4,096 characters.';
       }
+      updateError();
       if (writeURL) history.replaceState(null, '', url);
       controls();
     } catch (error) {
@@ -526,7 +538,8 @@ function scheduleURL(delay = 250) {
       url.hash = '';
       if (writeURL) history.replaceState(null, '', url);
       payload = null;
-      status(error.message);
+      urlError = error.message;
+      updateError();
       controls();
     }
   }, delay);
@@ -1024,13 +1037,10 @@ function fitGame() {
   const stage = document.querySelector('.stage'),
     size = Math.max(0, Math.floor(Math.min(width, (height * 160) / 144)));
   stage.style.width = size + 'px';
-  // A miniature screen cannot fit a readable message; use the player in that case.
-  const anchor = size >= 240 ? stage : $('viewport'),
-    notice = $('error-notice');
-  if (notice.parentElement !== anchor) anchor.append(notice);
-  anchor.style.setProperty(
+  const player = $('viewport');
+  player.style.setProperty(
     '--error-text-height',
-    Math.max(20, Math.min(100, Math.floor((anchor.clientHeight - 40) / 20) * 20)) + 'px',
+    Math.max(21, Math.min(105, Math.floor((player.clientHeight - 14) / 21) * 21)) + 'px',
   );
 }
 function setEditorOpen(open) {
@@ -1138,6 +1148,7 @@ window.addEventListener('pagehide', (event) => {
     audio.pause(true);
     capture?.suspend(true);
   } else {
+    revision++;
     runtime.stop();
     audio.close();
     capture?.close();
@@ -1151,7 +1162,11 @@ window.addEventListener('pageshow', (event) => {
   syncPlayback();
   if (!document.hidden) audio.unlock();
 });
-window.addEventListener('hashchange', () => location.reload());
+window.addEventListener('hashchange', () => {
+  revision++;
+  capture?.leave(true);
+  location.reload();
+});
 function animate(time) {
   const padMask = readGamepads();
   if (padMask !== gamepadMask) syncInput(padMask);
@@ -1195,9 +1210,8 @@ if (initialHash) {
     })
     .catch((error) => {
       if (initialEdit !== editRevision) return;
-      $('error').textContent = error.message;
-      $('error').hidden = false;
-      $('error-notice').hidden = false;
+      gameError = error.message;
+      updateError();
       if (view === 'code' && initialFocus === focusRevision) focusGame();
     });
 } else if (touch || !editorOpen) run(starter, true, focusRevision, true);

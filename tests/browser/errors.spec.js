@@ -113,20 +113,20 @@ for (const scenario of [
         const bounds = element.parentElement.getBoundingClientRect();
         return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
       });
-      if (after.width >= 240) expect(anchor).toEqual(after);
-      expect(notice.x).toBeGreaterThan(anchor.x);
-      expect(notice.y).toBeGreaterThan(anchor.y);
+      expect(anchor).toEqual(await page.locator('#viewport').boundingBox());
+      expect(notice.x).toBeCloseTo(anchor.x + 6, 1);
+      expect(notice.y).toBeCloseTo(anchor.y + 6, 1);
       expect(notice.x + notice.width).toBeLessThanOrEqual(anchor.x + anchor.width + 1);
       expect(notice.y + notice.height).toBeLessThanOrEqual(anchor.y + anchor.height + 1);
       const text = await page.locator('#error').boundingBox();
       expect(text.width).toBeGreaterThan(
         Math.min(100, (scenario.message || 'Game error').length * 7),
       );
-      expect(text.height).toBeGreaterThanOrEqual(20);
+      expect(text.height).toBeGreaterThanOrEqual(21);
       if (scenario.message === messages.twoLines) {
-        expect(text.height).toBe(40);
+        expect(text.height).toBe(42);
         const line = await page.locator('#error-line').boundingBox();
-        expect(line.height).toBe(20);
+        expect(line.height).toBe(21);
         expect(line.y).toBe(text.y);
       }
       await expect(page.locator('#error-notice img,#error-notice script')).toHaveCount(0);

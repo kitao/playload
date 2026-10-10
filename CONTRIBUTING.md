@@ -20,6 +20,8 @@ The server binds to localhost and opens the tool in your default browser. Use
 `npm run dev -- --no-open` to keep the browser closed, or set `PORT` to choose another port.
 The application itself has no runtime package dependencies or build step.
 
+For game development, see the [API reference](docs/api.md) and [tool guide](docs/web-tool.md).
+
 ## Checks
 
 ```sh
@@ -111,7 +113,7 @@ Install Chromium with `npx playwright install chromium`, or use installed Chrome
 
 `npm run fonts` also regenerates emoji colors from the checked-in Twemoji statistics, offline.
 To re-extract those statistics from the pinned upstream images, use `npm run fonts:colors`
-with Python and Pillow 12.3.0; setup is documented in [font coverage](docs/glyphs.md#browsing-and-reproduction).
+with Python and Pillow 12.3.0; setup is documented in [font coverage](docs/glyphs.md#regeneration).
 
 ## Reviewing changes
 

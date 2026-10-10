@@ -5,13 +5,16 @@ import { runInNewContext } from 'node:vm';
 import { Runtime, Sound } from '../src/runtime.js';
 import { compileScore } from '../src/sound.js';
 
-test('worker source remains readable until the worker is replaced or stopped', async (t) => {
+function mockWorker(t) {
   const originalWorker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
   class Worker {
     constructor(url) {
       this.url = url;
+      this.messages = [];
     }
-    postMessage() {}
+    postMessage(message) {
+      this.messages.push(message);
+    }
     terminate() {
       this.terminated = true;
     }
@@ -21,6 +24,10 @@ test('worker source remains readable until the worker is replaced or stopped', a
     if (originalWorker) Object.defineProperty(globalThis, 'Worker', originalWorker);
     else delete globalThis.Worker;
   });
+}
+
+test('worker source remains readable until the worker is replaced or stopped', async (t) => {
+  mockWorker(t);
   const runtime = new Runtime(() => {}, assert.fail);
   t.after(() => runtime.stop());
 
@@ -37,6 +44,67 @@ test('worker source remains readable until the worker is replaced or stopped', a
   runtime.stop();
   assert.equal(second.terminated, true);
   await assert.rejects(fetch(second.url), TypeError);
+});
+
+test('invalid sound frames stop the worker and valid playback recovers after loading again', (t) => {
+  mockWorker(t);
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const frames = t.mock.fn();
+  const errors = t.mock.fn();
+  const runtime = new Runtime(frames, errors);
+  t.after(() => runtime.stop());
+  const pixels = new Uint8Array(160 * 144);
+  const sound = (event) => ({ ch: 0, score: { code: [event] } });
+  const malformed = [
+    ['negative channel', { ch: -1, score: compileScore('c') }],
+    ['high channel', { ch: 3, score: compileScore('c') }],
+    ['fractional channel', { ch: 0.5, score: compileScore('c') }],
+    ['missing score', { ch: 0 }],
+    ['non-array score', { ch: 0, score: { code: {} } }],
+    ['negative frequency', sound({ op: 'note', frequency: -1, beats: 1 })],
+    ['non-finite frequency', sound({ op: 'note', frequency: NaN, beats: 1 })],
+    ['zero duration', sound({ op: 'note', frequency: 440, beats: 0 })],
+    ['non-finite duration', sound({ op: 'note', frequency: 440, beats: Infinity })],
+    ['repeat target', sound({ op: 'repeat', start: 1, count: 2 })],
+    ['repeat count', sound({ op: 'repeat', start: 0, count: 1 })],
+    ['unknown command', sound({ op: 'unknown' })],
+    ['high volume', sound({ op: 'V', value: 16 })],
+    ['fractional volume', sound({ op: 'V', value: 0.5 })],
+    ['low mixer', sound({ op: 'M', value: 0 })],
+  ];
+  for (const [name, command] of malformed) {
+    runtime.load('function tick() {}');
+    const worker = runtime.worker;
+    worker.onmessage({ data: { type: 'frame', pixels, sounds: [command] } });
+    assert.equal(frames.mock.callCount(), 0, name);
+    assert.equal(worker.terminated, true, name);
+    assert.equal(runtime.worker, null, name);
+    assert.equal(runtime.workerURL, null, name);
+    assert.equal(runtime.pending, false, name);
+    assert.deepEqual(errors.mock.calls.at(-1).arguments, [{ message: 'Invalid game frame.' }]);
+  }
+  assert.equal(errors.mock.callCount(), malformed.length);
+
+  runtime.load('function tick() {}');
+  const worker = runtime.worker;
+  const sounds = [
+    { ch: 0, score: compileScore('T60V0UX0W0M1O0N1c&H') },
+    { ch: 2, score: compileScore('T240V15UX65535W7M63O8N12C))') },
+  ];
+  worker.onmessage({ data: { type: 'ready', pixels, sounds } });
+  assert.deepEqual(frames.mock.calls[0].arguments, [pixels, sounds, true]);
+  runtime.frame();
+  runtime.frame();
+  assert.deepEqual(
+    worker.messages.map((message) => message.type),
+    ['load', 'frame'],
+  );
+  worker.onmessage({ data: { type: 'frame', pixels, sounds } });
+  assert.deepEqual(frames.mock.calls[1].arguments, [pixels, sounds, false]);
+  assert.equal(runtime.pending, false);
+  t.mock.timers.tick(1500);
+  assert.equal(errors.mock.callCount(), malformed.length);
+  assert.equal(worker.terminated, undefined);
 });
 
 test('the serialized worklet freezes synthesis during pause and fades pause, resume and reset', async () => {
@@ -160,23 +228,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
   });
   t.mock.method(globalThis, 'clearTimeout', (id) => timers.delete(id));
 
-  const originalWorker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
-  class Worker {
-    constructor() {
-      this.messages = [];
-    }
-    postMessage(message) {
-      this.messages.push(message);
-    }
-    terminate() {
-      this.terminated = true;
-    }
-  }
-  Object.defineProperty(globalThis, 'Worker', { value: Worker, configurable: true });
-  t.after(() => {
-    if (originalWorker) Object.defineProperty(globalThis, 'Worker', originalWorker);
-    else delete globalThis.Worker;
-  });
+  mockWorker(t);
 
   for (const state of [
     { running: true, paused: false, view: 'code' },
@@ -223,7 +275,10 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       'compact',
       'toolsOpen',
       'awaitingStart',
-      'let lastFrame = 123;\n' + playback + lifecycle + '\nreturn () => lastFrame;',
+      'let lastFrame = 123, revision = 0;\n' +
+        playback +
+        lifecycle +
+        '\nreturn () => ({lastFrame, revision});',
     )(
       { addEventListener: (type, handler) => handlers.set(type, handler) },
       { hidden: false },
@@ -250,12 +305,13 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     assert.equal(capture.suspended, true);
     assert.equal(release.mock.callCount(), 1);
     assert.equal(timers.size, 0);
+    assert.equal(clock().revision, 0);
     const messages = worker.messages.length;
     runtime.frame();
     assert.equal(worker.messages.length, messages);
 
     handlers.get('pageshow')({ persisted: true });
-    assert.equal(clock(), 0);
+    assert.deepEqual(clock(), { lastFrame: 0, revision: 0 });
     assert.equal(runtime.suspended, false);
     assert.equal(timers.size, 1);
     assert.equal([...timers.values()][0].delay, 1500);
@@ -280,6 +336,78 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     assert.equal(worker.terminated, true);
     assert.equal(audio.context.state, 'closed');
     assert.equal(capture.closed, true);
+    assert.equal(clock().revision, 1);
+  }
+});
+
+test('pending audio initialization cannot start video capture after navigation', async (t) => {
+  const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const frame = source.slice(
+    source.indexOf('async function frame('),
+    source.indexOf('function run('),
+  );
+  const lifecycle = source.slice(
+    source.indexOf("window.addEventListener('beforeunload'"),
+    source.indexOf('function animate('),
+  );
+
+  for (const navigation of ['none', 'hashchange', 'pagehide']) {
+    const handlers = new Map();
+    const initializing = Promise.withResolvers();
+    const start = t.mock.fn();
+    const Capture = t.mock.fn(function () {
+      this.start = start;
+      this.leave = t.mock.fn();
+    });
+    const context = {
+      window: { addEventListener: (type, handler) => handlers.set(type, handler) },
+      document: { hidden: false },
+      location: { reload: t.mock.fn() },
+      runtime: { stop: t.mock.fn() },
+      audio: {
+        context: { state: 'running' },
+        destination: { stream: {} },
+        play() {},
+        init: t.mock.fn(() => initializing.promise),
+        close() {},
+      },
+      Capture,
+      capture: undefined,
+      canvas: {},
+      revision: 0,
+      running: false,
+      paused: false,
+      awaitingStart: false,
+      gameError: '',
+      $: () => ({ hidden: false }),
+      render() {},
+      syncPlayback() {},
+      updateError() {},
+      controls() {},
+      focusAfterRun() {},
+      release() {},
+      status: assert.fail,
+    };
+    runInNewContext(frame + lifecycle, context);
+    const ready = context.frame(new Uint8Array(160 * 144), [], true);
+    assert.equal(context.audio.init.mock.callCount(), 1);
+    assert.equal(Capture.mock.callCount(), 0);
+    if (navigation === 'hashchange') handlers.get('hashchange')();
+    if (navigation === 'pagehide') handlers.get('pagehide')({ persisted: false });
+    initializing.resolve();
+    await ready;
+
+    const active = navigation === 'none';
+    assert.equal(Capture.mock.callCount(), active ? 1 : 0, navigation);
+    assert.equal(start.mock.callCount(), active ? 1 : 0, navigation);
+    assert.equal(typeof context.audio.context.onstatechange, active ? 'function' : 'undefined');
+    assert.equal(context.location.reload.mock.callCount(), navigation === 'hashchange' ? 1 : 0);
+    assert.equal(context.runtime.stop.mock.callCount(), navigation === 'pagehide' ? 1 : 0);
+    if (active) {
+      handlers.get('hashchange')();
+      assert.equal(context.capture.leave.mock.callCount(), 1);
+      assert.equal(context.capture.leave.mock.calls[0].arguments[0], true);
+    }
   }
 });
 

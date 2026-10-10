@@ -4,11 +4,23 @@ import { encode } from '../../src/payload.js';
 
 const test = base.extend({
   runtimeErrors: [
-    async ({ page }, use) => {
-      const errors = [];
-      page.on('pageerror', (error) => errors.push(error.message));
-      await use(errors);
-      expect(errors).toEqual([]);
+    async ({ browser, context }, use) => {
+      const errors = [],
+        contexts = new Set(),
+        report = (error) => errors.push(error.error().message),
+        watch = (created) => {
+          contexts.add(created);
+          created.on('weberror', report);
+        };
+      watch(context);
+      browser.on('context', watch);
+      try {
+        await use(errors);
+        expect(errors).toEqual([]);
+      } finally {
+        browser.off('context', watch);
+        for (const created of contexts) created.off('weberror', report);
+      }
     },
     { auto: true },
   ],
@@ -165,6 +177,103 @@ test('workspace tabs do not change the URL or select the opening screen', async 
   );
   await expect(page.locator('#info')).toBeHidden();
 });
+
+for (const limit of ['compressed source', 'full URL']) {
+  test(`bookmark sharing recovers after exceeding the ${limit} limit`, async ({
+    page,
+  }, testInfo) => {
+    let seed = 1;
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+      noise = Array.from({ length: limit === 'compressed source' ? 6000 : 1200 }, () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return alphabet[seed % alphabet.length];
+      }).join(''),
+      large = `// @title Large\n// ${noise}\nfunction tick() { cls(4); }`,
+      small = '// @title Small\nfunction tick() { cls(5); }',
+      path = limit === 'full URL' ? '/?padding=' + 'x'.repeat(3500) : '/';
+    if (limit === 'full URL') await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(path);
+    if (limit === 'full URL') await page.locator('#code-toggle').click();
+    const encoded = await page.evaluate(
+      async (source) => (await import('/src/payload.js')).encode(source),
+      large,
+    );
+    if (limit === 'compressed source') expect(encoded.bytes).toBeGreaterThan(3072);
+    else {
+      expect(encoded.bytes).toBeLessThanOrEqual(3072);
+      expect(new URL(path + encoded.hash, 'http://127.0.0.1:8765').href.length).toBeGreaterThan(
+        4096,
+      );
+    }
+
+    const editor = page.locator('#editor');
+    await editor.fill(large);
+    await expect(page.locator('#size-current')).toHaveText(
+      (encoded.bytes / 1024).toFixed(2) + ' KB',
+    );
+    const message =
+      limit === 'compressed source'
+        ? 'Code exceeds 3 KB compressed.'
+        : 'Bookmark URL exceeds 4,096 characters.';
+    await expect(page.locator('#error')).toHaveText(message);
+    await expect(page.locator('#error-notice')).toBeVisible();
+    await expect(page.locator('#error-line')).toBeHidden();
+    await expect(page.locator('#status')).toBeEmpty();
+    expect(new URL(page.url()).hash).toBe('');
+    await expect(editor).toHaveValue(large);
+    await page.locator('#run').click();
+    await expect(page.locator('#pause')).toBeEnabled();
+    await expect(page.locator('#error')).toHaveText(message);
+    await expect(page.locator('#error-notice')).toBeVisible();
+    const player = await page.locator('#viewport').boundingBox(),
+      notice = await page.locator('#error-notice').boundingBox();
+    expect(notice.x).toBeCloseTo(player.x + 6, 1);
+    expect(notice.y).toBeCloseTo(player.y + 6, 1);
+    await page.screenshot({ path: testInfo.outputPath('bookmark-too-large.png') });
+
+    await editor.fill(small);
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          if (!location.hash) return null;
+          return (await import('/src/payload.js')).decode(location.hash);
+        }),
+      )
+      .toBe(small);
+    await expect(page.locator('#error-notice')).toBeHidden();
+    await expect(page).toHaveTitle('Small — Playload');
+    await page.screenshot({ path: testInfo.outputPath('bookmark-recovered.png') });
+    if (limit === 'compressed source') {
+      const failing = large.replace('cls(4);', 'cls(4); throw new Error("Game failure");');
+      await editor.fill(failing);
+      await page.locator('#run').click();
+      await expect(page.locator('#error')).toHaveText('Game failure');
+      await expect(page.locator('#error-line')).toBeVisible();
+      await expect(page.locator('#error-line')).toBeEnabled();
+      await expect(page).toHaveURL('http://127.0.0.1:8765/');
+
+      await editor.fill(small);
+      await expect
+        .poll(() =>
+          page.evaluate(async () => {
+            if (!location.hash) return null;
+            return (await import('/src/payload.js')).decode(location.hash);
+          }),
+        )
+        .toBe(small);
+      await expect(page.locator('#error')).toHaveText('Game failure');
+      await expect(page.locator('#error-line')).toBeVisible();
+      await expect(page.locator('#error-line')).toBeDisabled();
+      await page.locator('#run').click();
+      await expect(page.locator('#pause')).toBeEnabled();
+      await expect(page.locator('#error-notice')).toBeHidden();
+    }
+    await page.reload();
+    await expect(editor).toHaveValue(small);
+    if (limit === 'full URL') await page.locator('#start-game').click();
+    await expect(page.locator('#pause')).toBeEnabled();
+  });
+}
 
 test('Starter opens a plain URL in a new tab and preserves the current code and URL', async ({
   browser,
@@ -890,6 +999,30 @@ test('malformed worker frames are rejected before display or playback', async ({
     });
   });
   expect(result).toEqual({ message: 'Invalid game frame.', frames: 0, stopped: true });
+});
+
+test('the game worker cannot make network requests and keeps running after a rejected fetch', async ({
+  page,
+}) => {
+  let requests = 0;
+  await page.route('**/LICENSE', (route) => {
+    requests++;
+    return route.fulfill({ body: 'Network access should be blocked' });
+  });
+  await run(
+    page,
+    `let color = 0;
+fetch('http://127.0.0.1:8765/LICENSE').then(
+  () => { color = 5; },
+  () => { color = 3; },
+);
+function tick() { cls(color); }`,
+    true,
+  );
+  await expect.poll(() => pixel(page)).toEqual([215, 115, 85, 255]);
+  expect(requests).toBe(0);
+  await expect(page.locator('#pause')).toBeEnabled();
+  await expect(page.locator('#error')).toBeHidden();
 });
 
 test('hidden pages freeze sound, game updates and recording, then restore the prior state', async ({
@@ -1721,6 +1854,42 @@ test('CRT retains a usable captured picture when WebGL is unavailable', async ({
   expect(await pixel(page)).toEqual([220, 245, 255, 255]);
 });
 
+test('losing the WebGL context switches the player to the CPU CRT renderer', async ({ page }) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type, ...args) {
+      const context = getContext.call(this, type, ...args);
+      if (type === 'webgl') window.gameGL = context;
+      return context;
+    };
+  });
+  await run(page, 'function tick() { cls(7); }');
+  await expect(page.locator('#pause')).toBeEnabled();
+  await page.evaluate(async () => {
+    const { createDisplay } = await import('/src/display.js'),
+      { palette } = await import('/src/engine.js'),
+      canvas = document.querySelector('#display'),
+      display = createDisplay(palette, canvas.width, canvas.height, '#211c29');
+    window.cpuCRT = display.render(new Uint8Array(160 * 144).fill(7), true).slice();
+    if (!window.gameGL) throw new Error('Expected an active WebGL context');
+    const loss = window.gameGL.getExtension('WEBGL_lose_context');
+    if (!loss) throw new Error('Expected WEBGL_lose_context');
+    loss.loseContext();
+  });
+  await expect.poll(() => page.evaluate(() => window.gameGL.isContextLost())).toBe(true);
+  await expect
+    .poll(() =>
+      page.locator('#display').evaluate((canvas) => {
+        const actual = canvas.getContext('2d').getImageData(0, 0, 640, 576).data;
+        return actual.every((value, index) => value === window.cpuCRT[index]);
+      }),
+    )
+    .toBe(true);
+  await expect(page.locator('#error')).toBeHidden();
+  await page.locator('#crt').click();
+  expect(await pixel(page)).toEqual([220, 245, 255, 255]);
+});
+
 for (const fallback of [false, true]) {
   test(`the waiting screen uses CRT before Run${fallback ? ' without WebGL' : ''}`, async ({
     page,
@@ -2125,6 +2294,7 @@ function tick() {
     });
     await page.goto('/');
     await page.locator('#tools-toggle').tap();
+    await page.locator('#crt').tap();
     const pending = page.waitForEvent('filechooser');
     await page.locator('#load').tap();
     await (
@@ -2132,12 +2302,14 @@ function tick() {
     ).setFiles({
       name: 'game.js',
       mimeType: 'text/javascript',
-      buffer: Buffer.from('function tick() { cls(btn(4) ? 5 : 0); }'),
+      buffer: Buffer.from('let color = 0; function tick() { if (btnp(4)) color = 5; cls(color); }'),
     });
     await expect(page.locator('#workspace-toolbar')).toBeHidden();
     await expect(page.locator('#screen')).toBeFocused();
     await expect(page.locator('#pause')).toBeEnabled();
+    await expect.poll(() => pixel(page)).toEqual([0, 0, 0, 255]);
     await page.locator('[data-input="4"]').tap();
+    await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
     await expect(page.locator('#error')).toBeHidden();
   });
   test('direction and action touches work together and rotation releases a held direction', async ({
@@ -2461,9 +2633,9 @@ test('the starter reaches every screen edge and keeps collecting gems with short
   expect(result.moreSounds).toHaveLength(9);
 });
 
-test('keyboard bindings leave the entire game visible in short and narrow workspaces', async ({
+test('keyboard bindings do not shrink or displace the centered game', async ({
   page,
-}) => {
+}, testInfo) => {
   await run(
     page,
     'function tick() { cls(4); put(0, 16, "SCORE LIVES BOTTOM UI", 7, 3); put(0, 17, "ABCDEFGHIJKLMNOPQRST", 7, 5) }',
@@ -2484,9 +2656,14 @@ test('keyboard bindings leave the entire game visible in short and narrow worksp
             guide = document.getElementById('keyboard-controls').getBoundingClientRect(),
             frame = document.getElementById('viewport').getBoundingClientRect();
           return (
-            screen.bottom <= guide.top &&
+            Math.abs(screen.x + screen.width / 2 - (frame.x + frame.width / 2)) <= 1 &&
+            Math.abs(screen.y + screen.height / 2 - (frame.y + frame.height / 2)) <= 1 &&
+            screen.top >= frame.top &&
+            screen.bottom <= frame.bottom &&
             screen.left >= frame.left &&
             screen.right <= frame.right &&
+            guide.left >= frame.left &&
+            guide.top >= frame.top &&
             guide.right <= frame.right &&
             guide.bottom <= frame.bottom
           );
@@ -2494,6 +2671,7 @@ test('keyboard bindings leave the entire game visible in short and narrow worksp
       )
       .toBe(true);
     await expect(page.locator('#keyboard-controls')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath(`keyboard-${width}x${height}.png`) });
   }
 });
 
@@ -2532,9 +2710,9 @@ test('keyboard bindings stay visible in Play without opening code or reference',
         fits: element.scrollWidth <= element.clientWidth,
       };
     });
-    expect(bounds.left).toBeGreaterThanOrEqual(12);
-    expect(bounds.right).toBeCloseTo(13, 0);
-    expect(bounds.bottom).toBeCloseTo(9, 0);
+    expect(bounds.left).toBeGreaterThanOrEqual(5);
+    expect(bounds.right).toBeCloseTo(6, 0);
+    expect(bounds.bottom).toBeCloseTo(6, 0);
     expect(bounds.fits).toBe(true);
   }
   await page.locator('#info-tab').click();
@@ -3770,10 +3948,10 @@ test('an error preserves the last game picture and marks its editable source lin
   await expect(page.locator('#pause')).toBeDisabled();
   expect(await pixel(page)).toEqual([80, 140, 215, 255]);
   await expect(page.locator('.editor-line-error')).toHaveText('5');
-  const picture = await page.locator('#screen').boundingBox(),
+  const picture = await page.locator('#viewport').boundingBox(),
     notice = await page.locator('#error-notice').boundingBox();
-  expect(notice.x).toBeGreaterThan(picture.x);
-  expect(notice.y).toBeGreaterThan(picture.y);
+  expect(notice.x).toBeCloseTo(picture.x + 6, 1);
+  expect(notice.y).toBeCloseTo(picture.y + 6, 1);
   expect(notice.x + notice.width).toBeLessThanOrEqual(picture.x + picture.width);
   expect(notice.y + notice.height).toBeLessThanOrEqual(picture.y + picture.height);
   await page.locator('#error-line').click();
