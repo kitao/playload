@@ -1037,11 +1037,9 @@ function fitGame() {
   const stage = document.querySelector('.stage'),
     size = Math.max(0, Math.floor(Math.min(width, (height * 160) / 144)));
   stage.style.width = size + 'px';
-  const player = $('viewport');
-  player.style.setProperty(
-    '--error-text-height',
-    Math.max(21, Math.min(105, Math.floor((player.clientHeight - 14) / 21) * 21)) + 'px',
-  );
+  const player = $('viewport'),
+    errorRows = Math.max(1, Math.min(5, Math.floor((player.clientHeight - 8) / 20)));
+  player.style.setProperty('--error-text-height', errorRows * 20 + 'px');
 }
 function setEditorOpen(open) {
   editorOpen = open;

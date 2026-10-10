@@ -227,8 +227,8 @@ for (const limit of ['compressed source', 'full URL']) {
     await expect(page.locator('#error-notice')).toBeVisible();
     const player = await page.locator('#viewport').boundingBox(),
       notice = await page.locator('#error-notice').boundingBox();
-    expect(notice.x).toBeCloseTo(player.x + 6, 1);
-    expect(notice.y).toBeCloseTo(player.y + 6, 1);
+    expect(notice.x).toBeCloseTo(player.x + 7, 1);
+    expect(notice.y).toBeCloseTo(player.y + 3, 1);
     await page.screenshot({ path: testInfo.outputPath('bookmark-too-large.png') });
 
     await editor.fill(small);
@@ -2710,9 +2710,9 @@ test('keyboard bindings stay visible in Play without opening code or reference',
         fits: element.scrollWidth <= element.clientWidth,
       };
     });
-    expect(bounds.left).toBeGreaterThanOrEqual(5);
-    expect(bounds.right).toBeCloseTo(6, 0);
-    expect(bounds.bottom).toBeCloseTo(6, 0);
+    expect(bounds.left).toBeGreaterThanOrEqual(6);
+    expect(bounds.right).toBeCloseTo(7, 0);
+    expect(bounds.bottom).toBeCloseTo(3, 0);
     expect(bounds.fits).toBe(true);
   }
   await page.locator('#info-tab').click();
@@ -3950,8 +3950,8 @@ test('an error preserves the last game picture and marks its editable source lin
   await expect(page.locator('.editor-line-error')).toHaveText('5');
   const picture = await page.locator('#viewport').boundingBox(),
     notice = await page.locator('#error-notice').boundingBox();
-  expect(notice.x).toBeCloseTo(picture.x + 6, 1);
-  expect(notice.y).toBeCloseTo(picture.y + 6, 1);
+  expect(notice.x).toBeCloseTo(picture.x + 7, 1);
+  expect(notice.y).toBeCloseTo(picture.y + 3, 1);
   expect(notice.x + notice.width).toBeLessThanOrEqual(picture.x + picture.width);
   expect(notice.y + notice.height).toBeLessThanOrEqual(picture.y + picture.height);
   await page.locator('#error-line').click();

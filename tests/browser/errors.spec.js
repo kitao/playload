@@ -114,19 +114,19 @@ for (const scenario of [
         return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
       });
       expect(anchor).toEqual(await page.locator('#viewport').boundingBox());
-      expect(notice.x).toBeCloseTo(anchor.x + 6, 1);
-      expect(notice.y).toBeCloseTo(anchor.y + 6, 1);
+      expect(notice.x).toBeCloseTo(anchor.x + 7, 1);
+      expect(notice.y).toBeCloseTo(anchor.y + 3, 1);
       expect(notice.x + notice.width).toBeLessThanOrEqual(anchor.x + anchor.width + 1);
       expect(notice.y + notice.height).toBeLessThanOrEqual(anchor.y + anchor.height + 1);
       const text = await page.locator('#error').boundingBox();
       expect(text.width).toBeGreaterThan(
         Math.min(100, (scenario.message || 'Game error').length * 7),
       );
-      expect(text.height).toBeGreaterThanOrEqual(21);
+      expect(text.height).toBeGreaterThanOrEqual(20);
       if (scenario.message === messages.twoLines) {
-        expect(text.height).toBe(42);
+        expect(text.height).toBe(40);
         const line = await page.locator('#error-line').boundingBox();
-        expect(line.height).toBe(21);
+        expect(line.height).toBe(20);
         expect(line.y).toBe(text.y);
       }
       await expect(page.locator('#error-notice img,#error-notice script')).toHaveCount(0);

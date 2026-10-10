@@ -865,27 +865,26 @@ dd {
 }
 #keyboard-controls,
 #error-notice {
-  padding: 2px 6px;
-  background: var(--face);
+  position: absolute;
+  max-width: calc(100% - 12px);
+  padding: 2px;
+  background: color-mix(in srgb, var(--face) 65%, transparent);
   text-shadow: 0 1px 2px #000;
+  z-index: 2;
 }
 #keyboard-controls {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
+  right: 6px;
+  bottom: 2px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 2px 10px;
-  max-width: calc(100% - 10px);
   margin: 0;
-  padding-inline: 4px;
   color: var(--muted);
   font-size: 12px;
   line-height: 18px;
   text-align: right;
   pointer-events: none;
-  z-index: 2;
 }
 #keyboard-controls span {
   white-space: nowrap;
@@ -938,25 +937,22 @@ body[data-touch='true'] #keyboard-controls {
   image-rendering: auto;
 }
 #error-notice {
-  position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 2px;
+  left: 6px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
   width: fit-content;
-  max-width: calc(100% - 10px);
-  z-index: 2;
 }
 #error {
   flex: 1;
   min-width: 0;
-  max-height: var(--error-text-height, 84px);
+  max-height: var(--error-text-height, 80px);
   overflow: auto;
   margin: 0;
   color: var(--text);
   font:
-    14px/1.5 ui-monospace,
+    13px/20px ui-monospace,
     SFMono-Regular,
     Menlo,
     Consolas,
@@ -968,15 +964,15 @@ body[data-touch='true'] #keyboard-controls {
   flex-shrink: 0;
   width: auto;
   height: auto;
-  min-height: 21px;
+  min-height: 20px;
   padding: 0;
   align-items: flex-start;
   justify-content: flex-start;
   border: 0;
   background: transparent;
   color: var(--active);
-  font-size: 14px;
-  line-height: 21px;
+  font-size: 13px;
+  line-height: 20px;
   text-transform: none;
   text-decoration: underline;
   text-underline-offset: 3px;
