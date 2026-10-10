@@ -164,7 +164,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     ),
   );
 
-  function cls(col = 0) {
+  function cls(col) {
     col = color(col);
     for (const row of scr)
       for (const element of row) {

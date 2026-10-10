@@ -1,42 +1,19 @@
-import { palette } from './engine.js?v=15';
+import { palette } from './engine.js?v=16';
 import { glyphs } from './glyphs.js?v=18';
 import { encode, decode, gameURL } from './payload.js?v=13';
-import { Runtime, Sound } from './runtime.js?v=25';
+import { Runtime, Sound } from './runtime.js?v=26';
 import { Capture, download } from './capture.js?v=20';
-import { createDisplay } from './display.js?v=14';
-import { createCRT } from './crt.js?v=14';
+import { createDisplay } from './display.js?v=15';
+import { createCRT } from './crt.js?v=15';
 import { highlightJavaScript } from './editor-highlighter.js?v=13';
-import { exampleLinks } from './example-links.js?v=24';
+import { starter, exampleLinks } from './example-links.js?v=29';
 
 const $ = (id) => document.getElementById(id);
 const initialHash = location.hash;
-const starter = `// @title My Game
-let x = 76;
-let y = 68;
-let gx = 14;
-let gy = 8;
-let gems = 0;
-
-function tick() {
-  x = Math.max(0, Math.min(152, x + btn(3) - btn(2)));
-  y = Math.max(0, Math.min(136, y + btn(1) - btn(0)));
-
-  if (Math.abs(x - gx * 8) < 6 && Math.abs(y - gy * 8) < 6) {
-    gems += 1;
-    gx = Math.floor(Math.random() * 20);
-    gy = 2 + Math.floor(Math.random() * 16);
-    play(0, 'T240O6N1cG');
-  }
-
-  cls(0);
-  put(1, 1, 'GEMS ' + gems);
-  put(gx, gy, '💎', 4);
-  spr(x, y, '👾', 6);
-}
-`;
 const canvas = $('display'),
   context = canvas.getContext('2d');
-const display = createDisplay(palette, canvas.width, canvas.height);
+const screenBackground = getComputedStyle($('viewport')).getPropertyValue('--face').trim();
+const display = createDisplay(palette, canvas.width, canvas.height, screenBackground);
 const image = new ImageData(display.render(new Uint8Array(160 * 144)), canvas.width, canvas.height);
 let screenPixels = new Uint8Array(160 * 144);
 let crtDisplay;
@@ -60,9 +37,11 @@ let editRevision = 0,
   focusRevision = 0,
   fileRequest,
   fileHandle;
+let checkingFile = false,
+  fileError = '';
 let editorErrorLine = null;
 let touch = touchLayout();
-let compact = touch || innerWidth < 1280;
+let compact = touch;
 let editorOpen = !touch && innerWidth >= 600;
 let toolsOpen = false,
   awaitingStart = false;
@@ -79,8 +58,6 @@ const runtime = new Runtime(frame, (error) => {
   $('error').textContent = error.message || 'Game error';
   $('error').hidden = false;
   $('error-notice').hidden = false;
-  $('screen').hidden = false;
-  $('empty').hidden = true;
   editorErrorLine = $('editor').value === pendingSource ? error.line : null;
   updateEditorLines();
   $('error-line').hidden = !error.line;
@@ -116,15 +93,34 @@ const runtime = new Runtime(frame, (error) => {
   focusAfterRun();
 });
 
-let statusTimer;
-function status(text = '') {
+let statusTimer,
+  copyRevision = 0;
+function status(text = '', target = null) {
   clearTimeout(statusTimer);
-  $('status').textContent = text;
-  if (text === 'Copied')
-    statusTimer = setTimeout(() => {
-      $('status').textContent = '';
-    }, 1800);
+  const notice = $('status'),
+    copied = text === 'Copied' && !!target;
+  notice.toggleAttribute('data-copy', copied);
+  notice.textContent = text;
+  if (copied) {
+    const source = target.getBoundingClientRect(),
+      { width, height } = notice.getBoundingClientRect(),
+      x = source.x + source.width / 2,
+      overlap = target.classList.contains('glyph') ? 5 : 0,
+      top = source.bottom - overlap;
+    notice.style.left = Math.max(8, Math.min(innerWidth - width - 8, x - width / 2)) + 'px';
+    notice.style.top =
+      (top + height <= innerHeight - 8 ? top : source.top - height + overlap) + 'px';
+  } else {
+    notice.style.removeProperty('left');
+    notice.style.removeProperty('top');
+  }
+  if (text === 'Copied') statusTimer = setTimeout(() => status(), 1800);
 }
+function dismissCopy() {
+  copyRevision++;
+  if ($('status').hasAttribute('data-copy')) status();
+}
+document.addEventListener('scroll', dismissCopy, true);
 function controls() {
   $('workspace-toolbar').hidden = view === 'info' || (compact && !toolsOpen);
   $('tools-toggle').hidden = !compact || view === 'info';
@@ -143,14 +139,16 @@ function controls() {
   $('load').disabled = reading;
   $('filename').textContent = filename;
   $('filename').title = filename;
-  $('reload').disabled = reading || !filename;
   for (const button of document.querySelectorAll('[data-input]')) button.disabled = !running;
 }
 function syncPlayback() {
-  audio.pause(!running || paused || view === 'info' || (compact && toolsOpen));
-  capture?.suspend(!running || view === 'info' || awaitingStart || (compact && toolsOpen));
+  audio.pause(document.hidden || !running || paused || view === 'info' || (compact && toolsOpen));
+  capture?.suspend(
+    document.hidden || !running || view === 'info' || awaitingStart || (compact && toolsOpen),
+  );
 }
 function setView(next) {
+  dismissCopy();
   view = next;
   document.body.dataset.view = next;
   for (const id of ['code', 'info']) $(id).hidden = id !== view;
@@ -173,7 +171,7 @@ function paint() {
   canvas.dataset.crt = String(crt);
   if (crt && crtDisplay === undefined) {
     try {
-      crtDisplay = createCRT(palette, canvas.width, canvas.height);
+      crtDisplay = createCRT(palette, canvas.width, canvas.height, screenBackground);
     } catch {
       crtDisplay = null;
     }
@@ -192,10 +190,8 @@ async function frame(pixels, sounds, ready) {
   running = true;
   paused = awaitingStart;
   syncPlayback();
-  $('screen').hidden = false;
   $('error').hidden = true;
   $('error-notice').hidden = true;
-  $('empty').hidden = true;
   $('error-line').hidden = true;
   controls();
   focusAfterRun();
@@ -240,10 +236,8 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForTa
   syncPlayback();
   pendingSource = code;
   scheduleURL(0);
-  $('screen').hidden = false;
   $('error').hidden = true;
   $('error-notice').hidden = true;
-  $('empty').hidden = true;
   $('error-line').hidden = true;
   editorErrorLine = null;
   updateEditorLines();
@@ -255,6 +249,7 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForTa
   controls();
   pendingFocus = takeFocus ? { element: document.activeElement, revision: focusGeneration } : null;
   runtime.load(code);
+  runtime.suspend(document.hidden);
 }
 function runCurrentSource() {
   if (reading) return;
@@ -281,7 +276,7 @@ function release() {
 }
 function focusEditor() {
   $('editor').focus({ preventScroll: true });
-  if (compact) window.scrollTo({ top: 0, behavior: 'instant' });
+  if (compact || innerWidth < 600) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function focusGame(reveal = true) {
   if (view !== 'code') setView('code');
@@ -365,10 +360,15 @@ tabs.onkeydown = (event) => {
   setView(next);
   $(next + '-tab').focus();
 };
-$('screen').onclick = () => {
+$('viewport').onpointerdown = (event) => {
+  if (event.button !== 0 || event.target.closest('button, #error')) return;
+  if (event.pointerType === 'mouse') event.preventDefault();
+  focusGame(false);
+};
+$('viewport').onclick = (event) => {
+  if (event.target.closest('button, #error')) return;
   if (compact && toolsOpen) {
     $('tools-toggle').click();
-    return;
   }
   if (awaitingStart) {
     startGame();
@@ -377,6 +377,7 @@ $('screen').onclick = () => {
   focusGame(false);
   audio.unlock();
 };
+$('start-game').onclick = startGame;
 $('game').addEventListener('pointerdown', () => audio.unlock());
 $('pause').onclick = () => {
   paused = !paused;
@@ -404,7 +405,7 @@ document.querySelector('.game-tools').addEventListener('click', (event) => {
     running &&
     !(compact && toolsOpen) &&
     button &&
-    !['code-toggle', 'run', 'pause'].includes(button.id)
+    !['load', 'code-toggle', 'run', 'pause', 'crt', 'sound'].includes(button.id)
   )
     focusGame();
 });
@@ -418,6 +419,7 @@ $('sound').onclick = () => {
   audio.mute(audio.enabled);
   $('sound').setAttribute('aria-pressed', String(audio.enabled));
 };
+for (const id of ['crt', 'sound']) $(id).onmousedown = (event) => event.preventDefault();
 $('screenshot').onpointerdown = (event) => event.preventDefault();
 $('screenshot').onclick = () =>
   canvas.toBlob((blob) => {
@@ -446,12 +448,12 @@ $('video').onclick = async () => {
     controls();
   }
 };
-let copyRevision = 0;
-async function copy(text) {
+async function copy(text, target) {
   const version = ++copyRevision;
   try {
     await navigator.clipboard.writeText(text);
-    if (version === copyRevision) status('Copied');
+    if (version === copyRevision && target.isConnected && target.getBoundingClientRect().height)
+      status('Copied', target);
   } catch {
     if (version !== copyRevision) return;
     status();
@@ -464,6 +466,16 @@ async function copy(text) {
   }
 }
 
+function gameTitle(code) {
+  for (const comment of code.matchAll(/\s*(?:\/\/([^\r\n\u2028\u2029]*)|\/\*([\s\S]*?)\*\/)/gy)) {
+    const title = /^[ \t]*\*?[ \t]*@title(?:[ \t]+([^\r\n\u2028\u2029]*))?$/m.exec(
+      comment[1] ?? comment[2],
+    );
+    if (title) return title[1]?.trim() || '';
+  }
+  return '';
+}
+
 let urlTimer,
   urlRevision = 0;
 function scheduleURL(delay = 250) {
@@ -471,9 +483,7 @@ function scheduleURL(delay = 250) {
   const version = ++urlRevision,
     code = $('editor').value,
     writeURL = !!initialHash || editRevision > 0 || code !== starter;
-  const title = writeURL
-    ? /^\s*\/\/[ \t]*@title[ \t]+([^\r\n\u2028\u2029]*)/.exec(code)?.[1].trim()
-    : null;
+  const title = writeURL ? gameTitle(code) : null;
   document.title = title ? `${title} — Playload` : 'Playload';
   urlTimer = setTimeout(async () => {
     try {
@@ -541,16 +551,13 @@ function readRequest() {
   return { edit: editRevision, focus: focusRevision };
 }
 async function readFile(file, request, handle = null) {
-  if (request.filename && file.name !== request.filename) {
-    status(`Select ${request.filename} to reload.`);
-    return false;
-  }
   const text = await file.text();
   if (request.edit !== editRevision) {
     status('Code changed while loading. Your edits were kept.');
     return false;
   }
   fileHandle = handle;
+  fileError = '';
   fileSource = text;
   $('editor').value = fileSource;
   filename = file.name;
@@ -560,13 +567,13 @@ async function readFile(file, request, handle = null) {
   return true;
 }
 async function chooseFile(request) {
+  reading = true;
+  controls();
   if (!window.showOpenFilePicker) {
     fileRequest = request;
     $('file').click();
     return;
   }
-  reading = true;
-  controls();
   try {
     const [selected] = await showOpenFilePicker({
       types: [{ description: 'JavaScript', accept: { 'text/javascript': ['.js'] } }],
@@ -585,34 +592,47 @@ async function chooseFile(request) {
 $('load').onclick = () => {
   if (!reading && discard()) return chooseFile(readRequest());
 };
-$('reload').onclick = async () => {
-  if (reading || !filename || !discard()) return;
-  const request = readRequest();
-  if (!fileHandle) {
-    status(`Select ${filename} again to reload.`);
-    return chooseFile({ ...request, filename });
-  }
-  reading = true;
-  controls();
+async function refreshFile() {
+  if (checkingFile || reading || !fileHandle || document.hidden || $('editor').value !== fileSource)
+    return;
+  const handle = fileHandle,
+    edit = editRevision;
+  checkingFile = true;
   try {
-    await readFile(await fileHandle.getFile(), request, fileHandle);
-    audio.unlock();
+    const file = await handle.getFile(),
+      text = await file.text();
+    if (reading || handle !== fileHandle || edit !== editRevision || document.hidden) return;
+    if (fileError && $('status').textContent === fileError) status();
+    fileError = '';
+    if (text === fileSource) return;
+    fileSource = text;
+    $('editor').value = text;
+    changed();
   } catch (error) {
-    status(
-      error.name === 'NotAllowedError' ? 'Load the file again to restore access.' : error.message,
-    );
+    if (reading || handle !== fileHandle || edit !== editRevision) return;
+    const message =
+      error.name === 'NotAllowedError' ? 'Load the file again to restore access.' : error.message;
+    if (message !== fileError) status(message);
+    fileError = message;
+    if (error.name === 'NotAllowedError') fileHandle = null;
   } finally {
-    reading = false;
-    controls();
+    checkingFile = false;
   }
-};
+}
+setInterval(refreshFile, 1000);
+window.addEventListener('focus', refreshFile);
 $('file').oncancel = () => {
   fileRequest = null;
+  reading = false;
   status();
+  controls();
 };
 $('file').onchange = async () => {
   const file = $('file').files[0];
-  if (!file) return;
+  if (!file) {
+    $('file').oncancel();
+    return;
+  }
   const request = fileRequest ?? readRequest();
   fileRequest = null;
   reading = true;
@@ -644,6 +664,7 @@ $('editor').onkeydown = (event) => {
 $('editor').value = starter;
 
 function setReference(next) {
+  dismissCopy();
   const selected = next === 'characters' ? category : next;
   if (!['api', 'examples'].includes(selected) && selected !== category) {
     category = selected;
@@ -664,14 +685,18 @@ function setReference(next) {
 for (const entry of exampleLinks) {
   const row = document.createElement('li'),
     playLink = document.createElement('a'),
+    size = document.createElement('span'),
     description = document.createElement('span');
   playLink.textContent = entry.name;
   playLink.href = gameURL(new URL('.', location.href).href, entry.hash);
   playLink.setAttribute('aria-label', 'Play ' + entry.name);
   playLink.target = '_blank';
   playLink.rel = 'noopener';
+  size.className = 'example-size';
+  size.textContent = (entry.bytes / 1024).toFixed(2) + ' KB';
+  description.className = 'example-description';
   description.textContent = entry.description;
-  row.append(playLink, description);
+  row.append(playLink, size, description);
   document.querySelector('.example-links').append(row);
 }
 for (const button of document.querySelectorAll('[data-ref]'))
@@ -745,7 +770,7 @@ function renderCatalogWindow() {
     unicode.textContent = glyph.ch;
     pattern(pixels, glyph);
     button.append(unicode, pixels);
-    button.onclick = () => copy(glyph.ch);
+    button.onclick = () => copy(glyph.ch, button);
     fragment.append(button);
   }
   window.replaceChildren(fragment);
@@ -818,7 +843,7 @@ for (let index = 0; index < 8; index++) {
   detail.className = 'hex';
   detail.textContent = palette[index].toUpperCase();
   button.append(swatch, number, detail);
-  button.onclick = () => copy(String(index));
+  button.onclick = () => copy(String(index), button);
   $('palette').append(button);
 }
 
@@ -855,15 +880,14 @@ document.addEventListener('keydown', (event) => {
   }
   if (view !== 'code') return;
   if (
-    event.altKey &&
-    !event.ctrlKey &&
-    !event.metaKey &&
+    event.key === 'Escape' &&
     !event.shiftKey &&
-    ['KeyP', 'KeyR'].includes(event.code)
+    !event.altKey &&
+    !event.ctrlKey &&
+    !event.metaKey
   ) {
-    const id = event.code === 'KeyR' ? 'reload' : 'pause';
     event.preventDefault();
-    if (!event.repeat && !$(id).disabled) $(id).click();
+    if (!event.repeat && !$('pause').disabled) $('pause').click();
     return;
   }
   if (editable(event.target)) return;
@@ -887,7 +911,6 @@ document.addEventListener('keydown', (event) => {
   if (!event.altKey || event.repeat || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const id = {
     KeyE: 'error-line',
-    KeyP: 'pause',
     Digit1: 'screenshot',
     Digit2: 'record',
     Digit3: 'video',
@@ -1008,7 +1031,7 @@ function touchLayout() {
 function layout() {
   touch = touchLayout();
   document.body.dataset.touch = String(touch);
-  const nextCompact = touch || innerWidth < 1280;
+  const nextCompact = touch;
   if (compact !== nextCompact) toolsOpen = false;
   compact = nextCompact;
   document.body.dataset.compact = String(compact);
@@ -1025,15 +1048,7 @@ function layout() {
 }
 let split = 0.5,
   dragging;
-try {
-  const saved = localStorage.getItem('playload-split'),
-    value = Number(saved);
-  if (saved !== null && saved.trim() !== '' && Number.isFinite(value) && value >= 0 && value <= 1)
-    split = value;
-} catch {
-  /* Resizing works without storage. */
-}
-function setSplit(value, save = false) {
+function setSplit(value) {
   const area = $('code'),
     available = Math.max(1, area.clientWidth - 8);
   const min = Math.min(0.35, 140 / available),
@@ -1044,12 +1059,6 @@ function setSplit(value, save = false) {
   $('divider').setAttribute('aria-valuemin', Math.round(min * 100));
   $('divider').setAttribute('aria-valuemax', Math.round(max * 100));
   $('divider').setAttribute('aria-valuenow', Math.round(split * 100));
-  if (save)
-    try {
-      localStorage.setItem('playload-split', String(split));
-    } catch {
-      /* Session layout is still retained. */
-    }
   fitGame();
 }
 $('divider').onpointerdown = (event) => {
@@ -1070,25 +1079,36 @@ for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'])
     if (dragging !== event.pointerId) return;
     dragging = null;
     document.body.classList.remove('resizing');
-    setSplit(split, true);
   });
 $('divider').onkeydown = (event) => {
   const change = { ArrowLeft: -0.05, ArrowRight: 0.05 }[event.key];
   if (change == null && !['Home', 'End'].includes(event.key)) return;
   event.preventDefault();
-  setSplit(event.key === 'Home' ? 0 : event.key === 'End' ? 1 : split + change, true);
+  setSplit(event.key === 'Home' ? 0 : event.key === 'End' ? 1 : split + change);
 };
-const gameLayout = new ResizeObserver(fitGame);
+const gameLayout = new ResizeObserver(() => requestAnimationFrame(fitGame));
 gameLayout.observe($('picture'));
 window.addEventListener('resize', () => {
+  dismissCopy();
   release();
   layout();
   if (reference === 'characters' && view === 'info') renderCharacters();
+});
+document.addEventListener('visibilitychange', () => {
+  lastFrame = 0;
+  release();
+  runtime.suspend(document.hidden);
+  syncPlayback();
+  if (!document.hidden) {
+    audio.unlock();
+    refreshFile();
+  }
 });
 window.addEventListener('beforeunload', () => capture?.leave(true));
 window.addEventListener('pagehide', (event) => {
   release();
   if (event.persisted) {
+    capture?.leave(true);
     runtime.suspend(true);
     audio.pause(true);
     capture?.suspend(true);
@@ -1102,9 +1122,9 @@ window.addEventListener('pageshow', (event) => {
   if (!event.persisted) return;
   lastFrame = 0;
   capture?.leave(false);
-  runtime.suspend(false);
+  runtime.suspend(document.hidden);
   syncPlayback();
-  audio.unlock();
+  if (!document.hidden) audio.unlock();
 });
 window.addEventListener('hashchange', () => location.reload());
 function animate(time) {
@@ -1112,6 +1132,7 @@ function animate(time) {
   if (padMask !== gamepadMask) syncInput(padMask);
   if (
     running &&
+    !document.hidden &&
     !paused &&
     view === 'code' &&
     !(compact && toolsOpen) &&
@@ -1122,10 +1143,11 @@ function animate(time) {
     lastFrame = time - lastFrame > interval * 2 ? time : lastFrame + interval;
     runtime.frame();
   }
-  if (capture?.stream && running && paused && view === 'code') paint();
+  if (capture?.stream && running && paused && view === 'code' && !document.hidden) paint();
   requestAnimationFrame(animate);
 }
 
+paint();
 setEditorOpen(editorOpen);
 setReference(reference);
 highlightEditor();
@@ -1151,8 +1173,10 @@ if (initialHash) {
       $('error').textContent = error.message;
       $('error').hidden = false;
       $('error-notice').hidden = false;
-      $('empty').hidden = true;
-      $('screen').hidden = false;
+      if (view === 'code' && initialFocus === focusRevision) focusGame();
     });
-} else if (touch || !editorOpen) run(starter, false, focusRevision, true);
-else scheduleURL(0);
+} else if (touch || !editorOpen) run(starter, true, focusRevision, true);
+else {
+  scheduleURL(0);
+  focusEditor();
+}

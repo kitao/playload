@@ -279,7 +279,7 @@ test('Gems collects when both coordinate differences are less than six', async (
       ...Object.keys(engine.api),
       'dx',
       'dy',
-      source + '\nx = gx + dx; y = gy + dy; return {tick,score:()=>score};',
+      source + '\nx = gx * 8 + dx; y = gy * 8 + dy; return {tick,score:()=>score};',
     )(...Object.values(engine.api), dx, dy);
     engine.sounds();
     engine.step(game.tick);
@@ -298,7 +298,7 @@ test('Gems draws coordinates once even when its next position overlaps the playe
   const game = new Function(
     ...Object.keys(engine.api),
     'Math',
-    source + '\nx = 72; y = 72; gx = 72; gy = 72; return {tick,state:()=>({x,y,gx,gy,score})};',
+    source + '\nx = 72; y = 72; gx = 9; gy = 9; return {tick,state:()=>({x,y,gx,gy,score})};',
   )(...Object.values(engine.api), math);
   const step = (mask, frames) => {
     engine.input(mask);
@@ -307,7 +307,7 @@ test('Gems draws coordinates once even when its next position overlaps the playe
   engine.sounds();
   for (let score = 1; score <= 2; score++) {
     step(0, 1);
-    assert.deepEqual(game.state(), { x: 72, y: 72, gx: 72, gy: 72, score });
+    assert.deepEqual(game.state(), { x: 72, y: 72, gx: 9, gy: 9, score });
     assert.equal(next, score * 2);
     assert.deepEqual(
       engine.sounds().map((sound) => sound.ch),
@@ -315,7 +315,7 @@ test('Gems draws coordinates once even when its next position overlaps the playe
     );
   }
   step(0, 1);
-  assert.deepEqual(game.state(), { x: 72, y: 72, gx: 8, gy: 24, score: 3 });
+  assert.deepEqual(game.state(), { x: 72, y: 72, gx: 1, gy: 3, score: 3 });
   assert.equal(next, 6);
   engine.sounds();
   step(0, 60);
@@ -323,7 +323,7 @@ test('Gems draws coordinates once even when its next position overlaps the playe
   assert.equal(engine.sounds().length, 0);
   next = 0;
   step(1 << 5, 1);
-  assert.deepEqual(game.state(), { x: 72, y: 72, gx: 72, gy: 72, score: 3 });
+  assert.deepEqual(game.state(), { x: 72, y: 72, gx: 9, gy: 9, score: 3 });
   assert.equal(next, 2);
   assert.deepEqual(
     engine.sounds().map((sound) => sound.ch),
@@ -357,7 +357,7 @@ test('Gems demonstrates held movement, collection, sound effects and relocation'
   engine.input(1 << 0);
   for (let i = 0; i < 24; i++) engine.step(game.tick);
   assert.equal(game.state().score, 1);
-  assert.deepEqual([game.state().gx, game.state().gy], [72, 72]);
+  assert.deepEqual([game.state().gx, game.state().gy], [9, 9]);
   assert.deepEqual(
     engine.sounds().map((sound) => sound.ch),
     [1],
@@ -399,6 +399,10 @@ test('Lights Out retains its screen-cell board, solves, and resets', async () =>
   engine.step(game.tick);
   const original = board();
   assert(original.flat().includes('●'));
+  assert.deepEqual(engine.api.scr[8][10].col, [null, 1]);
+  press(3);
+  assert.deepEqual(engine.api.scr[8][10].col, [null, null]);
+  assert.deepEqual(engine.api.scr[8][12].col, [null, 1]);
   for (let i = 0; i < 60; i++) engine.step(game.tick);
   assert.deepEqual(board(), original);
   for (const [tx, ty] of [

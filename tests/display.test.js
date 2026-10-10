@@ -89,3 +89,23 @@ test('CRT has opaque black borders, scanlines and edge shading, and can return t
   assert(Math.max(...levels) - Math.min(...levels) > 20);
   assert.deepEqual(display.render(pixels, false), plain);
 });
+
+test('CRT surrounds the curved glass with the capture background while retaining game black', () => {
+  const display = createDisplay(palette, 640, 576, '#211c29'),
+    pixels = new Uint8Array(160 * 144),
+    data = display.render(pixels, true);
+  for (const [x, y] of [
+    [0, 0],
+    [639, 0],
+    [0, 575],
+    [639, 575],
+    [320, 0],
+    [0, 288],
+  ]) {
+    const offset = (y * 640 + x) * 4;
+    assert.deepEqual([...data.slice(offset, offset + 4)], [33, 28, 41, 255]);
+  }
+  const center = (288 * 640 + 320) * 4;
+  assert.deepEqual([...data.slice(center, center + 4)], [0, 0, 0, 255]);
+  assert.deepEqual([...display.render(pixels, false).slice(0, 4)], [0, 0, 0, 255]);
+});

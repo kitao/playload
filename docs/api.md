@@ -15,7 +15,6 @@ function tick() {
 
   x = Math.max(0, Math.min(152, x));
 
-  cls(0);
   spr(x, 68, '👾', 6);
 }
 ```
@@ -26,7 +25,7 @@ Six functions:
 
 | API                              | Meaning                                                                                                                                                                              |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cls(col = 0)`                   | Fill the screen cells with spaces and a background override of `col`. Affects only the character screen.                                                                             |
+| `cls(col)`                       | Fill the screen cells with spaces and a background override of `col`. Affects only the character screen.                                                                             |
 | `put(cx, cy, str, col1?, col2?)` | Place text at character coordinates. Newlines return to the original column and advance one row. Omitted or `undefined` colors follow PCG; specified colors override each component. |
 | `spr(x, y, chr, col)`            | Draw an 8 × 8 sprite at pixel coordinates for the current tick. All four arguments are required. Zero pattern bits are transparent; color 0 paints black.                            |
 | `btn(id)`                        | Is button `id` held?                                                                                                                                                                 |

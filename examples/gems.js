@@ -1,19 +1,30 @@
 // @title Gems
 // Arrows move, Z boosts speed, X moves the gem.
 
-// State persists between ticks; sprite positions use pixels.
+// Gems stay in screen cells; the player moves by pixels.
 let x = 76;
 let y = 68;
 let score = 0;
 
-let gx = 36;
-let gy = 44;
+let gx = 4;
+let gy = 5;
 
-function placeGem() {
-  gx = 8 + Math.floor(Math.random() * 17) * 8;
-  gy = 24 + Math.floor(Math.random() * 12) * 8;
+function draw() {
+  put(1, 1, `GEMS ${score}`, 7, 1);
+  put(gx, gy, '💎', 4, 1);
 }
 
+function placeGem() {
+  put(gx, gy, ' ', 7, 1);
+  gx = 1 + Math.floor(Math.random() * 17);
+  gy = 3 + Math.floor(Math.random() * 12);
+  draw();
+}
+
+cls(1);
+put(4, 15, 'ARROWS MOVE', 7, 1);
+put(3, 16, 'A FAST  B GEM', 7, 1);
+draw();
 play(0, 'T150O4N3cegb))');
 
 function tick() {
@@ -24,7 +35,7 @@ function tick() {
   x = Math.max(8, Math.min(144, x));
   y = Math.max(24, Math.min(112, y));
 
-  if (Math.abs(x - gx) < 6 && Math.abs(y - gy) < 6) {
+  if (Math.abs(x - gx * 8) < 6 && Math.abs(y - gy * 8) < 6) {
     score++;
     placeGem();
     play(1, 'O6N1GC');
@@ -35,10 +46,5 @@ function tick() {
     play(2, 'O3N1c');
   }
 
-  cls(1);
-  put(1, 1, `GEMS ${score}`, 7, 1);
-  put(4, 15, 'ARROWS MOVE', 7, 1);
-  put(3, 16, 'A FAST  B GEM', 7, 1);
-  spr(gx, gy, '💎', 4);
   spr(x, y, '👾', 6);
 }

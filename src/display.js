@@ -1,5 +1,5 @@
 // Render into the capture canvas so screenshots and video include the CRT effect.
-export function createDisplay(palette, width = 640, height = 576) {
+export function createDisplay(palette, width = 640, height = 576, background = '#000000') {
   const data = new Uint8ClampedArray(width * height * 4);
   const output = new Uint32Array(data.buffer);
   const plain = new Int32Array(width * height),
@@ -7,6 +7,11 @@ export function createDisplay(palette, width = 640, height = 576) {
   const brightness = new Uint8Array(width * height);
   const colors = new Uint8ClampedArray(256 * 8 * 4);
   const packed = new Uint32Array(colors.buffer);
+  const surround = new Uint8Array([
+    ...[1, 3, 5].map((offset) => parseInt(background.slice(offset, offset + 2), 16)),
+    255,
+  ]);
+  const border = new Uint32Array(surround.buffer)[0];
   for (let level = 0; level < 256; level++) {
     for (let c = 0; c < 8; c++) {
       const offset = (level * 8 + c) * 4;
@@ -28,7 +33,8 @@ export function createDisplay(palette, width = 640, height = 576) {
       // Match CRT-Lottes' default horizontal and vertical curvature.
       const sx = (u * (1 + 0.031 * v * v)) / 0.98,
         sy = (v * (1 + 0.041 * u * u)) / 0.98;
-      if (Math.abs(sx) >= 1 || Math.abs(sy) >= 1) {
+      const corner = Math.hypot(Math.max(Math.abs(sx) - 0.97, 0), Math.max(Math.abs(sy) - 0.97, 0));
+      if (Math.abs(sx) >= 1 || Math.abs(sy) >= 1 || corner >= 0.03) {
         curved[i] = -1;
         continue;
       }
@@ -45,7 +51,7 @@ export function createDisplay(palette, width = 640, height = 576) {
     render(pixels, crt = false) {
       const map = crt ? curved : plain;
       for (let i = 0; i < output.length; i++) {
-        output[i] = packed[map[i] < 0 ? 0 : (crt ? brightness[i] : 255) * 8 + pixels[map[i]]];
+        output[i] = map[i] < 0 ? border : packed[(crt ? brightness[i] : 255) * 8 + pixels[map[i]]];
       }
       return data;
     },

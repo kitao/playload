@@ -13,6 +13,7 @@ void main() {
 const fragmentSource = `
 precision highp float;
 uniform sampler2D image;
+uniform vec3 background;
 varying vec2 uv;
 const vec2 sourceSize = vec2(160.0, 144.0);
 
@@ -67,15 +68,15 @@ void main() {
   vec2 warped = position * vec2(1.0 + 0.031 * position.y * position.y, 1.0 + 0.041 * position.x * position.x) / 0.98;
   vec2 p = warped * 0.5 + 0.5;
   // Rounded tube corners, with a narrow antialiased edge in source coordinates.
-  vec2 corner = max(abs(warped) - vec2(1.0), 0.0);
-  float glass = 1.0 - smoothstep(0.018, 0.024, length(corner));
-  if (abs(warped.x) >= 1.024 || abs(warped.y) >= 1.024) glass = 0.0;
+  vec2 corner = max(abs(warped) - vec2(0.97), 0.0);
+  float glass = 1.0 - smoothstep(0.028, 0.032, length(corner));
   float vignette = 1.0 - 0.13 * dot(position, position) * 0.5;
-  vec3 color = (scanlines(p) + 0.13 * bloom(p)) * mask(gl_FragCoord.xy) * vignette * glass;
-  gl_FragColor = vec4(toSrgb(color.r), toSrgb(color.g), toSrgb(color.b), 1.0);
+  vec3 color = (scanlines(p) + 0.13 * bloom(p)) * mask(gl_FragCoord.xy) * vignette;
+  vec3 srgb = vec3(toSrgb(color.r), toSrgb(color.g), toSrgb(color.b));
+  gl_FragColor = vec4(mix(background, srgb, glass), 1.0);
 }`;
 
-export function createCRT(palette, width = 640, height = 576) {
+export function createCRT(palette, width = 640, height = 576, background = '#000000') {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -124,6 +125,10 @@ export function createCRT(palette, width = 640, height = 576) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   gl.uniform1i(gl.getUniformLocation(program, 'image'), 0);
+  gl.uniform3fv(
+    gl.getUniformLocation(program, 'background'),
+    [1, 3, 5].map((offset) => parseInt(background.slice(offset, offset + 2), 16) / 255),
+  );
   const data = new Uint8Array(160 * 144 * 4),
     colors = palette.map((hex) =>
       [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16)),

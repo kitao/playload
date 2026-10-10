@@ -19,7 +19,7 @@ let frame = 0;
 let score = 0;
 let state = 'READY';
 
-function placeFood() {
+function chooseFood() {
   const empty = [];
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -35,6 +35,34 @@ function placeFood() {
   return empty[Math.floor(Math.random() * empty.length)];
 }
 
+function drawGems() {
+  put(11, 1, `GEMS ${score}`);
+  if (food) {
+    put(1 + food.x, 3 + food.y, '💎', 4);
+  }
+}
+
+function drawBoard() {
+  for (let y = 3; y < 15; y++) {
+    put(1, y, ' '.repeat(width));
+  }
+  drawGems();
+  for (let i = 0; i < body.length; i++) {
+    put(1 + body[i].x, 3 + body[i].y, '●', i === 0 ? 6 : 5);
+  }
+
+  if (state === 'READY') {
+    put(6, 8, 'A START', 7, 0);
+  } else if (state === 'PAUSED') {
+    put(7, 8, 'PAUSED', 7, 0);
+  } else if (state === 'OVER') {
+    put(5, 8, 'GAME OVER', 3, 0);
+  } else if (state === 'WON') {
+    put(5, 8, 'ALL CLEAR!', 6, 0);
+  }
+  put(2, 17, state === 'PLAY' ? 'A PAUSE  B RESET' : 'A PLAY   B RESET');
+}
+
 function reset() {
   // The first array element is the head; the last is the tail.
   body = [
@@ -47,7 +75,18 @@ function reset() {
   frame = 0;
   score = 0;
   state = 'READY';
-  food = placeFood();
+  food = chooseFood();
+
+  cls(0);
+  put(1, 1, 'SNAKE', 6);
+  put(0, 2, '▓'.repeat(20), 1);
+  put(0, 15, '▓'.repeat(20), 1);
+  for (let y = 3; y < 15; y++) {
+    put(0, y, '▓', 1);
+    put(19, y, '▓', 1);
+  }
+  put(4, 16, 'ARROWS TURN');
+  drawBoard();
   play(0, '');
 }
 
@@ -56,6 +95,7 @@ function move() {
   const x = body[0].x + dx;
   const y = body[0].y + dy;
   const grows = x === food.x && y === food.y;
+
   // The tail leaves its cell on a move that does not eat food.
   const occupied = grows ? body : body.slice(0, -1);
   if (
@@ -66,22 +106,31 @@ function move() {
     occupied.some((cell) => cell.x === x && cell.y === y)
   ) {
     state = 'OVER';
+    drawBoard();
     play(0, 'T180V10O3N1gc');
     return;
   }
 
   direction = nextDirection;
   body.unshift({ x, y });
+  if (!grows) {
+    const tail = body.pop();
+    put(1 + tail.x, 3 + tail.y, ' ');
+  }
+  put(1 + body[1].x, 3 + body[1].y, '●', 5);
+  put(1 + x, 3 + y, '●', 6);
+
   if (grows) {
     score += 1;
     play(0, 'T240V10O6N1cG');
-    food = placeFood();
-    if (!food) {
+    food = chooseFood();
+    if (food) {
+      drawGems();
+    } else {
       state = 'WON';
+      drawBoard();
       play(0, 'T180V10O5N3cegC');
     }
-  } else {
-    body.pop();
   }
 }
 
@@ -100,6 +149,7 @@ function tick() {
       }
       state = 'PLAY';
     }
+    drawBoard();
   }
 
   if (state === 'PLAY') {
@@ -114,32 +164,4 @@ function tick() {
       move();
     }
   }
-
-  cls(0);
-  put(1, 1, 'SNAKE', 6);
-  put(11, 1, `GEMS ${score}`);
-  put(0, 2, '▓'.repeat(20), 1);
-  put(0, 15, '▓'.repeat(20), 1);
-  for (let y = 3; y < 15; y++) {
-    put(0, y, '▓', 1);
-    put(19, y, '▓', 1);
-  }
-  if (food) {
-    put(1 + food.x, 3 + food.y, '💎', 4);
-  }
-  for (let i = 0; i < body.length; i++) {
-    put(1 + body[i].x, 3 + body[i].y, '●', i === 0 ? 6 : 5);
-  }
-
-  if (state === 'READY') {
-    put(6, 8, 'A START', 7, 0);
-  } else if (state === 'PAUSED') {
-    put(7, 8, 'PAUSED', 7, 0);
-  } else if (state === 'OVER') {
-    put(5, 8, 'GAME OVER', 3, 0);
-  } else if (state === 'WON') {
-    put(5, 8, 'ALL CLEAR!', 6, 0);
-  }
-  put(4, 16, 'ARROWS TURN');
-  put(2, 17, state === 'PLAY' ? 'A PAUSE  B RESET' : 'A PLAY   B RESET');
 }

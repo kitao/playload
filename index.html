@@ -10,18 +10,23 @@
     <meta name="description" content="A tiny game engine that lets you share games as URLs" />
     <title>Playload</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="src/style.css?v=75" />
-    <script type="module" src="src/app.js?v=75"></script>
+    <link rel="stylesheet" href="src/style.css?v=93" />
+    <script type="module" src="src/app.js?v=96"></script>
   </head>
   <body>
     <div id="app">
       <header>
         <div class="brand">
-          <img id="logo" src="logo.svg" width="64" height="8" alt="Playload" /><small
-            id="version"
-            aria-label="Version 0.8.0"
-            >0.8.0</small
+          <a
+            id="repository"
+            href="https://github.com/kitao/playload"
+            target="_blank"
+            rel="noopener"
+            aria-label="Playload on GitHub"
           >
+            <img id="logo" src="logo.svg" width="64" height="8" alt="Playload" />
+          </a>
+          <small id="version" aria-label="Version 0.8.0">0.8.0</small>
         </div>
         <nav id="views" role="tablist" aria-label="Workspace">
           <button id="code-tab" data-view="code" role="tab" aria-controls="code">Play</button>
@@ -29,14 +34,6 @@
         </nav>
         <div class="intro">
           <p>A tiny game engine that lets you share games as URLs</p>
-          <a
-            id="repository"
-            href="https://github.com/kitao/playload"
-            target="_blank"
-            rel="noopener"
-            aria-label="Playload on GitHub"
-            >GitHub</a
-          >
           <button
             id="tools-toggle"
             aria-label="Tools"
@@ -49,21 +46,16 @@
         </div>
       </header>
       <div id="workspace-toolbar">
-        <div id="files" class="toolbar-group" role="group" aria-label="File">
-          <button id="load" aria-keyshortcuts="Control+O Meta+O">
-            Load<kbd aria-hidden="true">Ctrl+O</kbd>
-          </button>
-          <button id="reload" aria-keyshortcuts="Alt+R" disabled>
-            Reload<kbd aria-hidden="true">Alt+R</kbd>
-          </button>
-          <input id="file" type="file" accept=".js,text/javascript" hidden />
-        </div>
         <div class="game-tools">
           <div class="play-tools toolbar-group" role="group" aria-label="Play">
+            <button id="load" aria-keyshortcuts="Control+O Meta+O">
+              Load<kbd aria-hidden="true">Ctrl+O</kbd>
+            </button>
+            <input id="file" type="file" accept=".js,text/javascript" hidden />
             <button id="run" aria-keyshortcuts="Control+Enter Meta+Enter">
               Run<kbd aria-hidden="true">Ctrl+Enter</kbd></button
-            ><button id="pause" aria-keyshortcuts="Alt+P" disabled>
-              Pause<kbd aria-hidden="true">Alt+P</kbd>
+            ><button id="pause" aria-keyshortcuts="Escape" disabled>
+              Pause<kbd aria-hidden="true">Esc</kbd>
             </button>
           </div>
           <div class="display-tools toolbar-group" role="group" aria-label="Display">
@@ -95,7 +87,7 @@
       <main>
         <section id="code" role="tabpanel" aria-labelledby="code-tab">
           <section id="workbench">
-            <pre id="editor-highlight" aria-hidden="true"></pre>
+            <pre id="editor-highlight" aria-hidden="true" tabindex="-1"></pre>
             <div id="editor-lines" aria-hidden="true"><pre id="editor-line-numbers"></pre></div>
             <textarea
               id="editor"
@@ -125,7 +117,6 @@
                     tabindex="0"
                     role="application"
                     aria-label="Game: arrows or WASD, Z or J for A, X or K for B"
-                    hidden
                   >
                     <canvas
                       id="display"
@@ -136,7 +127,6 @@
                     ></canvas>
                     <button id="start-game" hidden>Tap to play</button>
                   </div>
-                  <div id="empty"></div>
                   <div id="error-notice" role="alert" hidden>
                     <button id="error-line" aria-keyshortcuts="Alt+E" hidden>Line</button>
                     <pre id="error" tabindex="0" hidden></pre>
@@ -147,8 +137,8 @@
                 id="keyboard-controls"
                 aria-label="Keyboard controls: arrow keys or WASD, A on Z or J, B on X or K"
               >
-                <span>CURSOR: ↑↓←→ / <kbd>WASD</kbd></span
-                ><span>A: <kbd>Z/J</kbd> B: <kbd>X/K</kbd></span>
+                <span>CURSOR: <kbd>↑↓←→</kbd>/<kbd>WASD</kbd></span
+                ><span>A: <kbd>Z</kbd>/<kbd>J</kbd> B: <kbd>X</kbd>/<kbd>K</kbd></span>
               </p>
             </div>
             <div class="touch" aria-label="Game controls">
@@ -172,48 +162,50 @@
           <section id="colors" aria-label="Color palette">
             <div id="palette"></div>
           </section>
-          <nav class="reference-tabs" role="tablist" aria-label="Reference">
-            <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
-            <button
-              id="emoji-tab"
-              data-ref="emoji"
-              data-category="emoji"
-              role="tab"
-              aria-controls="characters"
-            >
-              Emoji
-            </button>
-            <button
-              id="symbols-tab"
-              data-ref="symbols"
-              data-category="symbols"
-              role="tab"
-              aria-controls="characters"
-            >
-              Symbols
-            </button>
-            <button
-              id="letters-tab"
-              data-ref="letters"
-              data-category="letters"
-              role="tab"
-              aria-controls="characters"
-            >
-              Alphabet
-            </button>
-            <button
-              id="kana-tab"
-              data-ref="kana"
-              data-category="kana"
-              role="tab"
-              aria-controls="characters"
-            >
-              Kana
-            </button>
-            <button id="examples-tab" data-ref="examples" role="tab" aria-controls="examples">
-              Examples
-            </button>
-          </nav>
+          <div class="reference-scroll">
+            <nav class="reference-tabs" role="tablist" aria-label="Reference">
+              <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
+              <button
+                id="emoji-tab"
+                data-ref="emoji"
+                data-category="emoji"
+                role="tab"
+                aria-controls="characters"
+              >
+                Emoji
+              </button>
+              <button
+                id="symbols-tab"
+                data-ref="symbols"
+                data-category="symbols"
+                role="tab"
+                aria-controls="characters"
+              >
+                Symbols
+              </button>
+              <button
+                id="letters-tab"
+                data-ref="letters"
+                data-category="letters"
+                role="tab"
+                aria-controls="characters"
+              >
+                Alphabet
+              </button>
+              <button
+                id="kana-tab"
+                data-ref="kana"
+                data-category="kana"
+                role="tab"
+                aria-controls="characters"
+              >
+                Kana
+              </button>
+              <button id="examples-tab" data-ref="examples" role="tab" aria-controls="examples">
+                Examples
+              </button>
+            </nav>
+          </div>
           <section id="characters" role="tabpanel" aria-labelledby="emoji-tab" hidden>
             <div id="catalog" tabindex="0" aria-label="Unicode characters">
               <div id="catalog-space"><div id="catalog-window"></div></div>
@@ -225,10 +217,11 @@
           <section id="api" role="tabpanel" aria-labelledby="api-tab">
             <div class="api-columns">
               <section class="api-guide" aria-label="Game API">
+                <h2>JavaScript · 3 KB max</h2>
                 <h3>Functions</h3>
                 <dl class="api-group">
                   <div>
-                    <dt>cls(col = 0)</dt>
+                    <dt>cls(col)</dt>
                     <dd>
                       <p class="reference-description">Fill the character screen with col.</p>
                       <pre class="api-example"><code>cls(0)</code></pre>
@@ -237,7 +230,9 @@
                   <div>
                     <dt>put(cx, cy, str, col1?, col2?)</dt>
                     <dd>
-                      <p class="reference-description">8px-cell text; foreground / background.</p>
+                      <p class="reference-description">
+                        8px-cell text stays; foreground / background.
+                      </p>
                       <pre class="api-example"><code>put(1, 1, &quot;HI\n👾&quot;)
 put(1, 1, &quot;HI\n👾&quot;, 6)
 put(1, 1, &quot;HI\n👾&quot;, 6, 0)</code></pre>
@@ -246,9 +241,7 @@ put(1, 1, &quot;HI\n👾&quot;, 6, 0)</code></pre>
                   <div>
                     <dt>spr(x, y, chr, col)</dt>
                     <dd>
-                      <p class="reference-description">
-                        Draw above text for this tick; later calls draw in front.
-                      </p>
+                      <p class="reference-description">Draw above text for this tick.</p>
                       <pre class="api-example"><code>spr(76, 68, &quot;👾&quot;, 6)</code></pre>
                     </dd>
                   </div>
@@ -276,7 +269,9 @@ put(1, 1, &quot;HI\n👾&quot;, 6, 0)</code></pre>
                   <div>
                     <dt>play(ch, str)</dt>
                     <dd>
-                      <p class="reference-description">Play on channel 0–2; empty stops.</p>
+                      <p class="reference-description">
+                        Play sound on channel 0–2 using ZX 128 PLAY.
+                      </p>
                       <pre class="api-example"><code>play(0, &quot;T150O5N3ceg))&quot;)
 play(0, &quot;&quot;) <span class="code-comment">// Stop</span></code></pre>
                     </dd>
@@ -288,7 +283,7 @@ play(0, &quot;&quot;) <span class="code-comment">// Stop</span></code></pre>
                     <dt>pcg[chr]</dt>
                     <dd>
                       <p class="reference-description">
-                        8-byte patterns and shared foreground/background colors.
+                        8-byte pattern and foreground/background colors.
                       </p>
                       <pre class="api-example"><code>pcg[&quot;↑&quot;].pat[0] = 0x18
 pcg[&quot;↑&quot;].pat = &quot;183c7e1818181800&quot;
@@ -317,7 +312,6 @@ scr[4][3].col = [null, 1]</code></pre>
                       <pre
                         class="api-example"
                       ><code>function tick() { <span class="code-comment">// 60 Hz</span>
-  cls(0)
   spr(76, 68, &quot;👾&quot;, 6)
 }</code></pre>
                     </dd>

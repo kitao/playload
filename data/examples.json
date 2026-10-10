@@ -1,10 +1,11 @@
 [
+  {"id":"starter","name":"Starter","description":"Start with the default code."},
   {"id":"gems","name":"Gems","description":"Move a sprite and collect gems."},
-  {"id":"snake","name":"Snake","description":"Collect gems and grow without hitting walls or your tail."},
   {"id":"lights-out","name":"Lights Out","description":"Flip neighboring lights to clear the board."},
   {"id":"shooter","name":"Shooter","description":"Fire at moving targets over a character background."},
   {"id":"jump","name":"Jump","description":"Jump between platforms to reach the goal."},
   {"id":"glyph-quest","name":"Glyph Quest","description":"Collect six gems and a ring, then reach the castle."},
+  {"id":"snake","name":"Snake","description":"Collect gems and grow without hitting walls or your tail."},
   {"id":"sound-fx","name":"Sound FX","description":"Try short effects made from notes, noise and envelopes."},
   {"id":"music-box","name":"Music Box","description":"Change eight notes and play your own melody."},
   {"id":"chiptune","name":"Chiptune","description":"Three voices with bass and noise drums."}

@@ -23,20 +23,20 @@ Envelope period zero is checked separately against MAME's documented twice-as-fa
 
 The unmodified public-domain [CRT-Lottes source](https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl) is included and its SHA-256 is verified before use. Both renderers run in the same Chrome/WebGL session. Parameters and presentation additions are matched; Gaussian reconstruction, scanlines, mask and bloom are computed by the original shader independently. See [the reference setup](../tests/browser/reference/README.md).
 
-Revalidated on 2026-10-09 after adopting the upstream default curvature (`warpX = 0.031`, `warpY = 0.041`) in both WebGL and CPU rendering. Playload's inset, phosphor settings and edge shading remain separate presentation choices.
+Revalidated on 2026-10-10 after matching the curved screen's surround to the play window background, including PNG and video exports. Both WebGL and CPU rendering retain the upstream default curvature (`warpX = 0.031`, `warpY = 0.041`). Playload's inset, rounded glass, phosphor settings and edge shading remain separate presentation choices.
 
 | Pattern                                       | Mean absolute difference, 8-bit RGB | Maximum difference |
 | --------------------------------------------- | ----------------------------------: | -----------------: |
 | White                                         |                            0.000348 |                  1 |
 | One-source-pixel checkerboard                 |                            0.001145 |                  1 |
 | Eight palette bands                           |                            0.001148 |                  1 |
-| Text and emoji glyphs (current adopted fonts) |                            0.000580 |                  1 |
+| Text and emoji glyphs (current adopted fonts) |                            0.000604 |                  1 |
 
 These measurements cover the central 544×480 region of the 640×576 output. Source-edge sampling deliberately differs, so this is not a whole-frame equivalence claim. Separate browser checks cover black, curved borders, phosphor modulation, point glow, white level, screenshot output, decoded video and CPU fallback.
 
 The comparison found different horizontal bloom sampling in Playload. The renderer now follows the upstream 3/5-tap scanline reconstruction and 5/7-tap bloom, including the outer bloom rows' narrower horizontal filter.
 
-Validated CRT source SHA-256: `9bff273805ff831aa116ac4ee1a37479b0be1b16f3d5938830505f6d30bf8cb9`.
+Validated CRT source SHA-256: `09f2c0e74e5b495335a0907b0bfc4a8cfe417054ed9c757f5f90235b729eb4d1`.
 
 ## Runtime and reproduction
 

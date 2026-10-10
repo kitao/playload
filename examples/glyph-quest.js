@@ -10,23 +10,33 @@ let gems = 0;
 let ring = false;
 let won = false;
 
-// Split rows into whole Unicode characters, including emoji.
-const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+pcg['#'].pat = pcg['▓'].pat;
+pcg['#'].col = [1, 0];
+
+// Each map symbol is one Unicode code point, so spread keeps its emoji intact.
 const map = [
   '##################',
-  '#@..#....💎.......#',
-  '#...#..####..###.#',
-  '#.💎.#.....#....#.#',
-  '#...###.#.#.💎..#.#',
-  '#.......#.#....#.#',
-  '###.#####.####.#.#',
-  '#...#.....#....#.#',
-  '#.💎.#.###.#.##.#.#',
-  '#...#..💍..#..💎...#',
-  '#.💎....#........🏰#',
+  '#   #    💎       #',
+  '#   #  ####  ### #',
+  '# 💎 #     #    # #',
+  '#   ### # # 💎  # #',
+  '#       # #    # #',
+  '### ##### #### # #',
+  '#   #     #    # #',
+  '# 💎 # ### # ## # #',
+  '#   #  💍  #  💎   #',
+  '# 💎    #        🏰#',
   '##################',
-].map((row) => [...segmenter.segment(row)].map((g) => g.segment));
+].map((row) => [...row]);
 const original = map.map((row) => row.slice());
+
+function drawMap() {
+  cls(0);
+  put(1, 1, 'GLYPH QUEST', 6, 0);
+  put(1, 2, '6 GEMS + 💍 → 🏰', 7, 0);
+  put(1, 3, map.map((row) => row.join('')).join('\n'));
+  put(1, 16, '💎0/6     A RESET', 7, 0);
+}
 
 function reset() {
   x = 1;
@@ -38,11 +48,14 @@ function reset() {
   original.forEach((row, i) => {
     map[i] = row.slice();
   });
+  drawMap();
 
   for (let ch = 0; ch < 3; ch++) {
     play(ch, '');
   }
 }
+
+drawMap();
 
 function tick() {
   if (btnp(4)) {
@@ -65,43 +78,30 @@ function tick() {
 
       if (tile === '💎') {
         gems++;
-        map[y][x] = '.';
         play(1, 'V12O6N1ceG');
       }
 
       if (tile === '💍') {
         ring = true;
-        map[y][x] = '.';
         play(1, 'V12O5N1gBG');
+      }
+
+      if (tile === '💎' || tile === '💍') {
+        map[y][x] = ' ';
+        put(1 + x, 3 + y, ' ');
+        put(1, 16, `💎${gems}/6  ${ring ? '💍' : ' '}  A RESET`, 7, 0);
       }
 
       if (tile === '🏰' && ring && gems === 6) {
         won = true;
+        put(1, 1, 'ALL GEMS FOUND!', 6, 0);
+        put(1, 2, ' '.repeat(18), 7, 0);
         play(0, 'T150V12O5N3cegCN5G');
         play(2, 'V10O3N3cegCN5G');
       }
     }
   }
 
-  cls(0);
-  if (won) {
-    put(1, 1, 'ALL GEMS FOUND!', 6, 0);
-  } else {
-    put(1, 1, 'GLYPH QUEST', 6, 0);
-    put(1, 2, '6 GEMS + 💍 → 🏰', 7, 0);
-  }
-  for (let j = 0; j < map.length; j++) {
-    for (let i = 0; i < 18; i++) {
-      const tile = map[j][i];
-      if (tile === '#') {
-        put(1 + i, 3 + j, '▓', 1);
-      } else if (tile !== '.' && tile !== '@') {
-        put(1 + i, 3 + j, tile);
-      }
-    }
-  }
-
   // The map starts at cell (1, 3); convert the player position to pixels.
   spr(8 + x * 8, 24 + y * 8, '👾', 6);
-  put(1, 16, `💎${gems}/6  ${ring ? '💍' : ' '}  A RESET`, 7, 0);
 }

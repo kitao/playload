@@ -1,6 +1,119 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
+test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
+
+for (const touch of [false, true]) {
+  test(`copy confirmation sits below its source without hiding its contents (${touch ? 'touch' : 'desktop'})`, async ({
+    browser,
+  }) => {
+    const page = await browser.newPage({
+      viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 800 },
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    await page.clock.install();
+    await page.addInitScript(() =>
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: async () => {} },
+      }),
+    );
+    await page.goto('http://127.0.0.1:8765/');
+    await page.getByRole('tab', { name: 'Info', exact: true }).click();
+    const color = page.locator('#palette button').first(),
+      colorBox = await color.boundingBox(),
+      colorText = await color.textContent(),
+      panelBox = await page.locator('#info').boundingBox(),
+      apiBox = await page.locator('#api').boundingBox();
+    if (touch) await color.tap();
+    else await color.click({ position: { x: 5, y: 5 } });
+    const notice = page.locator('#status');
+    await expect(notice).toHaveText('Copied');
+    await expect(notice).toBeVisible();
+    await expect(color).toHaveText(colorText);
+    expect(await color.evaluate((element) => getComputedStyle(element, '::after').content)).toBe(
+      'none',
+    );
+    expect(await color.boundingBox()).toEqual(colorBox);
+    expect(await page.locator('#info').boundingBox()).toEqual(panelBox);
+    expect(await page.locator('#api').boundingBox()).toEqual(apiBox);
+    let noticeBox = await notice.boundingBox();
+    expect(noticeBox.y).toBeCloseTo(colorBox.y + colorBox.height, 1);
+    expect(noticeBox.x + noticeBox.width / 2).toBeCloseTo(colorBox.x + colorBox.width / 2, 1);
+    expect(await notice.evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
+    expect(noticeBox.x).toBeGreaterThanOrEqual(8);
+    expect(noticeBox.x + noticeBox.width).toBeLessThanOrEqual(page.viewportSize().width - 8);
+    expect(await notice.evaluate((element) => getComputedStyle(element).borderTopColor)).toBe(
+      'rgb(230, 200, 110)',
+    );
+
+    await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
+    const glyph = page.locator('#catalog button').first(),
+      glyphBox = await glyph.boundingBox(),
+      glyphText = await glyph.textContent(),
+      artwork = await glyph.locator('canvas').evaluate((canvas) => canvas.toDataURL()),
+      catalogBox = await page.locator('#catalog').boundingBox();
+    if (touch) await glyph.tap();
+    else {
+      await glyph.focus();
+      await page.keyboard.press('Enter');
+    }
+    await expect(notice).toHaveText('Copied');
+    await expect(glyph).toHaveText(glyphText);
+    expect(await glyph.evaluate((element) => getComputedStyle(element, '::after').content)).toBe(
+      'none',
+    );
+    expect(await glyph.locator('canvas').evaluate((canvas) => canvas.toDataURL())).toBe(artwork);
+    expect(await glyph.boundingBox()).toEqual(glyphBox);
+    expect(await page.locator('#catalog').boundingBox()).toEqual(catalogBox);
+    noticeBox = await notice.boundingBox();
+    expect(noticeBox.y).toBeCloseTo(glyphBox.y + glyphBox.height - 5, 1);
+    const artworkBox = await glyph.locator('canvas').boundingBox();
+    expect(noticeBox.y).toBeGreaterThan(artworkBox.y + artworkBox.height);
+    expect(noticeBox.x + noticeBox.width / 2).toBeCloseTo(glyphBox.x + glyphBox.width / 2, 1);
+    expect(noticeBox.height).toBeGreaterThanOrEqual(30);
+    expect(noticeBox.x).toBeGreaterThanOrEqual(8);
+    expect(noticeBox.x + noticeBox.width).toBeLessThanOrEqual(page.viewportSize().width - 8);
+    await page.clock.fastForward(1800);
+    await expect(notice).toHaveText('');
+    await expect(glyph.locator('canvas')).toBeVisible();
+    await page.close();
+  });
+}
+
+for (const action of ['switch tab', 'scroll']) {
+  test(`a delayed copy does not appear over a source hidden by ${action}`, async ({ page }) => {
+    await page.addInitScript(() =>
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: () =>
+            new Promise((resolve) => {
+              window.finishCopy = resolve;
+            }),
+        },
+      }),
+    );
+    await page.goto('/');
+    await page.getByRole('tab', { name: 'Info', exact: true }).click();
+    await page.getByRole('tab', { name: 'Alphabet', exact: true }).click();
+    await page.locator('#catalog button').first().click();
+    if (action === 'switch tab') {
+      await page.getByRole('tab', { name: 'API', exact: true }).click();
+    } else {
+      await page.locator('#catalog').evaluate((catalog) => {
+        catalog.scrollTop = 44;
+      });
+      await expect(page.locator('#catalog')).toHaveJSProperty('scrollTop', 44);
+      await page.evaluate(() => new Promise(requestAnimationFrame));
+    }
+    await page.evaluate(async () => {
+      window.finishCopy();
+      await Promise.resolve();
+    });
+    await expect(page.locator('#status')).toHaveText('');
+  });
+}
+
 for (const result of ['success', 'failure']) {
   test(`a late clipboard ${result} preserves the newer manual copy`, async ({ page }) => {
     await page.addInitScript((result) => {
@@ -250,12 +363,11 @@ test('CRT reconstruction scales smoothly at fractional sizes while flat pixels r
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   for (const width of [375, 513, 863]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.getByRole('button', { name: 'Tools', exact: true }).click();
+    await expect(page.locator('#workspace-toolbar')).toBeVisible();
     await expect(page.locator('#display')).toHaveCSS('image-rendering', 'auto');
     await page.getByRole('button', { name: 'CRT', exact: true }).click();
     await expect(page.locator('#display')).toHaveCSS('image-rendering', 'pixelated');
     await page.getByRole('button', { name: 'CRT', exact: true }).click();
-    await page.getByRole('button', { name: 'Tools', exact: true }).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

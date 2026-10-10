@@ -133,7 +133,7 @@ test('cls fills spaces, preserves cell references and sprites, and uses the shar
   assert.equal(pixel(engine, 0), 5);
   assert.equal(pixel(engine, 1), 4);
   api.pcg[' '].pat.fill(0);
-  engine.step(() => api.cls());
+  engine.step(() => api.cls(0));
   assert(engine.pixels.every((value) => value === 0));
 });
 
@@ -258,6 +258,8 @@ test('invalid commands leave existing screen and sprite state intact', () => {
   engine.step(() => {
     api.spr(0, 0, 'X', 6);
     const before = engine.pixels.slice();
+    assert.throws(() => api.cls(), RangeError);
+    assert.throws(() => api.cls(undefined), RangeError);
     for (const value of [NaN, Infinity, -Infinity, '1', null, undefined]) {
       assert.throws(() => api.put(value, 0, 'X'), TypeError);
       assert.throws(() => api.put(0, value, 'X'), TypeError);

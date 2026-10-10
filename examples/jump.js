@@ -17,8 +17,14 @@ const platforms = [
   { x: 14, y: 5, width: 5 },
 ];
 
-// Each byte draws one row of the 8×8 flag.
-pcg['🚩'].pat = [0x7c, 0x7c, 0x7c, 0x40, 0x40, 0x40, 0x40, 0];
+// Each pair of hex digits draws one row of the 8×8 flag.
+pcg['🚩'].pat = '7c7c7c4040404000';
+
+function drawResult() {
+  put(2, 1, (won ? 'FLAG REACHED!' : 'YOU FELL!').padEnd(16), won ? 6 : 3);
+  put(2, 16, (won ? '  B PLAY AGAIN' : '  B TRY AGAIN').padEnd(16));
+  put(6, 17, ' '.repeat(7));
+}
 
 function reset() {
   x = 16;
@@ -27,6 +33,20 @@ function reset() {
   grounded = true;
   won = false;
   lost = false;
+
+  cls(0);
+  put(2, 1, 'JUMP TO THE FLAG');
+  put(2, 4, '·', 1);
+  put(10, 3, '★', 1);
+  put(4, 8, '·', 1);
+  put(18, 10, '★', 1);
+  for (const platform of platforms) {
+    put(platform.x, platform.y, '▀'.repeat(platform.width), 5, 1);
+  }
+  put(17, 4, '🚩', 3);
+  put(0, 15, '~'.repeat(20), 3);
+  put(2, 16, '← → MOVE  A JUMP');
+  put(6, 17, 'B RESET');
   play(0, '');
 }
 
@@ -71,38 +91,17 @@ function tick() {
 
     if (Math.abs(x - 136) < 8 && Math.abs(y - 32) < 8) {
       won = true;
+      drawResult();
       play(0, 'T180V12O5N2cegCN3G');
     }
     if (y >= 120) {
       lost = true;
+      drawResult();
       play(0, 'T180V10O4N2gec');
     }
   }
 
-  cls(0);
-  if (won) {
-    put(2, 1, 'FLAG REACHED!', 6);
-  } else if (lost) {
-    put(2, 1, 'YOU FELL!', 3);
-  } else {
-    put(2, 1, 'JUMP TO THE FLAG');
-  }
-  put(2, 4, '·', 1);
-  put(10, 3, '★', 1);
-  put(4, 8, '·', 1);
-  put(18, 10, '★', 1);
-  for (const platform of platforms) {
-    put(platform.x, platform.y, '▀'.repeat(platform.width), 5, 1);
-  }
-  put(17, 4, '🚩', 3);
-  put(0, 15, '~'.repeat(20), 3);
   if (!lost) {
     spr(x, y, '👾', 6);
-  }
-  if (won || lost) {
-    put(4, 16, won ? 'B PLAY AGAIN' : 'B TRY AGAIN');
-  } else {
-    put(2, 16, '← → MOVE  A JUMP');
-    put(6, 17, 'B RESET');
   }
 }

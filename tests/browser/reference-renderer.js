@@ -23,11 +23,10 @@ export function renderReference(source, pixels, palette) {
     `
     vec2 position = TEX0.xy * 2.0 - 1.0;
     vec2 warped = pos * 2.0 - 1.0;
-    vec2 corner = max(abs(warped) - vec2(1.0), 0.0);
-    float glass = 1.0 - smoothstep(0.018, 0.024, length(corner));
-    if (abs(warped.x) >= 1.024 || abs(warped.y) >= 1.024) glass = 0.0;
-    outColor *= (1.0 - 0.13 * dot(position, position) * 0.5) * glass;
-    ${output}`,
+    vec2 corner = max(abs(warped) - vec2(0.97), 0.0);
+    float glass = 1.0 - smoothstep(0.028, 0.032, length(corner));
+    outColor *= 1.0 - 0.13 * dot(position, position) * 0.5;
+    FragColor = vec4(ToSrgb(outColor.rgb) * glass, 1.0);`,
   );
   // Match Playload's high-precision constants. The upstream compatibility
   // wrapper otherwise rounds WebGL uniforms to mediump before reconstruction.

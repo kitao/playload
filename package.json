@@ -6,6 +6,7 @@
     "dev": "node scripts/serve.js",
     "examples": "node scripts/generate-examples.js",
     "examples:check": "node scripts/generate-examples.js --check",
+    "screenshots": "npm run examples && node scripts/generate-screenshots.js",
     "test": "node --test \"tests/*.test.js\"",
     "test:coverage": "node --import ./tests/coverage-hooks.js --test --experimental-test-coverage --test-coverage-exclude=\"tests/**\" \"tests/*.test.js\"",
     "test:browser": "playwright test",

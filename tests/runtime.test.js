@@ -212,6 +212,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     const release = t.mock.fn(() => runtime.input(0));
     const clock = new Function(
       'window',
+      'document',
       'runtime',
       'audio',
       'capture',
@@ -225,6 +226,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       'let lastFrame = 123;\n' + playback + lifecycle + '\nreturn () => lastFrame;',
     )(
       { addEventListener: (type, handler) => handlers.set(type, handler) },
+      { hidden: false },
       runtime,
       audio,
       capture,
