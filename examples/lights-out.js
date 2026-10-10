@@ -1,5 +1,5 @@
 // @title Lights Out
-// Arrows select a light; Z / A flips it and its neighbors. X / B restarts.
+// Arrows select a light; Z flips it and its neighbors. X restarts.
 
 let x = 2;
 let y = 2;

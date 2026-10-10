@@ -90,20 +90,24 @@ Development dependencies are not loaded by the application.
 
 Edit the inputs and regenerate rather than editing generated output:
 
-| Inputs                                         | Regenerate            | Output                                            |
-| ---------------------------------------------- | --------------------- | ------------------------------------------------- |
-| `data/fonts/`, font generator scripts          | `npm run fonts`       | `src/glyphs.js`, catalog font and coverage report |
-| `examples/*.js`, `data/examples.json`          | `npm run examples`    | `src/example-links.js`                            |
-| Tool UI and examples                           | `npm run screenshots` | `docs/images/*.jpg`                               |
-| Pinned Prism dependency, highlighter generator | `npm run editor`      | `src/editor-highlighter.js`                       |
+| Inputs                                         | Regenerate                                             | Output                                            |
+| ---------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------- |
+| `data/fonts/`, font generator scripts          | `npm run fonts`                                        | `src/glyphs.js`, catalog font and coverage report |
+| `examples/*.js`, `data/examples.json`          | `npm run examples`                                     | `src/example-links.js`                            |
+| Tool UI and examples                           | `npm run screenshots`                                  | `docs/images/`                                    |
+| Pinned Prism dependency, highlighter generator | `npm run editor`                                       | `src/editor-highlighter.js`                       |
+| `src/sound.js`, `tests/reference/`             | `npm run test:reference -- docs/retro-validation.json` | `docs/retro-validation.json`                      |
 
 Include affected outputs in the same pull request. Regenerating the existing fonts uses the
 checked-in source data; importing a new upstream font is a separate process documented in
 [font coverage](docs/glyphs.md).
 
-`npm run screenshots` refreshes the four README images at 1600 × 900, starts its own local
-server and stops it when finished. Install Chromium with `npx playwright install chromium`,
-or use installed Chrome with `PLAYLOAD_BROWSER_CHANNEL=chrome npm run screenshots`.
+`npm run screenshots` refreshes the README images and all six INFO tabs (`info-<tab>.jpg`).
+Each example also has a code-and-game tool view in `docs/images/example-<id>.jpg`,
+captured before any game input with the code scrolled to the top. All images are 1600 × 900.
+The command starts its own local server and stops it when finished.
+Install Chromium with `npx playwright install chromium`, or use installed Chrome with
+`PLAYLOAD_BROWSER_CHANNEL=chrome npm run screenshots`.
 
 `npm run fonts` also regenerates emoji colors from the checked-in Twemoji statistics, offline.
 To re-extract those statistics from the pinned upstream images, use `npm run fonts:colors`

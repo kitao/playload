@@ -14,6 +14,11 @@ test('UTF-8 source, emoji and newlines round-trip through a URL payload', async 
   assert(payload.bytes > 0);
 });
 
+test('a source byte-order mark is preserved when restoring a shared game', async () => {
+  const source = '\ufeff// @title Demo\nfunction tick() {}';
+  assert.equal(await decode((await encode(source)).hash), source);
+});
+
 test('malformed and excessive payloads fail without becoming source', async () => {
   for (const hash of ['#2.ab', '#1.a', '#1.**', '#1.' + 'a'.repeat(4097)])
     await assert.rejects(decode(hash));

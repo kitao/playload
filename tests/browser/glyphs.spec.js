@@ -3,6 +3,145 @@ import { readFile } from 'node:fs/promises';
 
 test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
 
+test('alphabet previews and clipboard preserve the original letter case', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.copied = [];
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: async (text) => window.copied.push(text) },
+    });
+  });
+  await page.goto('/');
+  await page.getByRole('tab', { name: 'Info', exact: true }).click();
+  await page.getByRole('tab', { name: 'Alphabet', exact: true }).click();
+  for (const chr of ['A', 'a', 'µ']) {
+    await page.locator('#catalog').evaluate(async (catalog, chr) => {
+      const { glyphs } = await import('/src/glyphs.js'),
+        index = glyphs
+          .filter((glyph) => glyph.group === 'letters')
+          .findIndex((glyph) => glyph.ch === chr),
+        columns = parseInt(
+          getComputedStyle(document.getElementById('catalog-window')).getPropertyValue('--columns'),
+        );
+      catalog.scrollTop = Math.floor(index / columns) * 44;
+    }, chr);
+    const glyph = page.locator('[data-glyph="' + chr + '"]');
+    await expect(glyph.locator('span')).toHaveText(chr);
+    await expect(glyph.locator('span')).toHaveCSS('text-transform', 'none');
+    await glyph.click();
+    await expect(page.locator('#status')).toHaveText('Copied');
+  }
+  expect(await page.evaluate(() => window.copied)).toEqual(['A', 'a', 'µ']);
+});
+
+test('landscape phone Info leaves readable palette labels and space to browse every category', async ({
+  browser,
+}) => {
+  const page = await browser.newPage({
+    viewport: { width: 568, height: 320 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  try {
+    await page.goto('http://127.0.0.1:8765/');
+    await page.locator('#info-tab').tap();
+    for (const [width, height] of [
+      [568, 320],
+      [667, 375],
+      [932, 430],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await expect
+        .poll(() => page.locator('#api').evaluate((element) => element.clientHeight))
+        .toBeGreaterThanOrEqual(80);
+      const labelsFit = await page.locator('#palette .hex').evaluateAll((labels) =>
+        labels.every((label) => {
+          const range = document.createRange();
+          range.selectNodeContents(label);
+          const text = range.getBoundingClientRect(),
+            button = label.parentElement.getBoundingClientRect();
+          return text.left >= button.left && text.right <= button.right;
+        }),
+      );
+      expect(labelsFit).toBe(true);
+      for (const name of ['Emoji', 'Symbols', 'Alphabet', 'Kana']) {
+        await page.getByRole('tab', { name, exact: true }).tap();
+        const catalog = page.locator('#catalog'),
+          first = page.locator('#catalog button').first();
+        await expect(first).toBeVisible();
+        expect(
+          await first.evaluate((element) => {
+            const tile = element.getBoundingClientRect(),
+              catalog = document.getElementById('catalog').getBoundingClientRect();
+            return tile.top >= catalog.top && tile.bottom <= catalog.bottom;
+          }),
+        ).toBe(true);
+        await catalog.evaluate((element) => (element.scrollTop = element.scrollHeight));
+        await expect
+          .poll(() => catalog.evaluate((element) => element.scrollTop + element.clientHeight))
+          .toBeGreaterThanOrEqual(await catalog.evaluate((element) => element.scrollHeight - 1));
+      }
+      await page.getByRole('tab', { name: 'Examples', exact: true }).tap();
+      await expect(page.locator('#examples')).toBeVisible();
+      await page.getByRole('tab', { name: 'API', exact: true }).tap();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth && scrollY === 0,
+        ),
+      ).toBe(true);
+    }
+  } finally {
+    await page.close();
+  }
+});
+
+test('catalog browsing position survives rotating while API, Examples or Play is visible', async ({
+  browser,
+}) => {
+  const page = await browser.newPage({
+    viewport: { width: 844, height: 390 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  try {
+    await page.goto('http://127.0.0.1:8765/');
+    await page.locator('#info-tab').tap();
+    for (const away of ['API', 'Examples', 'Play']) {
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.getByRole('tab', { name: 'Emoji', exact: true }).tap();
+      const catalog = page.locator('#catalog');
+      await catalog.evaluate((element) => (element.scrollTop = element.scrollHeight));
+      const index = await catalog.evaluate((element) => {
+        const columns = parseInt(
+          getComputedStyle(document.getElementById('catalog-window')).getPropertyValue('--columns'),
+        );
+        return Math.floor(element.scrollTop / 44) * columns;
+      });
+      expect(index).toBeGreaterThan(0);
+      await page.getByRole('tab', { name: away, exact: true }).tap();
+      await page.setViewportSize({ width: 390, height: 844 });
+      if (away === 'Play') await page.locator('#info-tab').tap();
+      else await page.getByRole('tab', { name: 'Emoji', exact: true }).tap();
+      const restored = await catalog.evaluate((element, index) => {
+        const columns = parseInt(
+          getComputedStyle(document.getElementById('catalog-window')).getPropertyValue('--columns'),
+        );
+        return {
+          actual: element.scrollTop,
+          expected: Math.min(
+            Math.floor(index / columns) * 44,
+            element.scrollHeight - element.clientHeight,
+          ),
+        };
+      }, index);
+      expect(restored.actual).toBeCloseTo(restored.expected, 0);
+      await page.getByRole('tab', { name: 'Symbols', exact: true }).tap();
+      expect(await catalog.evaluate((element) => element.scrollTop)).toBe(0);
+    }
+  } finally {
+    await page.close();
+  }
+});
+
 for (const touch of [false, true]) {
   test(`copy confirmation sits below its source without hiding its contents (${touch ? 'touch' : 'desktop'})`, async ({
     browser,

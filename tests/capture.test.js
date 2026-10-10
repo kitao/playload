@@ -15,6 +15,11 @@ const blocks = Buffer.from(
   'hex',
 );
 const recording = Buffer.concat([header, blocks]);
+// Chrome's final output when a recorder stops before its first frame.
+const emptyRecording = Buffer.concat([
+  Buffer.from('1a45dfa39f4286810142f7810142f2810442f381084282847765626d4287810442858102', 'hex'),
+  Buffer.alloc(74),
+]);
 
 function setup(t) {
   const previous = globalThis.MediaRecorder,
@@ -175,6 +180,7 @@ test('reference reading suspends the clip clock and preserves buffered play', ()
   capture.buffer.frames = [{ time: now - 9000, keyframe: true, data: Uint8Array.of(1) }];
   capture.recorder = {
     state: 'recording',
+    requestData() {},
     pause() {
       this.state = 'paused';
     },
@@ -182,6 +188,7 @@ test('reference reading suspends the clip clock and preserves buffered play', ()
       this.state = 'recording';
     },
   };
+  capture.session = { requests: [] };
   capture.suspend(true);
   const seconds = capture.seconds;
   // Model a long reference visit without making this test wait a minute.
@@ -231,6 +238,44 @@ test('saving before the first frame fails without preventing a later save', asyn
   recorder.emit(new Blob([blocks]));
   assert.ok((await pending).size > 0);
   assert.equal(recorder.state, 'recording');
+});
+
+test('suspending flushes a short clip before the first timer tick', async (t) => {
+  const { capture, recorders, time } = setup(t),
+    recorder = recorders[0];
+  assert.equal(capture.seconds, 0);
+  time(250);
+  capture.suspend(true);
+  assert.equal(recorder.state, 'paused');
+  assert.equal(capture.session.requests.length, 1);
+  recorder.emit(new Blob([recording]));
+  await capture.session.pending;
+  assert.equal(capture.seconds, 0.25);
+
+  const pending = capture.save();
+  recorder.emit(new Blob());
+  assert.ok((await pending).size > 0);
+  capture.start();
+  assert.equal(capture.seconds, 0);
+});
+
+test('empty recorder data does not require a Blob read or prevent a later save', async (t) => {
+  const { capture, recorders, time } = setup(t),
+    read = globalThis.FileReader.prototype.readAsArrayBuffer;
+  globalThis.FileReader.prototype.readAsArrayBuffer = function (data) {
+    if (data.size === 0) throw new Error('Cannot load blob');
+    return read.call(this, data);
+  };
+  capture.flush();
+  recorders[0].emit(new Blob());
+  await capture.session.pending;
+  assert.equal(capture.error, null);
+  assert.equal(capture.seconds, 0);
+
+  time(2500);
+  const pending = capture.save();
+  recorders[0].emit(new Blob([recording]));
+  assert.ok((await pending).size > 0);
 });
 
 test('a new clip rejects its unfinished save and ignores old recorder errors', async (t) => {
@@ -435,3 +480,58 @@ test('late audio restarts once and a save waits for the replacement recorder', a
   assert.equal(capture.stream.getAudioTracks().length, 1);
   assert.equal(recorders[1].state, 'recording');
 });
+
+test('late audio discards unfinished output from an empty stopped recorder', async (t) => {
+  const { capture, recorders, time } = setup(t),
+    old = recorders[0];
+  old.stop = function () {
+    this.state = 'inactive';
+    queueMicrotask(() => {
+      this.emit(new Blob([emptyRecording]));
+      this.onstop();
+    });
+  };
+  capture.audio({ getAudioTracks: () => [{}] });
+  const pending = capture.save();
+  await capture.restart;
+  assert.equal(capture.error, null);
+  assert.equal(recorders.length, 2);
+  assert.equal(capture.buffer.bytes, 0);
+  time(2500);
+  recorders[1].emit(new Blob([recording]));
+  assert.ok((await pending).size > 0);
+  assert.equal(capture.buffer.frames.length, 6);
+});
+
+for (const mode of ['current save', 'ordinary flush during restart', 'recorded stop']) {
+  test(`invalid WebM still fails during ${mode}`, async (t) => {
+    const { capture, recorders, time } = setup(t),
+      old = recorders[0];
+    time(2500);
+    let pending;
+    if (mode === 'current save') {
+      pending = capture.save();
+      old.emit(new Blob([emptyRecording]));
+    } else {
+      if (mode === 'recorded stop') {
+        capture.flush();
+        old.emit(new Blob([recording]));
+        await capture.session.pending;
+        old.stop = function () {
+          this.state = 'inactive';
+          queueMicrotask(() => {
+            this.emit(new Blob([emptyRecording]));
+            this.onstop();
+          });
+        };
+      } else {
+        capture.flush();
+        old.emit(new Blob([emptyRecording]));
+      }
+      capture.audio({ getAudioTracks: () => [{}] });
+      pending = capture.save();
+    }
+    await assert.rejects(pending, /Invalid WebM element/);
+    assert.match(capture.error.message, /Invalid WebM element/);
+  });
+}

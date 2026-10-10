@@ -1,5 +1,5 @@
 // @title Sound FX
-// Up / down selects an effect. Z / A plays it; X / B stops it.
+// Up / down selects an effect. Z plays it; X stops it.
 
 let selected = 0;
 

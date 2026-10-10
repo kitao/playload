@@ -1,5 +1,5 @@
 // @title Jump
-// Left/right moves; Z / A jumps, X / B restarts. Reach the red flag.
+// Left/right moves; Z jumps, X restarts. Reach the red flag.
 
 let x;
 let y;

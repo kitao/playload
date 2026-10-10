@@ -40,7 +40,7 @@ export async function decode(hash) {
     bytes.set(chunk, offset);
     offset += chunk.length;
   }
-  return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
 }
 
 export function gameURL(base, hash) {

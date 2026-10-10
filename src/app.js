@@ -1,12 +1,12 @@
 import { palette } from './engine.js?v=16';
 import { glyphs } from './glyphs.js?v=18';
-import { encode, decode, gameURL } from './payload.js?v=13';
+import { encode, decode, gameURL } from './payload.js?v=14';
 import { Runtime, Sound } from './runtime.js?v=26';
-import { Capture, download } from './capture.js?v=20';
+import { Capture, download } from './capture.js?v=23';
 import { createDisplay } from './display.js?v=15';
 import { createCRT } from './crt.js?v=15';
 import { highlightJavaScript } from './editor-highlighter.js?v=13';
-import { starter, exampleLinks } from './example-links.js?v=29';
+import { starter, exampleLinks } from './example-links.js?v=30';
 
 const $ = (id) => document.getElementById(id);
 const initialHash = location.hash;
@@ -134,6 +134,7 @@ function controls() {
   $('record').disabled = !running || !capture?.stream || !!capture?.saveRequest;
   $('video').disabled =
     !running ||
+    !capture?.seconds ||
     (!capture?.restarting && !['recording', 'paused'].includes(capture?.recorder?.state)) ||
     !!capture?.saveRequest;
   $('load').disabled = reading;
@@ -149,6 +150,7 @@ function syncPlayback() {
 }
 function setView(next) {
   dismissCopy();
+  if ($('catalog').clientHeight) catalogScroll = $('catalog').scrollTop;
   view = next;
   document.body.dataset.view = next;
   for (const id of ['code', 'info']) $(id).hidden = id !== view;
@@ -400,7 +402,7 @@ $('tools-toggle').onclick = () => {
   fitGame();
 };
 document.querySelector('.game-tools').addEventListener('click', (event) => {
-  const button = event.target.closest('button:not(:disabled)');
+  const button = event.target.closest('button');
   if (
     running &&
     !(compact && toolsOpen) &&
@@ -428,6 +430,7 @@ $('screenshot').onclick = () =>
 $('record').onclick = () => {
   try {
     capture?.start();
+    status();
   } catch (error) {
     capture?.close();
     capture = null;
@@ -436,16 +439,32 @@ $('record').onclick = () => {
   controls();
 };
 $('video').onclick = async () => {
+  const recording = capture,
+    focused = document.activeElement === $('video'),
+    revision = focusRevision;
   try {
     audio.unlock();
-    const promise = capture.save();
+    const promise = recording.save();
     controls();
     const blob = await promise;
+    if (recording !== capture) return;
     download(blob, 'playload.webm');
+    status();
   } catch (error) {
-    status(error.message);
+    if (recording === capture) status(error.message);
   } finally {
     controls();
+    if (
+      recording === capture &&
+      focused &&
+      revision === focusRevision &&
+      document.activeElement === document.body &&
+      compact &&
+      toolsOpen &&
+      view === 'code' &&
+      !$('video').disabled
+    )
+      $('video').focus({ preventScroll: true });
   }
 };
 async function copy(text, target) {
@@ -665,10 +684,12 @@ $('editor').value = starter;
 
 function setReference(next) {
   dismissCopy();
-  const selected = next === 'characters' ? category : next;
-  if (!['api', 'examples'].includes(selected) && selected !== category) {
+  if ($('catalog').clientHeight) catalogScroll = $('catalog').scrollTop;
+  const selected = next === 'characters' ? category : next,
+    resetScroll = !['api', 'examples'].includes(selected) && selected !== category;
+  if (resetScroll) {
     category = selected;
-    $('catalog').scrollTop = 0;
+    catalogScroll = 0;
   }
   reference = ['api', 'examples'].includes(selected) ? selected : 'characters';
   for (const button of document.querySelectorAll('[data-ref]')) {
@@ -726,19 +747,21 @@ function pattern(canvas, glyph) {
     }
 }
 let catalogItems = [],
+  catalogScroll = 0,
   catalogStart = -1,
   catalogEnd = -1,
   catalogFrame;
 function renderCharacters() {
   catalogItems = glyphs.filter((g) => g.group === category);
   const catalog = $('catalog');
-  const firstVisible = Math.floor(catalog.scrollTop / 44) * columns;
+  const firstVisible = Math.floor(catalogScroll / 44) * columns;
   const nextColumns = Math.max(3, Math.floor((catalog.clientWidth + 4) / 72));
   const resized = nextColumns !== columns;
   columns = nextColumns;
   $('catalog-window').style.setProperty('--columns', columns);
   $('catalog-space').style.height = Math.ceil(catalogItems.length / columns) * 44 + 'px';
-  if (resized) catalog.scrollTop = Math.floor(firstVisible / columns) * 44;
+  catalog.scrollTop = resized ? Math.floor(firstVisible / columns) * 44 : catalogScroll;
+  catalogScroll = catalog.scrollTop;
   catalogStart = catalogEnd = -1;
   renderCatalogWindow();
 }
@@ -787,6 +810,8 @@ function renderCatalogWindow() {
 $('catalog').addEventListener(
   'scroll',
   () => {
+    if (!$('catalog').clientHeight) return;
+    catalogScroll = $('catalog').scrollTop;
     if (catalogFrame) return;
     catalogFrame = requestAnimationFrame(() => {
       catalogFrame = null;

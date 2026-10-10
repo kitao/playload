@@ -1,5 +1,5 @@
 // @title Snake
-// Arrows turn; Z / A starts or pauses. X / B restarts.
+// Arrows turn; Z starts or pauses. X restarts.
 
 const width = 18;
 const height = 12;

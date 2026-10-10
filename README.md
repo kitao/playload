@@ -17,10 +17,10 @@
 <h2 align="center"><a href="https://kitao.github.io/playload/">Open Playload →</a></h2>
 
 <p align="center">
-  <a href="docs/images/play.jpg"><img src="docs/images/play.jpg" alt="The code editor beside a running Glyph Quest game" width="400"></a>
-  <a href="docs/images/cheat-sheet.jpg"><img src="docs/images/cheat-sheet.jpg" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a><br>
-  <a href="docs/images/emoji.jpg"><img src="docs/images/emoji.jpg" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
-  <a href="docs/images/examples.jpg"><img src="docs/images/examples.jpg" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
+  <a href="docs/images/example-glyph-quest.jpg"><img src="docs/images/example-glyph-quest.jpg" alt="The code editor beside a running Glyph Quest game" width="400"></a>
+  <a href="docs/images/info-api.jpg"><img src="docs/images/info-api.jpg" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a><br>
+  <a href="docs/images/info-emoji.jpg"><img src="docs/images/info-emoji.jpg" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
+  <a href="docs/images/info-examples.jpg"><img src="docs/images/info-examples.jpg" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
 </p>
 
 Edit your game in the **CODE** editor and press **Run**. The URL updates as you edit:

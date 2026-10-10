@@ -132,6 +132,8 @@ header {
   align-items: baseline;
   gap: 12px;
   min-width: 0;
+  font-size: 12px;
+  container-type: inline-size;
 }
 header p {
   flex: none;
@@ -562,6 +564,7 @@ body.resizing {
   min-width: 0;
   height: 40px;
   padding: 4px 2px;
+  text-transform: none;
 }
 .glyph span {
   width: 26px;
@@ -861,15 +864,14 @@ dd {
   padding: 12px;
 }
 #keyboard-controls {
-  position: absolute;
-  right: 12px;
-  bottom: 8px;
   display: flex;
+  flex-shrink: 0;
+  align-self: flex-end;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 2px 10px;
   max-width: calc(100% - 24px);
-  margin: 0;
+  margin: 0 12px 8px;
   color: var(--muted);
   font-size: 12px;
   line-height: 18px;
@@ -1061,8 +1063,14 @@ body[data-touch='true'] kbd {
 body[data-touch='true'] #screen:focus {
   outline: none;
 }
-@media (max-width: 919px) {
+/* Match the tagline length; compact Play also reserves the Tools button and gap. */
+@container (width < 52ch) {
   header p {
+    display: none;
+  }
+}
+@container (width < calc(52ch + 56px)) {
+  body[data-compact='true'][data-view='code'] header p {
     display: none;
   }
 }
@@ -1252,6 +1260,10 @@ body[data-compact='true'] .brand {
 body[data-compact='true'] .intro {
   margin-bottom: 1px;
 }
+body[data-compact='true'] header p {
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
 body[data-compact='true'] #tools-toggle {
   margin-left: auto;
   width: 44px;
@@ -1319,6 +1331,9 @@ body[data-compact='true'] #picture {
   padding: 8px;
 }
 @media (orientation: landscape) and (min-width: 560px) {
+  #palette {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
   body[data-touch='true'][data-editor-closed='true'] #viewport {
     flex: 1;
     width: calc(100% - 312px);
@@ -1382,6 +1397,15 @@ body[data-compact='true'] #picture {
   }
   body[data-touch='true'][data-view='code'][data-editor-closed='false'] #viewport {
     max-height: calc(100dvh - 168px);
+  }
+  body[data-touch='false'][data-view='code'][data-editor-closed='false'] main {
+    display: grid;
+  }
+  body[data-touch='false'][data-view='code'][data-editor-closed='false'] #code {
+    grid-template-rows: min(320px, calc(100dvh - 80px)) auto minmax(0, 1fr);
+  }
+  body[data-touch='false'][data-view='code'][data-editor-closed='false'] #viewport {
+    flex: 1;
   }
 }
 

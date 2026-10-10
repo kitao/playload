@@ -18,7 +18,10 @@ export class Capture {
     if (active) {
       this.suspendedAt = performance.now();
       this.suspended = true;
-      if (this.recorder?.state === 'recording') this.recorder.pause();
+      if (this.recorder?.state === 'recording') {
+        this.recorder.pause();
+        if (!this.restarting) this.flush();
+      }
     } else {
       this.heldTime = (this.heldTime ?? 0) + performance.now() - this.suspendedAt;
       this.suspended = false;
@@ -69,6 +72,10 @@ export class Capture {
             if (this.leaving) await this.returned;
             if (session.buffer !== this.buffer || this.closed) return;
             bytes = await new Promise((resolve, reject) => {
+              if (data.size === 0) {
+                resolve(new ArrayBuffer(0));
+                return;
+              }
               const reader = (session.reader = new FileReader());
               reader.onload = () => resolve(reader.result);
               reader.onerror = () => reject(reader.error);
@@ -79,7 +86,21 @@ export class Capture {
             });
           } while (bytes === null);
           if (session.buffer !== this.buffer || this.closed) return;
-          session.buffer.append(new Uint8Array(bytes));
+          try {
+            session.buffer.append(new Uint8Array(bytes));
+          } catch (error) {
+            // Chrome can stop an empty recorder with an unfinished WebM header.
+            if (
+              request.final &&
+              this.restarting &&
+              session === this.session &&
+              !session.buffer.frames.length
+            ) {
+              this.buffer = new VideoBuffer();
+              return;
+            }
+            throw error;
+          }
           session.buffer.trim(request.end);
           if (request.resolve) {
             try {
@@ -145,7 +166,7 @@ export class Capture {
   }
   stop() {
     if (!['recording', 'paused'].includes(this.recorder?.state)) return;
-    this.session.requests.push({ end: this.now });
+    this.session.requests.push({ end: this.now, final: true });
     this.recorder.stop();
   }
   audio(stream) {

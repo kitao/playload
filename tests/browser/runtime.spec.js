@@ -330,6 +330,18 @@ test('Load and Run shortcuts work; the address follows edits and restores a book
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
 });
 
+test('shared games preserve a leading source BOM and restore their title and gameplay', async ({
+  page,
+}) => {
+  const source = '\ufeff// @title BOM Game\nfunction tick() { cls(4) }';
+  await page.goto('/' + (await encode(source)).hash);
+  await expect(page.locator('#editor')).toHaveValue(source);
+  await expect(page).toHaveTitle('BOM Game — Playload');
+  await expect(page.locator('#pause')).toBeEnabled();
+  await page.locator('#crt').click();
+  await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
+});
+
 test('title comments update before Run and survive bookmarks, edits and a fresh URL', async ({
   page,
 }) => {
@@ -1229,6 +1241,116 @@ test('desktop controls stay visible and wrap through editing, play and window re
   }
 });
 
+test('mouse capture controls return focus to the game, including while Save video is disabled', async ({
+  page,
+}) => {
+  await run(page, 'function tick() { cls(btn(4) ? 3 : 4) }', true);
+  const supported = await page.evaluate(() =>
+    ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus'].some((type) =>
+      MediaRecorder.isTypeSupported(type),
+    ),
+  );
+  test.skip(!supported, 'This browser does not support the WebM recording format.');
+
+  for (const id of ['screenshot', 'record', 'video']) {
+    await page.locator('#editor').focus();
+    if (id === 'video') await page.waitForTimeout(400);
+    const pending = id === 'record' ? null : page.waitForEvent('download');
+    await page.locator('#' + id).click();
+    if (pending) {
+      const download = await pending;
+      expect(download.suggestedFilename()).toBe(id === 'video' ? 'playload.webm' : 'playload.png');
+      expect(await download.failure()).toBeNull();
+    }
+    await expect(page.locator('#screen')).toBeFocused();
+    await page.keyboard.down('z');
+    await expect.poll(() => pixel(page)).toEqual([215, 115, 85, 255]);
+    await page.keyboard.up('z');
+    await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
+  }
+});
+
+test('Run during a pending video save keeps the new game free of stale recording errors', async ({
+  page,
+}) => {
+  await run(page, 'function tick() { cls(btn(4) ? 3 : 4) }', true);
+  await expect(page.locator('#video')).toBeEnabled();
+  await page.evaluate(() => {
+    const read = FileReader.prototype.readAsArrayBuffer;
+    FileReader.prototype.readAsArrayBuffer = function (blob) {
+      FileReader.prototype.readAsArrayBuffer = read;
+      window.finishVideoRead = () => read.call(this, blob);
+    };
+  });
+  await page.locator('#video').click();
+  await expect.poll(() => page.evaluate(() => !!window.finishVideoRead)).toBe(true);
+  await expect(page.locator('#video')).toBeDisabled();
+  await page.locator('#run').click();
+  await expect(page.locator('#pause')).toBeEnabled();
+  await page.evaluate(() => window.finishVideoRead());
+  await expect(page.locator('#status')).toBeEmpty();
+  await expect(page.locator('#screen')).toBeFocused();
+  await page.keyboard.down('z');
+  await expect.poll(() => pixel(page)).toEqual([215, 115, 85, 255]);
+  await page.keyboard.up('z');
+
+  await expect(page.locator('#video')).toBeEnabled();
+  const pending = page.waitForEvent('download');
+  await page.locator('#video').click();
+  expect((await pending).suggestedFilename()).toBe('playload.webm');
+  await expect(page.locator('#status')).toBeEmpty();
+});
+
+test('touch tools enable Save only after frames arrive and preserve keyboard focus after saving', async ({
+  browser,
+}) => {
+  const page = await browser.newPage({
+    viewport: { width: 1366, height: 768 },
+    hasTouch: true,
+  });
+  try {
+    await page.goto('http://127.0.0.1:8765/');
+    await page.locator('#tools-toggle').tap();
+    await expect(page.locator('#video')).toBeDisabled();
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#start-game').tap();
+    await expect(page.locator('#video')).toBeEnabled();
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#video').focus();
+    const pending = page.waitForEvent('download');
+    await page.keyboard.press('Enter');
+    expect((await pending).suggestedFilename()).toBe('playload.webm');
+    await expect(page.locator('#video')).toBeFocused();
+    await expect(page.locator('#workspace-toolbar')).toBeVisible();
+    await expect(page.locator('#status')).toBeEmpty();
+
+    await page.evaluate(async () => {
+      const { Capture } = await import('/src/capture.js?v=23'),
+        save = Capture.prototype.save;
+      Capture.prototype.save = function () {
+        Capture.prototype.save = save;
+        return save.call(this).then(
+          (blob) =>
+            new Promise((resolve) => {
+              window.finishVideoSave = () => resolve(blob);
+            }),
+        );
+      };
+    });
+    await page.keyboard.press('Enter');
+    await expect.poll(() => page.evaluate(() => !!window.finishVideoSave)).toBe(true);
+    await page.locator('#crt').focus();
+    const next = page.waitForEvent('download');
+    await page.evaluate(() => window.finishVideoSave());
+    await next;
+    await expect(page.locator('#crt')).toBeFocused();
+    await page.locator('#tools-toggle').tap();
+    await expect(page.locator('#screen')).toBeFocused();
+  } finally {
+    await page.close();
+  }
+});
+
 test('a failed New clip reports the video error without stopping the game and Run can retry', async ({
   page,
 }) => {
@@ -1261,10 +1383,50 @@ test('a failed New clip reports the video error without stopping the game and Ru
   await expect(page.locator('#status')).toBeEmpty();
 });
 
+test('successful video retries clear the previous capture error without restarting the game', async ({
+  page,
+}) => {
+  await run(page, 'function tick() { cls(4) }');
+  await expect(page.locator('#video')).toBeEnabled();
+  await page.waitForTimeout(400);
+  for (const newClip of [true, false]) {
+    await page.evaluate(async () => {
+      const { Capture } = await import('/src/capture.js?v=23'),
+        save = Capture.prototype.save;
+      Capture.prototype.save = function () {
+        Capture.prototype.save = save;
+        throw new Error('Video export failed');
+      };
+    });
+    await page.locator('#video').click();
+    await expect(page.locator('#status')).toHaveText('Video export failed');
+    await expect(page.locator('#pause')).toBeEnabled();
+    if (newClip) {
+      await page.locator('#record').click();
+      await expect(page.locator('#status')).toBeEmpty();
+      await page.waitForTimeout(400);
+    }
+    const pending = page.waitForEvent('download');
+    await page.locator('#video').click();
+    expect((await pending).suggestedFilename()).toBe('playload.webm');
+    await expect(page.locator('#status')).toBeEmpty();
+    await expect(page.locator('#pause')).toBeEnabled();
+    await expect(page.locator('#screen')).toBeFocused();
+    await expect(page.locator('#error')).toBeHidden();
+  }
+});
+
 test('CRT video exports the curved frame with the same surround as the player', async ({
   page,
 }) => {
   await run(page, 'function tick() { cls(7) }');
+  for (const [x, y] of [
+    [0, 0],
+    [639, 0],
+    [0, 575],
+    [639, 575],
+  ])
+    expect(await pixel(page, x, y)).toEqual([33, 28, 41, 255]);
   await expect(page.getByRole('button', { name: 'New clip', exact: false })).toBeEnabled();
   await page.getByRole('button', { name: 'New clip', exact: false }).click();
   // A media export check needs a real interval of recorded frames/audio.
@@ -1297,12 +1459,26 @@ test('CRT video exports the curved frame with the same surround as the player', 
       canvas.height = video.videoHeight;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0);
+      // Measure full RGB patches away from the curve; video quantizes channels unevenly.
+      const surroundErrors = [
+        [0, 0],
+        [624, 0],
+        [0, 560],
+        [624, 560],
+      ].map(([x, y]) => {
+        const pixels = ctx.getImageData(x, y, 16, 16).data,
+          expected = [33, 28, 41];
+        let squaredError = 0;
+        for (let i = 0; i < pixels.length; i += 4)
+          for (let channel = 0; channel < 3; channel++)
+            squaredError += (pixels[i + channel] - expected[channel]) ** 2;
+        return Math.sqrt(squaredError / (256 * 3));
+      });
       return {
         width: canvas.width,
         height: canvas.height,
         duration: video.duration,
-        corner: [...ctx.getImageData(0, 0, 1, 1).data],
-        edge: [...ctx.getImageData(40, 8, 1, 1).data],
+        surroundErrors,
         top: [...ctx.getImageData(320, 16, 1, 1).data],
         center: [...ctx.getImageData(320, 288, 1, 1).data],
       };
@@ -1317,9 +1493,7 @@ test('CRT video exports the curved frame with the same surround as the player', 
   expect(result.width).toBe(640);
   expect(result.height).toBe(576);
   expect(result.duration).toBeGreaterThan(0.5);
-  for (const sample of [result.corner, result.edge])
-    for (let channel = 0; channel < 3; channel++)
-      expect(Math.abs(sample[channel] - [33, 28, 41][channel])).toBeLessThanOrEqual(8);
+  for (const error of result.surroundErrors) expect(error).toBeLessThanOrEqual(8);
   expect(result.top[0]).toBeGreaterThan(100);
   expect(result.center[0]).toBeGreaterThan(100);
 });
@@ -2287,13 +2461,49 @@ test('the starter reaches every screen edge and keeps collecting gems with short
   expect(result.moreSounds).toHaveLength(9);
 });
 
+test('keyboard bindings leave the entire game visible in short and narrow workspaces', async ({
+  page,
+}) => {
+  await run(
+    page,
+    'function tick() { cls(4); put(0, 16, "SCORE LIVES BOTTOM UI", 7, 3); put(0, 17, "ABCDEFGHIJKLMNOPQRST", 7, 5) }',
+    true,
+  );
+  for (const [width, height] of [
+    [1280, 500],
+    [1600, 600],
+    [640, 480],
+    [599, 800],
+    [375, 900],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const screen = document.getElementById('screen').getBoundingClientRect(),
+            guide = document.getElementById('keyboard-controls').getBoundingClientRect(),
+            frame = document.getElementById('viewport').getBoundingClientRect();
+          return (
+            screen.bottom <= guide.top &&
+            screen.left >= frame.left &&
+            screen.right <= frame.right &&
+            guide.right <= frame.right &&
+            guide.bottom <= frame.bottom
+          );
+        }),
+      )
+      .toBe(true);
+    await expect(page.locator('#keyboard-controls')).toBeVisible();
+  }
+});
+
 test('keyboard bindings stay visible in Play without opening code or reference', async ({
   page,
   browser,
 }) => {
   await page.goto('/');
   const guide = page.locator('#keyboard-controls');
-  await expect(guide).toHaveText('CURSOR: ↑↓←→/WASDA: Z/J B: X/K');
+  await expect(guide).toHaveText('MOVE: ↑↓←→·WASDA: Z·J B: X·K');
   await expect(guide).toBeVisible();
   await page.locator('#run').click();
   await expect(page.locator('#pause')).toBeEnabled();
@@ -3752,31 +3962,70 @@ test('an invalid shared URL focuses the visible player and keeps its error reada
   await expect(page.locator('#editor')).toBeVisible();
 });
 
-test('the tagline remains visible while the desktop header fits and narrow headers retain navigation', async ({
-  page,
+test('the tagline stays visible whenever its text fits, without crowding navigation or Tools', async ({
+  browser,
 }) => {
-  await page.goto('/');
-  for (const width of [
-    1280, 1100, 1099, 1024, 960, 921, 920, 919, 918, 800, 600, 375, 919, 920, 921, 1280,
-  ]) {
-    await page.setViewportSize({ width, height: 900 });
-    const tagline = page.locator('header p');
-    if (width >= 920) {
-      await expect(tagline).toBeVisible();
-      const bounds = await tagline.boundingBox(),
-        tabs = await page.locator('#views').boundingBox();
-      expect(bounds.x).toBeCloseTo(tabs.x + tabs.width + 24, 3);
-      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width - 16);
-    } else {
-      await expect(tagline).toBeHidden();
+  for (const touch of [false, true]) {
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 900 },
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto('/');
+      const playPositions = new Map();
+      for (const view of ['Play', 'Info']) {
+        await page.getByRole('tab', { name: view, exact: true }).click();
+        for (const width of [
+          1280, 1100, 1024, 960, 920, 919, 880, 860, 855, 854, 853, 850, 847, 846, 845, 844, 840,
+          820, 800, 600, 599, 580, 375, 320, 845, 846, 854, 880, 919, 1280,
+        ]) {
+          await page.setViewportSize({ width, height: 900 });
+          await page.evaluate(
+            () =>
+              new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+          );
+          const layout = await page.evaluate(() => {
+            const tagline = document.querySelector('header p'),
+              intro = document.querySelector('.intro'),
+              tools = document.querySelector('#tools-toggle'),
+              bounds = tagline.getBoundingClientRect(),
+              available = intro.getBoundingClientRect(),
+              toolsWidth = tools.getBoundingClientRect().width,
+              gap = toolsWidth ? parseFloat(getComputedStyle(intro).columnGap) : 0,
+              measure = document.createElement('canvas').getContext('2d');
+            measure.font = getComputedStyle(tagline).font;
+            return {
+              fits:
+                measure.measureText(tagline.textContent).width <=
+                available.width - toolsWidth - gap,
+              visible: !!tagline.getClientRects().length,
+              top: bounds.top,
+              inside: bounds.right <= available.right - toolsWidth - gap + 0.02,
+              aligned: !bounds.width || Math.abs(bounds.left - available.left) < 0.02,
+              overflow: document.documentElement.scrollWidth > innerWidth,
+            };
+          });
+          expect(layout.visible, `${touch ? 'touch' : 'desktop'} ${view} at ${width}px`).toBe(
+            layout.fits,
+          );
+          expect(layout.inside).toBe(true);
+          expect(layout.aligned).toBe(true);
+          expect(layout.overflow).toBe(false);
+          if (layout.visible) {
+            if (view === 'Play') playPositions.set(width, layout.top);
+            else if (playPositions.has(width))
+              expect(layout.top).toBeCloseTo(playPositions.get(width), 1);
+          }
+          for (const selector of ['#logo', '#code-tab', '#info-tab', '#repository'])
+            await expect(page.locator(selector)).toBeVisible();
+          if (touch && view === 'Play') await expect(page.locator('#tools-toggle')).toBeVisible();
+        }
+      }
+    } finally {
+      await context.close();
     }
-    await expect(page.locator('#logo')).toBeVisible();
-    await expect(page.locator('#code-tab')).toBeVisible();
-    await expect(page.locator('#info-tab')).toBeVisible();
-    await expect(page.locator('#repository')).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
   }
 });
 
