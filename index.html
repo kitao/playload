@@ -10,8 +10,8 @@
     <meta name="description" content="A tiny game engine that lets you share games as URLs" />
     <title>Playload</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="src/style.css?v=69" />
-    <script type="module" src="src/app.js?v=69"></script>
+    <link rel="stylesheet" href="src/style.css?v=75" />
+    <script type="module" src="src/app.js?v=75"></script>
   </head>
   <body>
     <div id="app">
@@ -37,6 +37,15 @@
             aria-label="Playload on GitHub"
             >GitHub</a
           >
+          <button
+            id="tools-toggle"
+            aria-label="Tools"
+            aria-controls="workspace-toolbar"
+            aria-expanded="false"
+            hidden
+          >
+            ⋯
+          </button>
         </div>
       </header>
       <div id="workspace-toolbar">
@@ -59,7 +68,7 @@
           </div>
           <div class="display-tools toolbar-group" role="group" aria-label="Display">
             <button id="code-toggle" aria-pressed="true">
-              JS<span class="indicator" aria-hidden="true"></span></button
+              CODE<span class="indicator" aria-hidden="true"></span></button
             ><button id="crt" aria-pressed="true">
               CRT<span class="indicator" aria-hidden="true"></span></button
             ><button id="sound" aria-pressed="true">
@@ -82,10 +91,6 @@
             ><span class="size-limit">/ 3 KB</span></output
           >
         </div>
-        <p id="keyboard-controls" aria-label="Keyboard controls: arrow keys, A on Z, B on X">
-          <span class="controls-label">Keys</span><span>↑↓←→</span><span>A: <kbd>Z</kbd></span
-          ><span>B: <kbd>X</kbd></span>
-        </p>
       </div>
       <main>
         <section id="code" role="tabpanel" aria-labelledby="code-tab">
@@ -119,7 +124,7 @@
                     id="screen"
                     tabindex="0"
                     role="application"
-                    aria-label="Game: arrows, Z for A, X for B"
+                    aria-label="Game: arrows or WASD, Z or J for A, X or K for B"
                     hidden
                   >
                     <canvas
@@ -129,6 +134,7 @@
                       aria-label="Game screen, 160 by 144 pixels"
                       role="img"
                     ></canvas>
+                    <button id="start-game" hidden>Tap to play</button>
                   </div>
                   <div id="empty"></div>
                   <div id="error-notice" role="alert" hidden>
@@ -137,6 +143,13 @@
                   </div>
                 </div>
               </div>
+              <p
+                id="keyboard-controls"
+                aria-label="Keyboard controls: arrow keys or WASD, A on Z or J, B on X or K"
+              >
+                <span>CURSOR: ↑↓←→ / <kbd>WASD</kbd></span
+                ><span>A: <kbd>Z/J</kbd> B: <kbd>X/K</kbd></span>
+              </p>
             </div>
             <div class="touch" aria-label="Game controls">
               <div class="dpad">
@@ -145,11 +158,11 @@
                 ><button data-input="1" aria-label="Down">↓</button
                 ><button data-input="3" aria-label="Right">→</button>
               </div>
+              <div id="touch-pause"></div>
               <div class="touch-right">
                 <div class="ab">
                   <button data-input="5">B</button><button data-input="4">A</button>
                 </div>
-                <div id="touch-screenshot"></div>
               </div>
             </div>
           </section>
@@ -244,7 +257,7 @@ put(1, 1, &quot;HI\n👾&quot;, 6, 0)</code></pre>
                     <dd>
                       <p class="reference-description">True while the button is held.</p>
                       <p class="button-map">
-                        <span>0 ↑ · 1 ↓ · 2 ← · 3 →</span><span>4 A (Z) · 5 B (X)</span>
+                        <span>0 ↑ · 1 ↓ · 2 ← · 3 →</span><span>4 A (Z/J) · 5 B (X/K)</span>
                       </p>
                       <pre
                         class="api-example"

@@ -7,9 +7,10 @@ Reading Info temporarily pauses the game and recording, then restores the previo
 
 ## Edit and play
 
-**JS** shows the JavaScript editor. It starts on for desktop screens and off below 600 pixels wide, including shared URLs.
-Toggle it or drag the divider to resize the editor and game. Narrow screens stack the editor
-above the game. Long lines scroll horizontally. Line numbers are not part of copied code.
+**CODE** shows the JavaScript editor. It starts on for desktop screens and off for touch-first devices
+and screens narrower than 600 pixels, including shared URLs. Toggle it or drag the divider to
+resize the editor and game. Compact portrait layouts stack the editor above the game.
+Long lines scroll horizontally. Line numbers are not part of copied code.
 
 **Run** starts or restarts exactly the web editor's code and begins a fresh recording.
 It never rereads a local file. **Load** selects a JavaScript file and starts it;
@@ -19,10 +20,17 @@ replacing edited code and never write back to the local file.
 
 Click the game screen to play and the editor to write. Run moves focus to the game.
 Pause moves focus to the visible editor; resuming returns it to the game, so you can
-switch using the keyboard. The six game buttons use arrows, Z and X; touch devices have a pad.
-Z and X follow the letters on Latin keyboard layouts; other scripts use the same key positions.
+switch using the keyboard. Directions use arrows or WASD; A uses Z or J, and B uses X or K.
+Touch devices have a pad. Letter controls follow the labels on Latin keyboard layouts;
+other scripts use the same key positions.
 Standard-mapped gamepads use the D-pad or left stick for directions and the bottom/right
 face buttons for A/B. Gamepad input is active while the game screen has focus.
+
+On phones and tablets, the game and touch controls fit the screen in portrait or landscape. Tap **Tap to play**
+to start the game and sound; the first touch on a game control also starts it. **⋯** opens the
+editing and capture controls, temporarily pausing play until you close them. **Pause** stays
+beside the game controls. Screens narrower than 1280 pixels also use **⋯** to keep the toolbar
+out of the way. Run reveals the game; Pause brings the open editor into view.
 
 Errors stop the game and retain its last completed picture. A translucent black backing
 behind the message overlays the screen’s upper left, inset by 12 pixels. The yellow line
@@ -34,11 +42,13 @@ and clears the editor’s error highlight; Run clears the message.
 
 ## Save and share
 
-The starter keeps a plain URL until you edit or load a file. After that, edits update the
-address after a brief typing pause without adding browser-history entries, including
+The starter keeps a plain URL and the `Playload` title until you edit or load a file.
+After that, edits update the address after a brief typing pause without adding browser-history entries, including
 undoing back to the starter. Bookmark the URL to save that version, or share it from the
-browser's address bar. Opening a shared game restores its source, starts it and focuses
-the game unless you select another control during loading. Opening a URL without a fragment
+browser's address bar. Opening a shared game restores its source and focuses
+the game unless you select another control during loading. Desktop games start immediately;
+touch-first devices show the first frame until you tap to play. Narrow desktop screens with the
+editor initially hidden show **Click to play**. Opening a URL without a fragment
 starts with starter code.
 
 Start the source with `// @title My Game` to name the page and bookmark `My Game — Playload`.

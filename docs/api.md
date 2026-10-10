@@ -46,7 +46,8 @@ Two system variables:
 
 The sprite layer is cleared at the start of each tick. Call `spr` every tick while a sprite should remain visible; omit the call to hide it. Sprites always draw in front of the character screen, and later `spr` calls draw in front of earlier ones.
 
-Buttons are **0 U · 1 D · 2 L · 3 R · 4 A · 5 B**. On a keyboard, use arrows, Z and X.
+Buttons are **0 U · 1 D · 2 L · 3 R · 4 A · 5 B**. On a keyboard, use arrows or WASD,
+Z or J for A, and X or K for B.
 
 ```js
 pcg['①'].pat = [0x18, 0x3c, 0x7e, 0x18, 0x18, 0x18, 0x18, 0x00];

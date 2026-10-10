@@ -67,8 +67,11 @@ for (const scenario of [
     page.on('pageerror', (error) => errors.push(error.message));
     try {
       await page.goto('http://127.0.0.1:8765/');
-      if ((await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'false')
+      const compact = await page.locator('#tools-toggle').isVisible();
+      if ((await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'false') {
+        if (compact) await page.locator('#tools-toggle').click();
         await page.locator('#code-toggle').click();
+      }
       const source = [
         '// @title Overlay Check',
         'function tick() {',
@@ -80,14 +83,19 @@ for (const scenario of [
         '}',
       ].join('\n');
       await page.locator('#editor').fill(source);
+      if (compact) await page.locator('#tools-toggle').click();
       await page.locator('#run').click();
       await expect(page.locator('#pause')).toBeEnabled();
+      if (compact) await page.locator('#tools-toggle').click();
       await page.locator('#crt').click();
       if (
         scenario.touch &&
         (await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'true'
       )
         await page.locator('#code-toggle').click();
+      if (compact && (await page.locator('#workspace-toolbar').isVisible()))
+        await page.locator('#tools-toggle').click();
+      await page.locator('#screen').click();
       await page.waitForFunction(() => document.getElementById('display').dataset.crt === 'false');
       const before = await page.locator('#screen').boundingBox();
       const pixels = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
@@ -152,6 +160,7 @@ for (const scenario of [
       ).toContain('throw new Error');
       await page.locator('#editor').fill('function tick() { cls(3) }');
       await expect(page.locator('#error-line')).toBeDisabled();
+      if (compact) await page.locator('#tools-toggle').click();
       await page.locator('#run').click();
       await expect(page.locator('#pause')).toBeEnabled();
       await expect(page.getByRole('alert')).toBeHidden();

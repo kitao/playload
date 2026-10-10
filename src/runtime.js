@@ -151,30 +151,48 @@ export class Sound {
     try {
       this.context = new AudioContext();
       const source = `${AY}\nclass Processor extends AudioWorkletProcessor {
-        constructor() { super(); this.ay = new AY(sampleRate); this.paused = false;
-          this.gain = 1; this.lastSample = 0; this.previous = 0; this.transition = 0;
-          this.port.onmessage = ({data}) => {
-            if(data.type === 'play') this.ay.play(data.ch, data.score);
-            if(data.type === 'reset') { this.previous = this.lastSample; this.transition = 1; this.ay.reset(); }
-            if(data.type === 'pause') this.paused = data.value;
+        constructor() {
+          super();
+          this.ay = new AY(sampleRate);
+          this.paused = false;
+          this.gain = 1;
+          this.lastSample = 0;
+          this.previous = 0;
+          this.transition = 0;
+
+          this.port.onmessage = ({ data }) => {
+            if (data.type === 'play') this.ay.play(data.ch, data.score);
+            if (data.type === 'reset') {
+              this.previous = this.lastSample;
+              this.transition = 1;
+              this.ay.reset();
+            }
+            if (data.type === 'pause') this.paused = data.value;
           };
         }
+
         process(inputs, outputs) {
           try {
-            const output = outputs[0][0], step = 1 / (sampleRate * .004);
-            for(let i = 0; i < output.length; i++) {
+            const output = outputs[0][0],
+              step = 1 / (sampleRate * 0.004);
+
+            for (let i = 0; i < output.length; i++) {
               this.gain = Math.max(0, Math.min(1, this.gain + (this.paused ? -step : step)));
               if (!this.paused) {
                 this.transition = Math.max(0, this.transition - step);
-                this.lastSample = this.previous * this.transition + this.ay.sample() * (1 - this.transition);
+                this.lastSample =
+                  this.previous * this.transition + this.ay.sample() * (1 - this.transition);
               }
               output[i] = this.lastSample * this.gain;
             }
+          } catch (error) {
+            this.ay.reset();
+            this.port.postMessage({ error: error.message });
           }
-          catch(error) { this.ay.reset(); this.port.postMessage({error:error.message}); }
           return true;
         }
       }
+
       registerProcessor('playload-ay', Processor);`;
       const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
       try {

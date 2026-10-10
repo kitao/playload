@@ -1,7 +1,7 @@
 import { palette } from './engine.js?v=15';
 import { glyphs } from './glyphs.js?v=18';
 import { encode, decode, gameURL } from './payload.js?v=13';
-import { Runtime, Sound } from './runtime.js?v=24';
+import { Runtime, Sound } from './runtime.js?v=25';
 import { Capture, download } from './capture.js?v=20';
 import { createDisplay } from './display.js?v=14';
 import { createCRT } from './crt.js?v=14';
@@ -61,7 +61,11 @@ let editRevision = 0,
   fileRequest,
   fileHandle;
 let editorErrorLine = null;
-let editorOpen = innerWidth >= 600;
+let touch = touchLayout();
+let compact = touch || innerWidth < 1280;
+let editorOpen = !touch && innerWidth >= 600;
+let toolsOpen = false,
+  awaitingStart = false;
 let pointers = new Map(),
   directions = new Set(),
   keys = new Map();
@@ -69,7 +73,8 @@ let gamepadMask = 0;
 const audio = new Sound((message) => status('Sound: ' + message));
 const runtime = new Runtime(frame, (error) => {
   running = false;
-  audio.pause(true);
+  awaitingStart = false;
+  syncPlayback();
   release();
   $('error').textContent = error.message || 'Game error';
   $('error').hidden = false;
@@ -89,7 +94,7 @@ const runtime = new Runtime(frame, (error) => {
     setView('code');
     setEditorOpen(true);
     editor.setSelectionRange(start, start + (lines[error.line - 1]?.length ?? 0));
-    editor.focus();
+    focusEditor();
     const style = getComputedStyle(editor),
       measure = document.createElement('div');
     measure.className = 'editor-measure';
@@ -108,6 +113,7 @@ const runtime = new Runtime(frame, (error) => {
     syncEditorScroll();
   };
   controls();
+  focusAfterRun();
 });
 
 let statusTimer;
@@ -120,20 +126,29 @@ function status(text = '') {
     }, 1800);
 }
 function controls() {
+  $('workspace-toolbar').hidden = view === 'info' || (compact && !toolsOpen);
+  $('tools-toggle').hidden = !compact || view === 'info';
+  $('tools-toggle').setAttribute('aria-expanded', String(toolsOpen));
+  $('start-game').hidden = !running || !awaitingStart;
   $('size').hidden = !payload;
-  for (const id of ['pause', 'screenshot']) $(id).disabled = !running;
+  $('pause').disabled = !running || awaitingStart;
+  $('screenshot').disabled = !running;
   $('run').disabled = reading;
-  $('pause').firstChild.textContent = paused ? 'Resume' : 'Pause';
+  $('pause').firstChild.textContent = paused && !awaitingStart ? 'Resume' : 'Pause';
   $('record').disabled = !running || !capture?.stream || !!capture?.saveRequest;
   $('video').disabled =
     !running ||
-    (!capture?.restarting && capture?.recorder?.state !== 'recording') ||
+    (!capture?.restarting && !['recording', 'paused'].includes(capture?.recorder?.state)) ||
     !!capture?.saveRequest;
   $('load').disabled = reading;
   $('filename').textContent = filename;
   $('filename').title = filename;
   $('reload').disabled = reading || !filename;
   for (const button of document.querySelectorAll('[data-input]')) button.disabled = !running;
+}
+function syncPlayback() {
+  audio.pause(!running || paused || view === 'info' || (compact && toolsOpen));
+  capture?.suspend(!running || view === 'info' || awaitingStart || (compact && toolsOpen));
 }
 function setView(next) {
   view = next;
@@ -143,10 +158,8 @@ function setView(next) {
     button.setAttribute('aria-selected', String(button.dataset.view === view));
     button.tabIndex = button.dataset.view === view ? 0 : -1;
   }
-  $('workspace-toolbar').hidden = view === 'info';
   release();
-  audio.pause(paused || view === 'info');
-  capture?.suspend(view === 'info');
+  syncPlayback();
   controls();
   if (view === 'code' && editorOpen && innerWidth >= 600) setSplit(split);
   requestAnimationFrame(fitGame);
@@ -177,28 +190,22 @@ async function frame(pixels, sounds, ready) {
   audio.play(sounds);
   if (!ready) return;
   running = true;
-  paused = false;
-  audio.pause(view === 'info');
+  paused = awaitingStart;
+  syncPlayback();
   $('screen').hidden = false;
   $('error').hidden = true;
   $('error-notice').hidden = true;
   $('empty').hidden = true;
   $('error-line').hidden = true;
   controls();
-  if (
-    pendingFocus &&
-    pendingFocus.element === document.activeElement &&
-    pendingFocus.revision === focusRevision
-  )
-    focusGame();
-  pendingFocus = null;
+  focusAfterRun();
   const version = revision;
   try {
     await audio.init();
   } catch {
     $('sound').disabled = true;
   }
-  if (version !== revision) return;
+  if (version !== revision || !running) return;
   if (audio.context)
     audio.context.onstatechange = () => {
       if (audio.context.state === 'running') capture?.audio(audio.destination?.stream);
@@ -211,7 +218,7 @@ async function frame(pixels, sounds, ready) {
         controls,
       );
       capture.start();
-      capture.suspend(view === 'info');
+      syncPlayback();
     }
   } catch (error) {
     capture?.close();
@@ -220,16 +227,17 @@ async function frame(pixels, sounds, ready) {
   }
   controls();
 }
-function run(code, focusGame = false, focusGeneration = focusRevision) {
+function run(code, takeFocus = false, focusGeneration = focusRevision, waitForTap = false) {
   revision++;
   status();
   release();
   capture?.close();
   capture = null;
   audio.reset();
-  audio.pause(false);
-  paused = false;
+  awaitingStart = waitForTap;
+  paused = waitForTap;
   running = false;
+  syncPlayback();
   pendingSource = code;
   scheduleURL(0);
   $('screen').hidden = false;
@@ -239,14 +247,31 @@ function run(code, focusGame = false, focusGeneration = focusRevision) {
   $('error-line').hidden = true;
   editorErrorLine = null;
   updateEditorLines();
-  pendingFocus = focusGame ? { element: document.activeElement, revision: focusGeneration } : null;
+  if (compact && takeFocus && focusGeneration === focusRevision) {
+    toolsOpen = false;
+    $('screen').focus({ preventScroll: true });
+    focusGeneration = focusRevision;
+  }
   controls();
+  pendingFocus = takeFocus ? { element: document.activeElement, revision: focusGeneration } : null;
   runtime.load(code);
 }
 function runCurrentSource() {
   if (reading) return;
+  toolsOpen = false;
   audio.unlock();
   run($('editor').value, true);
+}
+function startGame() {
+  if (!running || !awaitingStart) return;
+  audio.unlock();
+  awaitingStart = false;
+  paused = false;
+  toolsOpen = false;
+  syncPlayback();
+  controls();
+  focusGame(false);
+  fitGame();
 }
 function release() {
   keys.clear();
@@ -254,13 +279,30 @@ function release() {
   directions.clear();
   syncInput(0);
 }
+function focusEditor() {
+  $('editor').focus({ preventScroll: true });
+  if (compact) window.scrollTo({ top: 0, behavior: 'instant' });
+}
 function focusGame(reveal = true) {
   if (view !== 'code') setView('code');
   const screen = $('screen'),
-    bounds = screen.getBoundingClientRect();
+    target = touch ? $('game') : screen,
+    bounds = target.getBoundingClientRect();
   screen.focus({ preventScroll: true });
   if (reveal && (bounds.top < 0 || bounds.bottom > innerHeight))
-    screen.scrollIntoView({ block: 'center', behavior: 'instant' });
+    target.scrollIntoView({ block: 'center', behavior: 'instant' });
+}
+function focusAfterRun() {
+  if (
+    pendingFocus &&
+    pendingFocus.element === document.activeElement &&
+    pendingFocus.revision === focusRevision
+  ) {
+    focusGame();
+    if (compact && !$('error-notice').hidden)
+      $('error-notice').scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }
+  pendingFocus = null;
 }
 function syncInput(padMask = readGamepads()) {
   if (padMask & ~gamepadMask) audio.unlock();
@@ -278,6 +320,7 @@ function readGamepads() {
     running &&
     !paused &&
     view === 'code' &&
+    !(compact && toolsOpen) &&
     document.hasFocus() &&
     document.activeElement === $('screen')
   ) {
@@ -303,7 +346,7 @@ for (const button of document.querySelectorAll('[data-view]'))
   button.onclick = () => {
     setView(button.dataset.view);
     if (view === 'code') {
-      if (editorOpen) $('editor').focus({ preventScroll: true });
+      if (editorOpen) focusEditor();
       else if (running) focusGame();
     }
   };
@@ -323,21 +366,47 @@ tabs.onkeydown = (event) => {
   $(next + '-tab').focus();
 };
 $('screen').onclick = () => {
+  if (compact && toolsOpen) {
+    $('tools-toggle').click();
+    return;
+  }
+  if (awaitingStart) {
+    startGame();
+    return;
+  }
   focusGame(false);
   audio.unlock();
 };
 $('game').addEventListener('pointerdown', () => audio.unlock());
 $('pause').onclick = () => {
   paused = !paused;
+  toolsOpen = false;
   release();
-  audio.pause(paused || view === 'info');
+  audio.unlock();
+  syncPlayback();
   controls();
-  if (paused && editorOpen) $('editor').focus({ preventScroll: true });
+  if (paused && editorOpen) focusEditor();
   else focusGame();
+  fitGame();
+};
+$('tools-toggle').onclick = () => {
+  toolsOpen = !toolsOpen;
+  release();
+  audio.unlock();
+  syncPlayback();
+  controls();
+  if (!toolsOpen && running && !editorOpen) focusGame(false);
+  fitGame();
 };
 document.querySelector('.game-tools').addEventListener('click', (event) => {
   const button = event.target.closest('button:not(:disabled)');
-  if (running && button && !['code-toggle', 'run', 'pause'].includes(button.id)) focusGame();
+  if (
+    running &&
+    !(compact && toolsOpen) &&
+    button &&
+    !['code-toggle', 'run', 'pause'].includes(button.id)
+  )
+    focusGame();
 });
 $('crt').onclick = () => {
   crt = !crt;
@@ -355,7 +424,13 @@ $('screenshot').onclick = () =>
     if (blob) download(blob, 'playload.png');
   });
 $('record').onclick = () => {
-  capture?.start();
+  try {
+    capture?.start();
+  } catch (error) {
+    capture?.close();
+    capture = null;
+    status('Video: ' + error.message);
+  }
   controls();
 };
 $('video').onclick = async () => {
@@ -371,16 +446,19 @@ $('video').onclick = async () => {
     controls();
   }
 };
-async function copy(text, destination = $('status')) {
+let copyRevision = 0;
+async function copy(text) {
+  const version = ++copyRevision;
   try {
     await navigator.clipboard.writeText(text);
-    if (destination === $('status')) status('Copied');
-    else destination.textContent = 'Copied';
+    if (version === copyRevision) status('Copied');
   } catch {
+    if (version !== copyRevision) return;
+    status();
     const field = document.createElement('textarea');
     field.value = text;
     field.readOnly = true;
-    destination.replaceChildren(field);
+    $('status').replaceChildren(field);
     field.focus();
     field.select();
   }
@@ -393,7 +471,9 @@ function scheduleURL(delay = 250) {
   const version = ++urlRevision,
     code = $('editor').value,
     writeURL = !!initialHash || editRevision > 0 || code !== starter;
-  const title = /^\s*\/\/[ \t]*@title[ \t]+([^\r\n\u2028\u2029]*)/.exec(code)?.[1].trim();
+  const title = writeURL
+    ? /^\s*\/\/[ \t]*@title[ \t]+([^\r\n\u2028\u2029]*)/.exec(code)?.[1].trim()
+    : null;
   document.title = title ? `${title} — Playload` : 'Playload';
   urlTimer = setTimeout(async () => {
     try {
@@ -742,13 +822,24 @@ for (let index = 0; index < 8; index++) {
   $('palette').append(button);
 }
 
-const keyCodes = { ArrowUp: 0, ArrowDown: 1, ArrowLeft: 2, ArrowRight: 3, KeyZ: 4, KeyX: 5 };
+const keyCodes = {
+  ArrowUp: 0,
+  ArrowDown: 1,
+  ArrowLeft: 2,
+  ArrowRight: 3,
+  KeyW: 0,
+  KeyS: 1,
+  KeyA: 2,
+  KeyD: 3,
+  KeyZ: 4,
+  KeyJ: 4,
+  KeyX: 5,
+  KeyK: 5,
+};
 function gameButton(event) {
   const key = event.key.toLowerCase();
-  if (key === 'z') return 4;
-  if (key === 'x') return 5;
   // Follow Latin key labels; other scripts retain the same physical positions.
-  if (/^[a-z]$/.test(key)) return;
+  if (/^[a-z]$/.test(key)) return keyCodes['Key' + key.toUpperCase()];
   return keyCodes[event.code];
 }
 const editable = (target) => target.closest('input,textarea,select,[contenteditable]');
@@ -780,13 +871,15 @@ document.addEventListener('keydown', (event) => {
   if (
     document.activeElement === $('screen') &&
     running &&
-    !paused &&
+    (!paused || awaitingStart) &&
+    !(compact && toolsOpen) &&
     !event.altKey &&
     !event.ctrlKey &&
     !event.metaKey &&
     input != null
   ) {
     event.preventDefault();
+    if (awaitingStart) startGame();
     audio.unlock();
     keys.set(event.code, input);
     syncInput();
@@ -811,7 +904,9 @@ document.addEventListener('keyup', (event) => {
 });
 for (const button of document.querySelectorAll('[data-input]')) {
   button.onpointerdown = (event) => {
-    if (!running || paused || view !== 'code') return;
+    if (!running || view !== 'code' || (compact && toolsOpen)) return;
+    if (awaitingStart) startGame();
+    if (paused) return;
     event.preventDefault();
     focusGame(false);
     audio.unlock();
@@ -837,6 +932,38 @@ document.addEventListener('pointermove', (event) => {
   );
   syncInput();
 });
+// A second finger does not generate a compatibility click in every browser.
+let secondaryTap = null;
+document.addEventListener(
+  'pointerdown',
+  () => {
+    secondaryTap = null;
+  },
+  true,
+);
+document.addEventListener('pointerup', (event) => {
+  if (!touch || event.pointerType !== 'touch' || event.isPrimary) return;
+  const button = event.target.closest('button:not([data-input])');
+  if (
+    button &&
+    !button.disabled &&
+    document.elementFromPoint(event.clientX, event.clientY)?.closest('button') === button
+  ) {
+    secondaryTap = event.pointerId;
+    button.click();
+  }
+});
+document.addEventListener(
+  'click',
+  (event) => {
+    if (touch && event.pointerType === 'touch' && event.pointerId === secondaryTap) {
+      secondaryTap = null;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  },
+  true,
+);
 window.addEventListener('blur', release);
 function fitGame() {
   const viewport = $('picture');
@@ -869,20 +996,30 @@ function setEditorOpen(open) {
 }
 $('code-toggle').onclick = () => {
   setEditorOpen(!editorOpen);
-  if (editorOpen) $('editor').focus({ preventScroll: true });
+  toolsOpen = false;
+  controls();
+  syncPlayback();
+  if (editorOpen) focusEditor();
   else if (running) focusGame();
 };
+function touchLayout() {
+  return matchMedia('(pointer:coarse)').matches;
+}
 function layout() {
-  const touch = navigator.maxTouchPoints > 0 || matchMedia('(pointer:coarse)').matches;
+  touch = touchLayout();
   document.body.dataset.touch = String(touch);
-  document.body.dataset.phone = String(touch && innerWidth < 600);
-  if (touch && innerWidth < 600) {
-    $('touch-screenshot').append($('screenshot'));
-    $('screenshot').firstChild.textContent = '📷';
+  const nextCompact = touch || innerWidth < 1280;
+  if (compact !== nextCompact) toolsOpen = false;
+  compact = nextCompact;
+  document.body.dataset.compact = String(compact);
+  $('start-game').textContent = touch ? 'Tap to play' : 'Click to play';
+  if (touch) {
+    $('touch-pause').append($('pause'));
   } else {
-    $('screenshot').firstChild.textContent = 'Screenshot';
-    document.querySelector('.capture-tools').prepend($('screenshot'));
+    document.querySelector('.play-tools').append($('pause'));
   }
+  controls();
+  syncPlayback();
   if (view === 'code' && editorOpen && innerWidth >= 600) setSplit(split);
   else fitGame();
 }
@@ -944,6 +1081,7 @@ $('divider').onkeydown = (event) => {
 const gameLayout = new ResizeObserver(fitGame);
 gameLayout.observe($('picture'));
 window.addEventListener('resize', () => {
+  release();
   layout();
   if (reference === 'characters' && view === 'info') renderCharacters();
 });
@@ -965,15 +1103,20 @@ window.addEventListener('pageshow', (event) => {
   lastFrame = 0;
   capture?.leave(false);
   runtime.suspend(false);
-  audio.pause(!running || paused || view === 'info');
-  capture?.suspend(view === 'info');
+  syncPlayback();
   audio.unlock();
 });
 window.addEventListener('hashchange', () => location.reload());
 function animate(time) {
   const padMask = readGamepads();
   if (padMask !== gamepadMask) syncInput(padMask);
-  if (running && !paused && view === 'code' && time - lastFrame >= 1000 / 60 - 0.5) {
+  if (
+    running &&
+    !paused &&
+    view === 'code' &&
+    !(compact && toolsOpen) &&
+    time - lastFrame >= 1000 / 60 - 0.5
+  ) {
     const interval = 1000 / 60;
     // Keep fractional frame time on high-refresh displays; discard long pauses.
     lastFrame = time - lastFrame > interval * 2 ? time : lastFrame + interval;
@@ -1001,7 +1144,7 @@ if (initialHash) {
       if (initialEdit !== editRevision) return;
       $('editor').value = code;
       highlightEditor();
-      run(code, view === 'code', initialFocus);
+      run(code, view === 'code', initialFocus, touch || !editorOpen);
     })
     .catch((error) => {
       if (initialEdit !== editRevision) return;
@@ -1011,4 +1154,5 @@ if (initialHash) {
       $('empty').hidden = true;
       $('screen').hidden = false;
     });
-} else scheduleURL(0);
+} else if (touch || !editorOpen) run(starter, false, focusRevision, true);
+else scheduleURL(0);

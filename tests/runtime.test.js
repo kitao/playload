@@ -147,6 +147,10 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     source.indexOf("window.addEventListener('beforeunload'"),
     source.indexOf("window.addEventListener('hashchange'"),
   );
+  const playback = source.slice(
+    source.indexOf('function syncPlayback()'),
+    source.indexOf('function setView('),
+  );
   const timers = new Map();
   let timerId = 0;
   t.mock.method(globalThis, 'setTimeout', (callback, delay) => {
@@ -179,6 +183,8 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     { running: true, paused: true, view: 'code' },
     { running: false, paused: false, view: 'code' },
     { running: true, paused: false, view: 'info' },
+    { running: true, paused: true, view: 'code', awaitingStart: true, compact: true },
+    { running: true, paused: false, view: 'code', compact: true, toolsOpen: true },
   ]) {
     const handlers = new Map();
     const runtime = new Runtime(() => {}, assert.fail);
@@ -213,7 +219,10 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       'running',
       'paused',
       'view',
-      'let lastFrame = 123;\n' + lifecycle + '\nreturn () => lastFrame;',
+      'compact',
+      'toolsOpen',
+      'awaitingStart',
+      'let lastFrame = 123;\n' + playback + lifecycle + '\nreturn () => lastFrame;',
     )(
       { addEventListener: (type, handler) => handlers.set(type, handler) },
       runtime,
@@ -223,6 +232,9 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       state.running,
       state.paused,
       state.view,
+      !!state.compact,
+      !!state.toolsOpen,
+      !!state.awaitingStart,
     );
 
     assert.equal(timers.size, 1);
@@ -245,9 +257,15 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     assert.equal(runtime.suspended, false);
     assert.equal(timers.size, 1);
     assert.equal([...timers.values()][0].delay, 1500);
-    assert.equal(audio.paused, !state.running || state.paused || state.view === 'info');
+    assert.equal(
+      audio.paused,
+      !state.running || state.paused || state.view === 'info' || !!state.toolsOpen,
+    );
     assert.equal(capture.leaving, false);
-    assert.equal(capture.suspended, state.view === 'info');
+    assert.equal(
+      capture.suspended,
+      !state.running || state.view === 'info' || !!state.awaitingStart || !!state.toolsOpen,
+    );
     worker.onmessage({ data: { type: 'ready', pixels: new Uint8Array(160 * 144), sounds: [] } });
     assert.equal(timers.size, 0);
 
@@ -292,6 +310,7 @@ test('game input follows keyboard labels and releases the original physical keys
     'audio',
     'keys',
     'let view = "code", running = true, paused = false, gamepadMask = 0; ' +
+      'let compact = false, toolsOpen = false, awaitingStart = false; ' +
       'const pointers = new Map(), directions = new Set(); const readGamepads = () => 0;\n' +
       releaseSource +
       syncSource +
@@ -329,7 +348,7 @@ test('game input follows keyboard labels and releases the original physical keys
     input('keyup', code, 'Process');
     assert.equal(runtime.mask, 0);
   }
-  for (const key of ['w', 'y']) {
+  for (const key of ['q', 'y']) {
     input('keydown', 'KeyZ', key);
     assert.equal(runtime.mask, 0);
   }
@@ -342,6 +361,30 @@ test('game input follows keyboard labels and releases the original physical keys
   input('keyup', 'KeyZ', 'Z', { shiftKey: true });
   assert.equal(runtime.mask, 32);
   input('keyup', 'KeyX', 'ч');
+  assert.equal(runtime.mask, 0);
+
+  for (const [code, key, id] of [
+    ['KeyW', 'w', 0],
+    ['KeyS', 's', 1],
+    ['KeyA', 'a', 2],
+    ['KeyD', 'D', 3],
+    ['KeyJ', 'j', 4],
+    ['KeyK', 'k', 5],
+    ['KeyQ', 'a', 2],
+    ['KeyJ', 'о', 4],
+    ['KeyK', 'л', 5],
+  ]) {
+    input('keydown', code, key);
+    assert.equal(runtime.mask, 1 << id);
+    input('keyup', code, 'Process');
+    assert.equal(runtime.mask, 0);
+  }
+  input('keydown', 'KeyZ', 'z');
+  input('keydown', 'KeyJ', 'j');
+  assert.equal(runtime.mask, 16);
+  input('keyup', 'KeyZ', 'z');
+  assert.equal(runtime.mask, 16);
+  input('keyup', 'KeyJ', 'j');
   assert.equal(runtime.mask, 0);
 
   for (const [id, code] of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].entries()) {
@@ -358,7 +401,9 @@ test('game input follows keyboard labels and releases the original physical keys
     { metaKey: true },
     { target: { closest: () => ({}) } },
   ]) {
-    input('keydown', 'KeyZ', 'z', extras);
-    assert.equal(runtime.mask, 0);
+    for (const key of ['z', 'w', 's', 'a', 'd', 'j', 'k']) {
+      input('keydown', 'Key' + key.toUpperCase(), key, extras);
+      assert.equal(runtime.mask, 0);
+    }
   }
 });

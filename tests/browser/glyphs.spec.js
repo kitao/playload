@@ -1,6 +1,75 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
+for (const result of ['success', 'failure']) {
+  test(`a late clipboard ${result} preserves the newer manual copy`, async ({ page }) => {
+    await page.addInitScript((result) => {
+      let count = 0;
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: () => {
+            if (count++) return Promise.reject(new Error('Clipboard unavailable'));
+            return new Promise((resolve, reject) => {
+              window.finishCopy = () =>
+                result === 'success' ? resolve() : reject(new Error('Clipboard unavailable'));
+            });
+          },
+        },
+      });
+    }, result);
+    await page.goto('/');
+    await page.getByRole('tab', { name: 'Info', exact: true }).click();
+    await page.locator('#palette button').first().click();
+    await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
+    const glyph = page.locator('#catalog button').first();
+    const character = await glyph.getAttribute('data-glyph');
+    await glyph.click();
+    const fallback = page.locator('#status textarea');
+    await expect(fallback).toHaveValue(character);
+
+    await page.evaluate(() => window.finishCopy());
+    await expect(fallback).toHaveValue(character);
+    await expect(fallback).toBeFocused();
+  });
+}
+
+test('palette and catalog copies keep manual fallback available after a recent success', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.addInitScript(() => {
+    window.copied = [];
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: async (text) => {
+          if (window.copied.length) throw new Error('Clipboard unavailable');
+          window.copied.push(text);
+        },
+      },
+    });
+  });
+  await page.goto('/');
+  await page.getByRole('tab', { name: 'Info', exact: true }).click();
+  await page.locator('#palette button').first().click();
+  await expect(page.locator('#status')).toHaveText('Copied');
+  expect(await page.evaluate(() => window.copied)).toEqual(['0']);
+
+  await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
+  const glyph = page.locator('#catalog button').first();
+  const character = await glyph.getAttribute('data-glyph');
+  await glyph.click();
+  const fallback = page.locator('#status textarea');
+  await expect(fallback).toHaveValue(character);
+  await expect(fallback).toBeFocused();
+  expect(await fallback.evaluate((field) => field.selectionEnd - field.selectionStart)).toBe(
+    character.length,
+  );
+
+  await page.clock.fastForward(2000);
+  await expect(fallback).toBeVisible();
+  await expect(fallback).toHaveValue(character);
+});
+
 test('the curated game catalog scrolls continuously without search or pagination', async ({
   page,
 }, testInfo) => {
@@ -181,10 +250,12 @@ test('CRT reconstruction scales smoothly at fractional sizes while flat pixels r
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   for (const width of [375, 513, 863]) {
     await page.setViewportSize({ width, height: 900 });
+    await page.getByRole('button', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#display')).toHaveCSS('image-rendering', 'auto');
     await page.getByRole('button', { name: 'CRT', exact: true }).click();
     await expect(page.locator('#display')).toHaveCSS('image-rendering', 'pixelated');
     await page.getByRole('button', { name: 'CRT', exact: true }).click();
+    await page.getByRole('button', { name: 'Tools', exact: true }).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

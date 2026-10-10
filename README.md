@@ -23,7 +23,7 @@
   <a href="docs/images/examples.jpg"><img src="docs/images/examples.jpg" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
 </p>
 
-Edit your game in the **JS** editor and press **Run**. The URL updates as you edit:
+Edit your game in the **CODE** editor and press **Run**. The URL updates as you edit:
 share it to send the game and its code, or bookmark it to save that version.
 Start your code with `// @title My Game` to name the browser tab and bookmark.
 
