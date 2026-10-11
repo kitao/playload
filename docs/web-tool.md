@@ -18,9 +18,11 @@ It never rereads a local file. **Load** selects and starts a JavaScript file, co
 replacing edited code. The tool never writes back to the file.
 
 Browsers with `showOpenFilePicker`, such as desktop Chrome and Edge, check the loaded file
-every second while the page is visible and when you return. External changes update the editor,
-URL and title; Run applies them to the game. Updates wait while the web editor has changes.
-Other browsers require selecting the file again with Load.
+every 250 ms while the page is visible and when you return. External changes update the editor,
+URL and title, then restart the game and recording without moving focus. If the web editor
+also has changes, a confirmation asks before replacing them. Cancel keeps your edits and
+does not ask again for the same file contents. Other browsers require selecting the file
+again with Load.
 
 Errors stop the game and preserve its last completed picture. The message appears at the top left
 of the player; select its line number to jump to the source. Long messages scroll inside the overlay.
@@ -39,23 +41,24 @@ Letter keys follow Latin keyboard labels; other layouts use the same key positio
 Standard-mapped gamepads use the D-pad or left stick and the bottom/right face buttons for A/B.
 Gamepad input is active while the game has focus.
 
-On phones and tablets, tap **Tap to play** or a game control to start the game and sound.
-The directional pad and A/B buttons fit portrait and landscape layouts. **⋯** opens editing
-and capture controls, temporarily pausing play until you close them. **Pause** stays beside
-the game controls. On PCs, the toolbar stays visible and wraps when the window narrows.
+On phones and tablets, the screen shows **TAP TO PLAY** until your first tap starts the game
+and sound. The directional pad and A/B buttons fit portrait and landscape layouts.
+Slide across the eight-way pad without lifting your finger. **⋯** opens Run, Pause,
+editing and capture controls, temporarily pausing play until you close them.
+On PCs, the toolbar stays visible and wraps when the window narrows.
 Run reveals the game; Pause brings the open editor into view.
 
-Reading INFO or switching browser tabs pauses the game, sound and recording, then restores
-the previous state when you return.
+Reading INFO pauses the game, sound and recording. Switching browser tabs pauses game updates
+and recording while music continues. Returning restores the previous play state.
 
 ## Save and share
 
 The untouched starter keeps a plain URL and the `Playload` title. Editing or loading a file
 starts URL updates after a brief typing pause, without adding browser-history entries;
 updates continue even if you undo back to the starter. Bookmark the URL to save that version,
-or share it from the browser's address bar. Shared URLs restore the source. Desktop games
-start immediately; touch-first devices wait for a tap, and narrow desktop screens with CODE
-initially off show **Click to play**.
+or share it from the browser's address bar. Shared URLs restore the source and wait for an
+interaction before starting the game and sound: **CLICK TO PLAY** on PCs and **TAP TO PLAY**
+on touch-first devices. Run or a game key also starts play.
 
 A URL without a fragment opens the starter. **Starter** in Examples opens it in a new tab;
 the logo opens the GitHub repository in a new tab. Both preserve your current code.
@@ -94,9 +97,9 @@ Pause records a still picture with silent audio. INFO, open touch tools and hidd
 suspend recording without clearing its buffer; that time is excluded. Run or loading a game
 starts a fresh recording.
 
-Video uses **WebM**, requiring VP8/VP9 and Opus recording support. Engine audio is included
-even when speaker listening is muted. Audio needs a user interaction to start, subject to the
-browser's autoplay policy.
+Sound requires HTTPS or localhost and a user interaction, subject to the browser's autoplay
+policy. Video uses **WebM**, requiring VP8/VP9 and Opus recording support. Engine audio is
+included even when speaker listening is muted.
 
 ## Keyboard shortcuts
 

@@ -145,7 +145,7 @@ test('catalog browsing position survives rotating while API, Examples or Play is
 for (const touch of [false, true]) {
   test(`copy confirmation sits below its source without hiding its contents (${touch ? 'touch' : 'desktop'})`, async ({
     browser,
-  }) => {
+  }, testInfo) => {
     const page = await browser.newPage({
       viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 800 },
       hasTouch: touch,
@@ -213,12 +213,45 @@ for (const touch of [false, true]) {
     expect(noticeBox.height).toBeGreaterThanOrEqual(30);
     expect(noticeBox.x).toBeGreaterThanOrEqual(8);
     expect(noticeBox.x + noticeBox.width).toBeLessThanOrEqual(page.viewportSize().width - 8);
-    await page.clock.fastForward(1800);
+    await expect(notice).toHaveCSS('opacity', '1');
+    await page.screenshot({ path: testInfo.outputPath('copied.png') });
+    const opacity = await notice.evaluate((element) => {
+      const animation = element.getAnimations()[0];
+      animation.pause();
+      animation.currentTime = 875;
+      return Number(getComputedStyle(element).opacity);
+    });
+    expect(opacity).toBeGreaterThan(0);
+    expect(opacity).toBeLessThan(1);
+    await page.screenshot({ path: testInfo.outputPath('copied-fading.png') });
+    if (touch) await glyph.tap();
+    else await page.keyboard.press('Enter');
+    await expect(notice).toHaveCSS('opacity', '1');
+    await page.clock.fastForward(950);
     await expect(notice).toHaveText('');
     await expect(glyph.locator('canvas')).toBeVisible();
     await page.close();
   });
 }
+
+test('reduced motion keeps the copy confirmation still until it disappears', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.clock.install();
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: async () => {} },
+    }),
+  );
+  await page.goto('/');
+  await page.locator('#info-tab').click();
+  await page.locator('#palette button').first().click();
+  const notice = page.locator('#status');
+  await expect(notice).toHaveText('Copied');
+  await expect(notice).toHaveCSS('opacity', '1');
+  expect(await notice.evaluate((element) => element.getAnimations().length)).toBe(0);
+  await page.clock.fastForward(950);
+  await expect(notice).toHaveText('');
+});
 
 for (const action of ['switch tab', 'scroll']) {
   test(`a delayed copy does not appear over a source hidden by ${action}`, async ({ page }) => {
@@ -254,12 +287,19 @@ for (const action of ['switch tab', 'scroll']) {
 }
 
 for (const result of ['success', 'failure']) {
-  test(`a late clipboard ${result} preserves the newer manual copy`, async ({ page }) => {
+  test(`a late clipboard ${result} preserves the newer fallback copy`, async ({ page }) => {
     await page.addInitScript((result) => {
       let count = 0;
+      window.fallbackCopies = [];
+      document.execCommand = (command) => {
+        if (command !== 'copy') return false;
+        window.fallbackCopies.push(document.activeElement.value);
+        return true;
+      };
       Object.defineProperty(navigator, 'clipboard', {
         value: {
           writeText: () => {
+            window.copyFocus = document.activeElement;
             if (count++) return Promise.reject(new Error('Clipboard unavailable'));
             return new Promise((resolve, reject) => {
               window.finishCopy = () =>
@@ -276,21 +316,30 @@ for (const result of ['success', 'failure']) {
     const glyph = page.locator('#catalog button').first();
     const character = await glyph.getAttribute('data-glyph');
     await glyph.click();
-    const fallback = page.locator('#status textarea');
-    await expect(fallback).toHaveValue(character);
+    await expect(page.locator('#status')).toHaveText('Copied');
+    expect(await page.evaluate(() => window.fallbackCopies)).toEqual([character]);
+    expect(await page.evaluate(() => document.activeElement === window.copyFocus)).toBe(true);
+    await expect(page.locator('.clipboard-field, #status textarea')).toHaveCount(0);
 
     await page.evaluate(() => window.finishCopy());
-    await expect(fallback).toHaveValue(character);
-    await expect(fallback).toBeFocused();
+    expect(await page.evaluate(() => window.fallbackCopies)).toEqual([character]);
+    expect(await page.evaluate(() => document.activeElement === window.copyFocus)).toBe(true);
+    await expect(page.locator('.clipboard-field, #status textarea')).toHaveCount(0);
   });
 }
 
-test('palette and catalog copies keep manual fallback available after a recent success', async ({
+test('palette and catalog copies clean up the fallback after a recent success', async ({
   page,
 }) => {
   await page.clock.install();
   await page.addInitScript(() => {
     window.copied = [];
+    window.fallbackCopies = [];
+    document.execCommand = (command) => {
+      if (command !== 'copy') return false;
+      window.fallbackCopies.push(document.activeElement.value);
+      return true;
+    };
     Object.defineProperty(navigator, 'clipboard', {
       value: {
         writeText: async (text) => {
@@ -309,17 +358,77 @@ test('palette and catalog copies keep manual fallback available after a recent s
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   const glyph = page.locator('#catalog button').first();
   const character = await glyph.getAttribute('data-glyph');
-  await glyph.click();
-  const fallback = page.locator('#status textarea');
-  await expect(fallback).toHaveValue(character);
-  await expect(fallback).toBeFocused();
-  expect(await fallback.evaluate((field) => field.selectionEnd - field.selectionStart)).toBe(
-    character.length,
-  );
+  await glyph.focus();
+  await glyph.press('Enter');
+  await expect(page.locator('#status')).toHaveText('Copied');
+  expect(await page.evaluate(() => window.fallbackCopies)).toEqual([character]);
+  await expect(glyph).toBeFocused();
+  await expect(page.locator('.clipboard-field, #status textarea')).toHaveCount(0);
 
   await page.clock.fastForward(2000);
-  await expect(fallback).toBeVisible();
-  await expect(fallback).toHaveValue(character);
+  await expect(page.locator('#status')).toBeHidden();
+  await expect(page.locator('.clipboard-field, #status textarea')).toHaveCount(0);
+});
+
+test('a failed copy reports briefly without leaving a field or stealing focus', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { value: undefined });
+    document.execCommand = () => false;
+  });
+  await page.goto('/');
+  await page.getByRole('tab', { name: 'Info', exact: true }).click();
+  const palette = page.locator('#palette button').first();
+  await palette.focus();
+  await palette.press('Enter');
+
+  await expect(page.locator('#status')).toHaveText('Could not copy.');
+  await expect(page.locator('.clipboard-field, #status textarea')).toHaveCount(0);
+  await expect(palette).toBeFocused();
+  await page.clock.fastForward(2000);
+  await expect(page.locator('#status')).toBeHidden();
+});
+
+test('HTTP glyph taps copy real text without leaving a field', async ({ browser, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Reading the actual clipboard needs Chromium permissions.');
+  const context = await browser.newContext({
+    hasTouch: true,
+    isMobile: true,
+    viewport: { width: 390, height: 844 },
+    permissions: ['clipboard-read', 'clipboard-write'],
+  });
+  const secure = await context.newPage();
+  await secure.goto('http://127.0.0.1:8765/');
+  const original = await secure.evaluate(() => navigator.clipboard.readText());
+  try {
+    await context.route('http://playload.test/**', async (route) => {
+      const url = new URL(route.request().url());
+      const response = await context.request.get(
+        'http://127.0.0.1:8765' + url.pathname + url.search,
+      );
+      await route.fulfill({ response });
+    });
+    const phone = await context.newPage();
+    await phone.goto('http://playload.test/');
+    expect(await phone.evaluate(() => isSecureContext)).toBe(false);
+    expect(await phone.evaluate(() => typeof navigator.clipboard)).toBe('undefined');
+    await phone.getByRole('tab', { name: 'Info', exact: true }).tap();
+    await phone.getByRole('tab', { name: 'Emoji', exact: true }).tap();
+    const glyph = phone.locator('#catalog button').first();
+    const character = await glyph.getAttribute('data-glyph');
+    await glyph.tap();
+
+    await expect(phone.locator('#status')).toHaveText('Copied');
+    expect(await secure.evaluate(() => navigator.clipboard.readText())).toBe(character);
+    await expect(phone.locator('.clipboard-field, #status textarea')).toHaveCount(0);
+    await expect(glyph).toBeFocused();
+    expect(await phone.evaluate(() => scrollY)).toBe(0);
+  } finally {
+    await secure.evaluate((text) => navigator.clipboard.writeText(text), original);
+    await context.close();
+  }
 });
 
 test('the curated game catalog scrolls continuously without search or pagination', async ({
@@ -569,6 +678,7 @@ test('a shared pictogram dungeon starts with CRT and sound', async ({ page }, te
   }, source);
   expect(hash.length).toBeLessThan(4096);
   await page.goto('/' + hash);
+  await page.getByRole('button', { name: 'Click to play', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'CRT', exact: true })).toHaveAttribute(
     'aria-pressed',

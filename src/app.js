@@ -1,7 +1,7 @@
-import { palette } from './engine.js?v=16';
+import { palette, createEngine } from './engine.js?v=16';
 import { glyphs } from './glyphs.js?v=18';
 import { encode, decode, gameURL } from './payload.js?v=14';
-import { Runtime, Sound } from './runtime.js?v=26';
+import { Runtime, Sound } from './runtime.js?v=28';
 import { Capture, download } from './capture.js?v=23';
 import { createDisplay } from './display.js?v=15';
 import { createCRT } from './crt.js?v=15';
@@ -20,7 +20,8 @@ let crtDisplay;
 let pendingSource = '',
   pendingFocus,
   filename = '',
-  fileSource = '',
+  loadedSource = starter,
+  declinedFileSource = null,
   reading = false,
   running = false,
   paused = false,
@@ -108,6 +109,7 @@ function status(text = '', target = null) {
   clearTimeout(statusTimer);
   const notice = $('status'),
     copied = text === 'Copied' && !!target;
+  for (const animation of notice.getAnimations()) animation.cancel();
   notice.toggleAttribute('data-copy', copied);
   notice.textContent = text;
   if (copied) {
@@ -119,11 +121,18 @@ function status(text = '', target = null) {
     notice.style.left = Math.max(8, Math.min(innerWidth - width - 8, x - width / 2)) + 'px';
     notice.style.top =
       (top + height <= innerHeight - 8 ? top : source.top - height + overlap) + 'px';
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
+      notice.animate([{ opacity: 1 }, { opacity: 0 }], {
+        delay: 800,
+        duration: 150,
+        easing: 'ease-out',
+        fill: 'forwards',
+      });
   } else {
     notice.style.removeProperty('left');
     notice.style.removeProperty('top');
   }
-  if (text === 'Copied') statusTimer = setTimeout(() => status(), 1800);
+  if (text === 'Copied') statusTimer = setTimeout(() => status(), 950);
 }
 function dismissCopy() {
   copyRevision++;
@@ -134,7 +143,7 @@ function controls() {
   $('workspace-toolbar').hidden = view === 'info' || (compact && !toolsOpen);
   $('tools-toggle').hidden = !compact || view === 'info';
   $('tools-toggle').setAttribute('aria-expanded', String(toolsOpen));
-  $('start-game').hidden = !running || !awaitingStart;
+  $('start-game').hidden = !awaitingStart;
   $('size').hidden = !payload;
   $('pause').disabled = !running || awaitingStart;
   $('screenshot').disabled = !running;
@@ -149,10 +158,11 @@ function controls() {
   $('load').disabled = reading;
   $('filename').textContent = filename;
   $('filename').title = filename;
-  for (const button of document.querySelectorAll('[data-input]')) button.disabled = !running;
+  for (const button of document.querySelectorAll('[data-input]'))
+    button.disabled = !running && !awaitingStart;
 }
 function syncPlayback() {
-  audio.pause(document.hidden || !running || paused || view === 'info' || (compact && toolsOpen));
+  audio.pause(!running || paused || view === 'info' || (compact && toolsOpen));
   capture?.suspend(
     document.hidden || !running || view === 'info' || awaitingStart || (compact && toolsOpen),
   );
@@ -233,15 +243,15 @@ async function frame(pixels, sounds, ready) {
   }
   controls();
 }
-function run(code, takeFocus = false, focusGeneration = focusRevision, waitForTap = false) {
+function run(code, takeFocus = false, focusGeneration = focusRevision, waitForStart = false) {
   revision++;
   status();
   release();
   capture?.close();
   capture = null;
   audio.reset();
-  awaitingStart = waitForTap;
-  paused = waitForTap;
+  awaitingStart = waitForStart;
+  paused = waitForStart;
   running = false;
   syncPlayback();
   pendingSource = code;
@@ -257,26 +267,44 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForTa
   }
   controls();
   pendingFocus = takeFocus ? { element: document.activeElement, revision: focusGeneration } : null;
-  runtime.load(code);
-  runtime.suspend(document.hidden);
+  if (waitForStart) {
+    runtime.stop();
+    const welcome = createEngine(glyphs, () => {});
+    welcome.api.put(touch ? 7 : 6, 8, touch ? 'TAP TO' : 'CLICK TO', 6);
+    welcome.api.put(8, 9, 'PLAY', 6);
+    render(welcome.pixels);
+    focusAfterRun();
+  } else {
+    runtime.load(code);
+    runtime.suspend(document.hidden);
+  }
 }
 function runCurrentSource() {
   if (reading) return;
   toolsOpen = false;
-  audio.unlock();
+  unlockSound();
   run($('editor').value, true);
 }
-function startGame() {
-  if (!running || !awaitingStart) return;
+function unlockSound() {
+  audio.init().catch(() => {
+    $('sound').disabled = true;
+  });
   audio.unlock();
-  awaitingStart = false;
-  paused = false;
-  toolsOpen = false;
-  syncPlayback();
-  controls();
+}
+function startGame() {
+  if (!awaitingStart) return;
+  run(pendingSource, true);
+  unlockSound();
   focusGame(false);
   fitGame();
 }
+document.addEventListener('pointerdown', (event) => {
+  if (event.button === 0 && awaitingStart) startGame();
+});
+for (const type of ['pointerup', 'touchend', 'click'])
+  document.addEventListener(type, (event) => {
+    if (event.isTrusted && pendingSource && !awaitingStart) unlockSound();
+  });
 function release() {
   keys.clear();
   pointers.clear();
@@ -313,7 +341,7 @@ function syncInput(padMask = readGamepads()) {
   gamepadMask = padMask;
   let mask = padMask;
   for (const value of keys.values()) mask |= 1 << value;
-  for (const value of pointers.values()) if (value != null) mask |= 1 << value;
+  for (const value of pointers.values()) mask |= value;
   for (const button of document.querySelectorAll('[data-input]'))
     button.dataset.held = String(!!(mask & (1 << Number(button.dataset.input))));
   runtime.input(mask);
@@ -370,15 +398,16 @@ tabs.onkeydown = (event) => {
   $(next + '-tab').focus();
 };
 $('viewport').onpointerdown = (event) => {
-  if (event.button !== 0 || event.target.closest('button, #error')) return;
+  if (event.button !== 0 || event.target.closest('button, #error-notice')) return;
+  if (compact && toolsOpen) $('tools-toggle').click();
   if (event.pointerType === 'mouse') event.preventDefault();
   focusGame(false);
 };
+$('viewport').onmousedown = (event) => {
+  if (event.button === 0 && !event.target.closest('button, #error-notice')) event.preventDefault();
+};
 $('viewport').onclick = (event) => {
-  if (event.target.closest('button, #error')) return;
-  if (compact && toolsOpen) {
-    $('tools-toggle').click();
-  }
+  if (event.target.closest('button, #error-notice')) return;
   if (awaitingStart) {
     startGame();
     return;
@@ -390,13 +419,13 @@ $('start-game').onclick = startGame;
 $('game').addEventListener('pointerdown', () => audio.unlock());
 $('pause').onclick = () => {
   paused = !paused;
-  toolsOpen = false;
+  toolsOpen = compact && paused && !editorOpen;
   release();
   audio.unlock();
   syncPlayback();
   controls();
   if (paused && editorOpen) focusEditor();
-  else focusGame();
+  else if (!toolsOpen) focusGame();
   fitGame();
 };
 $('tools-toggle').onclick = () => {
@@ -476,19 +505,39 @@ $('video').onclick = async () => {
 };
 async function copy(text, target) {
   const version = ++copyRevision;
+  let copied = false;
   try {
-    await navigator.clipboard.writeText(text);
-    if (version === copyRevision && target.isConnected && target.getBoundingClientRect().height)
-      status('Copied', target);
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    }
   } catch {
-    if (version !== copyRevision) return;
-    status();
+    // Some browsers deny clipboard access even after a tap.
+  }
+  if (version !== copyRevision || !target.isConnected || !target.getBoundingClientRect().height)
+    return;
+  if (!copied) {
+    const focused = document.activeElement;
     const field = document.createElement('textarea');
+    field.className = 'clipboard-field';
     field.value = text;
     field.readOnly = true;
-    $('status').replaceChildren(field);
-    field.focus();
-    field.select();
+    document.body.append(field);
+    try {
+      field.focus({ preventScroll: true });
+      field.select();
+      copied = document.execCommand('copy');
+    } catch {
+      copied = false;
+    } finally {
+      field.remove();
+      focused?.focus({ preventScroll: true });
+    }
+  }
+  if (copied) status('Copied', target);
+  else {
+    status('Could not copy.');
+    statusTimer = setTimeout(() => status(), 2000);
   }
 }
 
@@ -575,8 +624,8 @@ function changed() {
 }
 function discard() {
   return (
-    $('editor').value === (filename ? fileSource : starter) ||
-    confirm('Replace the code in the editor?')
+    $('editor').value === loadedSource ||
+    confirm('The code was edited in the browser. Replace it with a file?')
   );
 }
 function readRequest() {
@@ -590,12 +639,13 @@ async function readFile(file, request, handle = null) {
   }
   fileHandle = handle;
   fileError = '';
-  fileSource = text;
-  $('editor').value = fileSource;
+  declinedFileSource = null;
+  loadedSource = text;
+  $('editor').value = loadedSource;
   filename = file.name;
   editRevision++;
   highlightEditor();
-  run(fileSource, true, request.focus);
+  run(loadedSource, true, request.focus);
   return true;
 }
 async function chooseFile(request) {
@@ -625,10 +675,10 @@ $('load').onclick = () => {
   if (!reading && discard()) return chooseFile(readRequest());
 };
 async function refreshFile() {
-  if (checkingFile || reading || !fileHandle || document.hidden || $('editor').value !== fileSource)
-    return;
+  if (checkingFile || reading || !fileHandle || document.hidden) return;
   const handle = fileHandle,
-    edit = editRevision;
+    edit = editRevision,
+    editor = $('editor');
   checkingFile = true;
   try {
     const file = await handle.getFile(),
@@ -636,10 +686,22 @@ async function refreshFile() {
     if (reading || handle !== fileHandle || edit !== editRevision || document.hidden) return;
     if (fileError && $('status').textContent === fileError) status();
     fileError = '';
-    if (text === fileSource) return;
-    fileSource = text;
-    $('editor').value = text;
+    if (text === loadedSource) {
+      declinedFileSource = null;
+      return;
+    }
+    if (editor.value !== loadedSource && editor.value !== text) {
+      if (text === declinedFileSource) return;
+      if (!confirm('The code was edited in the browser. Replace it with a file?')) {
+        declinedFileSource = text;
+        return;
+      }
+    }
+    declinedFileSource = null;
+    loadedSource = text;
+    editor.value = text;
     changed();
+    run(text);
   } catch (error) {
     if (reading || handle !== fileHandle || edit !== editRevision) return;
     const message =
@@ -651,7 +713,7 @@ async function refreshFile() {
     checkingFile = false;
   }
 }
-setInterval(refreshFile, 1000);
+setInterval(refreshFile, 250);
 window.addEventListener('focus', refreshFile);
 $('file').oncancel = () => {
   fileRequest = null;
@@ -932,7 +994,7 @@ document.addEventListener('keydown', (event) => {
   const input = gameButton(event);
   if (
     document.activeElement === $('screen') &&
-    running &&
+    (running || awaitingStart) &&
     (!paused || awaitingStart) &&
     !(compact && toolsOpen) &&
     !event.altKey &&
@@ -963,22 +1025,42 @@ document.addEventListener('keyup', (event) => {
     syncInput();
   }
 });
-for (const button of document.querySelectorAll('[data-input]')) {
-  button.onpointerdown = (event) => {
-    if (!running || view !== 'code' || (compact && toolsOpen)) return;
+const dpad = document.querySelector('.dpad');
+function padMask(event, previous = 0) {
+  const rect = dpad.getBoundingClientRect();
+  if (
+    event.clientX < rect.left ||
+    event.clientX >= rect.right ||
+    event.clientY < rect.top ||
+    event.clientY >= rect.bottom
+  )
+    return 0;
+  const x = event.clientX - rect.left - rect.width / 2,
+    y = event.clientY - rect.top - rect.height / 2;
+  if (x === 0 && y === 0) return previous;
+  // Eight equal direction sectors, including the four diagonals.
+  const slope = Math.SQRT2 - 1;
+  let mask = 0;
+  if (Math.abs(x) > Math.abs(y) * slope) mask |= x < 0 ? 4 : 8;
+  if (Math.abs(y) > Math.abs(x) * slope) mask |= y < 0 ? 1 : 2;
+  return mask;
+}
+for (const control of [dpad, ...document.querySelectorAll('.ab [data-input]')]) {
+  control.onpointerdown = (event) => {
+    if ((!running && !awaitingStart) || view !== 'code' || (compact && toolsOpen)) return;
     if (awaitingStart) startGame();
     if (paused) return;
     event.preventDefault();
     focusGame(false);
     audio.unlock();
-    button.setPointerCapture(event.pointerId);
-    const input = Number(button.dataset.input);
-    pointers.set(event.pointerId, input);
-    if (input < 4) directions.add(event.pointerId);
+    control.setPointerCapture(event.pointerId);
+    const mask = control === dpad ? padMask(event) : 1 << Number(control.dataset.input);
+    pointers.set(event.pointerId, mask);
+    if (control === dpad) directions.add(event.pointerId);
     syncInput();
   };
   for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'])
-    button.addEventListener(name, (event) => {
+    control.addEventListener(name, (event) => {
       pointers.delete(event.pointerId);
       directions.delete(event.pointerId);
       syncInput();
@@ -986,13 +1068,51 @@ for (const button of document.querySelectorAll('[data-input]')) {
 }
 document.addEventListener('pointermove', (event) => {
   if (!directions.has(event.pointerId)) return;
-  const button = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-input]');
-  pointers.set(
-    event.pointerId,
-    button && Number(button.dataset.input) < 4 ? Number(button.dataset.input) : null,
-  );
+  pointers.set(event.pointerId, padMask(event, pointers.get(event.pointerId)));
   syncInput();
 });
+function nativeTouch(target) {
+  const scroll = target.closest('.reference-scroll, #workspace-toolbar');
+  return (
+    target.closest('#workbench, #api, #characters, #examples, #error-notice') ||
+    (editorOpen && target.closest('#viewport')) ||
+    (scroll &&
+      (scroll.scrollWidth > scroll.clientWidth || scroll.scrollHeight > scroll.clientHeight))
+  );
+}
+// Keep native editing and scrolling; tool chrome must not trigger iOS text gestures.
+$('app').addEventListener(
+  'touchstart',
+  (event) => {
+    if (!nativeTouch(event.target)) event.preventDefault();
+  },
+  { passive: false },
+);
+$('app').addEventListener(
+  'touchend',
+  (event) => {
+    for (const finger of event.changedTouches) {
+      if (nativeTouch(finger.target)) continue;
+      event.preventDefault();
+      const action = finger.target.closest('button:not([data-input]), a');
+      if (
+        action &&
+        $('app').contains(action) &&
+        !action.disabled &&
+        document.elementFromPoint(finger.clientX, finger.clientY)?.closest('button, a') === action
+      )
+        action.click();
+    }
+  },
+  { passive: false },
+);
+$('app').oncontextmenu = (event) => {
+  if (
+    (touch || event.pointerType === 'touch') &&
+    (!nativeTouch(event.target) || event.target.closest('button'))
+  )
+    event.preventDefault();
+};
 // A second finger does not generate a compatibility click in every browser.
 let secondaryTap = null;
 document.addEventListener(
@@ -1003,7 +1123,8 @@ document.addEventListener(
   true,
 );
 document.addEventListener('pointerup', (event) => {
-  if (!touch || event.pointerType !== 'touch' || event.isPrimary) return;
+  if (!touch || event.pointerType !== 'touch' || event.isPrimary || !nativeTouch(event.target))
+    return;
   const button = event.target.closest('button:not([data-input])');
   if (
     button &&
@@ -1068,12 +1189,8 @@ function layout() {
   if (compact !== nextCompact) toolsOpen = false;
   compact = nextCompact;
   document.body.dataset.compact = String(compact);
+  $('keyboard-controls').hidden = touch;
   $('start-game').textContent = touch ? 'Tap to play' : 'Click to play';
-  if (touch) {
-    $('touch-pause').append($('pause'));
-  } else {
-    document.querySelector('.play-tools').append($('pause'));
-  }
   controls();
   syncPlayback();
   if (view === 'code' && editorOpen && innerWidth >= 600) setSplit(split);
@@ -1202,9 +1319,10 @@ if (initialHash) {
   decode(initialHash)
     .then((code) => {
       if (initialEdit !== editRevision) return;
+      loadedSource = code;
       $('editor').value = code;
       highlightEditor();
-      run(code, view === 'code', initialFocus, touch || !editorOpen);
+      run(code, view === 'code', initialFocus, true);
     })
     .catch((error) => {
       if (initialEdit !== editRevision) return;

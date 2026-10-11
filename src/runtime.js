@@ -149,7 +149,11 @@ export class Sound {
   }
   async setup() {
     try {
+      if (globalThis.isSecureContext === false)
+        throw new Error('Use HTTPS or localhost to enable sound.');
       this.context = new AudioContext();
+      if (!this.context.audioWorklet)
+        throw new Error('AudioWorklet is not supported by this browser.');
       const source = `${AY}\nclass Processor extends AudioWorkletProcessor {
         constructor() {
           super();
@@ -244,7 +248,8 @@ export class Sound {
     }
   }
   unlock() {
-    if (this.context?.state === 'suspended') this.context.resume().catch(() => {});
+    if (this.context?.state === 'suspended' || this.context?.state === 'interrupted')
+      this.context.resume().catch(() => {});
   }
   close() {
     this.context?.close();

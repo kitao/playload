@@ -10,10 +10,10 @@
     <meta name="description" content="A tiny game engine that lets you share games as URLs" />
     <title>Playload</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="src/style.css?v=109" />
-    <script type="module" src="src/app.js?v=109"></script>
+    <link rel="stylesheet" href="src/style.css?v=118" />
+    <script type="module" src="src/app.js?v=130"></script>
   </head>
-  <body>
+  <body data-editor-closed="true">
     <div id="app">
       <header>
         <div class="brand">
@@ -45,7 +45,7 @@
           </button>
         </div>
       </header>
-      <div id="workspace-toolbar">
+      <div id="workspace-toolbar" hidden>
         <div class="game-tools">
           <div class="play-tools toolbar-group" role="group" aria-label="Play">
             <button id="load" aria-keyshortcuts="Control+O Meta+O">
@@ -86,7 +86,7 @@
       </div>
       <main>
         <section id="code" role="tabpanel" aria-labelledby="code-tab">
-          <section id="workbench">
+          <section id="workbench" hidden>
             <pre id="editor-highlight" aria-hidden="true" tabindex="-1"></pre>
             <div id="editor-lines" aria-hidden="true"><pre id="editor-line-numbers"></pre></div>
             <textarea
@@ -100,6 +100,7 @@
           </section>
           <div
             id="divider"
+            hidden
             role="separator"
             aria-label="Resize editor and game"
             aria-orientation="vertical"
@@ -135,6 +136,7 @@
               </div>
               <p
                 id="keyboard-controls"
+                hidden
                 aria-label="Keyboard controls: arrow keys or WASD, A on Z or J, B on X or K"
               >
                 <span>MOVE: <kbd>↑↓←→</kbd>·<kbd>WASD</kbd></span
@@ -148,7 +150,6 @@
                 ><button data-input="1" aria-label="Down">↓</button
                 ><button data-input="3" aria-label="Right">→</button>
               </div>
-              <div id="touch-pause"></div>
               <div class="touch-right">
                 <div class="ab">
                   <button data-input="5">B</button><button data-input="4">A</button>
@@ -156,7 +157,7 @@
               </div>
             </div>
           </section>
-          <div class="editor-status"><span id="filename"></span></div>
+          <div class="editor-status" hidden><span id="filename"></span></div>
         </section>
         <section id="info" role="tabpanel" aria-labelledby="info-tab" hidden>
           <section id="colors" aria-label="Color palette">

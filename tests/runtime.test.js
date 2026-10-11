@@ -26,6 +26,52 @@ function mockWorker(t) {
   });
 }
 
+test('insecure pages report the HTTPS requirement before creating sound resources', async (t) => {
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'isSecureContext');
+  Object.defineProperty(globalThis, 'isSecureContext', { value: false, configurable: true });
+  t.after(() => {
+    if (original) Object.defineProperty(globalThis, 'isSecureContext', original);
+    else delete globalThis.isSecureContext;
+  });
+  const errors = [],
+    sound = new Sound((message) => errors.push(message));
+  sound.play([{ ch: 0, score: compileScore('c') }]);
+
+  await assert.rejects(sound.init(), /Use HTTPS or localhost to enable sound\./);
+
+  assert.deepEqual(errors, ['Use HTTPS or localhost to enable sound.']);
+  assert.equal(sound.context, undefined);
+  assert.equal(sound.failed, true);
+  assert.deepEqual(sound.queue, []);
+});
+
+test('sound can retry a blocked unlock and recover after a device interruption', async () => {
+  const sound = new Sound(assert.fail);
+  let attempts = 0;
+  sound.context = {
+    state: 'suspended',
+    async resume() {
+      attempts++;
+      if (attempts === 1) throw new Error('A completed tap is required');
+      this.state = 'running';
+    },
+  };
+
+  sound.unlock();
+  await Promise.resolve();
+  assert.equal(sound.context.state, 'suspended');
+  sound.unlock();
+  assert.equal(sound.context.state, 'running');
+
+  sound.context.state = 'interrupted';
+  sound.unlock();
+  assert.equal(sound.context.state, 'running');
+  sound.unlock();
+  sound.context.state = 'closed';
+  sound.unlock();
+  assert.equal(attempts, 3);
+});
+
 test('worker source remains readable until the worker is replaced or stopped', async (t) => {
   mockWorker(t);
   const runtime = new Runtime(() => {}, assert.fail);
@@ -415,7 +461,7 @@ test('game input follows keyboard labels and releases the original physical keys
   const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   const handlersSource = source.slice(
     source.indexOf('const keyCodes ='),
-    source.indexOf("for (const button of document.querySelectorAll('[data-input]')) {"),
+    source.indexOf("const dpad = document.querySelector('.dpad');"),
   );
   const syncSource = source.slice(
     source.indexOf('function syncInput('),

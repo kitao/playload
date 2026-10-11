@@ -825,12 +825,10 @@ dd {
 #status:empty {
   display: none;
 }
-#status:has(textarea) {
-  pointer-events: auto;
-}
-#status textarea {
-  width: 100%;
-  max-height: 100px;
+.clipboard-field {
+  position: fixed;
+  left: -9999px;
+  top: 0;
 }
 #game {
   display: flex;
@@ -909,20 +907,14 @@ body[data-touch='true'] #keyboard-controls {
 }
 #start-game {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: max-content;
-  height: 48px;
-  padding: 0 12px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: var(--text);
-  font-size: 16px;
-  text-transform: none;
-  text-shadow:
-    0 1px 3px #000,
-    0 0 8px #000;
+  color: transparent;
+  font-size: 0;
 }
 #start-game:not(:disabled):hover {
   background: transparent;
@@ -1023,6 +1015,23 @@ body[data-editor-closed='true'] #game {
   display: grid;
   grid-template-columns: repeat(3, 52px);
   grid-template-rows: repeat(2, 52px);
+  touch-action: none;
+}
+#app,
+button,
+button * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+#workbench,
+#api,
+#characters,
+#examples,
+#error-notice {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 [data-input] {
   width: 52px;
@@ -1158,6 +1167,9 @@ body[data-touch='true'] button,
 body[data-touch='true'] #screen {
   -webkit-tap-highlight-color: transparent;
 }
+body[data-touch='true'] #workbench {
+  font-size: 16px;
+}
 body[data-touch='true'] .dpad {
   grid-template-columns: repeat(3, 48px);
   grid-template-rows: repeat(3, 48px);
@@ -1211,22 +1223,6 @@ body[data-touch='true'] button[data-held='true'] {
 }
 body[data-touch='true'] [data-input='5'] {
   align-self: flex-end;
-}
-body[data-touch='true'] #touch-pause {
-  position: absolute;
-  top: 0;
-  left: calc(50% - 24px);
-}
-body[data-touch='true'] #pause {
-  width: 48px;
-  height: 48px;
-  font-size: 10px;
-  color: var(--muted);
-  border: 0;
-  background: transparent;
-}
-body[data-touch='true'] #pause:disabled {
-  color: #786c83;
 }
 body[data-compact='true'] #workspace-toolbar kbd {
   display: none;
@@ -1323,14 +1319,21 @@ body[data-compact='true'] main {
 body[data-compact='true'] #game {
   position: relative;
   justify-content: center;
+  gap: 32px;
 }
 body[data-touch='true'][data-editor-closed='true'] #viewport {
   flex: 0 1 auto;
   aspect-ratio: 10 / 9;
-  max-height: calc(100% - 156px);
+  max-height: calc(100% - 176px);
 }
 body[data-compact='true'] #picture {
   padding: 8px;
+}
+@media (orientation: portrait) {
+  body[data-touch='true'][data-editor-closed='true'] #game {
+    justify-content: space-evenly;
+    gap: 12px;
+  }
 }
 @media (orientation: landscape) and (min-width: 560px) {
   #palette {
@@ -1349,6 +1352,7 @@ body[data-compact='true'] #picture {
   body[data-touch='true'][data-editor-closed='true'] .touch {
     position: absolute;
     inset: 0;
+    height: 100%;
     pointer-events: none;
   }
   body[data-touch='true'][data-editor-closed='true'] .dpad,
@@ -1358,19 +1362,11 @@ body[data-compact='true'] #picture {
   }
   body[data-touch='true'][data-editor-closed='true'] .dpad {
     left: 0;
-    bottom: calc(50% - 72px);
+    bottom: max(0px, calc(50% - 88px));
   }
   body[data-touch='true'][data-editor-closed='true'] .touch-right {
     right: 0;
-    bottom: calc(50% - 40px);
-  }
-  body[data-touch='true'][data-editor-closed='true'] #touch-pause {
-    position: absolute;
-    top: auto;
-    left: auto;
-    right: 36px;
-    bottom: calc(50% + 52px);
-    pointer-events: auto;
+    bottom: max(32px, calc(50% - 56px));
   }
 }
 
@@ -1398,7 +1394,7 @@ body[data-compact='true'] #picture {
     aspect-ratio: 10 / 9;
   }
   body[data-touch='true'][data-view='code'][data-editor-closed='false'] #viewport {
-    max-height: calc(100dvh - 168px);
+    max-height: calc(100dvh - 188px);
   }
   body[data-touch='false'][data-view='code'][data-editor-closed='false'] main {
     display: grid;

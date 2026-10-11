@@ -44,6 +44,42 @@ async function pixel(page, x = 0, y = 0) {
     );
 }
 
+async function expectCenteredWelcome(page) {
+  const { width, height, lines } = await page.locator('#display').evaluate((canvas) => {
+    const { width, height } = canvas;
+    const pixels = canvas.getContext('2d').getImageData(0, 0, width, height).data;
+    const lines = [0, 1].map(() => ({ left: width, right: -1, top: height, bottom: -1 }));
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        const offset = (y * width + x) * 4;
+        if (pixels[offset] < 150 || pixels[offset + 1] < 125 || pixels[offset + 2] > 150) continue;
+        const line = lines[y < height / 2 ? 0 : 1];
+        line.left = Math.min(line.left, x);
+        line.right = Math.max(line.right, x);
+        line.top = Math.min(line.top, y);
+        line.bottom = Math.max(line.bottom, y);
+      }
+    return { width, height, lines };
+  });
+  for (const line of lines) {
+    expect(line.right).toBeGreaterThan(line.left);
+    expect(Math.abs((line.left + line.right) / 2 - width / 2)).toBeLessThanOrEqual(4);
+    expect(line.bottom - line.top).toBeLessThan(32);
+  }
+  expect(lines[1].top - lines[0].bottom).toBeGreaterThanOrEqual(4);
+  expect(Math.abs((lines[0].top + lines[1].bottom) / 2 - height / 2)).toBeLessThanOrEqual(4);
+}
+
+async function touchStartCanceled(page, selector) {
+  return page
+    .locator(selector)
+    .first()
+    .evaluate(
+      (element) =>
+        !element.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, cancelable: true })),
+    );
+}
+
 async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
   await page.addInitScript((source) => {
     window.testFileSource = source;
@@ -92,6 +128,7 @@ test('a new page focuses the visible editor or the player without starting touch
         await expect(editor).toBeFocused();
       } else {
         await expect(page.locator('#start-game')).toBeVisible();
+        await expectCenteredWelcome(page);
         await expect(page.locator('#screen')).toBeFocused();
         await expect(editor).toBeHidden();
         await expect(page.locator('#pause')).toBeDisabled();
@@ -270,7 +307,7 @@ for (const limit of ['compressed source', 'full URL']) {
     }
     await page.reload();
     await expect(editor).toHaveValue(small);
-    if (limit === 'full URL') await page.locator('#start-game').click();
+    await page.locator('#start-game').click();
     await expect(page.locator('#pause')).toBeEnabled();
   });
 }
@@ -352,12 +389,14 @@ test('a shared URL containing the starter remains a playable bookmark', async ({
   await page.goto('/' + hash);
   await expect(editor).toHaveValue(starter);
   await expect(page).toHaveTitle('My Game — Playload');
+  await page.locator('#start-game').click();
   await expect(page.locator('#pause')).toBeEnabled();
   await expect(page.locator('#size')).toBeVisible();
   expect(new URL(page.url()).hash).toBe(hash);
   await page.reload();
   await expect(editor).toHaveValue(starter);
   await expect(page).toHaveTitle('My Game — Playload');
+  await page.locator('#start-game').click();
   await expect(page.locator('#pause')).toBeEnabled();
   expect(new URL(page.url()).hash).toBe(hash);
 });
@@ -434,6 +473,7 @@ test('Load and Run shortcuts work; the address follows edits and restores a book
   await page.goto(bookmark);
   await expect(editor).toHaveValue(source);
   await expect(editor).toBeVisible();
+  await page.locator('#start-game').click();
   await expect(page.locator('#pause')).toBeEnabled();
   await page.locator('#crt').click();
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
@@ -446,6 +486,7 @@ test('shared games preserve a leading source BOM and restore their title and gam
   await page.goto('/' + (await encode(source)).hash);
   await expect(page.locator('#editor')).toHaveValue(source);
   await expect(page).toHaveTitle('BOM Game — Playload');
+  await page.locator('#start-game').click();
   await expect(page.locator('#pause')).toBeEnabled();
   await page.locator('#crt').click();
   await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
@@ -475,7 +516,8 @@ test('title comments update before Run and survive bookmarks, edits and a fresh 
   await page.goto(bookmark);
   await expect(page).toHaveTitle('Star Catcher — Playload');
   await expect(editor).toHaveValue(source);
-  await expect(page.locator('#pause')).toBeEnabled();
+  await expect(page.locator('#start-game')).toBeVisible();
+  await expect(page.locator('#pause')).toBeDisabled();
   await editor.fill(source.replace('Star Catcher', '星の冒険 👾'));
   await expect(page).toHaveTitle('星の冒険 👾 — Playload');
   await editor.fill(source.replace('// @title Star Catcher', '// @title   '));
@@ -594,6 +636,7 @@ test('removing the URL hash restores the starter instead of an old browser draft
   expect(new URL(page.url()).hash).toBe('');
   await page.goto(bookmark);
   await expect(editor).toHaveValue(source);
+  await page.locator('#start-game').click();
   await expect(page.locator('#pause')).toBeEnabled();
 });
 
@@ -899,9 +942,11 @@ test('paused keyboard and touch presses do not become game actions on resume', a
   await expect(phone.locator('#pause')).toBeEnabled();
   await phone.locator('#tools-toggle').tap();
   await phone.locator('#crt').click();
-  await phone.locator('#tools-toggle').tap();
   await phone.locator('#pause').click();
+  await expect(phone.locator('#pause')).toContainText('Resume');
+  await phone.locator('#tools-toggle').tap();
   await phone.locator('[data-input="4"]').tap();
+  await phone.locator('#tools-toggle').tap();
   await phone.locator('#pause').click();
   await phone.waitForTimeout(100);
   expect(await pixel(phone)).toEqual([0, 0, 0, 255]);
@@ -963,7 +1008,8 @@ test('a shared URL starts the player with the same game', async ({ page }) => {
       .hash;
   });
   await page.goto('/' + hash);
-  await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
+  await expect(page.locator('#start-game')).toHaveText('Click to play');
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeDisabled();
   await expect(page.getByRole('tab', { name: 'Play' })).toBeVisible();
   await expect(page.locator('#editor')).toBeVisible();
   await expect(page.locator('#screen')).toBeFocused();
@@ -977,6 +1023,8 @@ test('a shared URL starts the player with the same game', async ({ page }) => {
   );
   expect(await pixel(page)).toEqual([33, 28, 41, 255]);
   await page.keyboard.press('z');
+  await expect(page.locator('#start-game')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await page.getByRole('button', { name: 'CRT', exact: true }).click();
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
   await page.keyboard.press('Control+Enter');
@@ -1025,7 +1073,7 @@ function tick() { cls(color); }`,
   await expect(page.locator('#error')).toBeHidden();
 });
 
-test('hidden pages freeze sound, game updates and recording, then restore the prior state', async ({
+test('hidden pages keep music playing while freezing game updates and recording', async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -1081,17 +1129,18 @@ function tick() { put(1, 1, String(frames++)); }
   await expect.poll(recorderState).toBe('recording');
   await expect.poll(sound).toBeGreaterThan(0.001);
   const recorderCount = await page.evaluate(() => window.recorders.length);
-  await page.locator('#sound').click();
-  await expect(page.locator('#sound')).toHaveAttribute('aria-pressed', 'false');
-
   await visibility(true);
   await expect.poll(recorderState).toBe('paused');
-  await expect.poll(sound).toBe(0);
+  await expect.poll(sound).toBeGreaterThan(0.001);
   const requests = await page.evaluate(() => window.frameRequests);
   const frame = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
   await page.waitForTimeout(400);
   expect(await page.evaluate(() => window.frameRequests)).toBe(requests);
   expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(frame);
+  await expect.poll(sound).toBeGreaterThan(0.001);
+  await page.locator('#sound').click();
+  await expect(page.locator('#sound')).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(sound).toBeGreaterThan(0.001);
 
   await visibility(false);
   await expect.poll(recorderState).toBe('recording');
@@ -1442,11 +1491,23 @@ test('touch tools enable Save only after frames arrive and preserve keyboard foc
     hasTouch: true,
   });
   try {
+    await page.addInitScript(() => {
+      const Worker = window.Worker;
+      window.Worker = class extends Worker {
+        postMessage(message, ...args) {
+          if (message.type === 'load')
+            window.finishGameLoad = () => super.postMessage(message, ...args);
+          else super.postMessage(message, ...args);
+        }
+      };
+    });
     await page.goto('http://127.0.0.1:8765/');
     await page.locator('#tools-toggle').tap();
+    await expect.poll(() => page.evaluate(() => typeof window.finishGameLoad)).toBe('function');
     await expect(page.locator('#video')).toBeDisabled();
+    await page.evaluate(() => window.finishGameLoad());
     await page.locator('#tools-toggle').tap();
-    await page.locator('#start-game').tap();
+    await expect(page.locator('#start-game')).toBeHidden();
     await expect(page.locator('#video')).toBeEnabled();
     await page.locator('#tools-toggle').tap();
     await page.locator('#video').focus();
@@ -1658,6 +1719,7 @@ test('the shared chiptune demo exports audible music while speaker monitoring is
     source,
   );
   await page.goto('/' + hash);
+  await page.locator('#start-game').click();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await page.locator('#screen').click();
   await page.getByRole('button', { name: 'Sound', exact: true }).click();
@@ -1929,27 +1991,207 @@ for (const fallback of [false, true]) {
 
 test.describe('touch player', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 375, height: 812 } });
+  test('slow glyph loading never exposes the editor or desktop toolbar', async ({
+    page,
+  }, testInfo) => {
+    for (const [width, height] of [
+      [375, 812],
+      [768, 1024],
+    ]) {
+      await page.setViewportSize({ width, height });
+      let release;
+      const blocked = new Promise((resolve) => {
+        release = resolve;
+      });
+      const holdGlyphs = async (route) => {
+        await blocked;
+        await route.continue();
+      };
+      await page.route('**/src/glyphs.js*', holdGlyphs);
+      try {
+        await page.goto('/', { waitUntil: 'commit' });
+        await expect(page.locator('#logo')).toBeVisible();
+        await expect(page.locator('#editor')).toBeHidden();
+        await expect(page.locator('#divider')).toBeHidden();
+        await expect(page.locator('#workspace-toolbar')).toBeHidden();
+        release();
+        await expect(page.locator('#start-game')).toBeVisible();
+        await expect(page.locator('#editor')).toBeHidden();
+        await expect(page.locator('#workspace-toolbar')).toBeHidden();
+        await page.screenshot({ path: testInfo.outputPath(`after-initialization-${width}.png`) });
+      } finally {
+        release();
+        await page.unroute('**/src/glyphs.js*', holdGlyphs);
+      }
+    }
+  });
+
+  test('touch controls prevent text selection and long-press menus without blocking the editor', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    for (const selector of [
+      '#app',
+      'header',
+      '#version',
+      '.intro',
+      '#viewport',
+      '#picture',
+      '.stage',
+      '.touch',
+      '.dpad',
+      '.ab',
+      '[data-input]',
+      '#tools-toggle',
+      'button kbd',
+    ]) {
+      for (const control of await page.locator(selector).all()) {
+        const selection = await control.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return { standard: style.userSelect, webkit: style.webkitUserSelect };
+        });
+        expect(selection.standard === 'none' || selection.webkit === 'none').toBe(true);
+      }
+    }
+    await expect(page.locator('.dpad')).toHaveCSS('touch-action', 'none');
+    for (const selector of [
+      '.dpad',
+      '[data-input="0"]',
+      '.ab',
+      '[data-input="4"]',
+      '#viewport',
+      '#display',
+      'header',
+      '#version',
+      '#repository',
+      '#start-game',
+      '#tools-toggle',
+      '#code-tab',
+    ])
+      expect(await touchStartCanceled(page, selector)).toBe(true);
+    expect(
+      await page
+        .locator('.dpad')
+        .evaluate((element) =>
+          element.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })),
+        ),
+    ).toBe(false);
+    await page.locator('#start-game').tap();
+    const version = await page.locator('#version').boundingBox();
+    await page.mouse.move(version.x, version.y + version.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(version.x + version.width, version.y + version.height / 2, { steps: 5 });
+    await page.mouse.up();
+    expect(await page.evaluate(() => window.getSelection().toString())).toBe('');
+    await page.locator('#screen').focus();
+    await page.evaluate(() => {
+      window.gameFocusTargets = [];
+      window.toolClicks = {};
+      document.addEventListener('focusin', (event) => {
+        window.gameFocusTargets.push(event.target.id || event.target.tagName);
+      });
+      document.addEventListener('click', (event) => {
+        const id = event.target.closest('button')?.id;
+        if (id) window.toolClicks[id] = (window.toolClicks[id] || 0) + 1;
+      });
+    });
+    for (const id of [0, 1, 2, 3, 4, 5]) await page.locator(`[data-input="${id}"]`).tap();
+    await expect(page.locator('#screen')).toBeFocused();
+    expect(
+      await page.evaluate(() => window.gameFocusTargets.filter((id) => id !== 'screen')),
+    ).toEqual([]);
+    await page.locator('#tools-toggle').tap();
+    expect(await page.evaluate(() => window.toolClicks['tools-toggle'])).toBe(1);
+    const menuScrolls = await page
+      .locator('#workspace-toolbar')
+      .evaluate(
+        (element) =>
+          element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight,
+      );
+    expect(await touchStartCanceled(page, '#workspace-toolbar')).toBe(!menuScrolls);
+    expect(await touchStartCanceled(page, '#code-toggle')).toBe(!menuScrolls);
+    await page.locator('#code-toggle').tap();
+    const editor = page.locator('#editor');
+    await expect(editor).toBeFocused();
+    expect(await touchStartCanceled(page, '#editor')).toBe(false);
+    expect(await touchStartCanceled(page, '#viewport')).toBe(false);
+    expect(await editor.evaluate((element) => getComputedStyle(element).webkitUserSelect)).not.toBe(
+      'none',
+    );
+    await editor.fill('Editable code');
+    await editor.evaluate((element) => element.setSelectionRange(0, 8));
+    expect(
+      await editor.evaluate((element) =>
+        element.value.slice(element.selectionStart, element.selectionEnd),
+      ),
+    ).toBe('Editable');
+
+    await page.locator('#info-tab').tap();
+    expect(await page.evaluate(() => window.toolClicks['info-tab'])).toBe(1);
+    expect(await touchStartCanceled(page, '#palette button')).toBe(true);
+    const tabsScroll = await page
+      .locator('.reference-scroll')
+      .evaluate(
+        (element) =>
+          element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight,
+      );
+    expect(await touchStartCanceled(page, '#api-tab')).toBe(!tabsScroll);
+    const description = page.locator('#api .reference-description').first();
+    expect(await touchStartCanceled(page, '#api .reference-description')).toBe(false);
+    expect(
+      await description.evaluate((element) => getComputedStyle(element).webkitUserSelect),
+    ).not.toBe('none');
+    const bounds = await description.boundingBox();
+    await page.mouse.move(bounds.x + 1, bounds.y + bounds.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(bounds.x + 160, bounds.y + bounds.height / 2, { steps: 5 });
+    await page.mouse.up();
+    expect(await page.evaluate(() => window.getSelection().toString())).toContain('character');
+
+    await page.locator('#code-tab').tap();
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#code-toggle').tap();
+    await expect(editor).toBeHidden();
+    await expect(page.locator('#version')).toHaveCSS('-webkit-user-select', 'none');
+    expect(
+      await page.evaluate(() => ({
+        tools: window.toolClicks['tools-toggle'],
+        code: window.toolClicks['code-toggle'],
+        play: window.toolClicks['code-tab'],
+      })),
+    ).toEqual({ tools: 2, code: 2, play: 1 });
+  });
+
   test('tapping the play frame padding starts play and returns focus from open tools', async ({
     page,
   }) => {
     await page.goto('/');
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#code-tab').focus();
+    await page.evaluate(() => {
+      window.gameFocusTargets = [];
+      document.addEventListener('focusin', (event) => {
+        window.gameFocusTargets.push(event.target.id || event.target.tagName);
+      });
+    });
     const viewport = page.locator('#viewport');
     await viewport.tap({ position: { x: 2, y: 2 } });
     await expect(page.locator('#screen')).toBeFocused();
     await expect(page.locator('#start-game')).toBeHidden();
     await expect(page.locator('#pause')).toBeEnabled();
+    expect(await page.evaluate(() => window.gameFocusTargets)).toEqual(['screen']);
 
     await page.locator('#tools-toggle').tap();
     await page.locator('#code-toggle').click();
     await expect(page.locator('#editor')).toBeFocused();
     await page.locator('#tools-toggle').tap();
     const bounds = await viewport.boundingBox();
+    await page.evaluate(() => (window.gameFocusTargets = []));
     await viewport.tap({ position: { x: 2, y: bounds.height - 2 } });
     await expect(page.locator('#tools-toggle')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('#screen')).toBeFocused();
     await expect(page.locator('#editor')).toBeVisible();
+    expect(await page.evaluate(() => window.gameFocusTargets)).toEqual(['screen']);
   });
 
   test('CRT and sound taps preserve the focused pane while tools are open', async ({ page }) => {
@@ -1998,6 +2240,18 @@ function tick() {
       await page.locator('#code-toggle').tap();
       const editor = page.locator('#editor');
       await expect(editor).toBeFocused();
+      // Native iPhone focus zooms text fields smaller than 16px.
+      await editor.tap({ position: { x: 80, y: 24 } });
+      const fonts = await page
+        .locator('#editor, #editor-highlight, #editor-line-numbers')
+        .evaluateAll((elements) =>
+          elements.map((element) => {
+            const style = getComputedStyle(element);
+            return [parseFloat(style.fontSize), parseFloat(style.lineHeight)];
+          }),
+        );
+      expect(fonts.every(([size]) => size >= 16)).toBe(true);
+      expect(new Set(fonts.map(([size, height]) => `${size}/${height}`)).size).toBe(1);
       await editor.fill(source);
       await expect(page).toHaveTitle('Tap test — Playload');
       await expect
@@ -2019,7 +2273,7 @@ function tick() {
       await expect(page.locator('#screen')).toBeFocused();
       await expect(page.locator('#start-game')).toBeHidden();
       await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
-      for (const control of await page.locator('[data-input], #pause').all()) {
+      for (const control of await page.locator('[data-input]').all()) {
         const bounds = await control.boundingBox();
         expect(bounds.y).toBeGreaterThanOrEqual(0);
         expect(bounds.y + bounds.height).toBeLessThanOrEqual(height);
@@ -2027,6 +2281,7 @@ function tick() {
       await page.locator('[data-input="4"]').tap();
       await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
 
+      await page.locator('#tools-toggle').tap();
       await page.locator('#pause').tap();
       await expect(editor).toBeFocused();
       await expect(page.locator('#pause')).toContainText('Resume');
@@ -2038,6 +2293,7 @@ function tick() {
       expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(
         pausedImage,
       );
+      await page.locator('#tools-toggle').tap();
       await page.locator('#pause').tap();
       await expect(page.locator('#screen')).toBeFocused();
       await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
@@ -2051,11 +2307,46 @@ function tick() {
       await expect(editor).toHaveValue(source);
       await expect(editor).toBeHidden();
       await expect(page.locator('#screen')).toBeFocused();
+      for (let cycle = 0; cycle < 2; cycle++) {
+        await page.locator('#tools-toggle').tap();
+        await page.locator('#code-toggle').tap();
+        await expect(editor).toBeFocused();
+        await editor.tap({ position: { x: 80, y: 24 } });
+        await editor.evaluate((element) => {
+          element.scrollLeft = element.scrollWidth;
+          element.scrollTop = element.scrollHeight;
+          window.scrollTo(0, document.documentElement.scrollHeight);
+        });
+        await page.locator('#tools-toggle').tap();
+        await page.locator('#code-toggle').tap();
+        await expect(editor).toBeHidden();
+        await expect(page.locator('#screen')).toBeFocused();
+
+        const layout = await page.evaluate(() => ({
+          scroll: [scrollX, scrollY],
+          size: [document.documentElement.scrollWidth, document.documentElement.scrollHeight],
+          controls: [...document.querySelectorAll('header, #viewport, [data-input]')].map(
+            (element) => {
+              const rect = element.getBoundingClientRect();
+              return [rect.left, rect.top, rect.right, rect.bottom];
+            },
+          ),
+        }));
+        expect(layout.scroll).toEqual([0, 0]);
+        expect(layout.size).toEqual([width, height]);
+        for (const [left, top, right, bottom] of layout.controls) {
+          expect(left).toBeGreaterThanOrEqual(0);
+          expect(top).toBeGreaterThanOrEqual(0);
+          expect(right).toBeLessThanOrEqual(width);
+          expect(bottom).toBeLessThanOrEqual(height);
+        }
+      }
       await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
     }
   });
   test('an error on the first tick is revealed and its line returns to visible editing', async ({
     page,
+    browserName,
   }) => {
     for (const [width, height] of [
       [375, 568],
@@ -2069,7 +2360,10 @@ function tick() {
       await page.locator('#code-toggle').tap();
       await page
         .locator('#editor')
-        .fill('// Context\n'.repeat(60) + 'function tick() {\n  throw new Error("First tick");\n}');
+        .fill(
+          '// Context\n'.repeat(60) +
+            'function tick() {\n  throw new Error("First tick\\n".repeat(20));\n}',
+        );
       await page.locator('#tools-toggle').tap();
       await page.locator('#run').tap();
       await expect(page.locator('#error')).toContainText('First tick');
@@ -2077,6 +2371,29 @@ function tick() {
       const notice = await page.locator('#error-notice').boundingBox();
       expect(notice.y).toBeGreaterThanOrEqual(0);
       expect(notice.y + notice.height).toBeLessThanOrEqual(height);
+      for (const selector of ['#error-notice', '#error', '#error-line'])
+        expect(await touchStartCanceled(page, selector)).toBe(false);
+      const error = page.locator('#error');
+      expect(await error.evaluate((element) => element.scrollHeight)).toBeGreaterThan(
+        await error.evaluate((element) => element.clientHeight),
+      );
+      if (browserName === 'chromium' && width === 375 && height === 568) {
+        const session = await page.context().newCDPSession(page);
+        const bounds = await error.boundingBox();
+        const start = bounds.y + bounds.height - 10;
+        await session.send('Input.dispatchTouchEvent', {
+          type: 'touchStart',
+          touchPoints: [{ id: 0, x: bounds.x + bounds.width / 2, y: start }],
+        });
+        for (let step = 1; step <= 5; step++)
+          await session.send('Input.dispatchTouchEvent', {
+            type: 'touchMove',
+            touchPoints: [{ id: 0, x: bounds.x + bounds.width / 2, y: start - step * 10 }],
+          });
+        await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await expect.poll(() => error.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+        await session.detach();
+      }
       await page.locator('#error-line').tap();
       await expect(page.locator('#editor')).toBeFocused();
       expect((await page.locator('#editor').boundingBox()).y).toBeGreaterThanOrEqual(0);
@@ -2101,10 +2418,144 @@ function tick() {
       await expect(page.locator('#screen')).toBeFocused();
     }
   });
-  test('shared games wait on the first frame, then the first tap starts sound and play', async ({
+  test('shared games execute no code or sound before their first play action', async ({
+    page: phone,
+    browser,
+  }) => {
+    const monitorResources = () => {
+      const Worker = window.Worker,
+        Context = window.AudioContext;
+      window.gameWorkers = 0;
+      window.audioContexts = 0;
+      window.Worker = class extends Worker {
+        constructor(...args) {
+          super(...args);
+          window.gameWorkers++;
+        }
+      };
+      window.AudioContext = class extends Context {
+        constructor(...args) {
+          super(...args);
+          window.audioContexts++;
+        }
+      };
+      const Node = window.AudioWorkletNode;
+      window.AudioWorkletNode = class extends Node {
+        constructor(context, ...args) {
+          super(context, ...args);
+          window.gameAnalyser = context.createAnalyser();
+          this.connect(window.gameAnalyser);
+        }
+      };
+    };
+    await phone.addInitScript(monitorResources);
+    const desktop = await browser.newPage({
+      viewport: { width: 1280, height: 800 },
+      hasTouch: false,
+      isMobile: false,
+    });
+    try {
+      await desktop.addInitScript(monitorResources);
+      const { hash } = await encode(
+        'let frames = 0; play(0, "T240O5N3c))"); function tick() { cls(0); put(1, 1, String(frames++)); }',
+      );
+      for (const [width, height, selector, touch = true] of [
+        [375, 812, '#start-game'],
+        [375, 812, '[data-input="4"]'],
+        [375, 812, '#tools-toggle'],
+        [768, 1024, '#start-game'],
+        [1024, 768, '[data-input="4"]'],
+        [1280, 800, '#start-game', false],
+        [1280, 800, 'keyboard', false],
+      ]) {
+        const page = touch ? phone : desktop;
+        const sound = () =>
+          page.evaluate(() => {
+            if (!window.gameAnalyser) return -1;
+            const samples = new Float32Array(window.gameAnalyser.fftSize);
+            window.gameAnalyser.getFloatTimeDomainData(samples);
+            return Math.max(...samples.map(Math.abs));
+          });
+        await page.setViewportSize({ width, height });
+        await page.goto('/');
+        await page.goto('/' + hash);
+        await expect(page.locator('#start-game')).toHaveText(
+          touch ? 'Tap to play' : 'Click to play',
+        );
+        await expect(page.locator('#screen')).toBeFocused();
+        await expectCenteredWelcome(page);
+        await expect.poll(sound).toBe(-1);
+        expect(await page.evaluate(() => [window.gameWorkers, window.audioContexts])).toEqual([
+          0, 0,
+        ]);
+        const preview = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
+        await page.waitForTimeout(200);
+        expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(
+          preview,
+        );
+        if (touch) await expect(page.locator('#workspace-toolbar')).toBeHidden();
+        else await expect(page.locator('#editor')).toBeVisible();
+        await expect(page.locator('#pause')).toBeDisabled();
+        if (selector === 'keyboard') await page.keyboard.press('ArrowRight');
+        else if (touch) await page.locator(selector).tap();
+        else await page.locator(selector).click();
+        await expect(page.locator('#start-game')).toBeHidden();
+        await expect(page.locator('#pause')).toBeEnabled();
+        expect(await page.evaluate(() => [window.gameWorkers, window.audioContexts])).toEqual([
+          1, 1,
+        ]);
+        if (selector === '#tools-toggle') {
+          await expect(page.locator('#workspace-toolbar')).toBeVisible();
+          await page.locator('#tools-toggle').tap();
+        }
+        await expect.poll(sound).toBeGreaterThan(0.001);
+        await expect
+          .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
+          .not.toBe(preview);
+      }
+    } finally {
+      await desktop.close();
+    }
+  });
+  test('the first touch unlocks sound when activation is allowed only on release', async ({
     page,
   }) => {
     await page.addInitScript(() => {
+      let phase = '',
+        resetPhase;
+      for (const name of ['pointerdown', 'pointerup', 'touchend', 'click']) {
+        document.addEventListener(
+          name,
+          (event) => {
+            if (!event.isTrusted) return;
+            phase = event.type;
+            clearTimeout(resetPhase);
+            resetPhase = setTimeout(() => {
+              phase = '';
+            }, 0);
+          },
+          true,
+        );
+      }
+      const Context = window.AudioContext;
+      window.gameAudioContexts = [];
+      window.audioResumes = [];
+      window.AudioContext = class extends Context {
+        constructor(...args) {
+          super(...args);
+          window.gameAudioContexts.push(this);
+          super.suspend();
+        }
+        get state() {
+          return this.released ? super.state : 'suspended';
+        }
+        resume() {
+          window.audioResumes.push(phase);
+          if (phase !== window.requiredAudioEvent) return Promise.resolve();
+          this.released = true;
+          return super.resume();
+        }
+      };
       const Node = window.AudioWorkletNode;
       window.AudioWorkletNode = class extends Node {
         constructor(context, ...args) {
@@ -2114,49 +2565,36 @@ function tick() {
         }
       };
     });
-    await page.goto('/');
-    const hash = await page.evaluate(async () => {
-      const { encode } = await import('/src/payload.js');
-      return (
-        await encode(
-          'let frames = 0; play(0, "T240O5N3c))"); function tick() { cls(0); put(1, 1, String(frames++)); }',
-        )
-      ).hash;
-    });
-    const sound = () =>
-      page.evaluate(() => {
-        if (!window.gameAnalyser) return -1;
-        const samples = new Float32Array(window.gameAnalyser.fftSize);
-        window.gameAnalyser.getFloatTimeDomainData(samples);
-        return Math.max(...samples.map(Math.abs));
-      });
-    for (const [width, height, selector] of [
-      [375, 812, '#start-game'],
-      [375, 812, '[data-input="4"]'],
-      [768, 1024, '#start-game'],
-      [1024, 768, '[data-input="4"]'],
-    ]) {
-      await page.setViewportSize({ width, height });
+    const { hash } = await encode('play(0, "T240O5N3c))"); function tick() { cls(0); }');
+    for (const event of ['pointerup', 'touchend']) {
       await page.goto('/');
       await page.goto('/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
-      await expect.poll(sound).toBe(0);
-      const preview = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
-      await page.waitForTimeout(200);
-      expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(preview);
-      await expect(page.locator('#workspace-toolbar')).toBeHidden();
-      await expect(page.locator('#pause')).toBeDisabled();
-      await page.locator(selector).tap();
+      expect(await page.evaluate(() => window.gameAudioContexts.length)).toBe(0);
+      await page.evaluate((event) => {
+        window.requiredAudioEvent = event;
+      }, event);
+      await page.locator('#start-game').tap();
       await expect(page.locator('#start-game')).toBeHidden();
-      await expect(page.locator('#pause')).toBeEnabled();
-      await expect.poll(sound).toBeGreaterThan(0.001);
       await expect
-        .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
-        .not.toBe(preview);
+        .poll(() => page.evaluate(() => window.gameAudioContexts.map((context) => context.state)))
+        .toEqual(['running']);
+      expect(await page.evaluate((event) => window.audioResumes.includes(event), event)).toBe(true);
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            if (!window.gameAnalyser) return 0;
+            const samples = new Float32Array(window.gameAnalyser.fftSize);
+            window.gameAnalyser.getFloatTimeDomainData(samples);
+            return Math.max(...samples.map(Math.abs));
+          }),
+        )
+        .toBeGreaterThan(0.001);
     }
   });
   test('portrait and landscape players fit all controls without page scrolling', async ({
     page,
+    browserName,
   }) => {
     for (const [width, height] of [
       [320, 568],
@@ -2185,7 +2623,10 @@ function tick() {
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
         width,
       );
-      for (const selector of ['#screen', '#pause', '[data-input]']) {
+      const headerBottom = await page
+        .locator('header')
+        .evaluate((element) => element.getBoundingClientRect().bottom);
+      for (const selector of ['#screen', '[data-input]']) {
         const bounds = await page.locator(selector).evaluateAll((elements) =>
           elements.map((element) => {
             const r = element.getBoundingClientRect();
@@ -2201,11 +2642,18 @@ function tick() {
         );
         for (const r of bounds) {
           expect(r.left).toBeGreaterThanOrEqual(0);
-          expect(r.top).toBeGreaterThanOrEqual(0);
+          expect(r.top).toBeGreaterThanOrEqual(headerBottom);
           expect(r.right).toBeLessThanOrEqual(width);
           expect(r.bottom).toBeLessThanOrEqual(height);
           expect(Math.min(r.width, r.height)).toBeGreaterThanOrEqual(48);
         }
+      }
+      if (height > width) {
+        const player = await page.locator('#viewport').boundingBox();
+        const pad = await page.locator('.dpad').boundingBox();
+        expect(
+          Math.abs(player.y - headerBottom - (pad.y - player.y - player.height)),
+        ).toBeLessThanOrEqual(1);
       }
       const up = await page.locator('[data-input="0"]').boundingBox();
       const down = await page.locator('[data-input="1"]').boundingBox();
@@ -2217,9 +2665,38 @@ function tick() {
       expect(left.y + left.height).toBe(down.y);
       await page.locator('#tools-toggle').tap();
       await expect(page.locator('#workspace-toolbar')).toBeVisible();
+      await expect(page.locator('.play-tools > #pause')).toBeVisible();
+      await expect(page.locator('.touch #pause')).toHaveCount(0);
       const menu = await page.locator('#workspace-toolbar').boundingBox();
       expect(menu.x + menu.width).toBeLessThanOrEqual(width);
       expect(menu.y + menu.height).toBeLessThanOrEqual(height);
+    }
+    await page.setViewportSize({ width: 568, height: 220 });
+    await page.goto('/');
+    await page.locator('#tools-toggle').tap();
+    const toolbar = page.locator('#workspace-toolbar');
+    expect(await toolbar.evaluate((element) => element.scrollHeight)).toBeGreaterThan(
+      await toolbar.evaluate((element) => element.clientHeight),
+    );
+    expect(await touchStartCanceled(page, '#workspace-toolbar')).toBe(false);
+    if (browserName === 'chromium') {
+      const session = await page.context().newCDPSession(page);
+      const menu = await toolbar.boundingBox();
+      const start = menu.y + menu.height - 14;
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchStart',
+        touchPoints: [{ id: 0, x: menu.x + 8, y: start }],
+      });
+      for (let step = 1; step <= 5; step++)
+        await session.send('Input.dispatchTouchEvent', {
+          type: 'touchMove',
+          touchPoints: [{ id: 0, x: menu.x + 8, y: start - step * 20 }],
+        });
+      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await expect.poll(() => toolbar.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+      await expect(page.locator('#tools-toggle')).toHaveAttribute('aria-expanded', 'true');
+      expect(await page.evaluate(() => scrollY)).toBe(0);
+      await session.detach();
     }
   });
   test('tools, Info, pause and rotation retain the game and its prior pause state', async ({
@@ -2234,7 +2711,10 @@ function tick() {
     });
     await page.goto('/' + hash);
     await page.locator('#start-game').tap();
+    await page.locator('#tools-toggle').tap();
     await page.locator('#pause').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeVisible();
+    await expect(page.locator('#pause')).toContainText('Resume');
     // Let the worker's already requested frame finish before comparing frozen pictures.
     await page.waitForTimeout(100);
     const frozen = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
@@ -2247,6 +2727,8 @@ function tick() {
     expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(frozen);
     await expect(page.locator('#pause')).toContainText('Resume');
     await page.locator('#pause').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeHidden();
+    await expect(page.locator('#screen')).toBeFocused();
     await expect
       .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
       .not.toBe(frozen);
@@ -2259,6 +2741,38 @@ function tick() {
     await expect
       .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
       .not.toBe(inTools);
+    expect(new URL(page.url()).hash).toBe(hash);
+  });
+  test('phone tools keep Resume accessible and Run restarts the source', async ({ page }) => {
+    const source = 'let color = 4; function tick() { if (btnp(4)) color = 5; cls(color); }';
+    const { hash } = await encode(source);
+    await page.goto('/' + hash);
+    await page.locator('#start-game').tap();
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#crt').tap();
+    await page.locator('#tools-toggle').tap();
+    await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
+    await page.locator('[data-input="4"]').tap();
+    await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
+
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#pause').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeVisible();
+    await expect(page.locator('#pause')).toContainText('Resume');
+    await page.locator('#tools-toggle').tap();
+    await page.locator('[data-input="4"]').tap();
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#pause').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeHidden();
+    await expect(page.locator('#screen')).toBeFocused();
+    await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
+
+    await page.locator('#tools-toggle').tap();
+    await page.locator('#run').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeHidden();
+    await expect(page.locator('#screen')).toBeFocused();
+    await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
+    await expect(page.locator('#editor')).toHaveValue(source);
     expect(new URL(page.url()).hash).toBe(hash);
   });
   test('video can be saved from the phone tools while recording is temporarily paused', async ({
@@ -2320,11 +2834,9 @@ function tick() {
       browserName !== 'chromium',
       'Multiple held touch contacts require the Chromium input protocol.',
     );
-    await page.goto('/');
-    const hash = await page.evaluate(async () => {
-      const { encode } = await import('/src/payload.js');
-      return (await encode('function tick() { cls(Number(btn(3)) + 2 * Number(btn(4))); }')).hash;
-    });
+    const { hash } = await encode(
+      'function tick() { for (let id = 0; id < 6; id++) put(id, 0, " ", 0, btn(id) ? 7 : 0); }',
+    );
     await page.goto('/' + hash);
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
@@ -2335,63 +2847,164 @@ function tick() {
       const bounds = await page.locator(selector).boundingBox();
       return { id, x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
     };
-    const right = await contact('[data-input="3"]', 0);
-    const action = await contact('[data-input="4"]', 1);
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchStart',
-      touchPoints: [right, action],
+    const dispatch = (type, ...touchPoints) =>
+      session.send('Input.dispatchTouchEvent', { type, touchPoints });
+    const inputMask = () =>
+      page.locator('#display').evaluate((canvas) => {
+        const context = canvas.getContext('2d');
+        let mask = 0;
+        for (let id = 0; id < 6; id++) {
+          if (context.getImageData(id * 32 + 16, 16, 1, 1).data[0] === 220) mask |= 1 << id;
+        }
+        return mask;
+      });
+    await page.evaluate(() => {
+      window.touchCancellations = 0;
+      window.gameFocusTargets = [];
+      document.addEventListener('pointercancel', () => window.touchCancellations++);
+      document.addEventListener('focusin', (event) => {
+        window.gameFocusTargets.push(event.target.id || event.target.tagName);
+      });
     });
-    await expect.poll(() => pixel(page)).toEqual([215, 115, 85, 255]);
-    for (const selector of ['[data-input="3"]', '[data-input="4"]']) {
+    const center = await contact('.dpad', 0);
+    const right = await contact('[data-input="3"]', 0);
+    const left = await contact('[data-input="2"]', 0);
+    const a = await contact('[data-input="4"]', 1);
+    const b = await contact('[data-input="5"]', 2);
+    await dispatch('touchStart', center, a, b);
+    await expect.poll(inputMask).toBe(48);
+    await dispatch('touchMove', right, a, b);
+    await expect.poll(inputMask).toBe(56);
+    for (const selector of ['[data-input="3"]', '[data-input="4"]', '[data-input="5"]']) {
       await expect(page.locator(selector)).toHaveCSS('background-color', 'rgb(230, 200, 110)');
       await expect(page.locator(selector)).toHaveCSS('color', 'rgb(33, 28, 41)');
     }
-    const left = await contact('[data-input="2"]', 0);
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchMove',
-      touchPoints: [left, action],
+    await dispatch('touchMove', center, a, b);
+    await expect(page.locator('[data-input="3"]')).toHaveAttribute('data-held', 'true');
+    await expect.poll(inputMask).toBe(56);
+    await dispatch('touchMove', left, a, b);
+    await expect(page.locator('[data-input="2"]')).toHaveAttribute('data-held', 'true');
+    await expect.poll(inputMask).toBe(52);
+
+    const pad = await page.locator('.dpad').boundingBox();
+    for (const [x, y, mask] of [
+      [pad.x + 2, center.y - 4, 4],
+      [pad.x + 2, pad.y + 2, 5],
+      [center.x - 4, pad.y + 2, 1],
+      [pad.x + pad.width - 2, pad.y + 2, 9],
+      [pad.x + pad.width - 2, center.y - 4, 8],
+      [pad.x + pad.width - 2, pad.y + pad.height - 2, 10],
+      [center.x + 4, pad.y + pad.height - 2, 2],
+      [pad.x + 2, pad.y + pad.height - 2, 6],
+    ]) {
+      await dispatch('touchMove', { id: 0, x, y }, a, b);
+      await expect.poll(inputMask).toBe(mask | 48);
+      await dispatch('touchMove', center, a, b);
+      await expect.poll(inputMask).toBe(mask | 48);
+    }
+    await dispatch('touchMove', { id: 0, x: pad.x + 2, y: pad.y + 4 }, a, b);
+    await expect(page.locator('.dpad [data-held="true"]')).toHaveCount(2);
+    await expect.poll(inputMask).toBe(53);
+    await dispatch('touchMove', { id: 0, x: pad.x + pad.width + 12, y: center.y }, a, b);
+    await expect(page.locator('.dpad [data-held="true"]')).toHaveCount(0);
+    await expect.poll(inputMask).toBe(48);
+    await dispatch('touchMove', right, a, b);
+    await page.waitForTimeout(800);
+    await expect.poll(inputMask).toBe(56);
+    expect(await page.evaluate(() => window.getSelection().toString())).toBe('');
+    expect(await page.evaluate(() => window.touchCancellations)).toBe(0);
+    await dispatch('touchEnd');
+    await expect.poll(inputMask).toBe(0);
+
+    await dispatch('touchStart', { id: 0, x: pad.x + 2, y: pad.y + 2 });
+    await expect.poll(inputMask).toBe(5);
+    await dispatch('touchMove', center);
+    await expect.poll(inputMask).toBe(5);
+    await dispatch('touchEnd');
+    await expect.poll(inputMask).toBe(0);
+
+    await expect(page.locator('#screen')).toBeFocused();
+    expect(
+      await page.evaluate(() => window.gameFocusTargets.filter((id) => id !== 'screen')),
+    ).toEqual([]);
+
+    await page.evaluate(() => {
+      window.headerClicks = {};
+      document.addEventListener('click', (event) => {
+        const id = event.target.closest('header button')?.id;
+        if (id) window.headerClicks[id] = (window.headerClicks[id] || 0) + 1;
+      });
     });
-    await expect.poll(() => pixel(page)).toEqual([100, 105, 100, 255]);
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await expect.poll(() => pixel(page)).toEqual([0, 0, 0, 255]);
-    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [right] });
-    await expect.poll(() => pixel(page)).toEqual([85, 65, 95, 255]);
-    const pause = await contact('#pause', 1);
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchStart',
-      touchPoints: [right, pause],
-    });
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [pause] });
-    await expect(page.locator('#pause')).toContainText('Resume');
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchStart',
-      touchPoints: [right, pause],
-    });
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [pause] });
-    await expect(page.locator('#pause')).toContainText('Pause');
-    await expect.poll(() => pixel(page)).toEqual([0, 0, 0, 255]);
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [right] });
+    const tools = await contact('#tools-toggle', 1);
+    await dispatch('touchStart', { ...tools, id: 0 });
+    await dispatch('touchMove', { id: 0, x: tools.x, y: tools.y + 70 });
+    await dispatch('touchEnd');
+    await expect(page.locator('#workspace-toolbar')).toBeHidden();
+    expect(await page.evaluate(() => window.headerClicks['tools-toggle'] || 0)).toBe(0);
+    await page.locator('#tools-toggle').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeVisible();
+    expect(await page.evaluate(() => window.headerClicks['tools-toggle'])).toBe(1);
+    await page.locator('#tools-toggle').tap();
+    await expect(page.locator('#workspace-toolbar')).toBeHidden();
+    expect(await page.evaluate(() => window.headerClicks['tools-toggle'])).toBe(2);
+
+    // Secondary touches can open tools without leaving a held direction behind.
+    await dispatch('touchStart', right);
+    await expect.poll(inputMask).toBe(8);
+    await dispatch('touchStart', right, tools);
+    await dispatch('touchEnd', tools);
+    await expect(page.locator('#workspace-toolbar')).toBeVisible();
+    expect(await page.evaluate(() => window.headerClicks['tools-toggle'])).toBe(3);
+    await dispatch('touchEnd');
+    expect(await page.evaluate(() => window.headerClicks['tools-toggle'])).toBe(3);
+    await page.locator('#tools-toggle').tap();
+    await expect.poll(inputMask).toBe(0);
+
+    await dispatch('touchStart', right);
     const info = await contact('#info-tab', 1);
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchStart',
-      touchPoints: [right, info],
-    });
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [info] });
+    await dispatch('touchStart', right, info);
+    await dispatch('touchEnd', info);
     await expect(page.locator('body')).toHaveAttribute('data-view', 'info');
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    expect(await page.evaluate(() => window.headerClicks['info-tab'])).toBe(1);
+    await dispatch('touchEnd');
+    expect(await page.evaluate(() => window.headerClicks['info-tab'])).toBe(1);
+
+    const tabs = page.locator('.reference-scroll');
+    const strip = await tabs.boundingBox();
+    expect(await tabs.evaluate((element) => element.scrollWidth)).toBeGreaterThan(
+      await tabs.evaluate((element) => element.clientWidth),
+    );
+    expect(await touchStartCanceled(page, '.reference-tabs')).toBe(false);
+    const start = { id: 0, x: strip.x + strip.width - 20, y: strip.y + 12 };
+    await dispatch('touchStart', start);
+    for (let step = 1; step <= 5; step++)
+      await dispatch('touchMove', { ...start, x: start.x - step * 30 });
+    await dispatch('touchEnd');
+    await expect.poll(() => tabs.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+    await expect(page.locator('#api-tab')).toHaveAttribute('aria-selected', 'true');
+
+    const api = page.locator('#api');
+    const content = await api.boundingBox();
+    const contentStart = { id: 0, x: content.x + 100, y: content.y + content.height - 40 };
+    await dispatch('touchStart', contentStart);
+    for (let step = 1; step <= 5; step++)
+      await dispatch('touchMove', { ...contentStart, y: contentStart.y - step * 30 });
+    await dispatch('touchEnd');
+    await expect.poll(() => api.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => [scrollX, scrollY])).toEqual([0, 0]);
     await page.locator('#code-tab').tap();
-    await expect.poll(() => pixel(page)).toEqual([0, 0, 0, 255]);
-    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [right] });
-    await expect.poll(() => pixel(page)).toEqual([85, 65, 95, 255]);
+    await expect.poll(inputMask).toBe(0);
+    await dispatch('touchStart', right);
+    await expect.poll(inputMask).toBe(8);
     await page.setViewportSize({ width: 812, height: 375 });
-    await expect.poll(() => pixel(page)).toEqual([0, 0, 0, 255]);
-    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await expect.poll(inputMask).toBe(0);
+    await dispatch('touchEnd');
     await session.detach();
     expect(await page.evaluate(() => scrollY)).toBe(0);
   });
   test('game controls and screen clicks preserve page position after scrolling past the editor', async ({
     page,
+    browserName,
   }) => {
     await page.setViewportSize({ width: 375, height: 350 });
     await page.goto('/');
@@ -2428,6 +3041,21 @@ function tick() {
     await page.mouse.click(screen.x + 50, screen.y + 50);
     await expect(page.locator('#screen')).toBeFocused();
     expect(await page.evaluate(() => scrollY)).toBe(position);
+    expect(await touchStartCanceled(page, '#display')).toBe(false);
+    if (browserName === 'chromium') {
+      const session = await page.context().newCDPSession(page);
+      const start = { id: 0, x: screen.x + 20, y: screen.y + 20 };
+      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [start] });
+      for (let step = 1; step <= 5; step++)
+        await session.send('Input.dispatchTouchEvent', {
+          type: 'touchMove',
+          touchPoints: [{ ...start, y: start.y + step * 30 }],
+        });
+      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(position);
+      await expect(page.locator('#editor')).toBeInViewport();
+      await session.detach();
+    }
   });
   test('CRT and touch input work in the phone player layout', async ({ page }) => {
     await page.goto('/');
@@ -2729,6 +3357,7 @@ test('keyboard bindings stay visible in Play without opening code or reference',
 
 test('Play opens first, the static retro logo loads, and the starter runs', async ({
   page,
+  browser,
 }, testInfo) => {
   await page.goto('/');
   await expect(page.getByRole('tab', { name: 'Play' })).toHaveAttribute('aria-selected', 'true');
@@ -2797,6 +3426,39 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
   await page.setViewportSize({ width: 375, height: 900 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('develop-phone.png') });
+
+  const phone = await browser.newPage({
+    viewport: { width: 375, height: 812 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  try {
+    await phone.goto('http://127.0.0.1:8765/');
+    for (const [original, touch] of [
+      [page, false],
+      [phone, true],
+    ]) {
+      await original
+        .context()
+        .route('https://github.com/kitao/playload', (route) =>
+          route.fulfill({ contentType: 'text/html', body: '<title>Playload repository</title>' }),
+        );
+      const url = original.url();
+      const source = await original.locator('#editor').inputValue();
+      const opened = original.waitForEvent('popup');
+      if (touch) await original.locator('#repository').tap();
+      else await original.locator('#repository').click();
+      const popup = await opened;
+      await popup.waitForLoadState('domcontentloaded');
+      expect(popup.url()).toBe('https://github.com/kitao/playload');
+      expect(await popup.evaluate(() => window.opener === null)).toBe(true);
+      expect(original.url()).toBe(url);
+      await expect(original.locator('#editor')).toHaveValue(source);
+      await popup.close();
+    }
+  } finally {
+    await phone.close();
+  }
 });
 
 test('the reference documents six functions and two variables; every example runs without copy controls', async ({
@@ -3439,7 +4101,7 @@ test('disabled Pause ignores Escape and the removed Reload shortcut is no longer
   await expect(editor).toHaveValue(source);
 });
 
-test('external file changes update code, title and URL without restarting or moving focus', async ({
+test('external file changes restart the game and update code, title and URL without moving focus', async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -3469,23 +4131,30 @@ test('external file changes update code, title and URL without restarting or mov
     )
     .toBe(source);
   await expect(editor).toBeFocused();
-  await expect(page.locator('#pause')).toHaveText(/^Resume/);
-  expect(await pixel(page)).toEqual([80, 140, 215, 255]);
-  expect(await page.evaluate(() => window.gameLoads)).toBe(1);
+  await expect(page.locator('#pause')).toHaveText(/^Pause/);
+  await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
+  expect(await page.evaluate(() => window.gameLoads)).toBe(2);
   expect(await page.evaluate(() => window.pickerOpens)).toBe(1);
   await editor.press('Control+Enter');
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
   await expect(page.locator('#screen')).toBeFocused();
-  expect(await page.evaluate(() => window.gameLoads)).toBe(2);
+  expect(await page.evaluate(() => window.gameLoads)).toBe(3);
 });
 
-test('automatic file updates wait for editor changes to be reverted and Run keeps the draft', async ({
+test('declining an external update keeps the draft without repeatedly asking to replace it', async ({
   page,
 }) => {
   await loadFileHandle(page);
   const editor = page.locator('#editor'),
     original = await editor.inputValue();
   await page.locator('#crt').click();
+  let dialogs = 0;
+  page.on('dialog', async (dialog) => {
+    expect(dialog.type()).toBe('confirm');
+    expect(dialog.message()).toBe('The code was edited in the browser. Replace it with a file?');
+    dialogs++;
+    await dialog.dismiss();
+  });
   const draft = '// @title Draft\nfunction tick() { cls(6) }';
   await editor.fill(draft);
   await page.evaluate(() => (window.testFileSource = 'function tick() { cls(3) }'));
@@ -3494,14 +4163,61 @@ test('automatic file updates wait for editor changes to be reverted and Run keep
   await expect(page).toHaveTitle('Draft — Playload');
   await editor.press('Control+Enter');
   await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+  expect(dialogs).toBe(1);
+  await editor.fill(original);
+  await expect(editor).toHaveValue('function tick() { cls(3) }');
+  await expect.poll(() => pixel(page)).toEqual([215, 115, 85, 255]);
+  expect(dialogs).toBe(1);
+});
+
+for (const width of [1400, 375]) {
+  test(`accepting an external update replaces the draft and runs without moving focus at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    await loadFileHandle(page);
+    const editor = page.locator('#editor');
+    if (!(await editor.isVisible())) await page.locator('#code-toggle').click();
+    await page.locator('#crt').click();
+    await editor.fill('// @title Draft\nfunction tick() { cls(6) }');
+    let dialogs = 0;
+    page.on('dialog', async (dialog) => {
+      expect(dialog.message()).toBe('The code was edited in the browser. Replace it with a file?');
+      dialogs++;
+      if (dialogs === 1) await dialog.dismiss();
+      else await dialog.accept();
+    });
+    await page.evaluate(() => (window.testFileSource = 'function tick() { cls(3) }'));
+    await expect.poll(() => dialogs).toBe(1);
+    const source = '// @title Updated\nfunction tick() { cls(5) }';
+    await page.evaluate((source) => (window.testFileSource = source), source);
+    await expect(editor).toHaveValue(source);
+    await expect(page).toHaveTitle('Updated — Playload');
+    await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
+    await expect(editor).toBeFocused();
+    const reads = await page.evaluate(() => window.fileReads);
+    await expect.poll(() => page.evaluate(() => window.fileReads)).toBeGreaterThan(reads + 2);
+    expect(dialogs).toBe(2);
+    expect(new URL(page.url()).hash).toBe((await encode(source)).hash);
+    await page.screenshot({ path: testInfo.outputPath('external-update.png') });
+  });
+}
+
+test('matching editor and external changes run without asking to replace identical code', async ({
+  page,
+}) => {
+  await loadFileHandle(page);
+  await page.locator('#crt').click();
+  const source = 'function tick() { cls(5) }';
+  await page.locator('#editor').fill(source);
   let dialogs = 0;
   page.on('dialog', async (dialog) => {
     dialogs++;
     await dialog.dismiss();
   });
-  await editor.fill(original);
-  await expect(editor).toHaveValue('function tick() { cls(3) }');
-  expect(await pixel(page)).toEqual([230, 200, 110, 255]);
+  await page.evaluate((source) => (window.testFileSource = source), source);
+  await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
+  await expect(page.locator('#editor')).toBeFocused();
   expect(dialogs).toBe(0);
 });
 
@@ -3620,7 +4336,7 @@ test('a temporary file read failure preserves the game and automatic checks reco
   });
   await expect(page.locator('#editor')).toHaveValue('function tick() { cls(5) }');
   await expect(page.locator('#status')).toHaveText('');
-  expect(await pixel(page)).toEqual([80, 140, 215, 255]);
+  await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
 });
 
 test('revoked file access stops polling until Load restores access without automatic dialogs', async ({
@@ -3668,6 +4384,45 @@ test('file checks stop in hidden pages and check immediately when visible again'
   await expect(page.locator('#editor')).toHaveValue('function tick() { cls(5) }');
 });
 
+test('Load confirms only edits to the opened shared game', async ({ page }) => {
+  const source = '// @title Shared Game\nfunction tick() { cls(4) }';
+  await page.addInitScript(() => {
+    window.pickerOpens = 0;
+    window.showOpenFilePicker = async () => {
+      window.pickerOpens++;
+      throw new DOMException('Canceled', 'AbortError');
+    };
+  });
+  await page.goto('/' + (await encode(source)).hash);
+  const editor = page.locator('#editor');
+  await expect(editor).toHaveValue(source);
+  await expect(page.locator('#start-game')).toBeVisible();
+  await expect(page.locator('#pause')).toBeDisabled();
+  let dialogs = 0;
+  page.on('dialog', async (dialog) => {
+    expect(dialog.message()).toBe('The code was edited in the browser. Replace it with a file?');
+    dialogs++;
+    await dialog.dismiss();
+  });
+
+  await page.locator('#load').click();
+  expect(dialogs).toBe(0);
+  await expect.poll(() => page.evaluate(() => window.pickerOpens)).toBe(1);
+  await expect(page.locator('#run')).toBeEnabled();
+
+  await editor.fill(source + '\n// Edited');
+  await page.locator('#load').click();
+  expect(dialogs).toBe(1);
+  expect(await page.evaluate(() => window.pickerOpens)).toBe(1);
+  await expect(editor).toHaveValue(source + '\n// Edited');
+
+  await editor.fill(source);
+  await page.locator('#load').click();
+  expect(dialogs).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.pickerOpens)).toBe(2);
+  await expect(editor).toHaveValue(source);
+});
+
 test('Load reselects files when handles are unavailable and confirms before replacing edits', async ({
   page,
 }) => {
@@ -3685,10 +4440,16 @@ test('Load reselects files when handles are unavailable and confirms before repl
   await expect(page.locator('#screen')).toBeFocused();
   const editor = page.locator('#editor');
   await editor.fill('function tick() { cls(6) }');
-  page.once('dialog', (dialog) => dialog.dismiss());
+  page.once('dialog', (dialog) => {
+    expect(dialog.message()).toBe('The code was edited in the browser. Replace it with a file?');
+    return dialog.dismiss();
+  });
   await page.locator('#load').click();
   await expect(editor).toHaveValue('function tick() { cls(6) }');
-  page.once('dialog', (dialog) => dialog.accept());
+  page.once('dialog', (dialog) => {
+    expect(dialog.message()).toBe('The code was edited in the browser. Replace it with a file?');
+    return dialog.accept();
+  });
   await select('fallback-game.js', 'function tick() { cls(5) }');
   await expect(editor).toHaveValue('function tick() { cls(5) }');
   await page.locator('#crt').click();
@@ -4022,7 +4783,10 @@ test('Examples starts with Starter and other game links contain their actual sou
       await expect(game.locator('#editor')).toBeFocused();
       await game.locator('#run').click();
       await expect(game).toHaveURL('http://127.0.0.1:8765/');
-    } else await expect(game).toHaveTitle((await link.textContent()) + ' — Playload');
+    } else {
+      await expect(game).toHaveTitle((await link.textContent()) + ' — Playload');
+      await game.locator('#start-game').click();
+    }
     await expect(game.locator('#pause')).toBeEnabled();
     await expect(game.locator('#screen')).toBeFocused();
     await expect(game.locator('#editor')).toHaveValue(source);
@@ -4124,6 +4888,7 @@ test('a shared game does not steal editor focus chosen while its worker is start
     };
   });
   await page.goto('/' + hash);
+  await page.locator('#start-game').click();
   await expect.poll(() => page.evaluate(() => typeof window.finishInitialLoad)).toBe('function');
   await page.locator('#editor').focus();
   await page.evaluate(() => window.finishInitialLoad());
