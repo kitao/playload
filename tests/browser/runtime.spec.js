@@ -121,6 +121,12 @@ test('a new page focuses the visible editor or the player without starting touch
       const editor = page.locator('#editor');
       if (!touch && width >= 600) {
         await expect(editor).toBeFocused();
+        await expect(page.locator('#start-game')).toBeVisible();
+        await expectCenteredWelcome(page);
+        await editor.click();
+        await expect(page.locator('#start-game')).toBeHidden();
+        await expect(page.locator('#pause')).toBeEnabled();
+        await expect(editor).toBeFocused();
         const starter = await editor.inputValue();
         await page.keyboard.press('End');
         await page.keyboard.insertText(' ');
@@ -1026,9 +1032,164 @@ test('a shared URL starts the player with the same game', async ({ page }) => {
   await expect(page.locator('#start-game')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await page.getByRole('button', { name: 'CRT', exact: true }).click();
+  await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+  await page.keyboard.press('z');
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
   await page.keyboard.press('Control+Enter');
   await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+});
+
+test('the welcome screen starts with ordinary keys or a mouse click and uses editor changes', async ({
+  page,
+}) => {
+  for (const key of ['Enter', 'Space', 'q', 'Tab', 'Escape', 'Shift', 'Control', 'Alt', 'Meta']) {
+    await page.goto('/');
+    await expect(page.locator('#start-game')).toBeVisible();
+    await page.locator('#screen').focus();
+    await page.keyboard.press(key);
+    await expect(page.locator('#start-game')).toBeHidden();
+    await expect(page.locator('#pause')).toBeEnabled();
+    await expect(page.locator('#screen')).toBeFocused();
+  }
+
+  for (const button of ['left', 'middle', 'right']) {
+    await page.goto('/');
+    await page.locator('#editor').fill('function tick() { cls(5) }');
+    await expect(page.locator('#start-game')).toBeVisible();
+    await expect(page.locator('#editor')).toBeFocused();
+    await page.locator('#viewport').click({ button, position: { x: 3, y: 3 } });
+    await expect(page.locator('#start-game')).toBeHidden();
+    await expect(page.locator('#pause')).toBeEnabled();
+    await expect(page.locator('#screen')).toBeFocused();
+    await page.locator('#crt').click();
+    await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
+  }
+
+  for (const selector of ['#editor', '#crt', '#sound', '#code-tab']) {
+    await page.goto('/');
+    await expect(page.locator('#start-game')).toBeVisible();
+    await page.locator(selector).click();
+    await expect(page.locator('#start-game')).toBeHidden();
+    await expect(page.locator('#pause')).toBeEnabled();
+    if (selector === '#editor') await expect(page.locator('#editor')).toBeFocused();
+  }
+
+  await page.goto('/');
+  await expect(page.locator('#start-game')).toBeVisible();
+  const original = await page.locator('#editor').inputValue();
+  await page.locator('#editor').evaluate((editor) => editor.setSelectionRange(0, 0));
+  await page.keyboard.type(' ');
+  await expect(page.locator('#start-game')).toBeHidden();
+  await expect(page.locator('#pause')).toBeEnabled();
+  await expect(page.locator('#editor')).toBeFocused();
+  await expect(page.locator('#editor')).toHaveValue(' ' + original);
+});
+
+test('the activation key is consumed until released, including repeats', async ({ page }) => {
+  const source = `let color = 6;
+function tick() {
+  if (btn(3)) color = 4;
+  if (btnp(4)) color = 5;
+  cls(color);
+}`;
+  const { hash } = await encode(source);
+  for (const [key, color] of [
+    ['ArrowRight', [80, 140, 215, 255]],
+    ['z', [100, 185, 100, 255]],
+  ]) {
+    await page.goto('about:blank');
+    await page.goto('/' + hash);
+    await expect(page.locator('#start-game')).toBeVisible();
+    await page.locator('#crt').evaluate((button) => button.click());
+    await page.keyboard.down(key);
+    await expect(page.locator('#start-game')).toBeHidden();
+    await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+    await page.keyboard.down(key);
+    await page.waitForTimeout(100);
+    expect(await pixel(page)).toEqual([230, 200, 110, 255]);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#editor')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#screen')).toBeFocused();
+    await page.keyboard.down(key);
+    await page.waitForTimeout(100);
+    expect(await pixel(page)).toEqual([230, 200, 110, 255]);
+    await page.keyboard.up(key);
+    await page.keyboard.down(key);
+    await expect.poll(() => pixel(page)).toEqual(color);
+    await page.keyboard.up(key);
+  }
+
+  await page.goto('about:blank');
+  await page.goto('/' + hash);
+  await expect(page.locator('#start-game')).toBeVisible();
+  await page.locator('#crt').evaluate((button) => button.click());
+  await page.mouse.click(2, 2);
+  await expect(page.locator('#screen')).toBeFocused();
+  await page.keyboard.down('ArrowRight');
+  await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
+  await page.keyboard.up('ArrowRight');
+
+  for (const key of ['Space', 'Enter']) {
+    await page.goto('about:blank');
+    await page.goto('/' + hash);
+    await expect(page.locator('#start-game')).toBeVisible();
+    await page.locator('#crt').evaluate((button) => button.click());
+    await page.locator('#start-game').focus();
+    await page.keyboard.press(key);
+    await expect(page.locator('#screen')).toBeFocused();
+    await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+    await page.keyboard.down('ArrowRight');
+    await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
+    await page.keyboard.up('ArrowRight');
+  }
+});
+
+test('activation on the game pad is consumed through a tap, hold or drag', async ({ browser }) => {
+  const page = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const { hash } = await encode(`let color = 6;
+function tick() {
+  if (btn(3)) color = 4;
+  if (btnp(4)) color = 5;
+  cls(color);
+}`);
+  try {
+    for (const [selector, color] of [
+      ['.dpad [data-input="3"]', [80, 140, 215, 255]],
+      ['.ab [data-input="4"]', [100, 185, 100, 255]],
+    ]) {
+      await page.goto('about:blank');
+      await page.goto('/' + hash);
+      await expect(page.locator('#start-game')).toBeVisible();
+      await page.locator('#crt').evaluate((button) => button.click());
+      const pad = page.locator(selector);
+      const bounds = await pad.boundingBox();
+      await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+      await page.mouse.down();
+      await expect(page.locator('#start-game')).toBeHidden();
+      await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+      await page.mouse.move(bounds.x + bounds.width / 2 + 2, bounds.y + bounds.height / 2);
+      await page.waitForTimeout(100);
+      expect(await pixel(page)).toEqual([230, 200, 110, 255]);
+      await page.mouse.up();
+      await page.mouse.down();
+      await expect.poll(() => pixel(page)).toEqual(color);
+      await page.mouse.up();
+      await page.goto('about:blank');
+      await page.goto('/' + hash);
+      await expect(page.locator('#start-game')).toBeVisible();
+      await page.locator('#crt').evaluate((button) => button.click());
+      await pad.tap();
+      await expect(page.locator('#start-game')).toBeHidden();
+      await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
+    }
+  } finally {
+    await page.close();
+  }
 });
 
 test('malformed worker frames are rejected before display or playback', async ({ page }) => {
@@ -1370,6 +1531,7 @@ test('desktop controls stay visible and wrap through editing, play and window re
   page,
 }) => {
   for (const [width, height] of [
+    [1280, 800],
     [1200, 800],
     [1024, 768],
     [800, 600],
@@ -1393,13 +1555,23 @@ test('desktop controls stay visible and wrap through editing, play and window re
     const buttons = await page.locator('#workspace-toolbar button').evaluateAll((elements) =>
       elements.map((element) => {
         const bounds = element.getBoundingClientRect();
-        return { left: bounds.left, right: bounds.right, width: bounds.width, top: bounds.top };
+        const label = document.createRange();
+        label.selectNode(element.firstChild);
+        return {
+          left: bounds.left,
+          right: bounds.right,
+          width: bounds.width,
+          top: bounds.top,
+          labelHeight: label.getBoundingClientRect().height,
+          lineHeight: parseFloat(getComputedStyle(element).lineHeight),
+        };
       }),
     );
     for (const button of buttons) {
       expect(button.left).toBeGreaterThanOrEqual(0);
       expect(button.right).toBeLessThanOrEqual(width);
       expect(button.width).toBe(buttons[0].width);
+      expect(button.labelHeight).toBeLessThanOrEqual(button.lineHeight + 2);
     }
     if (width <= 800) expect(new Set(buttons.map((button) => button.top)).size).toBeGreaterThan(1);
     await page.locator('#screen').click();
@@ -1633,57 +1805,69 @@ test('CRT video exports the curved frame with the same surround as the player', 
   for await (const chunk of stream) chunks.push(chunk);
   expect(download.suggestedFilename()).toBe('playload.webm');
   const bytes = [...Buffer.concat(chunks)];
-  const result = await page.evaluate(async (bytes) => {
-    const video = document.createElement('video'),
-      url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'video/webm' }));
-    video.muted = true;
-    video.style.cssText = 'position: fixed; right: 0; bottom: 0; width: 160px';
-    document.body.append(video);
-    try {
-      await new Promise((resolve, reject) => {
-        video.onloadeddata = resolve;
-        video.onerror = () => reject(new Error('Exported video could not be decoded'));
-        video.src = url;
+  const expectedPatches = await page.locator('#display').evaluate((canvas) => {
+    const ctx = canvas.getContext('2d');
+    return [
+      [0, 0],
+      [624, 0],
+      [0, 560],
+      [624, 560],
+    ].map(([x, y]) => [...ctx.getImageData(x, y, 16, 16).data]);
+  });
+  const result = await page.evaluate(
+    async ({ bytes, expectedPatches }) => {
+      const video = document.createElement('video'),
+        url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'video/webm' }));
+      video.muted = true;
+      video.style.cssText = 'position: fixed; right: 0; bottom: 0; width: 160px';
+      document.body.append(video);
+      try {
+        await new Promise((resolve, reject) => {
+          video.onloadeddata = resolve;
+          video.onerror = () => reject(new Error('Exported video could not be decoded'));
+          video.src = url;
+          video.load();
+        });
+        await video.play();
+        await new Promise((resolve) => video.requestVideoFrameCallback(resolve));
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        // Compare the rendered corners, including the glass edge; video quantizes RGB.
+        const surroundErrors = [
+          [0, 0],
+          [624, 0],
+          [0, 560],
+          [624, 560],
+        ].map(([x, y], patch) => {
+          const pixels = ctx.getImageData(x, y, 16, 16).data,
+            expected = expectedPatches[patch];
+          let squaredError = 0;
+          for (let i = 0; i < pixels.length; i += 4)
+            for (let channel = 0; channel < 3; channel++)
+              squaredError += (pixels[i + channel] - expected[i + channel]) ** 2;
+          return Math.sqrt(squaredError / (256 * 3));
+        });
+        return {
+          width: canvas.width,
+          height: canvas.height,
+          duration: video.duration,
+          surroundErrors,
+          top: [...ctx.getImageData(320, 16, 1, 1).data],
+          center: [...ctx.getImageData(320, 288, 1, 1).data],
+        };
+      } finally {
+        video.pause();
+        video.removeAttribute('src');
         video.load();
-      });
-      await video.play();
-      await new Promise((resolve) => video.requestVideoFrameCallback(resolve));
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0);
-      // Measure full RGB patches away from the curve; video quantizes channels unevenly.
-      const surroundErrors = [
-        [0, 0],
-        [624, 0],
-        [0, 560],
-        [624, 560],
-      ].map(([x, y]) => {
-        const pixels = ctx.getImageData(x, y, 16, 16).data,
-          expected = [33, 28, 41];
-        let squaredError = 0;
-        for (let i = 0; i < pixels.length; i += 4)
-          for (let channel = 0; channel < 3; channel++)
-            squaredError += (pixels[i + channel] - expected[channel]) ** 2;
-        return Math.sqrt(squaredError / (256 * 3));
-      });
-      return {
-        width: canvas.width,
-        height: canvas.height,
-        duration: video.duration,
-        surroundErrors,
-        top: [...ctx.getImageData(320, 16, 1, 1).data],
-        center: [...ctx.getImageData(320, 288, 1, 1).data],
-      };
-    } finally {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-      video.remove();
-      URL.revokeObjectURL(url);
-    }
-  }, bytes);
+        video.remove();
+        URL.revokeObjectURL(url);
+      }
+    },
+    { bytes, expectedPatches },
+  );
   expect(result.width).toBe(640);
   expect(result.height).toBe(576);
   expect(result.duration).toBeGreaterThan(0.5);
@@ -1701,7 +1885,9 @@ test('a black CRT screen retains a visible curved contour without recoloring gam
     [0, 0],
     [639, 575],
     [320, 0],
+    [320, 575],
     [0, 288],
+    [639, 288],
   ])
     expect(await pixel(page, x, y)).toEqual([33, 28, 41, 255]);
   expect(await pixel(page, 320, 288)).toEqual([0, 0, 0, 255]);
@@ -1968,14 +2154,14 @@ for (const fallback of [false, true]) {
     await expect(page.locator('#display')).toBeVisible();
     await expect(page.locator('#pause')).toBeDisabled();
     expect(await pixel(page)).toEqual([33, 28, 41, 255]);
-    expect(await pixel(page, 320, 288)).toEqual([0, 0, 0, 255]);
+    await expectCenteredWelcome(page);
     const widths = await page.locator('#display').evaluate((canvas) => {
       const pixels = canvas.getContext('2d').getImageData(0, 0, 640, 576).data;
       return [8, 288].map((y) => {
         let width = 0;
         for (let x = 0; x < 640; x++) {
           const i = (y * 640 + x) * 4;
-          if (pixels[i] === 0 && pixels[i + 1] === 0 && pixels[i + 2] === 0) width++;
+          if (pixels[i] !== 33 || pixels[i + 1] !== 28 || pixels[i + 2] !== 41) width++;
         }
         return width;
       });
@@ -1985,7 +2171,7 @@ for (const fallback of [false, true]) {
     expect(await pixel(page)).toEqual([0, 0, 0, 255]);
     await page.locator('#crt').click();
     expect(await pixel(page)).toEqual([33, 28, 41, 255]);
-    await expect(page.locator('#pause')).toBeDisabled();
+    await expect(page.locator('#pause')).toBeEnabled();
   });
 }
 
@@ -3075,6 +3261,8 @@ function tick() {
     await page.locator('[data-input="4"]').tap();
     await expect(page.locator('#start-game')).toBeHidden();
     await expect(page.locator('#pause')).toBeEnabled();
+    await expect.poll(async () => (await pixel(page, 320, 288))[2]).toBeGreaterThan(180);
+    await page.locator('[data-input="4"]').tap();
     await expect.poll(async () => (await pixel(page, 320, 288))[2]).toBeLessThan(130);
   });
   test('touch action rows stay aligned and error text and its edit button fit', async ({
@@ -3874,7 +4062,7 @@ test('the whole play frame accepts focus before Run and keeps keyboard input and
   await expect(screen).toBeFocused();
   await page.mouse.up();
   await expect(screen).toBeFocused();
-  await expect(page.locator('#pause')).toBeDisabled();
+  await expect(page.locator('#pause')).toBeEnabled();
   await expect(page.locator('#display')).toBeVisible();
 
   await editor.fill(`function tick() {
@@ -3951,25 +4139,8 @@ test('Escape pauses once, releases held input and moves focus only to a visible 
   await page.goto('/');
   const editor = page.locator('#editor'),
     screen = page.locator('#screen'),
-    pause = page.locator('#pause'),
-    starter = await editor.inputValue();
+    pause = page.locator('#pause');
   await expect(editor).toBeFocused();
-  await page.keyboard.press('Escape');
-  await expect(editor).toBeFocused();
-  await screen.click();
-  await page.keyboard.press('Escape');
-  await expect(screen).toBeFocused();
-  await expect(editor).toHaveValue(starter);
-  await expect(pause).toBeDisabled();
-  await page.locator('#code-toggle').click();
-  await expect(editor).toBeHidden();
-  await screen.click();
-  await page.keyboard.press('Escape');
-  await expect(screen).toBeFocused();
-  await expect(editor).toBeHidden();
-  await expect(pause).toBeDisabled();
-  await page.locator('#code-toggle').click();
-
   const source = 'function tick() { cls(btn(4) ? 3 : 4) }';
   await editor.focus();
   await editor.fill(source);
@@ -4113,6 +4284,7 @@ test('external file changes restart the game and update code, title and URL with
     };
   });
   await loadFileHandle(page, '// @title Original\nfunction tick() { cls(4) }');
+  const initialLoads = await page.evaluate(() => window.gameLoads);
   await page.locator('#crt').click();
   await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
   await page.locator('#pause').click();
@@ -4133,12 +4305,12 @@ test('external file changes restart the game and update code, title and URL with
   await expect(editor).toBeFocused();
   await expect(page.locator('#pause')).toHaveText(/^Pause/);
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
-  expect(await page.evaluate(() => window.gameLoads)).toBe(2);
+  expect(await page.evaluate(() => window.gameLoads)).toBe(initialLoads + 1);
   expect(await page.evaluate(() => window.pickerOpens)).toBe(1);
   await editor.press('Control+Enter');
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
   await expect(page.locator('#screen')).toBeFocused();
-  expect(await page.evaluate(() => window.gameLoads)).toBe(3);
+  expect(await page.evaluate(() => window.gameLoads)).toBe(initialLoads + 2);
 });
 
 test('declining an external update keeps the draft without repeatedly asking to replace it', async ({
@@ -4781,7 +4953,9 @@ test('Examples starts with Starter and other game links contain their actual sou
       await expect(game).toHaveURL('http://127.0.0.1:8765/');
       await expect(game).toHaveTitle('Playload');
       await expect(game.locator('#editor')).toBeFocused();
-      await game.locator('#run').click();
+      await expect(game.locator('#start-game')).toBeVisible();
+      await expectCenteredWelcome(game);
+      await game.locator('#start-game').click();
       await expect(game).toHaveURL('http://127.0.0.1:8765/');
     } else {
       await expect(game).toHaveTitle((await link.textContent()) + ' — Playload');
@@ -4801,7 +4975,7 @@ test('Examples starts with Starter and other game links contain their actual sou
       await game.keyboard.up('ArrowRight');
       await expect(game.locator('#editor')).toHaveValue(source);
     }
-    if (['snake', 'jump', 'music-box'].includes(id)) {
+    if (id !== 'starter') {
       const before = await game.locator('#display').evaluate((canvas) => canvas.toDataURL());
       await game.keyboard.press(id === 'music-box' ? 'ArrowUp' : 'z');
       await expect
@@ -4814,15 +4988,13 @@ test('Examples starts with Starter and other game links contain their actual sou
   }
 });
 
-test('new examples respond to touch controls and fit a narrow player', async ({
+test('examples respond to touch controls and fit a narrow player', async ({
   browser,
 }, testInfo) => {
   const entries = JSON.parse(
     await readFile(new URL('../../data/examples.json', import.meta.url), 'utf8'),
   );
-  for (const entry of entries.filter((entry) =>
-    ['snake', 'jump', 'music-box'].includes(entry.id),
-  )) {
+  for (const entry of entries.filter((entry) => entry.id !== 'starter')) {
     const phone = await browser.newPage({
       viewport: { width: 375, height: 812 },
       hasTouch: true,
@@ -4894,6 +5066,58 @@ test('a shared game does not steal editor focus chosen while its worker is start
   await page.evaluate(() => window.finishInitialLoad());
   await expect(page.locator('#pause')).toBeEnabled();
   await expect(page.locator('#editor')).toBeFocused();
+});
+
+test('Info interactions stay in Info when a shared URL finishes decoding', async ({ browser }) => {
+  const { hash } = await encode('function tick() { cls(6) }');
+  for (const touch of [false, true]) {
+    const page = await browser.newPage({
+      viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 800 },
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    await page.addInitScript(() => {
+      const Stream = DecompressionStream;
+      window.DecompressionStream = class {
+        constructor(...args) {
+          const stream = new Stream(...args);
+          this.writable = stream.writable;
+          this.readable = stream.readable.pipeThrough(
+            new TransformStream({
+              async transform(chunk, controller) {
+                await new Promise((resolve) => (window.releaseDecode = resolve));
+                controller.enqueue(chunk);
+              },
+            }),
+          );
+        }
+      };
+    });
+    try {
+      for (const action of ['pointer', 'key']) {
+        await page.goto('about:blank');
+        await page.goto('/' + hash);
+        await page.waitForFunction(() => typeof window.releaseDecode === 'function');
+        await page.locator('#info-tab').click();
+        await page.evaluate(() => window.releaseDecode());
+        await page.waitForFunction(() => !document.querySelector('#start-game').hidden);
+        if (action === 'pointer') {
+          const description = page.locator('#api .reference-description').first();
+          if (touch) await description.tap();
+          else await description.click();
+        } else {
+          await page.keyboard.press('ArrowDown');
+        }
+        await expect(page.locator('#start-game')).toBeHidden();
+        await expect(page.locator('#pause')).toBeEnabled();
+        await expect(page.locator('#info')).toBeVisible();
+        await expect(page.locator('#screen')).not.toBeFocused();
+        await expect(page.locator('#error')).toBeHidden();
+      }
+    } finally {
+      await page.close();
+    }
+  }
 });
 
 test('an invalid shared URL focuses the visible player and keeps its error readable', async ({

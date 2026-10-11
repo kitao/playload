@@ -56,9 +56,10 @@ and recording while music continues. Returning restores the previous play state.
 The untouched starter keeps a plain URL and the `Playload` title. Editing or loading a file
 starts URL updates after a brief typing pause, without adding browser-history entries;
 updates continue even if you undo back to the starter. Bookmark the URL to save that version,
-or share it from the browser's address bar. Shared URLs restore the source and wait for an
-interaction before starting the game and sound: **CLICK TO PLAY** on PCs and **TAP TO PLAY**
-on touch-first devices. Run or a game key also starts play.
+or share it from the browser's address bar. Shared URLs restore the source. New pages wait before
+starting the game and sound: **CLICK TO PLAY** on PCs and **TAP TO PLAY** on touch-first devices.
+Any keypress, click or tap starts play without interrupting editor or toolbar actions.
+In the player, the starting key or touch is consumed until released.
 
 A URL without a fragment opens the starter. **Starter** in Examples opens it in a new tab;
 the logo opens the GitHub repository in a new tab. Both preserve your current code.

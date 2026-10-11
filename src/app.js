@@ -3,10 +3,10 @@ import { glyphs } from './glyphs.js?v=18';
 import { encode, decode, gameURL } from './payload.js?v=14';
 import { Runtime, Sound } from './runtime.js?v=28';
 import { Capture, download } from './capture.js?v=23';
-import { createDisplay } from './display.js?v=15';
-import { createCRT } from './crt.js?v=15';
+import { createDisplay } from './display.js?v=17';
+import { createCRT } from './crt.js?v=17';
 import { highlightJavaScript } from './editor-highlighter.js?v=13';
-import { starter, exampleLinks } from './example-links.js?v=30';
+import { starter, exampleLinks } from './example-links.js?v=33';
 
 const $ = (id) => document.getElementById(id);
 const initialHash = location.hash;
@@ -50,7 +50,8 @@ let toolsOpen = false,
   awaitingStart = false;
 let pointers = new Map(),
   directions = new Set(),
-  keys = new Map();
+  keys = new Map(),
+  startKeys = new Set();
 let gamepadMask = 0;
 const audio = new Sound((message) => status('Sound: ' + message));
 const runtime = new Runtime(frame, (error) => {
@@ -291,16 +292,33 @@ function unlockSound() {
   });
   audio.unlock();
 }
-function startGame() {
+function startGame(takeFocus = true) {
   if (!awaitingStart) return;
-  run(pendingSource, true);
+  run($('editor').value, takeFocus);
   unlockSound();
-  focusGame(false);
+  if (takeFocus) focusGame(false);
   fitGame();
 }
-document.addEventListener('pointerdown', (event) => {
-  if (event.button === 0 && awaitingStart) startGame();
-});
+function targetsPlayer(target) {
+  return (
+    view === 'code' &&
+    (!!target.closest('#game') ||
+      !target.closest('#workbench, button, a, input, select, [contenteditable], #divider'))
+  );
+}
+document.addEventListener(
+  'pointerdown',
+  (event) => {
+    if (!awaitingStart) return;
+    const player = targetsPlayer(event.target);
+    if (player) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    startGame(player);
+  },
+  true,
+);
 for (const type of ['pointerup', 'touchend', 'click'])
   document.addEventListener(type, (event) => {
     if (event.isTrusted && pendingSource && !awaitingStart) unlockSound();
@@ -415,7 +433,7 @@ $('viewport').onclick = (event) => {
   focusGame(false);
   audio.unlock();
 };
-$('start-game').onclick = startGame;
+$('start-game').onclick = () => startGame();
 $('game').addEventListener('pointerdown', () => audio.unlock());
 $('pause').onclick = () => {
   paused = !paused;
@@ -969,6 +987,19 @@ function gameButton(event) {
 }
 const editable = (target) => target.closest('input,textarea,select,[contenteditable]');
 document.addEventListener('keydown', (event) => {
+  if (startKeys.has(event.code)) {
+    event.preventDefault();
+    return;
+  }
+  if (awaitingStart) {
+    const player = targetsPlayer(document.activeElement);
+    startGame(player);
+    if (player) {
+      event.preventDefault();
+      startKeys.add(event.code);
+      return;
+    }
+  }
   if (event.isComposing) return;
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey) {
     const id = { Enter: 'run', NumpadEnter: 'run', KeyO: 'load' }[event.code];
@@ -994,8 +1025,8 @@ document.addEventListener('keydown', (event) => {
   const input = gameButton(event);
   if (
     document.activeElement === $('screen') &&
-    (running || awaitingStart) &&
-    (!paused || awaitingStart) &&
+    (running || runtime.pending) &&
+    !paused &&
     !(compact && toolsOpen) &&
     !event.altKey &&
     !event.ctrlKey &&
@@ -1003,7 +1034,6 @@ document.addEventListener('keydown', (event) => {
     input != null
   ) {
     event.preventDefault();
-    if (awaitingStart) startGame();
     audio.unlock();
     keys.set(event.code, input);
     syncInput();
@@ -1021,6 +1051,7 @@ document.addEventListener('keydown', (event) => {
   }
 });
 document.addEventListener('keyup', (event) => {
+  startKeys.delete(event.code);
   if (keys.delete(event.code)) {
     syncInput();
   }
@@ -1047,8 +1078,7 @@ function padMask(event, previous = 0) {
 }
 for (const control of [dpad, ...document.querySelectorAll('.ab [data-input]')]) {
   control.onpointerdown = (event) => {
-    if ((!running && !awaitingStart) || view !== 'code' || (compact && toolsOpen)) return;
-    if (awaitingStart) startGame();
+    if (!(running || runtime.pending) || view !== 'code' || (compact && toolsOpen)) return;
     if (paused) return;
     event.preventDefault();
     focusGame(false);
@@ -1146,7 +1176,10 @@ document.addEventListener(
   },
   true,
 );
-window.addEventListener('blur', release);
+window.addEventListener('blur', () => {
+  startKeys.clear();
+  release();
+});
 function fitGame() {
   const viewport = $('picture');
   if (!viewport.clientWidth || !viewport.clientHeight) return;
@@ -1246,6 +1279,7 @@ window.addEventListener('resize', () => {
 });
 document.addEventListener('visibilitychange', () => {
   lastFrame = 0;
+  if (document.hidden) startKeys.clear();
   release();
   runtime.suspend(document.hidden);
   syncPlayback();
@@ -1256,6 +1290,7 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('beforeunload', () => capture?.leave(true));
 window.addEventListener('pagehide', (event) => {
+  startKeys.clear();
   release();
   if (event.persisted) {
     capture?.leave(true);
@@ -1332,6 +1367,6 @@ if (initialHash) {
     });
 } else if (touch || !editorOpen) run(starter, true, focusRevision, true);
 else {
-  scheduleURL(0);
+  run(starter, false, focusRevision, true);
   focusEditor();
 }

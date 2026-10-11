@@ -67,13 +67,16 @@ void main() {
   // CRT-Lottes' default curvature; the inset retains the complete game image.
   vec2 warped = position * vec2(1.0 + 0.031 * position.y * position.y, 1.0 + 0.041 * position.x * position.x) / 0.98;
   vec2 p = warped * 0.5 + 0.5;
-  // Rounded tube corners, with a narrow antialiased edge in source coordinates.
-  vec2 corner = max(abs(warped) - vec2(0.97), 0.0);
+  // The glass outline stays outside the inset image and its phosphor glow.
+  vec2 corner = max(abs(warped * 0.98) - vec2(0.97), 0.0);
   float glass = 1.0 - smoothstep(0.028, 0.032, length(corner));
   float vignette = 1.0 - 0.13 * dot(position, position) * 0.5;
   vec3 color = (scanlines(p) + 0.13 * bloom(p)) * mask(gl_FragCoord.xy) * vignette;
   vec3 srgb = vec3(toSrgb(color.r), toSrgb(color.g), toSrgb(color.b));
-  gl_FragColor = vec4(mix(background, srgb, glass), 1.0);
+  // Outside the image, retain the surrounding color and the phosphor glow.
+  vec2 edge = (abs(warped) - 1.0) * sourceSize * 0.5;
+  vec3 surround = background * clamp(max(edge.x, edge.y) + 0.5, 0.0, 1.0);
+  gl_FragColor = vec4(mix(background, srgb + surround, glass), 1.0);
 }`;
 
 export function createCRT(palette, width = 640, height = 576, background = '#000000') {

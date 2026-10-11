@@ -82,7 +82,7 @@ try {
         globalThis.requestAnimationFrame(() => globalThis.requestAnimationFrame(resolve)),
       );
     });
-    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1));
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
     if (entry.id !== 'starter') {
       const source = await readFile(new URL(`../examples/${entry.id}.js`, import.meta.url), 'utf8');
       await page.locator('#editor').fill(source);

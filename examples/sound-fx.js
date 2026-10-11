@@ -1,7 +1,8 @@
 // @title Sound FX
-// Up / down selects an effect. Z plays it; X stops it.
+// Up / down selects an effect. A plays it; B stops it.
 
 let selected = 0;
+let pulse = 0;
 
 // Every tone effect restores M7; M8 gives channel 0 noise instead of tone.
 const effects = [
@@ -13,13 +14,26 @@ const effects = [
   { name: 'VICTORY', sound: 'T150M7V12O5N3cegCN5G' },
 ];
 
-put(4, 1, 'SOUND FX', 6);
-put(4, 2, 'READY');
-for (let i = 0; i < effects.length; i++) {
-  put(4, 4 + i * 2, effects[i].name, i === selected ? 6 : 7);
+function putCentered(cy, str, col = 7) {
+  put(1, cy, ' '.repeat(18));
+  put(Math.floor((20 - str.length) / 2), cy, str, col);
 }
+
+function drawEffect() {
+  const [settings, notes] = effects[selected].sound.split(/(?=O)/);
+  putCentered(13, settings);
+  putCentered(14, notes, 6);
+}
+
+put(6, 1, 'SOUND FX', 6);
+putCentered(2, 'READY');
+for (let i = 0; i < effects.length; i++) {
+  put(7, 4 + i, effects[i].name, i === selected ? 6 : 7);
+}
+putCentered(12, 'ZX 128 PLAY', 2);
 put(5, 15, '↑↓ SELECT');
 put(3, 16, 'A PLAY  B STOP');
+drawEffect();
 
 function tick() {
   const previous = selected;
@@ -27,18 +41,26 @@ function tick() {
   selected = Math.max(0, Math.min(effects.length - 1, selected));
 
   if (selected !== previous) {
-    put(4, 4 + previous * 2, effects[previous].name, 7);
-    put(4, 4 + selected * 2, effects[selected].name, 6);
+    pulse = 0;
+    put(7, 4 + previous, effects[previous].name, 7);
+    put(7, 4 + selected, effects[selected].name, 6);
+    drawEffect();
   }
 
   if (btnp(4)) {
     play(0, effects[selected].sound);
-    put(4, 2, `PLAY ${effects[selected].name}`.padEnd(16));
+    putCentered(2, `PLAY ${effects[selected].name}`);
+    pulse = 18;
   }
   if (btnp(5)) {
     play(0, '');
-    put(4, 2, 'STOPPED'.padEnd(16));
+    putCentered(2, 'STOPPED');
+    pulse = 0;
   }
 
-  spr(16, 32 + selected * 16, '→', 6);
+  spr(40, 32 + selected * 8, '→', pulse ? 7 : 6);
+  if (pulse > 0) {
+    spr(128, 32 + selected * 8 - pulse / 3, '♪', 6);
+    pulse--;
+  }
 }

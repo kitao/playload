@@ -1,8 +1,8 @@
 // @title Snake
-// Arrows turn; Z starts or pauses. X restarts.
+// Arrows turn; A starts or pauses. B restarts.
 
 const width = 18;
-const height = 12;
+const height = 14;
 const directions = [
   [0, -1],
   [0, 1],
@@ -36,19 +36,19 @@ function chooseFood() {
 }
 
 function drawGems() {
-  put(11, 1, `GEMS ${score}`);
+  put(11, 0, `GEMS ${score}`);
   if (food) {
-    put(1 + food.x, 3 + food.y, '💎', 4);
+    put(1 + food.x, 2 + food.y, '💎', 4);
   }
 }
 
 function drawBoard() {
-  for (let y = 3; y < 15; y++) {
-    put(1, y, ' '.repeat(width));
+  for (let y = 0; y < height; y++) {
+    put(1, 2 + y, ' '.repeat(width));
   }
   drawGems();
   for (let i = 0; i < body.length; i++) {
-    put(1 + body[i].x, 3 + body[i].y, '●', i === 0 ? 6 : 5);
+    put(1 + body[i].x, 2 + body[i].y, '●', i === 0 ? 6 : 5);
   }
 
   if (state === 'READY') {
@@ -66,9 +66,9 @@ function drawBoard() {
 function reset() {
   // The first array element is the head; the last is the tail.
   body = [
-    { x: 8, y: 5 },
-    { x: 7, y: 5 },
-    { x: 6, y: 5 },
+    { x: 8, y: 6 },
+    { x: 7, y: 6 },
+    { x: 6, y: 6 },
   ];
   direction = 3;
   nextDirection = 3;
@@ -78,14 +78,13 @@ function reset() {
   food = chooseFood();
 
   cls(0);
-  put(1, 1, 'SNAKE', 6);
-  put(0, 2, '▓'.repeat(20), 1);
-  put(0, 15, '▓'.repeat(20), 1);
-  for (let y = 3; y < 15; y++) {
-    put(0, y, '▓', 1);
-    put(19, y, '▓', 1);
+  put(1, 0, 'SNAKE', 6);
+  put(0, 1, '▓'.repeat(20), 1);
+  put(0, height + 2, '▓'.repeat(20), 1);
+  for (let y = 0; y < height; y++) {
+    put(0, 2 + y, '▓', 1);
+    put(19, 2 + y, '▓', 1);
   }
-  put(4, 16, 'ARROWS TURN');
   drawBoard();
   play(0, '');
 }
@@ -115,10 +114,10 @@ function move() {
   body.unshift({ x, y });
   if (!grows) {
     const tail = body.pop();
-    put(1 + tail.x, 3 + tail.y, ' ');
+    put(1 + tail.x, 2 + tail.y, ' ');
   }
-  put(1 + body[1].x, 3 + body[1].y, '●', 5);
-  put(1 + x, 3 + y, '●', 6);
+  put(1 + body[1].x, 2 + body[1].y, '●', 5);
+  put(1 + x, 2 + y, '●', 6);
 
   if (grows) {
     score += 1;

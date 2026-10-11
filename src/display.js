@@ -33,8 +33,7 @@ export function createDisplay(palette, width = 640, height = 576, background = '
       // Match CRT-Lottes' default horizontal and vertical curvature.
       const sx = (u * (1 + 0.031 * v * v)) / 0.98,
         sy = (v * (1 + 0.041 * u * u)) / 0.98;
-      const corner = Math.hypot(Math.max(Math.abs(sx) - 0.97, 0), Math.max(Math.abs(sy) - 0.97, 0));
-      if (Math.abs(sx) >= 1 || Math.abs(sy) >= 1 || corner >= 0.03) {
+      if (Math.abs(sx) >= 1 || Math.abs(sy) >= 1) {
         curved[i] = -1;
         continue;
       }

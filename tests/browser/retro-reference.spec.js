@@ -70,3 +70,55 @@ test('CRT reconstruction agrees with the frozen Lottes shader at matched setting
     expect(report.maximum).toBeLessThanOrEqual(1);
   }
 });
+
+test('CRT glass preserves every edge pixel and its phosphor glow', async ({ page }) => {
+  const source = await readFile(new URL('../../src/crt.js', import.meta.url), 'utf8');
+  expect(source).toContain('mix(background, srgb + surround, glass)');
+  await page.goto('/');
+  const result = await page.evaluate(async (source) => {
+    const { createCRT } = await import('/src/crt.js'),
+      { palette } = await import('/src/engine.js');
+    const unmaskedSource = source.replace(
+      'mix(background, srgb + surround, glass)',
+      'srgb + surround',
+    );
+    const unmasked = new Function(
+      unmaskedSource.replace('export function createCRT', 'function createCRT') +
+        '\nreturn createCRT;',
+    )();
+    const renderers = [createCRT(palette), unmasked(palette)],
+      pixels = new Uint8Array(160 * 144),
+      rgba = new Uint8Array(640 * 576 * 4);
+    const edges = [
+      ...Array.from({ length: 160 }, (_, x) => [x, 0]),
+      ...Array.from({ length: 160 }, (_, x) => [x, 143]),
+      ...Array.from({ length: 142 }, (_, y) => [0, y + 1]),
+      ...Array.from({ length: 142 }, (_, y) => [159, y + 1]),
+    ];
+    let minimumPeak = 1,
+      minimumGlow = 1;
+    for (const [x, y] of edges) {
+      pixels.fill(0);
+      pixels[y * 160 + x] = 7;
+      const samples = renderers.map((renderer) => {
+        renderer.render(pixels);
+        const gl = renderer.canvas.getContext('webgl');
+        gl.readPixels(0, 0, 640, 576, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+        let peak = 0,
+          glow = 0;
+        for (let offset = 0; offset < rgba.length; offset += 4) {
+          const light = rgba[offset] + rgba[offset + 1] + rgba[offset + 2];
+          peak = Math.max(peak, light);
+          glow += light;
+        }
+        return { peak, glow };
+      });
+      minimumPeak = Math.min(minimumPeak, samples[0].peak / samples[1].peak);
+      minimumGlow = Math.min(minimumGlow, samples[0].glow / samples[1].glow);
+    }
+    return { count: edges.length, minimumPeak, minimumGlow };
+  }, source);
+  expect(result.count).toBe(604);
+  expect(result.minimumPeak).toBe(1);
+  expect(result.minimumGlow).toBeGreaterThanOrEqual(0.99);
+});

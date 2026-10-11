@@ -1,12 +1,12 @@
 [
   {"id":"starter","name":"Starter","description":"Start with the default code."},
-  {"id":"gems","name":"Gems","description":"Move a sprite and collect gems."},
-  {"id":"lights-out","name":"Lights Out","description":"Flip neighboring lights to clear the board."},
-  {"id":"shooter","name":"Shooter","description":"Fire at moving targets over a character background."},
-  {"id":"jump","name":"Jump","description":"Jump between platforms to reach the goal."},
-  {"id":"glyph-quest","name":"Glyph Quest","description":"Collect six gems and a ring, then reach the castle."},
+  {"id":"gems","name":"Gems","description":"Dash through three timed gem-collecting rounds."},
+  {"id":"lights-out","name":"Lights Out","description":"Solve five boards in as few moves as possible."},
   {"id":"snake","name":"Snake","description":"Collect gems and grow without hitting walls or your tail."},
+  {"id":"shooter","name":"Shooter","description":"Survive four alien waves and defeat the boss."},
+  {"id":"jump","name":"Jump","description":"Reach four flags across moving platforms and patrols."},
+  {"id":"glyph-quest","name":"Glyph Quest","description":"Collect gems and a ring in three guarded dungeons."},
   {"id":"sound-fx","name":"Sound FX","description":"Try short effects made from notes, noise and envelopes."},
-  {"id":"music-box","name":"Music Box","description":"Change eight notes and play your own melody."},
-  {"id":"chiptune","name":"Chiptune","description":"Three voices with bass and noise drums."}
+  {"id":"music-box","name":"Music Box","description":"Arrange notes and rests into your own melody."},
+  {"id":"chiptune","name":"Chiptune","description":"A three-voice song with melody, bass and noise drums."}
 ]

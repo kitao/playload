@@ -1,107 +1,263 @@
 // @title Glyph Quest
-// A tiny dungeon made entirely from built-in Unicode artwork.
-// Arrows move; collect six gems and the ring, then reach the castle. Z restarts.
+// Collect every gem and the ring, then reach the castle in three guarded dungeons.
+// Arrows move; A stuns nearby ghosts. B retries this stage.
 
-// State persists between ticks; x and y are positions in the map's 8×8 cells.
-let x = 1;
-let y = 1;
-let frame = 0;
-let gems = 0;
-let ring = false;
-let won = false;
+const levels = [
+  {
+    name: 'COURTYARD',
+    wall: 1,
+    map: [
+      '##################',
+      '#   #    💎       #',
+      '#   #  ####  ### #',
+      '# 💎 #     #    # #',
+      '#   ### # # 💎  # #',
+      '#       # #    # #',
+      '### ##### #### # #',
+      '#   #     #    # #',
+      '# 💎 # ### # ## # #',
+      '#   #  💍  #  💎   #',
+      '# 💎    #        🏰#',
+      '##################',
+    ],
+    patrols: [
+      [
+        [1, 3],
+        [3, 3],
+        [3, 5],
+        [1, 5],
+      ],
+      [
+        [11, 1],
+        [16, 1],
+      ],
+    ],
+  },
+  {
+    name: 'GALLERIES',
+    wall: 4,
+    map: [
+      '##################',
+      '#    💎           #',
+      '# #### #### #### #',
+      '#    #      #  💎 #',
+      '#### # #### # ## #',
+      '#💎   # # 💎  #    #',
+      '# #### # ###### ##',
+      '#      #  💎      #',
+      '# ####### ###### #',
+      '#  💎    #💍       #',
+      '#               🏰#',
+      '##################',
+    ],
+    patrols: [
+      [
+        [7, 3],
+        [11, 3],
+      ],
+      [
+        [1, 7],
+        [6, 7],
+      ],
+      [
+        [9, 10],
+        [15, 10],
+      ],
+    ],
+  },
+  {
+    name: 'INNER KEEP',
+    wall: 5,
+    map: [
+      '##################',
+      '#              💎 #',
+      '# ### ###### ### #',
+      '# # 💎    💎     # #',
+      '# # ### ## ### # #',
+      '#💎    #    #    💎#',
+      '##### # ## # #####',
+      '#     #  💎 #     #',
+      '# # ### ## ### # #',
+      '# #    💎       # #',
+      '#        💍      🏰#',
+      '##################',
+    ],
+    patrols: [
+      [
+        [4, 3],
+        [13, 3],
+      ],
+      [
+        [7, 5],
+        [10, 5],
+      ],
+      [
+        [12, 7],
+        [16, 7],
+      ],
+      [
+        [3, 10],
+        [12, 10],
+      ],
+    ],
+  },
+];
+
+let stage = 0;
+let map;
+let enemies;
+let x;
+let y;
+let frame;
+let gems;
+let total;
+let ring;
+let cooldown;
+let state;
 
 pcg['#'].pat = pcg['▓'].pat;
-pcg['#'].col = [1, 0];
 
-// Each map symbol is one Unicode code point, so spread keeps its emoji intact.
-const map = [
-  '##################',
-  '#   #    💎       #',
-  '#   #  ####  ### #',
-  '# 💎 #     #    # #',
-  '#   ### # # 💎  # #',
-  '#       # #    # #',
-  '### ##### #### # #',
-  '#   #     #    # #',
-  '# 💎 # ### # ## # #',
-  '#   #  💍  #  💎   #',
-  '# 💎    #        🏰#',
-  '##################',
-].map((row) => [...row]);
-const original = map.map((row) => row.slice());
+function drawStatus() {
+  const finalStage = stage === levels.length - 1;
+  let title = 'GLYPH QUEST';
+  let controls = 'A STUN   B RETRY';
+  if (state === 'CAUGHT') {
+    title = 'CAUGHT!';
+    controls = 'B RETRY';
+  } else if (state === 'CLEAR') {
+    title = finalStage ? 'ALL CLEAR!' : 'STAGE CLEAR!';
+    controls = finalStage ? 'A RESTART B RETRY' : 'A NEXT   B RETRY';
+  }
+  const recharge = state === 'PLAY' ? (cooldown ? ' / WAIT' : ' / READY') : '';
 
-function drawMap() {
-  cls(0);
-  put(1, 1, 'GLYPH QUEST', 6, 0);
-  put(1, 2, '6 GEMS + 💍 → 🏰', 7, 0);
-  put(1, 3, map.map((row) => row.join('')).join('\n'));
-  put(1, 16, '💎0/6     A RESET', 7, 0);
+  put(1, 1, title.padEnd(18), state === 'CAUGHT' ? 3 : 6);
+  put(16, 1, `${stage + 1}/${levels.length}`, 7);
+  put(1, 2, `💎${gems}/${total} + 💍 → 🏰`.padEnd(18));
+  put(8, 2, '💍', ring ? 6 : 2);
+  put(1, 15, ' '.repeat(18));
+  put(Math.floor((20 - controls.length) / 2), 15, controls);
+  put(1, 16, (levels[stage].name + recharge).padEnd(18), 2);
 }
 
-function reset() {
+function startLevel() {
+  // All map symbols are single code points, so spread keeps the emoji intact.
+  map = levels[stage].map.map((row) => [...row]);
+  enemies = levels[stage].patrols.map((route) => ({
+    route,
+    next: 1,
+    x: route[0][0],
+    y: route[0][1],
+    stun: 0,
+  }));
   x = 1;
   y = 1;
   frame = 0;
   gems = 0;
+  cooldown = 0;
+  total = map.flat().filter((chr) => chr === '💎').length;
   ring = false;
-  won = false;
-  original.forEach((row, i) => {
-    map[i] = row.slice();
-  });
-  drawMap();
+  state = 'PLAY';
 
+  pcg['#'].col = [levels[stage].wall, 0];
+  cls(0);
+  put(1, 3, map.map((row) => row.join('')).join('\n'));
+  drawStatus();
   for (let ch = 0; ch < 3; ch++) {
-    play(ch, '');
+    play(ch, ch === 0 ? 'T240M7' : '');
   }
 }
 
-drawMap();
+startLevel();
 
 function tick() {
-  if (btnp(4)) {
-    reset();
-  }
-
-  if (!won) {
+  if (btnp(5)) {
+    startLevel();
+  } else if (state === 'CLEAR' && btnp(4)) {
+    stage = (stage + 1) % levels.length;
+    startLevel();
+  } else if (state === 'PLAY') {
     frame++;
-  }
+    if (cooldown > 0) {
+      cooldown--;
+      if (cooldown === 0) {
+        drawStatus();
+      }
+    }
+    if (btnp(4) && cooldown === 0) {
+      cooldown = 90;
+      for (const enemy of enemies) {
+        if (Math.abs(enemy.x - x) + Math.abs(enemy.y - y) <= 3) {
+          enemy.stun = 60;
+        }
+      }
+      drawStatus();
+      play(0, 'T240V10O6N1cG');
+    }
 
-  // Move at most one cell every seven ticks.
-  if (!won && frame % 7 === 0) {
-    const nx = x + btn(3) - btn(2);
-    const ny = y + btn(1) - btn(0);
+    const previousX = x;
+    const previousY = y;
+    if (frame % 7 === 0) {
+      const dx = btn(3) - btn(2);
+      const dy = dx === 0 ? btn(1) - btn(0) : 0;
+      const nx = x + dx;
+      const ny = y + dy;
+      if (map[ny]?.[nx] && map[ny][nx] !== '#') {
+        x = nx;
+        y = ny;
+      }
+    }
 
-    const tile = map[ny]?.[nx];
-    if (tile && tile !== '#') {
-      x = nx;
-      y = ny;
+    let caught = false;
+    for (const enemy of enemies) {
+      const oldX = enemy.x;
+      const oldY = enemy.y;
+      if (enemy.stun > 0) {
+        enemy.stun--;
+      } else if (frame % (22 - stage * 3) === 0) {
+        const [tx, ty] = enemy.route[enemy.next];
+        enemy.x += Math.sign(tx - enemy.x);
+        enemy.y += Math.sign(ty - enemy.y);
+        if (enemy.x === tx && enemy.y === ty) {
+          enemy.next = (enemy.next + 1) % enemy.route.length;
+        }
+      }
+      if (
+        enemy.stun === 0 &&
+        ((enemy.x === x && enemy.y === y) ||
+          (oldX === x && oldY === y && enemy.x === previousX && enemy.y === previousY))
+      ) {
+        caught = true;
+      }
+    }
 
+    const tile = map[y][x];
+    if (caught) {
+      state = 'CAUGHT';
+      drawStatus();
+      play(1, 'V10O3N1gc');
+    } else if (tile === '💎' || tile === '💍') {
       if (tile === '💎') {
         gems++;
-        play(1, 'V12O6N1ceG');
-      }
-
-      if (tile === '💍') {
+      } else {
         ring = true;
-        play(1, 'V12O5N1gBG');
       }
-
-      if (tile === '💎' || tile === '💍') {
-        map[y][x] = ' ';
-        put(1 + x, 3 + y, ' ');
-        put(1, 16, `💎${gems}/6  ${ring ? '💍' : ' '}  A RESET`, 7, 0);
-      }
-
-      if (tile === '🏰' && ring && gems === 6) {
-        won = true;
-        put(1, 1, 'ALL GEMS FOUND!', 6, 0);
-        put(1, 2, ' '.repeat(18), 7, 0);
-        play(0, 'T150V12O5N3cegCN5G');
-        play(2, 'V10O3N3cegCN5G');
-      }
+      map[y][x] = ' ';
+      put(1 + x, 3 + y, ' ');
+      drawStatus();
+      play(1, tile === '💎' ? 'V12O6N1ceG' : 'V12O5N1gBG');
+    } else if (tile === '🏰' && ring && gems === total) {
+      state = 'CLEAR';
+      drawStatus();
+      play(0, 'T150V12O5N3cegCN5G');
+      play(2, 'V10O3N3cegCN5G');
     }
   }
 
-  // The map starts at cell (1, 3); convert the player position to pixels.
-  spr(8 + x * 8, 24 + y * 8, '👾', 6);
+  // The map starts at cell (1, 3); convert sprite coordinates to pixels.
+  if (state !== 'CLEAR') {
+    for (const enemy of enemies) {
+      spr(8 + enemy.x * 8, 24 + enemy.y * 8, '👻', enemy.stun ? 4 : 3);
+    }
+  }
+  spr(8 + x * 8, 24 + y * 8, '👾', state === 'CAUGHT' ? 2 : 6);
 }

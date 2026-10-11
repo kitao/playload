@@ -40,9 +40,12 @@ See [reference setup](../tests/browser/reference/README.md).
 | Text and emoji      |                            0.000604 |                  1 |
 
 These recorded results use CRT source SHA-256
-`09f2c0e74e5b495335a0907b0bfc4a8cfe417054ed9c757f5f90235b729eb4d1`.
+`b9e71e3714c920f76768e7ab065650afaea325c1d5eac33e8bfe65589d4110c0`.
 They cover the central **544×480** region of the **640×576** output. Source-edge sampling differs
 intentionally, so the table does not claim whole-frame equivalence.
+Separate edge tests require all 604 border pixels to retain their peak brightness and at least
+99% of their phosphor glow compared with reconstruction without the glass outline.
+Outside the game image, the tool background replaces the black bezel while retaining edge glow.
 
 ## Runtime checks
 

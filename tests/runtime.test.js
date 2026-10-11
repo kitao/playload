@@ -308,6 +308,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       },
     };
     const release = t.mock.fn(() => runtime.input(0));
+    const startKeys = new Set(['KeyZ']);
     const clock = new Function(
       'window',
       'document',
@@ -321,6 +322,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       'compact',
       'toolsOpen',
       'awaitingStart',
+      'startKeys',
       'let lastFrame = 123, revision = 0;\n' +
         playback +
         lifecycle +
@@ -338,12 +340,14 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       !!state.compact,
       !!state.toolsOpen,
       !!state.awaitingStart,
+      startKeys,
     );
 
     assert.equal(timers.size, 1);
     handlers.get('beforeunload')();
     assert.equal(capture.leaving, true);
     handlers.get('pagehide')({ persisted: true });
+    assert.equal(startKeys.size, 0);
     assert.equal(runtime.worker, worker);
     assert.equal(worker.terminated, undefined);
     assert.equal(audio.context.state, 'running');
@@ -424,6 +428,7 @@ test('pending audio initialization cannot start video capture after navigation',
       running: false,
       paused: false,
       awaitingStart: false,
+      startKeys: new Set(),
       gameError: '',
       $: () => ({ hidden: false }),
       render() {},
@@ -487,7 +492,8 @@ test('game input follows keyboard labels and releases the original physical keys
     'keys',
     'let view = "code", running = true, paused = false, gamepadMask = 0; ' +
       'let compact = false, toolsOpen = false, awaitingStart = false; ' +
-      'const pointers = new Map(), directions = new Set(); const readGamepads = () => 0;\n' +
+      'const pointers = new Map(), directions = new Set(), startKeys = new Set(); ' +
+      'const readGamepads = () => 0;\n' +
       releaseSource +
       syncSource +
       handlersSource +

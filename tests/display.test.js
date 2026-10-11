@@ -90,6 +90,28 @@ test('CRT has opaque black borders, scanlines and edge shading, and can return t
   assert.deepEqual(display.render(pixels, false), plain);
 });
 
+test('CRT keeps every edge pixel visible at four-times scale', () => {
+  const display = createDisplay(palette),
+    pixels = new Uint8Array(160 * 144);
+  const edges = [
+    ...Array.from({ length: 160 }, (_, x) => [x, 0]),
+    ...Array.from({ length: 160 }, (_, x) => [x, 143]),
+    ...Array.from({ length: 142 }, (_, y) => [0, y + 1]),
+    ...Array.from({ length: 142 }, (_, y) => [159, y + 1]),
+  ];
+  for (const [x, y] of edges) {
+    pixels.fill(0);
+    pixels[y * 160 + x] = 7;
+    const data = display.render(pixels, true);
+    let area = 0;
+    for (let offset = 0; offset < data.length; offset += 4) {
+      if (data[offset] > 0) area++;
+    }
+    // At four-times scale, curvature still leaves at least nine samples per pixel.
+    assert(area >= 9, `edge pixel (${x}, ${y}) was cut to ${area} samples`);
+  }
+});
+
 test('CRT surrounds the curved glass with the capture background while retaining game black', () => {
   const display = createDisplay(palette, 640, 576, '#211c29'),
     pixels = new Uint8Array(160 * 144),
@@ -100,7 +122,9 @@ test('CRT surrounds the curved glass with the capture background while retaining
     [0, 575],
     [639, 575],
     [320, 0],
+    [320, 575],
     [0, 288],
+    [639, 288],
   ]) {
     const offset = (y * 640 + x) * 4;
     assert.deepEqual([...data.slice(offset, offset + 4)], [33, 28, 41, 255]);

@@ -6,6 +6,25 @@ import { glyphs } from '../src/glyphs.js';
 import { compileScore, AY } from '../src/sound.js';
 import { encode, gameURL } from '../src/payload.js';
 
+async function loadExample(name, hooks, math = Math) {
+  const source = await readFile(new URL(`../examples/${name}.js`, import.meta.url), 'utf8');
+  const engine = createEngine(glyphs, compileScore);
+  const game = new Function(...Object.keys(engine.api), 'Math', source + '\n' + hooks)(
+    ...Object.values(engine.api),
+    math,
+  );
+  const step = (mask = 0, frames = 1) => {
+    engine.input(mask);
+    for (let i = 0; i < frames; i++) engine.step(game.tick);
+  };
+  const press = (id) => {
+    step();
+    step(1 << id);
+    step();
+  };
+  return { source, engine, game, step, press };
+}
+
 test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async () => {
   const source = await readFile(new URL('../examples/snake.js', import.meta.url), 'utf8');
   const engine = createEngine(glyphs, compileScore);
@@ -15,7 +34,7 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
     ...Object.keys(engine.api),
     'Math',
     source +
-      '\nreturn {tick,state:()=>({body,food,nextDirection,score,state}),feed:()=>{food={x:9,y:5}}};',
+      '\nreturn {tick,state:()=>({body,food,nextDirection,score,state}),feed:()=>{food={x:9,y:6}}};',
   )(...Object.values(engine.api), math);
   const step = (mask = 0, frames = 1) => {
     engine.input(mask);
@@ -32,7 +51,7 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
   step(1 << 4, 8);
   assert.equal(game.state().score, 1);
   assert.equal(game.state().body.length, 4);
-  assert.deepEqual(game.state().body[0], { x: 9, y: 5 });
+  assert.deepEqual(game.state().body[0], { x: 9, y: 6 });
   assert.equal(engine.api.scr[8][10].chr, '●');
   assert(
     !game
@@ -45,7 +64,7 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
   step(1 << 2);
   assert.equal(game.state().nextDirection, 0);
   step(0, 6);
-  assert.deepEqual(game.state().body[0], { x: 9, y: 4 });
+  assert.deepEqual(game.state().body[0], { x: 9, y: 5 });
   press(4);
   assert.equal(game.state().state, 'PAUSED');
   const paused = structuredClone(game.state());
@@ -94,105 +113,154 @@ return {tick,state:()=>({body,food,state}),fixture:(cells,gem,heading)=>{
 
   const cycle = [];
   for (let x = 0; x < 18; x++) cycle.push({ x, y: 0 });
-  for (let y = 1; y < 12; y++) {
+  for (let y = 1; y < 14; y++) {
     for (let i = 0; i < 17; i++) cycle.push({ x: y % 2 ? 17 - i : 1 + i, y });
   }
-  for (let y = 11; y >= 1; y--) cycle.push({ x: 0, y });
+  for (let y = 13; y >= 1; y--) cycle.push({ x: 0, y });
   game.fixture(cycle.slice(1), cycle[0], 2);
   move();
   assert.equal(game.state().state, 'WON');
-  assert.equal(game.state().body.length, 216);
+  assert.equal(game.state().body.length, 252);
   assert.equal(game.state().food, null);
   move();
   assert.equal(game.state().state, 'WON');
 });
 
-test('Jump reaches a visible flag, lands on platforms, falls and resets', async () => {
-  const source = await readFile(new URL('../examples/jump.js', import.meta.url), 'utf8');
-  const fresh = () => {
-    const engine = createEngine(glyphs, compileScore);
-    const game = new Function(
-      ...Object.keys(engine.api),
-      source +
-        `
-return {tick,platforms,state:()=>({x,y,dy,grounded,won,lost}),place:(px,py,velocity)=>{
-  x=px;y=py;dy=velocity;grounded=false;won=false;lost=false;
-}};`,
-    )(...Object.values(engine.api));
-    const step = (mask = 0, frames = 1) => {
-      engine.input(mask);
-      for (let i = 0; i < frames; i++) engine.step(game.tick);
-    };
-    step();
-    engine.sounds();
-    return { engine, game, step };
-  };
-  const { engine, game, step } = fresh();
-  const flag = [];
-  for (let y = 32; y < 40; y++) flag.push(...engine.pixels.subarray(y * 160 + 136, y * 160 + 144));
-  assert(flag.includes(3), 'The goal must be visibly red.');
-  for (const [tx, ty] of [
-    [64, 80],
-    [112, 56],
-    [76, 40],
-    [136, 32],
-  ]) {
-    step();
-    step((1 << 4) | (1 << (game.state().x < tx ? 3 : 2)));
-    for (
-      let i = 0;
-      i < 70 && !game.state().grounded && !game.state().won && !game.state().lost;
-      i++
-    ) {
-      const { x } = game.state();
-      step(x < tx ? 1 << 3 : x > tx ? 1 << 2 : 0);
+const jumpHooks = `return {tick,stages,state:()=>({stage,state,x,y,dy,grounded,jumpBuffer,
+  ferry:ferry&&{...ferry},hazard:hazard&&{...hazard},standing:platforms.indexOf(standing)})};`;
+
+test('Jump clears four distinct stages with real movement, including the ferry and patrol', async () => {
+  const { engine, game, step, press } = await loadExample('jump', jumpHooks);
+  const moveTo = (target) => {
+    for (let i = 0; i < 100 && Math.abs(game.state().x - target) > 1; i++) {
+      step(1 << (game.state().x < target ? 3 : 2));
+      assert.equal(game.state().state, 'PLAY');
     }
-    assert.equal(game.state().grounded, true);
-    assert.equal(game.state().y, ty);
-    assert.equal(game.state().lost, false);
+    assert(Math.abs(game.state().x - target) <= 1);
+  };
+  const jumpTo = (target, top) => {
+    step();
+    step((1 << 4) | (1 << (game.state().x < target ? 3 : 2)));
+    for (let i = 0; i < 70; i++) {
+      const { x, y, state, grounded } = game.state();
+      if (state !== 'PLAY' || (grounded && y === top)) break;
+      step(Math.abs(x - target) < 1 ? 0 : 1 << (x < target ? 3 : 2));
+    }
+    assert.notEqual(game.state().state, 'OVER');
+    if (game.state().state === 'PLAY') {
+      assert.equal(game.state().grounded, true);
+      assert.equal(game.state().y, top);
+    } else {
+      const [fx, fy] = game.stages[game.state().stage].flag;
+      assert(Math.abs(game.state().x - fx * 8) < 7 && Math.abs(game.state().y - fy * 8) < 7);
+    }
+  };
+  const routes = [
+    [
+      [72, 80],
+      [136, 56],
+    ],
+    [
+      [96, 80],
+      [56, 56],
+      [104, 32],
+    ],
+    [
+      [72, 80],
+      [136, 56],
+    ],
+    [
+      [100, 80],
+      [120, 56],
+      [64, 32],
+    ],
+  ];
+
+  step();
+  engine.sounds();
+  for (let stage = 0; stage < routes.length; stage++) {
+    assert.equal(game.state().stage, stage);
+    if (stage > 0) {
+      press(5);
+      assert.equal(game.state().stage, stage, 'Retry preserves the current stage.');
+    }
+    step(0, 240);
+    assert.equal(game.state().state, 'PLAY', 'The starting platform must be safe.');
+    const [fx, fy] = game.stages[stage].flag;
+    assert(
+      Array.from({ length: 8 }, (_, y) =>
+        engine.pixels.subarray((fy * 8 + y) * 160 + fx * 8, (fy * 8 + y) * 160 + fx * 8 + 8),
+      ).some((row) => row.includes(3)),
+      'The goal must be visibly red.',
+    );
+    moveTo([40, 64, 40, 54][stage]);
+    for (let i = 0; i < routes[stage].length; i++) {
+      jumpTo(...routes[stage][i]);
+      if (stage === 2 && i === 0) {
+        step(0, 2400);
+        assert.equal(game.state().standing, 2, 'The ferry carries the player through reversals.');
+        assert.equal(game.state().y, 80);
+        for (let n = 0; n < 160 && game.state().x < 102; n++) step();
+        assert(game.state().x >= 102);
+      }
+    }
+    if (stage === 0) step(1 << 3, 5);
+    assert.equal(game.state().state, stage === 3 ? 'DONE' : 'CLEAR');
+    const clear = game.state();
+    step(1 << 2, 60);
+    assert.deepEqual(game.state(), clear);
+    press(4);
+    assert.equal(game.state().stage, (stage + 1) % routes.length);
+    assert.equal(game.state().state, 'PLAY');
+    assert.equal(game.state().dy, 0, 'Advancing must not also trigger a jump.');
   }
-  for (let i = 0; i < 20 && !game.state().won; i++) step(1 << 3);
-  assert.equal(game.state().won, true);
-  const won = game.state();
-  step((1 << 2) | (1 << 4), 60);
-  assert.deepEqual(game.state(), won);
   const ay = new AY();
-  for (const command of engine.sounds()) {
+  for (const command of engine.sounds().filter((sound) => sound.score.code.length)) {
     ay.reset();
     ay.play(command.ch, command.score);
     assert(ay.render(12000).some((value) => Math.abs(value) > 0.01));
   }
-  step(1 << 5);
-  assert.deepEqual(game.state(), { x: 16, y: 104, dy: 0, grounded: true, won: false, lost: false });
-  assert(engine.sounds().every((command) => command.score.code.length === 0));
-
-  for (const platform of game.platforms) {
-    const trial = fresh();
-    const top = platform.y * 8;
-    trial.game.place(platform.x * 8, top + 2, -4.5);
-    trial.step();
-    assert.equal(trial.game.state().grounded, false);
-    assert(trial.game.state().dy < 0);
-    for (let i = 0; i < 60 && !trial.game.state().grounded; i++) trial.step();
-    assert.equal(trial.game.state().y, top - 8);
-    trial.step(0, 90);
-    assert.equal(trial.game.state().y, top - 8);
-  }
-  step(1 << 4, 100);
-  assert.equal(engine.sounds().length, 1, 'Holding jump must not bounce repeatedly.');
-  assert.equal(game.state().y, 104);
-  step(1 << 2, 60);
-  assert.equal(game.state().lost, true);
-  assert(!engine.pixels.includes(6), 'The fallen player must not be drawn.');
-  const lost = game.state();
-  step((1 << 3) | (1 << 4), 60);
-  assert.deepEqual(game.state(), lost);
-  step(1 << 5);
-  assert.equal(game.state().lost, false);
-  assert.equal(game.state().y, 104);
 });
 
-test('Music Box edits all eight steps, plays the melody, stops and restores it', async () => {
+test('Jump retries falls and accepts buffered and coyote jumps without bouncing on held A', async () => {
+  const { engine, game, step, press } = await loadExample('jump', jumpHooks);
+  step();
+  engine.sounds();
+  step(1 << 4, 100);
+  assert.equal(game.state().grounded, true);
+  assert.equal(game.state().y, 104);
+  assert.equal(engine.sounds().filter((sound) => sound.score.code.length).length, 1);
+
+  step(1 << 2, 60);
+  assert.equal(game.state().state, 'OVER');
+  const lost = game.state();
+  step(0, 60);
+  assert.deepEqual(game.state(), lost);
+  press(5);
+  assert.deepEqual([game.state().stage, game.state().x, game.state().y], [0, 16, 104]);
+  step(1 << 3, 17);
+  assert.equal(game.state().grounded, false);
+  step((1 << 3) | (1 << 4));
+  assert(game.state().dy < 0, 'A jump just beyond the platform edge is accepted.');
+
+  press(5);
+  step(1 << 4);
+  step(0, 30);
+  assert(game.state().dy > 0 && !game.state().grounded);
+  step(1 << 4);
+  let landed = false;
+  let bounced = false;
+  for (let i = 0; i < 10; i++) {
+    const before = game.state();
+    step();
+    const after = game.state();
+    if (after.grounded) landed = true;
+    if (landed && before.grounded && after.dy < 0) bounced = true;
+  }
+  assert(landed && bounced, 'A press shortly before landing is buffered.');
+});
+
+test('Music Box edits notes and rests, plays eight steps, stops and restores them', async () => {
   const source = await readFile(new URL('../examples/music-box.js', import.meta.url), 'utf8');
   const engine = createEngine(glyphs, compileScore);
   const game = new Function(
@@ -222,12 +290,20 @@ test('Music Box edits all eight steps, plays the melody, stops and restores it',
   for (let step = 0; step < 8; step++) {
     assert.equal(game.state().selected, step);
     for (let i = 0; i < 9; i++) press(0);
-    assert.equal(game.state().notes[step], 7);
+    assert.equal(game.state().notes[step], 8);
     for (let i = 0; i < 9; i++) press(1);
     assert.equal(game.state().notes[step], 0);
     press(3);
   }
   assert.equal(game.state().selected, 7);
+  const restPreview = engine.sounds().at(-1);
+  const silence = new AY();
+  silence.play(restPreview.ch, restPreview.score);
+  assert(silence.render(4800).every((value) => value === 0));
+  assert.equal(engine.api.scr[12][15].chr, '–');
+  for (let i = 0; i < 7; i++) press(2);
+  press(0);
+  for (let i = 0; i < 7; i++) press(3);
   engine.sounds();
   press(4);
   const started = engine.sounds();
@@ -240,7 +316,7 @@ test('Music Box edits all eight steps, plays the melody, stops and restores it',
   assert.equal(ay.mixer, 7);
   engine.input(0);
   for (let i = 0; i < 30; i++) engine.step(game.tick);
-  assert.equal(engine.api.scr[12][6].col[0], 6);
+  assert.equal(engine.api.scr[12][9].col[0], 6);
   press(0);
   assert.equal(game.state().frame, 1);
   assert.equal(
@@ -249,7 +325,7 @@ test('Music Box edits all eight steps, plays the melody, stops and restores it',
       .find((command) => command.ch === 0)
       .score.code.filter((event) => event.op === 'note')
       .at(-1).frequency,
-    440 * 2 ** ((62 - 69) / 12),
+    440 * 2 ** ((60 - 69) / 12),
   );
   press(4);
   assert.equal(game.state().playing, false);
@@ -288,154 +364,218 @@ test('Gems collects when both coordinate differences are less than six', async (
   }
 });
 
-test('Gems draws coordinates once even when its next position overlaps the player', async () => {
-  const source = await readFile(new URL('../examples/gems.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
-  const math = Object.create(Math);
-  const values = [0.5, 0.5, 0.5, 0.5, 0, 0];
-  let next = 0;
-  math.random = () => values[next++ % values.length];
-  const game = new Function(
-    ...Object.keys(engine.api),
-    'Math',
-    source + '\nx = 72; y = 72; gx = 9; gy = 9; return {tick,state:()=>({x,y,gx,gy,score})};',
-  )(...Object.values(engine.api), math);
-  const step = (mask, frames) => {
-    engine.input(mask);
-    for (let i = 0; i < frames; i++) engine.step(game.tick);
-  };
-  engine.sounds();
-  for (let score = 1; score <= 2; score++) {
-    step(0, 1);
-    assert.deepEqual(game.state(), { x: 72, y: 72, gx: 9, gy: 9, score });
-    assert.equal(next, score * 2);
-    assert.deepEqual(
-      engine.sounds().map((sound) => sound.ch),
-      [1],
-    );
+const gemsHooks = `return {tick,rounds,state:()=>({round,state,x,y,gx,gy,score,collected,time,dash,cooldown})};`;
+
+test('Gems clears three timed rounds, rewards faster play and starts again without background music', async () => {
+  for (const random of [0, 0.5, 0.999]) {
+    const math = Object.create(Math);
+    math.random = () => random;
+    const { engine, game, step, press } = await loadExample('gems', gemsHooks, math);
+    assert.equal(engine.sounds().length, 3, 'Starting clears all three sound channels.');
+    let previousScore = 0;
+    for (let round = 0; round < game.rounds.length; round++) {
+      let frames = 0;
+      while (game.state().state === 'PLAY' && frames++ < 1800) {
+        const { x, y, gx, gy, cooldown } = game.state();
+        const dx = gx * 8 - x;
+        const dy = gy * 8 - y;
+        const movement =
+          (Math.abs(dx) > 2 ? 1 << (dx > 0 ? 3 : 2) : 0) |
+          (Math.abs(dy) > 2 ? 1 << (dy > 0 ? 1 : 0) : 0);
+        step(movement | (cooldown === 0 ? 1 << 4 : 0));
+        const after = game.state();
+        assert(after.x >= 8 && after.x <= 144 && after.y >= 24 && after.y <= 112);
+        for (const { score } of engine.sounds()) {
+          assert(
+            !score.code.some((event) => event.op === 'repeat'),
+            'Game effects must be finite.',
+          );
+        }
+      }
+      const clear = game.state();
+      assert.equal(clear.round, round);
+      assert.equal(clear.state, round === 2 ? 'WON' : 'CLEAR');
+      assert.equal(clear.collected, game.rounds[round].gems);
+      assert.equal(clear.score, previousScore + clear.collected + Math.ceil(clear.time / 60));
+      assert.equal(engine.api.scr[clear.gy][clear.gx].chr, ' ');
+      previousScore = clear.score;
+      step(1 << 3, 60);
+      assert.deepEqual(game.state(), clear, 'Time and positions freeze after clearing.');
+      press(4);
+      assert.equal(game.state().round, (round + 1) % game.rounds.length);
+      assert.equal(game.state().dash, 0, 'The next-round input must not also dash.');
+      assert.equal(game.state().cooldown, 0);
+      assert(
+        engine.sounds().every((sound) => !sound.score.code.some((event) => event.op === 'note')),
+      );
+    }
+    assert.equal(game.state().score, 0);
   }
-  step(0, 1);
-  assert.deepEqual(game.state(), { x: 72, y: 72, gx: 1, gy: 3, score: 3 });
-  assert.equal(next, 6);
-  engine.sounds();
-  step(0, 60);
-  assert.equal(game.state().score, 3);
-  assert.equal(engine.sounds().length, 0);
-  next = 0;
-  step(1 << 5, 1);
-  assert.deepEqual(game.state(), { x: 72, y: 72, gx: 9, gy: 9, score: 3 });
-  assert.equal(next, 2);
-  assert.deepEqual(
-    engine.sounds().map((sound) => sound.ch),
-    [2],
-  );
-  step(0, 1);
-  assert.equal(game.state().score, 4);
-  assert.equal(next, 4);
-  assert.deepEqual(
-    engine.sounds().map((sound) => sound.ch),
-    [1],
-  );
 });
 
-test('Gems demonstrates held movement, collection, sound effects and relocation', async () => {
-  const source = await readFile(new URL('../examples/gems.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
+test('Gems limits held dash, expires its timer, keeps distant pickups and restarts', async () => {
   const math = Object.create(Math);
   math.random = () => 0.5;
-  const game = new Function(
-    ...Object.keys(engine.api),
-    'Math',
-    source + '\nreturn {tick,state:()=>({x,y,gx,gy,score})};',
-  )(...Object.values(engine.api), math);
-  assert.equal(engine.sounds()[0].ch, 0);
-  engine.input((1 << 3) | (1 << 4));
-  engine.step(game.tick);
-  assert.equal(game.state().x, 78);
-  engine.input(1 << 2);
-  for (let i = 0; i < 42; i++) engine.step(game.tick);
-  engine.input(1 << 0);
-  for (let i = 0; i < 24; i++) engine.step(game.tick);
-  assert.equal(game.state().score, 1);
-  assert.deepEqual([game.state().gx, game.state().gy], [9, 9]);
-  assert.deepEqual(
-    engine.sounds().map((sound) => sound.ch),
-    [1],
-  );
-  engine.input(1 << 5);
-  engine.step(game.tick);
-  assert.equal(game.state().score, 1);
+  const { engine, game, step, press } = await loadExample('gems', gemsHooks, math);
+  engine.sounds();
+  step((1 << 3) | (1 << 4));
+  assert.equal(game.state().x, 79);
+  assert.equal(game.state().dash, 17);
+  assert.equal(game.state().cooldown, 90);
+  step(1 << 4, 100);
+  assert.equal(game.state().dash, 0);
+  assert.equal(game.state().cooldown, 0);
   assert.deepEqual(
     engine.sounds().map((sound) => sound.ch),
     [2],
+    'Holding A does not repeat dash.',
   );
-  engine.step(game.tick);
-  assert.equal(engine.sounds().length, 0);
-  engine.input((1 << 0) | (1 << 2));
-  for (let i = 0; i < 200; i++) engine.step(game.tick);
+  step();
+  const before = game.state().x;
+  step((1 << 2) | (1 << 4));
+  assert.equal(game.state().x, before - 3);
+
+  press(5);
+  engine.sounds();
+  step((1 << 0) | (1 << 2), 100);
   assert.deepEqual([game.state().x, game.state().y], [8, 24]);
-  engine.input((1 << 1) | (1 << 3));
-  for (let i = 0; i < 200; i++) engine.step(game.tick);
+  step((1 << 1) | (1 << 3), 200);
   assert.deepEqual([game.state().x, game.state().y], [144, 112]);
+  step(0, game.state().time - 1);
+  assert.equal(game.state().state, 'PLAY');
+  step();
+  assert.equal(game.state().time, 0);
+  assert.equal(game.state().state, 'OVER');
+  const expired = game.state();
+  step(1 << 2, 60);
+  assert.deepEqual(game.state(), expired);
+  press(4);
+  assert.deepEqual(
+    [
+      game.state().round,
+      game.state().score,
+      game.state().collected,
+      game.state().x,
+      game.state().y,
+      game.state().state,
+    ],
+    [0, 0, 0, 76, 68, 'PLAY'],
+  );
+
+  // A constant random source must not keep spawning a gem beneath the player.
+  const trial = await loadExample('gems', gemsHooks, math);
+  for (let i = 0; i < 100 && trial.game.state().collected === 0; i++) {
+    const { x, y, gx, gy } = trial.game.state();
+    trial.step(
+      (Math.abs(x - gx * 8) > 2 ? 1 << (x < gx * 8 ? 3 : 2) : 0) |
+        (Math.abs(y - gy * 8) > 2 ? 1 << (y < gy * 8 ? 1 : 0) : 0),
+    );
+  }
+  const { x, y, gx, gy, collected } = trial.game.state();
+  assert.equal(collected, 1);
+  assert(Math.abs(x - gx * 8) >= 24 || Math.abs(y - gy * 8) >= 24);
+  trial.step(0, 60);
+  assert.equal(trial.game.state().collected, 1);
 });
 
-test('Lights Out retains its screen-cell board, solves, and resets', async () => {
-  const source = await readFile(new URL('../examples/lights-out.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
-  const game = new Function(
-    ...Object.keys(engine.api),
-    source + '\nreturn {tick,state:()=>({x,y,moves})};',
-  )(...Object.values(engine.api));
+test('Lights Out solves five distinct boards at their verified minimum, advances and restarts', async () => {
+  const { engine, game, step, press } = await loadExample(
+    'lights-out',
+    'return {tick,puzzles,state:()=>({level,x,y,moves,cleared})};',
+  );
   const board = () =>
     Array.from({ length: 5 }, (_, y) =>
-      Array.from({ length: 5 }, (_, x) => engine.api.scr[4 + y * 2][6 + x * 2].chr),
+      Array.from({ length: 5 }, (_, x) =>
+        engine.api.scr[4 + y * 2][6 + x * 2].chr === '●' ? 1 : 0,
+      ),
     );
-  const press = (id) => {
-    engine.input(1 << id);
-    engine.step(game.tick);
-    engine.input(0);
-    engine.step(game.tick);
-  };
-  engine.step(game.tick);
-  const original = board();
-  assert(original.flat().includes('●'));
-  assert.deepEqual(engine.api.scr[8][10].col, [null, 1]);
-  press(3);
-  assert.deepEqual(engine.api.scr[8][10].col, [null, null]);
-  assert.deepEqual(engine.api.scr[8][12].col, [null, 1]);
-  for (let i = 0; i < 60; i++) engine.step(game.tick);
-  assert.deepEqual(board(), original);
-  for (const [tx, ty] of [
-    [0, 0],
-    [1, 3],
-    [4, 2],
-    [2, 2],
-  ]) {
-    const dx = tx - game.state().x,
-      dy = ty - game.state().y;
-    for (let i = 0; i < Math.abs(dx); i++) press(dx > 0 ? 3 : 2);
-    for (let i = 0; i < Math.abs(dy); i++) press(dy > 0 ? 1 : 0);
-    assert.deepEqual([game.state().x, game.state().y], [tx, ty]);
-    press(4);
-  }
-  assert.equal(game.state().moves, 4);
-  assert(
-    board()
-      .flat()
-      .every((chr) => chr === '○'),
-  );
-  assert.equal(
-    engine.api.scr[1]
+  const text = (row) =>
+    engine.api.scr[row]
       .map((cell) => cell.chr)
       .join('')
-      .trim(),
-    'ALL CLEAR!',
-  );
-  assert.equal(engine.sounds().filter((sound) => sound.score.code.length).length, 4);
+      .trim();
+
+  // Any solution is determined by the first row's 32 possible choices.
+  function minimumMoves(original) {
+    let minimum = 26;
+    for (let firstRow = 0; firstRow < 32; firstRow++) {
+      const cells = original.map((row) => row.slice());
+      let moves = 0;
+      function flip(x, y) {
+        moves++;
+        for (const [dx, dy] of [
+          [0, 0],
+          [0, -1],
+          [0, 1],
+          [-1, 0],
+          [1, 0],
+        ]) {
+          if (cells[y + dy]?.[x + dx] !== undefined) cells[y + dy][x + dx] ^= 1;
+        }
+      }
+      for (let x = 0; x < 5; x++) if (firstRow & (1 << x)) flip(x, 0);
+      for (let y = 1; y < 5; y++) {
+        for (let x = 0; x < 5; x++) if (cells[y - 1][x]) flip(x, y);
+      }
+      if (cells[4].every((cell) => cell === 0)) minimum = Math.min(minimum, moves);
+    }
+    return minimum;
+  }
+
+  step();
+  const boards = new Set();
+  for (let level = 0; level < game.puzzles.length; level++) {
+    const original = board();
+    boards.add(original.flat().join(''));
+    assert.equal(game.state().level, level);
+    if (level > 0) {
+      press(5);
+      assert.equal(game.state().level, level, 'Retry preserves the current board.');
+      assert.deepEqual(board(), original);
+    }
+    assert.equal(minimumMoves(original), level + 2);
+    assert.equal(game.puzzles[level].length, level + 2);
+    assert(text(14).includes(`PAR ${level + 2}`));
+    assert.deepEqual(engine.api.scr[8][10].col, [null, 1]);
+    press(3);
+    assert.deepEqual(engine.api.scr[8][10].col, [null, null]);
+    assert.deepEqual(engine.api.scr[8][12].col, [null, 1]);
+    step(0, 60);
+    assert.deepEqual(board(), original, 'Idle ticks must not redraw or mutate the puzzle.');
+
+    for (const [tx, ty] of game.puzzles[level]) {
+      for (let i = 0; i < 4 && game.state().x !== tx; i++) press(game.state().x < tx ? 3 : 2);
+      for (let i = 0; i < 4 && game.state().y !== ty; i++) press(game.state().y < ty ? 1 : 0);
+      assert.deepEqual([game.state().x, game.state().y], [tx, ty]);
+      press(4);
+    }
+    assert.equal(game.state().cleared, true);
+    assert.equal(game.state().moves, level + 2);
+    assert(
+      board()
+        .flat()
+        .every((cell) => cell === 0),
+    );
+    const clear = game.state();
+    step(1 << 3, 60);
+    assert.deepEqual(game.state(), clear, 'The solved board must remain solved.');
+    assert(
+      board()
+        .flat()
+        .every((cell) => cell === 0),
+    );
+    if (level === game.puzzles.length - 1) assert.equal(text(2), 'ALL BOARDS CLEAR!');
+    press(4);
+    assert.equal(game.state().moves, 0, 'Next-board input must not also flip a light.');
+  }
+  assert.equal(boards.size, 5);
+  assert.equal(game.state().level, 0);
+  assert.equal(game.state().cleared, false);
+
+  press(4);
+  assert.equal(game.state().moves, 1);
   press(5);
-  assert.deepEqual(game.state(), { x: 2, y: 2, moves: 0 });
-  assert.deepEqual(board(), original);
-  assert(engine.sounds().every((sound) => sound.score.code.length === 0));
+  assert.deepEqual(game.state(), { level: 0, x: 2, y: 2, moves: 0, cleared: false });
 });
 
 test('Sound FX plays every preset audibly, once per press, and stops', async () => {
@@ -448,6 +588,15 @@ test('Sound FX plays every preset audibly, once per press, and stops', async () 
   assert.equal(engine.sounds().length, 0);
   const ay = new AY();
   for (let i = 0; i < game.effects.length; i++) {
+    const displayed = [13, 14]
+      .map((row) =>
+        engine.api.scr[row]
+          .map((cell) => cell.chr)
+          .join('')
+          .trim(),
+      )
+      .join('');
+    assert.equal(displayed, game.effects[i].sound);
     engine.input(1 << 4);
     engine.step(game.tick);
     const commands = engine.sounds();
@@ -472,211 +621,454 @@ test('Sound FX plays every preset audibly, once per press, and stops', async () 
   }
 });
 
-test('the chiptune example plays three valid voices and supports stop and restart', async () => {
-  const source = await readFile(new URL('../examples/chiptune.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
-  const tick = new Function(...Object.keys(engine.api), source + '\nreturn tick;')(
-    ...Object.values(engine.api),
+test('Chiptune synchronizes four sections, finishes without looping, stops and restarts', async () => {
+  const { engine, game, step, press } = await loadExample(
+    'chiptune',
+    'return {tick,sections,songTicks,state:()=>({playing,frame})};',
   );
-  engine.step(tick);
   const commands = engine.sounds();
   assert.deepEqual(
     commands.map((command) => command.ch),
     [0, 1, 2],
   );
+  for (const { score } of commands) {
+    assert.equal(
+      score.code
+        .filter((event) => event.op === 'note')
+        .reduce((sum, event) => sum + event.beats, 0),
+      64,
+    );
+    assert(!score.code.some((event) => event.op === 'repeat'));
+  }
   const ay = new AY();
   for (const command of commands) ay.play(command.ch, command.score);
-  assert(ay.render(4800).some((value) => Math.abs(value) > 0.01));
+  const audio = ay.render(48000 * 27);
+  assert(audio.some((value) => Math.abs(value) > 0.01));
+  assert(audio.every((value) => Number.isFinite(value) && Math.abs(value) < 1));
+  assert(audio.subarray(audio.length - 4800).every((value) => Math.abs(value) < 0.001));
+  assert(ay.voices.every((voice) => voice === null));
   assert.equal(ay.mixer, 35);
-  assert(engine.pixels.some((value) => value !== 0));
-  assert(engine.pixels.every((value) => value <= 7));
-  engine.input(1 << 4);
-  engine.step(tick);
-  const stopped = engine.sounds();
-  assert.deepEqual(
-    stopped.map((command) => command.ch),
-    [0, 1, 2],
+
+  step();
+  for (let section = 1; section < game.sections.length; section++) {
+    step(0, section * 384 - game.state().frame);
+    assert.equal(game.state().playing, true);
+    assert(
+      engine.api.scr[4]
+        .map((cell) => cell.chr)
+        .join('')
+        .includes(game.sections[section].name + ' 1/4'),
+    );
+  }
+  step(0, game.songTicks - game.state().frame);
+  assert.deepEqual(game.state(), { playing: false, frame: 1536 });
+  assert(
+    engine.api.scr[4]
+      .map((cell) => cell.chr)
+      .join('')
+      .includes('FINISHED'),
   );
-  assert(stopped.every((command) => command.score.code.length === 0));
-  engine.input(0);
-  engine.step(tick);
-  assert.deepEqual(engine.sounds(), []);
-  engine.input(1 << 5);
-  engine.step(tick);
+  step(0, 120);
+  assert.deepEqual(game.state(), { playing: false, frame: 1536 });
+  press(4);
+  assert.deepEqual(game.state(), { playing: true, frame: 2 });
+  assert(
+    engine.api.scr[4]
+      .map((cell) => cell.chr)
+      .join('')
+      .includes('VERSE 1/4'),
+  );
+  step(0, 400);
+  engine.sounds();
+  press(4);
+  assert.equal(game.state().playing, false);
+  assert.equal(engine.sounds().length, 3);
+  const stopped = game.state();
+  step(0, 60);
+  assert.deepEqual(game.state(), stopped);
+  press(5);
+  assert.deepEqual(game.state(), { playing: true, frame: 2 });
   assert.deepEqual(
     engine.sounds().map((command) => command.ch),
     [0, 1, 2],
   );
-  const payload = await encode(source);
-  assert(payload.bytes <= 3072);
-  assert(gameURL('https://example.com/playload/', payload.hash).length <= 4096);
+  assert(engine.pixels.every((col) => col <= 7));
 });
 
-test('the pictogram dungeon can collect every item, win, and reset through the public API', async () => {
-  const source = await readFile(new URL('../examples/glyph-quest.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
-  const game = new Function(
-    ...Object.keys(engine.api),
-    source + '\nreturn {tick,map,state:()=>({x,y,gems,ring,won})};',
-  )(...Object.values(engine.api));
-  const directions = [
-    [0, -1],
-    [0, 1],
-    [-1, 0],
-    [1, 0],
+test('Glyph Quest clears three guarded dungeons through recorded real inputs', async () => {
+  const { source, engine, game, step } = await loadExample(
+    'glyph-quest',
+    'return {tick,state:()=>structuredClone({stage,state,map,enemies,x,y,gems,total,ring,cooldown})};',
+  );
+  // Recorded real controller inputs, encoded as mask:ticks. No state is injected.
+  const routes = [
+    '0:1200 8:14 2:21 18:1 2:6 8:28 1:14 4:7 1:14 8:21 4:21 2:14 8:7 2:14 4:28 ' +
+      '1:14 4:7 2:14 24:1 8:34 1:14 4:7 1:14 8:28 24:1 8:6 2:21 8:7 1:14 4:14 1:7 ' +
+      '4:35 2:14 8:7 2:14 4:28 2:21 4:7 2:7 8:7 2:7 8:14 1:7 8:21 2:7 8:21 1:7 ' +
+      '8:14 2:7 4:28 1:7 4:21 2:7 4:28 8:21 1:7 8:21 2:7 8:56 15:30 0:1 16:1 0:1',
+    '0:1200 8:63 24:1 8:41 2:14 4:7 8:7 1:14 4:70 2:42 4:7 20:1 4:27 1:14 2:35 ' +
+      '8:49 24:1 8:6 1:21 4:7 1:14 8:7 4:7 2:14 8:14 4:7 2:14 18:1 2:6 4:14 1:7 ' +
+      '4:28 2:7 8:42 1:7 8:28 24:1 8:6 2:7 8:14 15:30 0:1 16:1 0:1',
+    '0:1200 8:98 4:21 20:1 4:48 2:14 4:7 8:28 24:1 8:6 4:42 2:14 4:14 8:14 1:14 ' +
+      '8:14 24:1 8:62 2:14 8:14 4:14 1:14 4:28 2:28 4:21 2:21 8:63 15:30 0:1 16:1 ' +
+      '0:1',
   ];
-  function walkTo(tx, ty) {
-    const { x, y } = game.state();
-    const queue = [[x, y, []]],
-      seen = new Set([x + ',' + y]);
-    let path;
-    for (let i = 0; i < queue.length; i++) {
-      const [px, py, moves] = queue[i];
-      if (px === tx && py === ty) {
-        path = moves;
-        break;
-      }
-      directions.forEach(([dx, dy], button) => {
-        const nx = px + dx,
-          ny = py + dy,
-          k = nx + ',' + ny;
-        if (game.map[ny]?.[nx] && game.map[ny][nx] !== '#' && !seen.has(k)) {
-          seen.add(k);
-          queue.push([nx, ny, [...moves, button]]);
+
+  for (let stage = 0; stage < routes.length; stage++) {
+    assert.equal(game.state().stage, stage);
+    if (stage > 0) {
+      step(1 << 5);
+      step();
+      assert.equal(game.state().stage, stage, 'Retry preserves the current dungeon.');
+    }
+    assert.equal(game.state().total, [6, 6, 7][stage]);
+    assert.equal(game.state().enemies.length, stage + 2);
+    let cleared = false;
+    const inputs = routes[stage].split(' ').map((move) => move.split(':').map(Number));
+    for (const [mask, frames] of inputs) {
+      for (let i = 0; i < frames; i++) {
+        const before = game.state();
+        step(mask);
+        const after = game.state();
+        assert.notEqual(after.state, 'CAUGHT');
+        assert.notEqual(after.map[after.y][after.x], '#');
+        assert(after.enemies.every((enemy) => after.map[enemy.y][enemy.x] !== '#'));
+        if (before.stage === after.stage) {
+          assert(Math.abs(before.x - after.x) + Math.abs(before.y - after.y) <= 1);
         }
-      });
+        if (after.state === 'CLEAR') {
+          cleared = true;
+          assert.equal(after.gems, after.total);
+          assert.equal(after.ring, true);
+          assert(!engine.pixels.includes(3), 'Clearing removes the red enemy sprites.');
+          assert(
+            !engine.api.scr[16]
+              .map((cell) => cell.chr)
+              .join('')
+              .includes('READY'),
+          );
+        }
+        if (before.state === 'CLEAR' && after.state === 'PLAY') {
+          assert.equal(after.stage, (stage + 1) % routes.length);
+          assert.equal(after.cooldown, 0, 'Advancing must not also use stun.');
+        }
+      }
     }
-    assert(path, 'item is unreachable: ' + tx + ',' + ty);
-    for (const button of path) {
-      engine.input(1 << button);
-      for (let i = 0; i < 7; i++) engine.step(game.tick);
-    }
-    assert.deepEqual([game.state().x, game.state().y], [tx, ty]);
+    assert(cleared, 'The recorded controller route must clear this dungeon.');
   }
-  const items = [];
-  game.map.forEach((row, y) =>
-    row.forEach((tile, x) => {
-      if (tile === '💎' || tile === '💍') items.push([x, y]);
-    }),
-  );
-  assert.equal(items.length, 7);
-  for (const [x, y] of items) walkTo(x, y);
-  assert.equal(game.state().gems, 6);
-  assert.equal(game.state().ring, true);
-  assert.equal(engine.sounds().filter((s) => s.ch === 1).length, 7);
-  walkTo(16, 10);
-  assert.equal(game.state().won, true);
-  assert.deepEqual(
-    engine.sounds().map((s) => s.ch),
-    [0, 2],
-  );
-  engine.input(1 << 4);
-  engine.step(game.tick);
-  assert.deepEqual(game.state(), { x: 1, y: 1, gems: 0, ring: false, won: false });
-  assert(engine.sounds().every((s) => s.score.code.length === 0));
+  assert.deepEqual([game.state().stage, game.state().gems, game.state().ring], [0, 0, false]);
   assert((await encode(source)).bytes <= 3072);
 });
 
-test('the shooter moves by pixels, removes hit targets in the same frame, and resets', async () => {
-  const source = await readFile(new URL('../examples/shooter.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
-  const game = new Function(
-    ...Object.keys(engine.api),
-    source + '\nreturn {tick,state:()=>({x,score,shots,targets})};',
-  )(...Object.values(engine.api));
-  engine.step(game.tick);
-  const shipPixels = [];
-  for (let y = 120; y < 128; y++) {
-    shipPixels.push(...engine.pixels.subarray(y * 160 + 76, y * 160 + 84));
-  }
-  assert(shipPixels.includes(4), 'The custom ship must be visible in blue at its spawn position.');
-
-  const fire = () => {
-    const target = game
-      .state()
-      .targets.find((target) => target.alive && target.x === game.state().x);
-    assert(target);
-    engine.input(1 << 4);
-    engine.step(game.tick);
-    engine.input(0);
-    for (let i = 0; i < 32; i++) {
-      engine.step(game.tick);
-      if (!target.alive) {
-        for (let y = target.y; y < target.y + 8; y++) {
-          assert(
-            !engine.pixels.subarray(y * 160 + target.x, y * 160 + target.x + 8).includes(3),
-            'A hit target must disappear in the collision frame.',
-          );
-        }
-      }
+test('Glyph Quest catches crossing paths, permits stunned passage and restores items on retry', async () => {
+  const hooks = 'return {tick,state:()=>({stage,state,x,y,gems,ring,cooldown,enemies})};';
+  for (const stun of [false, true]) {
+    const { engine, game, step, press } = await loadExample('glyph-quest', hooks);
+    step(0, 22);
+    step(1 << 1, 20);
+    step(0, 111);
+    step((1 << 1) | (stun ? 1 << 4 : 0));
+    assert.equal(game.state().state, stun ? 'PLAY' : 'CAUGHT');
+    if (stun) {
+      assert(game.state().enemies.some((enemy) => enemy.stun > 0));
+      assert.equal(game.state().cooldown, 90);
+      step(1 << 0, 28);
+      step(0, 90);
+      assert.equal(game.state().state, 'PLAY');
+      assert.equal(game.state().cooldown, 0);
+      assert(game.state().enemies.every((enemy) => enemy.stun === 0));
+    } else {
+      assert(
+        !engine.api.scr[16]
+          .map((cell) => cell.chr)
+          .join('')
+          .includes('READY'),
+      );
+      const caught = structuredClone(game.state());
+      step(1 << 3, 60);
+      assert.deepEqual(game.state(), caught);
     }
-  };
-  fire();
-  assert.equal(game.state().score, 1);
-  engine.input(1 << 2);
-  for (let i = 0; i < 24; i++) engine.step(game.tick);
-  assert.equal(game.state().x, 28);
-  for (let y = 120; y < 128; y++) {
-    assert(
-      !engine.pixels.subarray(y * 160 + 76, y * 160 + 84).includes(4),
-      'The moving ship must not leave its previous sprite behind.',
+    press(5);
+    assert.deepEqual(
+      [
+        game.state().stage,
+        game.state().x,
+        game.state().y,
+        game.state().gems,
+        game.state().ring,
+        game.state().cooldown,
+        game.state().state,
+      ],
+      [0, 1, 1, 0, false, 0, 'PLAY'],
     );
+    assert.equal(engine.api.scr[6][3].chr, '💎');
   }
-  fire();
-  assert.equal(game.state().score, 2);
-  engine.input(1 << 3);
-  for (let i = 0; i < 48; i++) engine.step(game.tick);
-  assert.equal(game.state().x, 124);
-  fire();
-  assert.equal(game.state().score, 3);
-  assert(game.state().targets.every((target) => !target.alive));
-  assert.equal(game.state().shots.length, 0);
-  assert.equal(
-    engine.api.scr[16]
-      .map((cell) => cell.chr)
-      .join('')
-      .trim(),
-    'CLEAR! B RESET',
-  );
-  assert(engine.pixels.every((col) => col <= 7));
-  engine.input(1 << 5);
-  engine.step(game.tick);
-  assert.equal(game.state().score, 0);
-  assert.equal(game.state().x, 76);
-  assert(game.state().targets.every((target) => target.alive));
-  assert.equal(
-    engine.api.scr[16]
-      .map((cell) => cell.chr)
-      .join('')
-      .trim(),
-    'A FIRE  B RESET',
-  );
-  const payload = await encode(source);
-  assert(payload.bytes <= 3072);
-  assert(gameURL('https://example.com/', payload.hash).length <= 4096);
 });
 
-test('the shooter retains its sixteen-shot limit and reuses space after shots leave', async () => {
-  const source = await readFile(new URL('../examples/shooter.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
-  const game = new Function(
-    ...Object.keys(engine.api),
-    source + '\nshots = Array.from({length:16},()=>({x:0,y:112})); return {tick,shots:()=>shots};',
-  )(...Object.values(engine.api));
+test('Glyph Quest starts each dungeon silently at the same effects tempo', async () => {
+  const { engine, game } = await loadExample(
+    'glyph-quest',
+    'return {tick,start:(level)=>{stage=level;startLevel();}};',
+  );
+  const ay = new AY();
+  engine.sounds();
+  for (const [stage, tempo] of [120, 240, 150].entries()) {
+    ay.play(0, compileScore(`T${tempo}M35O3N5c`));
+    ay.sample();
+    ay.play(1, compileScore('O6N5g'));
+    ay.play(2, compileScore('O4N5e'));
+    game.start(stage);
+    for (const command of engine.sounds()) ay.play(command.ch, command.score);
+    ay.sample();
+    assert.equal(ay.tempo, 240);
+    assert.equal(ay.mixer, 7);
+    assert(ay.voices.every((voice) => voice === null));
+  }
+});
 
-  engine.input(1 << 4);
-  engine.step(game.tick);
-  assert.equal(game.shots().length, 16);
+test('Shooter wins four waves through movement and fire, including a multi-hit boss', async () => {
+  for (const random of [0.05, 0.8]) {
+    const math = Object.create(Math);
+    math.random = () => random;
+    const { source, engine, game, step, press } = await loadExample(
+      'shooter',
+      'return {tick,waves,state:()=>({wave,state,x,targets,bullets,shots,direction,score,lives,frame})};',
+      math,
+    );
+    step();
+    const shipPixels = [];
+    for (let y = 120; y < 128; y++)
+      shipPixels.push(...engine.pixels.subarray(y * 160 + 76, y * 160 + 84));
+    assert(shipPixels.includes(4));
+    const completed = [];
+    let frames = 0;
+    let sawBoss = false;
+    while (frames < 6000 && !['WON', 'OVER'].includes(game.state().state)) {
+      const { wave, state, x, targets, bullets, direction } = game.state();
+      if (state === 'CLEAR') {
+        completed.push(wave);
+        assert(targets.every((target) => !target.alive));
+        assert.equal(game.state().shots.length, 0);
+        assert.equal(bullets.length, 0);
+        const frozen = structuredClone(game.state());
+        step(0, 60);
+        assert.deepEqual(game.state(), frozen);
+        press(4);
+        assert.equal(game.state().wave, wave + 1);
+        assert.equal(game.state().shots.length, 0);
+        continue;
+      }
+      if (wave === 3 && !sawBoss) {
+        sawBoss = true;
+        assert.equal(targets.length, 1);
+        assert.equal(targets[0].health, 24);
+      }
+
+      // Follow a moving target's predicted position, dodging incoming shots.
+      const alive = targets.filter((target) => target.alive);
+      const target = alive.reduce((a, b) => (Math.abs(a.x - x) < Math.abs(b.x - x) ? a : b));
+      let goal = target.x + direction * game.waves[wave].speed * Math.max(0, (112 - target.y) / 4);
+      const danger = bullets.some(
+        (bullet) =>
+          bullet.y > 88 &&
+          bullet.y < 128 &&
+          Math.abs(bullet.x + (bullet.dx * (120 - bullet.y)) / (1.5 + wave * 0.2) - x) < 9,
+      );
+      if (danger) goal = x < 76 ? x + 20 : x - 20;
+      goal = Math.max(0, Math.min(152, goal));
+      step((1 << 4) | (goal > x + 1 ? 1 << 3 : goal < x - 1 ? 1 << 2 : 0));
+      frames++;
+      assert(game.state().shots.length <= 8);
+      assert(game.state().x >= 0 && game.state().x <= 152);
+    }
+    assert.deepEqual(completed, [0, 1, 2]);
+    assert(sawBoss);
+    assert.equal(game.state().state, 'WON');
+    assert(game.state().lives > 0);
+    assert.equal(game.state().targets[0].health, 0);
+    assert.equal(
+      engine.api.scr[8]
+        .slice(2, 18)
+        .map((cell) => cell.chr)
+        .join('')
+        .trim(),
+      'ALL WAVES CLEAR',
+    );
+    const won = structuredClone(game.state());
+    step(1 << 2, 60);
+    assert.deepEqual(game.state(), won);
+    assert(engine.pixels.every((col) => col <= 7));
+    press(4);
+    assert.equal(game.state().wave, 0);
+    assert.equal(game.state().score, 0);
+    assert.equal(game.state().lives, 3);
+    assert.equal(game.state().state, 'PLAY');
+    const payload = await encode(source);
+    assert(payload.bytes <= 3072);
+    assert(gameURL('https://kitao.github.io/playload/', payload.hash).length <= 4096);
+  }
+});
+
+test('Shooter removes hits immediately, grants damage recovery, loses and restarts', async () => {
+  const { engine, game, step, press } = await loadExample(
+    'shooter',
+    `return {tick,state:()=>({x,score,lives,state,invincible,targets,bullets}),
+      shot:()=>{shots=[{x:targets[0].x+direction*waves[wave].speed,y:targets[0].y+4}];},
+      hit:()=>{bullets=Array.from({length:3},()=>({x,y:118.5,dx:0}));},
+      expose:()=>{invincible=0;},invade:()=>{for(const target of targets) target.y=112;}};`,
+  );
+  step();
+  engine.sounds();
+  game.shot();
+  step();
+  const target = game.state().targets[0];
+  assert.equal(target.alive, false);
+  assert.equal(game.state().score, 10);
+  for (let y = target.y; y < target.y + 8; y++) {
+    const left = y * 160 + Math.floor(target.x);
+    assert(
+      !engine.pixels.subarray(left, left + 8).includes(3),
+      'The alien disappears on the hit frame.',
+    );
+  }
+  game.expose();
+  game.hit();
+  step();
+  assert.equal(game.state().lives, 2, 'Overlapping bullets consume one life.');
+  assert.equal(game.state().bullets.length, 0);
+  for (let i = 0; i < 89; i++) {
+    game.hit();
+    step();
+    assert.equal(game.state().lives, 2);
+  }
+  game.hit();
+  step();
+  assert.equal(game.state().lives, 1);
+  game.expose();
+  game.hit();
+  step();
+  assert.equal(game.state().state, 'OVER');
+  assert.equal(game.state().lives, 0);
+  assert(!engine.pixels.includes(4), 'A destroyed ship is no longer drawn.');
+  const lost = structuredClone(game.state());
+  step(1 << 3, 60);
+  assert.deepEqual(game.state(), lost);
+  press(5);
+  assert.equal(game.state().state, 'PLAY');
+  assert.equal(game.state().score, 0);
+  assert.equal(game.state().lives, 3);
+  assert.equal(game.state().x, 76);
+  game.invade();
+  step();
+  assert.equal(game.state().state, 'OVER', 'An alien reaching the ship row ends the game.');
+  press(4);
+  assert.equal(game.state().state, 'PLAY');
+});
+
+test('Shooter fires immediately on a tap, repeats at a fixed rate and respects the shot cap', async () => {
+  const { engine, game, step } = await loadExample(
+    'shooter',
+    'return {tick,state:()=>({shots}),fill:()=>{shots=Array.from({length:8},()=>({x:0,y:112}));}};',
+  );
+  engine.sounds();
+  game.fill();
+  step(1 << 4);
+  assert.equal(game.state().shots.length, 8);
   assert.equal(engine.sounds().length, 0);
-  engine.input(0);
-  for (let i = 0; i < 32; i++) engine.step(game.tick);
-  assert.equal(game.shots().length, 0);
-
-  engine.input(1 << 4);
-  engine.step(game.tick);
-  assert.equal(game.shots().length, 1);
+  step(0, 31);
+  assert.equal(game.state().shots.length, 0);
+  step(1 << 4);
+  assert.equal(game.state().shots.length, 1);
   assert.equal(engine.sounds().length, 1);
-  engine.step(game.tick);
-  assert.equal(game.shots().length, 1);
-  assert.equal(engine.sounds().length, 0, 'Holding fire must not create another shot.');
+  step(1 << 4, 11);
+  assert.equal(game.state().shots.length, 1);
+  assert.equal(engine.sounds().length, 0);
+  step(1 << 4);
+  assert.equal(game.state().shots.length, 2);
+  assert.equal(engine.sounds().length, 1);
+});
+
+test('Shooter restores tone and tempo after damage, interruptions and restarts', async () => {
+  const math = Object.create(Math);
+  math.random = () => 0;
+  const { engine, game, step } = await loadExample(
+    'shooter',
+    `return {tick,finish,state:()=>({lives,wave}),
+      hit:()=>{invincible=0;bullets=[{x,y:118.5,dx:0}];},
+      kill:()=>{shots=[{x:targets[0].x+direction*waves[wave].speed,y:targets[0].y+4}];}};`,
+    math,
+  );
+  const ay = new AY();
+  const advance = (mask = 0, frames = 1) => {
+    for (let i = 0; i < frames; i++) {
+      step(mask);
+      for (const command of engine.sounds()) ay.play(command.ch, command.score);
+      ay.render(800);
+    }
+  };
+
+  advance(0, 96);
+  assert.equal(ay.tempo, 240);
+  advance(1 << 2, 23);
+  for (let i = 0; i < 32 && game.state().lives === 3; i++) advance();
+  assert.equal(game.state().lives, 2, 'Real movement leads into an enemy bullet.');
+  assert.equal(ay.mixer, 35, 'Damage adds noise only to channel 2.');
+  advance(1 << 4);
+  assert(ay.voices[1]?.sounding, 'Firing still has a tone during damage.');
+  assert(ay.mixer & 2);
+  advance(0, 8);
+  assert.equal(ay.mixer, 7, 'The finished damage effect restores tone.');
+
+  game.hit();
+  advance();
+  assert.equal(ay.mixer, 35);
+  game.kill();
+  advance();
+  assert.equal(ay.mixer, 7, 'A kill can interrupt damage without leaving noise enabled.');
+  game.hit();
+  advance();
+  assert.equal(ay.tempo, 180);
+  assert.equal(ay.mixer, 7, 'The loss melody also restores tone.');
+  advance(1 << 5);
+  assert.equal(ay.tempo, 240);
+  assert(ay.voices.every((voice) => voice === null));
+  advance(1 << 4);
+  assert(ay.voices[1]?.sounding);
+  advance(0, 4);
+  assert.equal(ay.voices[1], null, 'A restarted shot remains shorter than 100 ms.');
+
+  game.finish('CLEAR');
+  advance();
+  advance(1 << 4);
+  assert.equal(game.state().wave, 1);
+  assert.equal(ay.tempo, 240);
+  assert.equal(ay.mixer, 7);
+  assert(ay.voices.every((voice) => voice === null));
+});
+
+test('Shooter clears shrinking boss HP and measures invasion using its full height', async () => {
+  const { engine, game, step } = await loadExample(
+    'shooter',
+    `return {tick,state:()=>({state,targets}),boss:()=>{wave=3;startWave();score=1030;
+      targets[0].health=10;drawStatus();},shot:()=>{shots=[{
+      x:targets[0].x+direction*waves[wave].speed,y:targets[0].y+4}];},
+      descend:(y)=>{targets[0].y=y;}};`,
+  );
+  game.boss();
+  game.shot();
+  step();
+  assert.equal(game.state().targets[0].health, 9);
+  assert.equal(
+    engine.api.scr[2]
+      .map((cell) => cell.chr)
+      .join('')
+      .trim(),
+    'SCORE 1040 BOSS 9',
+  );
+  game.descend(103);
+  step();
+  assert.equal(game.state().state, 'PLAY');
+  game.descend(104);
+  step();
+  assert.equal(game.state().state, 'OVER', 'The 16-pixel boss reaches the ship row at y=104.');
 });

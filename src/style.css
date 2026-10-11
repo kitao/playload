@@ -348,6 +348,7 @@ header::after {
 .game-tools button {
   border-color: transparent;
   background: transparent;
+  white-space: nowrap;
 }
 #workspace-toolbar button:not(:disabled):hover,
 .game-tools button:not(:disabled):hover {
