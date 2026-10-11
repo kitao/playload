@@ -6,7 +6,7 @@ import { Capture, download } from './capture.js?v=23';
 import { createDisplay } from './display.js?v=17';
 import { createCRT } from './crt.js?v=17';
 import { highlightJavaScript } from './editor-highlighter.js?v=13';
-import { starter, exampleLinks } from './example-links.js?v=33';
+import { starter, exampleLinks } from './example-links.js?v=34';
 
 const $ = (id) => document.getElementById(id);
 const initialHash = location.hash;

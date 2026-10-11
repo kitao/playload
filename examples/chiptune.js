@@ -107,7 +107,7 @@ put(6, 2, 'CHIPTUNE', 6);
 for (let i = 0; i < 24; i++) {
   put((i * 7) % 19, 6 + ((i * 3) % 7), '·', 2);
 }
-put(7, 7, '👾 💎 👾', 4);
+put(8, 7, '👾 💎 👾', 4);
 for (let ch = 0; ch < 3; ch++) {
   put(2, 9 + ch * 2, ['MELODY', 'BASS', 'DRUMS'][ch], 4 + ch);
 }
