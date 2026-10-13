@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/serve.js",
+    "build": "node scripts/build.js",
+    "preview": "node scripts/serve.js --dist",
     "examples": "node scripts/generate-examples.js",
     "examples:check": "node scripts/generate-examples.js --check",
     "screenshots": "npm run examples && node scripts/generate-screenshots.js",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.63.0",
+    "esbuild": "0.28.2",
     "eslint": "10.12.0",
     "globals": "17.13.0",
     "prettier": "3.9.9",

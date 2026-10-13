@@ -3,5 +3,6 @@ node_modules/
 test-results/
 playwright-report/
 coverage/
+dist/
 .venv/
 __pycache__/

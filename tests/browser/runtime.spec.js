@@ -1,5 +1,9 @@
 import { test as base, expect } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { execFile, spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { relative, sep } from 'node:path';
+import { promisify } from 'node:util';
 import { encode } from '../../src/payload.js';
 
 const test = base.extend({
@@ -26,6 +30,198 @@ const test = base.extend({
   ],
 });
 test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
+const execute = promisify(execFile);
+const root = fileURLToPath(new URL('../..', import.meta.url));
+
+async function startServer(...args) {
+  const server = spawn(process.execPath, ['scripts/serve.js', '--no-open', ...args], {
+    cwd: root,
+    env: { ...process.env, PORT: '0' },
+    stdio: ['ignore', 'pipe', 'inherit'],
+  });
+  const url = await new Promise((resolve, reject) => {
+    let output = '';
+    server.stdout.on('data', (data) => {
+      output += data;
+      const address = output.match(/https?:\/\/127\.0\.0\.1:\d+\//);
+      if (address) resolve(address[0]);
+    });
+    server.once('error', reject);
+    server.once('exit', () => reject(new Error('Local server stopped')));
+  });
+  return { server, url };
+}
+
+test('the production build plays games and audio with one compressed, cached script', async ({
+  browser,
+}, testInfo) => {
+  await execute(process.execPath, ['scripts/build.js'], { cwd: root });
+  const { server, url } = await startServer('--dist');
+  try {
+    const source = `// @title Built Game
+cls(1);
+pcg['①'].pat = [24, 60, 126, 24, 24, 24, 24, 0];
+pcg['①'].col = [6, 1];
+put(1, 1, 'BUILD', undefined, 1);
+scr[1][1].chr = '①';
+let x = 76;
+play(0, 'T120M35V12O5N8c');
+play(1, 'V10O3N8c');
+play(2, 'UX300W0O3N8c');
+function tick() {
+  x = Math.max(0, Math.min(152, x + btn(3) - btn(2)));
+  if (btnp(4)) put(1, 2, 'PRESSED', 6, 1);
+  spr(x, 68, '👾', 4);
+}`;
+    const { hash } = await encode(source);
+    for (const touch of [false, true]) {
+      const page = await browser.newPage({
+        viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 800 },
+        hasTouch: touch,
+        isMobile: touch,
+      });
+      try {
+        await page.addInitScript(() => {
+          const Context = window.AudioContext;
+          window.AudioContext = class extends Context {
+            createMediaStreamDestination() {
+              const destination = super.createMediaStreamDestination();
+              window.buildAnalyser = this.createAnalyser();
+              this.createMediaStreamSource(destination.stream).connect(window.buildAnalyser);
+              return destination;
+            }
+          };
+        });
+        const scripts = [];
+        page.on('response', (response) => {
+          if (new URL(response.url()).pathname.endsWith('.js')) scripts.push(response);
+        });
+        const navigation = await page.goto(url + hash);
+        expect(navigation.headers()['cache-control']).toBe('no-cache');
+        await expect(page.locator('#start-game')).toBeVisible();
+        await expectCenteredWelcome(page);
+        expect(scripts).toHaveLength(1);
+        expect(scripts[0].headers()['content-encoding']).toBe('gzip');
+        expect(scripts[0].headers()['cache-control']).toContain('immutable');
+        expect(await scripts[0].text()).toContain('Copyright (c) 2012 Lea Verou');
+        const uncompressed = await page.request.get(scripts[0].url(), {
+          headers: { 'Accept-Encoding': 'gzip;q=0, identity' },
+        });
+        expect(uncompressed.headers()['content-encoding']).toBeUndefined();
+        expect(uncompressed.headers().vary).toBe('Accept-Encoding');
+        await page.locator('#start-game').click();
+        await expect(page.locator('#pause')).toBeEnabled();
+        await expect(page.locator('#error-notice')).toBeHidden();
+        await expect
+          .poll(() =>
+            page.evaluate(() => {
+              if (!window.buildAnalyser) return 0;
+              const samples = new Float32Array(window.buildAnalyser.fftSize);
+              window.buildAnalyser.getFloatTimeDomainData(samples);
+              return Math.max(...samples.map(Math.abs));
+            }),
+          )
+          .toBeGreaterThan(0.02);
+        const before = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
+        await page.keyboard.press('z');
+        await expect
+          .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
+          .not.toBe(before);
+        if (touch) {
+          await page.locator('#tools-toggle').click();
+          await page.locator('#code-toggle').click();
+        }
+        await expect(page.locator('#editor-highlight .token.comment').first()).toHaveText(
+          '// @title Built Game',
+        );
+        await page.screenshot({
+          path: testInfo.outputPath(`built-${touch ? 'phone' : 'desktop'}.png`),
+        });
+        await page.locator('#editor').fill('function tick() { throw new Error("Built error") }');
+        if (touch) await page.locator('#tools-toggle').click();
+        await page.locator('#run').click();
+        await expect(page.locator('#error')).toHaveText('Built error');
+        await expect(page.locator('#error-line')).toBeVisible();
+      } finally {
+        await page.close();
+      }
+    }
+  } finally {
+    server.kill();
+  }
+});
+
+test('the HTTPS server opens a stable secure player and never serves its private key', async ({
+  browser,
+}, testInfo) => {
+  await expect(
+    execute(process.execPath, ['scripts/serve.js', '--cert', 'cert.pem', '--key', 'key.pem'], {
+      cwd: root,
+    }),
+  ).rejects.toThrow('Use --https with --cert and --key.');
+  try {
+    await execute('openssl', ['version']);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    test.skip(true, 'OpenSSL is required to generate the temporary test certificate.');
+  }
+  await mkdir(testInfo.outputDir, { recursive: true });
+  const config = testInfo.outputPath('certificate.cnf');
+  const cert = testInfo.outputPath('certificate.pem');
+  const key = testInfo.outputPath('key.pem');
+  await writeFile(
+    config,
+    '[req]\nprompt=no\ndistinguished_name=subject\nx509_extensions=extensions\n' +
+      '[subject]\nCN=localhost\n[extensions]\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n',
+  );
+  let server;
+  try {
+    await execute('openssl', [
+      'req',
+      '-x509',
+      '-newkey',
+      'rsa:2048',
+      '-nodes',
+      '-days',
+      '1',
+      '-config',
+      config,
+      '-keyout',
+      key,
+      '-out',
+      cert,
+    ]);
+    const started = await startServer('--https', '--cert', cert, '--key', key);
+    server = started.server;
+    const page = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+      ignoreHTTPSErrors: true,
+    });
+    try {
+      await page.goto(started.url);
+      expect(await page.evaluate(() => isSecureContext)).toBe(true);
+      await expectCenteredWelcome(page);
+      await expect(page.locator('#editor')).toBeHidden();
+      await page.screenshot({ path: testInfo.outputPath('https-phone-ready.png') });
+      const response = await page.request.get(
+        started.url + relative(root, key).split(sep).join('/'),
+      );
+      expect(response.status()).toBe(404);
+      await page.locator('#start-game').click();
+      await expect(page.locator('#pause')).toBeEnabled();
+      await expect(page.locator('#sound')).toBeEnabled();
+      await expect(page.locator('#error-notice')).toBeHidden();
+      await expect(page.locator('#status')).not.toHaveText(/^Sound:/);
+    } finally {
+      await page.close();
+    }
+  } finally {
+    server?.kill();
+    for (const path of [config, cert, key]) await rm(path, { force: true });
+  }
+});
 
 async function run(page, source, flat = false) {
   await page.goto('/');
@@ -100,6 +296,84 @@ async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
   await page.locator('#load').click();
   await expect(page.locator('#pause')).toBeEnabled();
 }
+
+test('startup shows a finished layout and welcome screen even when scripts load slowly', async ({
+  browser,
+}, testInfo) => {
+  const { hash } = await encode('// @title Shared\nfunction tick() { spr(76, 68, "👾", 6) }');
+  for (const [name, width, height, touch, fragment] of [
+    ['phone', 390, 844, true, ''],
+    ['shared-phone', 390, 844, true, hash],
+    ['invalid-phone', 390, 844, true, '#invalid'],
+    ['tablet-landscape', 1024, 768, true, hash],
+    ['desktop', 1280, 800, false, ''],
+  ]) {
+    const page = await browser.newPage({
+      viewport: { width, height },
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    const criticalRequests = [];
+    page.on('request', (request) => {
+      const file = new URL(request.url()).pathname.split('/').pop();
+      if (['glyphs.js', 'sound.js'].includes(file)) criticalRequests.push(file);
+    });
+    let release;
+    const gate = new Promise((resolve) => (release = resolve));
+    await page.route('**/src/app.js?*', async (route) => {
+      await gate;
+      await route.continue();
+    });
+    await page.addInitScript(() => {
+      requestAnimationFrame(function firstPaint() {
+        const app = document.querySelector('#app');
+        const game = document.querySelector('#game');
+        if (
+          !app ||
+          getComputedStyle(app).visibility === 'hidden' ||
+          !game ||
+          getComputedStyle(game).visibility === 'hidden'
+        ) {
+          requestAnimationFrame(firstPaint);
+          return;
+        }
+        window.firstWorkspacePaint = {
+          welcome: !document.querySelector('#start-game').hidden,
+          error: !document.querySelector('#error-notice').hidden,
+          screen: document.querySelector('#display').getBoundingClientRect().toJSON(),
+        };
+      });
+    });
+    const loading = page.goto('http://127.0.0.1:8765/' + fragment);
+    try {
+      await page.locator('#display').waitFor({ state: 'attached' });
+      await expect(page.locator('#app')).toBeHidden();
+      await expect.poll(() => criticalRequests.toSorted()).toEqual(['glyphs.js', 'sound.js']);
+      release();
+      await loading;
+      expect(criticalRequests.toSorted()).toEqual(['glyphs.js', 'sound.js']);
+      await expect(page.locator('#app')).toBeVisible();
+      await page.waitForFunction(() => window.firstWorkspacePaint);
+      const first = await page.evaluate(() => window.firstWorkspacePaint);
+      if (fragment === '#invalid') {
+        expect(first.error).toBe(true);
+        await expect(page.locator('#error')).toHaveText('Invalid game URL');
+      } else {
+        expect(first.welcome).toBe(true);
+        await expectCenteredWelcome(page);
+      }
+      const screen = await page.locator('#display').boundingBox();
+      for (const key of ['x', 'y', 'width', 'height']) {
+        expect(Math.abs(first.screen[key] - screen[key])).toBeLessThanOrEqual(1);
+      }
+      await page.screenshot({ path: testInfo.outputPath(`${name}-ready.png`) });
+    } finally {
+      release();
+      await loading;
+      await page.close();
+    }
+  }
+});
 
 test('a new page focuses the visible editor or the player without starting touch playback', async ({
   browser,
@@ -2196,12 +2470,14 @@ test.describe('touch player', () => {
       await page.route('**/src/glyphs.js*', holdGlyphs);
       try {
         await page.goto('/', { waitUntil: 'commit' });
-        await expect(page.locator('#logo')).toBeVisible();
+        await page.locator('#logo').waitFor({ state: 'attached' });
+        await expect(page.locator('#app')).toBeHidden();
         await expect(page.locator('#editor')).toBeHidden();
         await expect(page.locator('#divider')).toBeHidden();
         await expect(page.locator('#workspace-toolbar')).toBeHidden();
         release();
         await expect(page.locator('#start-game')).toBeVisible();
+        await expect(page.locator('#logo')).toBeVisible();
         await expect(page.locator('#editor')).toBeHidden();
         await expect(page.locator('#workspace-toolbar')).toBeHidden();
         await page.screenshot({ path: testInfo.outputPath(`after-initialization-${width}.png`) });

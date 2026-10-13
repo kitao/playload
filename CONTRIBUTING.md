@@ -18,9 +18,38 @@ npm run dev
 
 The server binds to localhost and opens the tool in your default browser. Use
 `npm run dev -- --no-open` to keep the browser closed, or set `PORT` to choose another port.
-The application itself has no runtime package dependencies or build step.
+The application has no runtime package dependencies. Local development serves source modules directly.
 
 For game development, see the [API reference](docs/api.md) and [tool guide](docs/web-tool.md).
+
+### HTTPS and phones
+
+Use a local certificate, for example from [mkcert](https://github.com/FiloSottile/mkcert),
+covering localhost, 127.0.0.1 and the computer's LAN IP.
+Keep the certificate and key outside the checkout.
+
+```sh
+npm run dev -- --https --cert /path/to/cert.pem --key /path/to/key.pem
+```
+
+HTTPS defaults to port 8766. Add `--host 0.0.0.0` to listen on the local network, then open
+`https://<LAN IP>:8766/` on a phone on the same Wi-Fi. The phone must trust the certificate's CA;
+follow the certificate tool's device instructions. The server does not change system trust settings.
+The same options work with `npm run preview`.
+
+### Production build
+
+```sh
+npm run build
+npm run preview
+```
+
+Publish the contents of `dist/` to a static host. The build bundles and minifies JavaScript and CSS,
+uses content hashes for asset names, and retains resource notices. Preview opens this build locally
+with gzip and cache headers; compression and caching on a public site depend on its host.
+
+For GitHub Pages, select **GitHub Actions** as the publishing source, then run the **Pages**
+workflow. Publication is manual; ordinary pushes run the existing checks.
 
 ## Checks
 

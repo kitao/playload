@@ -218,7 +218,7 @@ for (const touch of [false, true]) {
     const opacity = await notice.evaluate((element) => {
       const animation = element.getAnimations()[0];
       animation.pause();
-      animation.currentTime = 875;
+      animation.currentTime = 600;
       return Number(getComputedStyle(element).opacity);
     });
     expect(opacity).toBeGreaterThan(0);
@@ -227,7 +227,7 @@ for (const touch of [false, true]) {
     if (touch) await glyph.tap();
     else await page.keyboard.press('Enter');
     await expect(notice).toHaveCSS('opacity', '1');
-    await page.clock.fastForward(950);
+    await page.clock.fastForward(800);
     await expect(notice).toHaveText('');
     await expect(glyph.locator('canvas')).toBeVisible();
     await page.close();
@@ -249,7 +249,7 @@ test('reduced motion keeps the copy confirmation still until it disappears', asy
   await expect(notice).toHaveText('Copied');
   await expect(notice).toHaveCSS('opacity', '1');
   expect(await notice.evaluate((element) => element.getAnimations().length)).toBe(0);
-  await page.clock.fastForward(950);
+  await page.clock.fastForward(800);
   await expect(notice).toHaveText('');
 });
 

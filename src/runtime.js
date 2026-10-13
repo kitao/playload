@@ -154,7 +154,8 @@ export class Sound {
       this.context = new AudioContext();
       if (!this.context.audioWorklet)
         throw new Error('AudioWorklet is not supported by this browser.');
-      const source = `${AY}\nclass Processor extends AudioWorkletProcessor {
+      // Bind the serialized class explicitly; minification can rename its declaration.
+      const source = `const AY = ${AY};\nclass Processor extends AudioWorkletProcessor {
         constructor() {
           super();
           this.ay = new AY(sampleRate);

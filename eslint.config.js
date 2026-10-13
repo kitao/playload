@@ -9,6 +9,7 @@ export default defineConfig([
       'test-results/**',
       'playwright-report/**',
       'coverage/**',
+      'dist/**',
       'tests/reference/**',
       'tests/browser/reference/**',
       'src/glyphs.js',

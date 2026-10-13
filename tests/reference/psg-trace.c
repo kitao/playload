@@ -4,8 +4,15 @@
 #include "emu2149/emu2149.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
 
 int main(int argc, char **argv) {
+#ifdef _WIN32
+  if (_setmode(_fileno(stdout), _O_BINARY) == -1) return 4;
+#endif
   if (argc != 6 && argc != 8 && argc != 9) return 2;
   unsigned count = (unsigned)strtoul(argv[1], NULL, 10);
   unsigned tone = (unsigned)strtoul(argv[2], NULL, 10);

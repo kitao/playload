@@ -71,7 +71,9 @@ for cp in sorted(characters):
         shifted.append(f"U+{cp:04X}")
     lines.append(f"{cp:05X}:" + "".join(f"{row:02X}" for row in rows))
 
-(root / "data/fonts/public-pixel-8.hex").write_text("\n".join(lines) + "\n")
+(root / "data/fonts/public-pixel-8.hex").write_text(
+    "\n".join(lines) + "\n", encoding="utf-8", newline="\n"
+)
 (root / "data/fonts/public-pixel-conversion.json").write_text(
     json.dumps(
         {
@@ -85,6 +87,8 @@ for cp in sorted(characters):
         },
         indent=2,
     )
-    + "\n"
+    + "\n",
+    encoding="utf-8",
+    newline="\n",
 )
 print(f"{len(lines)} native glyphs; {len(rejected)} outside the 8x8 cell")

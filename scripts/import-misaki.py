@@ -44,8 +44,10 @@ with zipfile.ZipFile(sys.argv[1]) as source:
     header = text.split("STARTCHAR", 1)[0]
     header = re.sub(r"^CHARS \d+$", f"CHARS {len(blocks)}", header, flags=re.M)
     subset = header + "".join(blocks) + "ENDFONT\n"
-    ROOT.joinpath("misaki-kana.bdf").write_text(subset, encoding="utf-8")
-    ROOT.joinpath("misaki-kana.hex").write_text("\n".join(cells) + "\n", encoding="utf-8")
+    ROOT.joinpath("misaki-kana.bdf").write_text(subset, encoding="utf-8", newline="\n")
+    ROOT.joinpath("misaki-kana.hex").write_text(
+        "\n".join(cells) + "\n", encoding="utf-8", newline="\n"
+    )
     ROOT.joinpath("misaki.txt").write_bytes(source.read("misaki.txt"))
     ROOT.joinpath("misaki-bdf-readme.txt").write_bytes(source.read("readme.txt"))
 
@@ -61,5 +63,7 @@ with zipfile.ZipFile(sys.argv[1]) as source:
         "croppedOrRescaledCells": 0,
         "subsetBDFSHA256": hashlib.sha256(subset.encode()).hexdigest(),
     }
-    ROOT.joinpath("misaki-conversion.json").write_text(json.dumps(report, indent=2) + "\n")
+    ROOT.joinpath("misaki-conversion.json").write_text(
+        json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     print(json.dumps(report, indent=2))

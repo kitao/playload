@@ -1,11 +1,11 @@
 import { palette, createEngine } from './engine.js?v=16';
 import { glyphs } from './glyphs.js?v=18';
 import { encode, decode, gameURL } from './payload.js?v=14';
-import { Runtime, Sound } from './runtime.js?v=28';
+import { Runtime, Sound } from './runtime.js?v=29';
 import { Capture, download } from './capture.js?v=23';
 import { createDisplay } from './display.js?v=17';
 import { createCRT } from './crt.js?v=17';
-import { highlightJavaScript } from './editor-highlighter.js?v=13';
+import { highlightJavaScript } from './editor-highlighter.js?v=14';
 import { starter, exampleLinks } from './example-links.js?v=34';
 
 const $ = (id) => document.getElementById(id);
@@ -124,8 +124,8 @@ function status(text = '', target = null) {
       (top + height <= innerHeight - 8 ? top : source.top - height + overlap) + 'px';
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
       notice.animate([{ opacity: 1 }, { opacity: 0 }], {
-        delay: 800,
-        duration: 150,
+        delay: 500,
+        duration: 300,
         easing: 'ease-out',
         fill: 'forwards',
       });
@@ -133,7 +133,7 @@ function status(text = '', target = null) {
     notice.style.removeProperty('left');
     notice.style.removeProperty('top');
   }
-  if (text === 'Copied') statusTimer = setTimeout(() => status(), 950);
+  if (text === 'Copied') statusTimer = setTimeout(() => status(), 800);
 }
 function dismissCopy() {
   copyRevision++;
@@ -245,6 +245,7 @@ async function frame(pixels, sounds, ready) {
   controls();
 }
 function run(code, takeFocus = false, focusGeneration = focusRevision, waitForStart = false) {
+  showPlayer();
   revision++;
   status();
   release();
@@ -1336,6 +1337,10 @@ function animate(time) {
   if (capture?.stream && running && paused && view === 'code' && !document.hidden) paint();
   requestAnimationFrame(animate);
 }
+function showPlayer() {
+  fitGame();
+  document.body.removeAttribute('data-loading');
+}
 
 paint();
 setEditorOpen(editorOpen);
@@ -1363,6 +1368,7 @@ if (initialHash) {
       if (initialEdit !== editRevision) return;
       gameError = error.message;
       updateError();
+      showPlayer();
       if (view === 'code' && initialFocus === focusRevision) focusGame();
     });
 } else if (touch || !editorOpen) run(starter, true, focusRevision, true);

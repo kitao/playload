@@ -133,5 +133,6 @@ if __name__ == "__main__":
     OUTPUT.write_text(
         json.dumps(output, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     print(f"Frozen color statistics for {len(glyphs)} emoji: {OUTPUT.stat().st_size} bytes")

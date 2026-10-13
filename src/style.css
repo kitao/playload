@@ -40,6 +40,12 @@ body {
   height: 100dvh;
   padding: 0 16px 16px;
 }
+body:not([data-view]) #app {
+  visibility: hidden;
+}
+body[data-loading] #game {
+  visibility: hidden;
+}
 main {
   flex: 1;
   min-height: 0;
