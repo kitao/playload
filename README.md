@@ -1,10 +1,21 @@
 <p align="center">
-  <img src="logo.svg" alt="Playload" width="384">
+  <img src="assets/logo.svg" alt="Playload" width="384">
 </p>
 
 <p align="center">
   A tiny game engine that lets you share games as URLs
 </p>
+
+<h3 align="center"><a href="https://kitao.dev/playload/">Open Playload →</a></h3>
+
+<p align="center">
+  <a href="assets/images/example-glyph-quest.jpg"><img src="assets/images/example-glyph-quest.jpg" alt="The code editor beside a running Glyph Quest game" width="400"></a>
+  <a href="assets/images/info-api.jpg"><img src="assets/images/info-api.jpg" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a><br>
+  <a href="assets/images/info-emoji.jpg"><img src="assets/images/info-emoji.jpg" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
+  <a href="assets/images/info-examples.jpg"><img src="assets/images/info-examples.jpg" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
+</p>
+
+## Specifications
 
 - Up to 3 KB of compressed JavaScript
 - API with 6 functions, 2 variables and 1 callback
@@ -14,18 +25,22 @@
 - 4-direction and 2-button input
 - A complete game in one URL — a **playable payload**
 
-<h2 align="center"><a href="https://kitao.github.io/playload/">Open Playload →</a></h2>
-
-<p align="center">
-  <a href="docs/images/example-glyph-quest.jpg"><img src="docs/images/example-glyph-quest.jpg" alt="The code editor beside a running Glyph Quest game" width="400"></a>
-  <a href="docs/images/info-api.jpg"><img src="docs/images/info-api.jpg" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a><br>
-  <a href="docs/images/info-emoji.jpg"><img src="docs/images/info-emoji.jpg" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
-  <a href="docs/images/info-examples.jpg"><img src="docs/images/info-examples.jpg" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
-</p>
+## Create and share
 
 Edit your game in the **CODE** editor and press **Run**. The URL updates as you edit:
 share it to send the game and its code, or bookmark it to save that version.
 Start your code with `// @title My Game` to name the browser tab and bookmark.
+
+## Support Playload
+
+If you enjoy Playload, please consider starring the project on GitHub.
+It helps more people discover the project.
+
+Playload is free to use. If you would like to support its development, you can
+[sponsor me on GitHub](https://github.com/sponsors/kitao) or
+[buy me a coffee on Ko-fi](https://ko-fi.com/H2H27VDKD).
+Your support helps cover development costs and gives me more time to improve Playload.
+Thank you for helping keep it going.
 
 ## Run locally
 
@@ -34,11 +49,11 @@ Requires **Node.js 24+**.
 ```sh
 git clone https://github.com/kitao/playload.git
 cd playload
+npm ci
 npm run dev
 ```
 
-No package installation or build step is needed. The server opens Playload in your default browser.
-For development tools and checks, see [Contributing](CONTRIBUTING.md).
+The development server builds the tool, watches its sources, and opens Playload in your default browser.
 
 ## License
 

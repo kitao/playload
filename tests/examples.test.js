@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { createEngine } from '../src/engine.js';
-import { glyphs } from '../src/glyphs.js';
-import { compileScore, AY } from '../src/sound.js';
+import { createEngine } from '../src/engine/engine.js';
+import { glyphs } from '../src/engine/glyphs.js';
+import { compileScore, AY } from '../src/engine/sound.js';
 import { encode, gameURL } from '../src/payload.js';
 
 async function loadExample(name, hooks, math = Math) {
@@ -905,7 +905,7 @@ test('Shooter wins four waves through movement and fire, including a multi-hit b
     assert.equal(game.state().state, 'PLAY');
     const payload = await encode(source);
     assert(payload.bytes <= 3072);
-    assert(gameURL('https://kitao.github.io/playload/', payload.hash).length <= 4096);
+    assert(gameURL('https://kitao.dev/playload/', payload.hash).length <= 4096);
   }
 });
 

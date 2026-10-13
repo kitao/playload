@@ -2,7 +2,8 @@
 
 The built-in bank contains **2,433 canonical 8×8 cells**. Public Pixel supplies text;
 Unscii and Public Pixel supply symbols and emoji; Misaki Gothic supplies kana.
-[Resource adoption](resource-adoption.md) records the fixed sources and reasons.
+Original fonts, licenses and conversion records are in `data/fonts/`;
+[README](../README.md#license) lists the source projects and licenses.
 
 ## Letters and kana
 

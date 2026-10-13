@@ -1,5 +1,5 @@
 // Keep encoded WebM blocks; exporting changes only timestamps and track IDs.
-export class VideoBuffer {
+export class WebMBuffer {
   constructor() {
     this.frames = [];
     this.pending = new Uint8Array();
@@ -108,7 +108,7 @@ export class VideoBuffer {
   }
 }
 
-export function video(buffer, mime, end) {
+export function exportWebM(buffer, mime, end) {
   const first = buffer.frames.find((frame) => frame.keyframe && frame.time >= end - 10000);
   if (!first || first.time > end || !buffer.header || !buffer.info || !buffer.tracks)
     throw new Error('No video frames were received');

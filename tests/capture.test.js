@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Capture } from '../src/capture.js';
-import { VideoBuffer, video } from '../src/video.js';
+import { Capture } from '../src/app/capture.js';
+import { WebMBuffer, exportWebM } from '../src/app/webm.js';
 
 // Minimal WebM structure with three keyframes and 20 ms Opus packets.
 const header = Buffer.from(
@@ -112,7 +112,7 @@ function setup(t) {
 }
 
 test('partial WebM elements retain encoded blocks and export whole audio packets', async () => {
-  const buffer = new VideoBuffer();
+  const buffer = new WebMBuffer();
   buffer.begin(0);
   for (const byte of recording) buffer.append(Uint8Array.of(byte));
   assert.equal(buffer.pending.length, 0);
@@ -127,9 +127,9 @@ test('partial WebM elements retain encoded blocks and export whole audio packets
       [2000, 2],
     ],
   );
-  const saved = new VideoBuffer();
+  const saved = new WebMBuffer();
   saved.begin(0);
-  saved.append(new Uint8Array(await video(buffer, 'video/webm', 2010).arrayBuffer()));
+  saved.append(new Uint8Array(await exportWebM(buffer, 'video/webm', 2010).arrayBuffer()));
   assert.deepEqual(
     saved.frames.filter((frame) => frame.kind === 1).map((frame) => frame.data.at(-1)),
     [0xaa, 0xbb, 0xcc],
@@ -146,7 +146,7 @@ test('WebM timestamps retain a nondefault time scale through export', async () =
   assert.notEqual(scale, -1);
   source.writeUIntBE(500000, scale + 4, 3);
 
-  const buffer = new VideoBuffer();
+  const buffer = new WebMBuffer();
   buffer.begin(0);
   buffer.append(source);
   assert.deepEqual(
@@ -161,9 +161,9 @@ test('WebM timestamps retain a nondefault time scale through export', async () =
     ],
   );
 
-  const exported = Buffer.from(await video(buffer, 'video/webm', 1010).arrayBuffer());
+  const exported = Buffer.from(await exportWebM(buffer, 'video/webm', 1010).arrayBuffer());
   assert(exported.includes(Buffer.from('2ad7b18307a120', 'hex')));
-  const saved = new VideoBuffer();
+  const saved = new WebMBuffer();
   saved.begin(0);
   saved.append(exported);
   assert.deepEqual(
@@ -188,20 +188,20 @@ test('restarted WebM remaps retained packets to the latest track numbers', async
       .replaceAll('a38682000080', 'a38684000080'),
     'hex',
   );
-  const buffer = new VideoBuffer();
+  const buffer = new WebMBuffer();
   buffer.begin(0);
   buffer.append(recording);
   buffer.begin(3000);
   buffer.append(restarted);
 
-  const exported = Buffer.from(await video(buffer, 'video/webm', 6000).arrayBuffer());
+  const exported = Buffer.from(await exportWebM(buffer, 'video/webm', 6000).arrayBuffer());
   // The first retained packets must use tracks 3/4 while keeping their payloads.
   assert(exported.includes(Buffer.from('a38583000080aa', 'hex')));
   assert(exported.includes(Buffer.from('a38684000080f800', 'hex')));
   assert(!exported.includes(Buffer.from('a38581000080aa', 'hex')));
   assert(!exported.includes(Buffer.from('a38682000080f800', 'hex')));
 
-  const saved = new VideoBuffer();
+  const saved = new WebMBuffer();
   saved.begin(0);
   saved.append(exported);
   assert.deepEqual(
@@ -218,7 +218,7 @@ test('restarted WebM remaps retained packets to the latest track numbers', async
 });
 
 test('the rolling video buffer advances to a keyframe within the latest ten seconds', () => {
-  const buffer = new VideoBuffer();
+  const buffer = new WebMBuffer();
   buffer.frames = Array.from({ length: 13 }, (_, i) => ({
     time: i * 1000,
     keyframe: true,
@@ -236,7 +236,7 @@ test('the rolling video buffer advances to a keyframe within the latest ten seco
 });
 
 test('the 64 MiB buffer discards dependent frames with the oldest keyframe', () => {
-  const buffer = new VideoBuffer(),
+  const buffer = new WebMBuffer(),
     mib = 1024 * 1024;
   buffer.pending = Uint8Array.of(1, 2, 3, 4);
   buffer.frames = [
@@ -253,7 +253,7 @@ test('the 64 MiB buffer discards dependent frames with the oldest keyframe', () 
 test('reference reading suspends the clip clock and preserves buffered play', () => {
   const capture = Object.create(Capture.prototype),
     now = performance.now();
-  capture.buffer = new VideoBuffer();
+  capture.buffer = new WebMBuffer();
   capture.buffer.frames = [{ time: now - 9000, keyframe: true, data: Uint8Array.of(1) }];
   capture.recorder = {
     state: 'recording',

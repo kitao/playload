@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src blob:; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="description" content="{{DESCRIPTION}}" />
+    <title>Playload</title>
+    <link rel="canonical" href="https://kitao.dev/playload/" />
+    <link rel="icon" href="/playload/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="{{APP_STYLE}}" />
+    <script type="module" src="{{APP_SCRIPT}}"></script>
+  </head>
+  <body data-editor-closed="true" data-loading>
+    <div id="app">
+      <header>
+        <div class="brand">
+          <a
+            id="home-link"
+            href="/playload/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open Playload in a new tab"
+          >
+            <img id="logo" src="/playload/assets/logo.svg" width="64" height="8" alt="Playload" />
+          </a>
+          <small id="version" aria-label="Version {{VERSION}}">{{VERSION}}</small>
+        </div>
+        <nav id="views" role="tablist" aria-label="Workspace">
+          <button id="play-tab" data-view="play" role="tab" aria-controls="play">Play</button>
+          <button id="info-tab" data-view="info" role="tab" aria-controls="info">Info</button>
+        </nav>
+        <div class="intro">
+          <p>{{DESCRIPTION}}</p>
+          <button
+            id="tools-toggle"
+            aria-label="Tools"
+            aria-controls="workspace-toolbar"
+            aria-expanded="false"
+            hidden
+          >
+            ⋯
+          </button>
+        </div>
+      </header>
+      <div id="workspace-toolbar" hidden>
+        <div class="game-tools">
+          <div class="play-tools toolbar-group" role="group" aria-label="Play">
+            <button id="load" aria-keyshortcuts="Control+O Meta+O">
+              Load<kbd aria-hidden="true">Ctrl+O</kbd>
+            </button>
+            <input id="file" type="file" accept=".js,text/javascript" hidden />
+            <button id="run" aria-keyshortcuts="Control+Enter Meta+Enter">
+              Run<kbd aria-hidden="true">Ctrl+Enter</kbd></button
+            ><button id="pause" aria-keyshortcuts="Escape" disabled>
+              Pause<kbd aria-hidden="true">Esc</kbd>
+            </button>
+          </div>
+          <div class="display-tools toolbar-group" role="group" aria-label="Display">
+            <button id="code-toggle" aria-pressed="true">
+              CODE<span class="indicator" aria-hidden="true"></span></button
+            ><button id="crt" aria-pressed="true">
+              CRT<span class="indicator" aria-hidden="true"></span></button
+            ><button id="sound" aria-pressed="true">
+              Sound<span class="indicator" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="export-tools toolbar-group" role="group" aria-label="Capture">
+            <div class="capture-tools">
+              <button id="screenshot" aria-label="Screenshot" aria-keyshortcuts="Alt+1" disabled>
+                Screenshot<kbd aria-hidden="true">Alt+1</kbd></button
+              ><button id="record" aria-keyshortcuts="Alt+2" disabled>
+                New clip<kbd aria-hidden="true">Alt+2</kbd></button
+              ><button id="video" aria-keyshortcuts="Alt+3" disabled>
+                Save video<kbd aria-hidden="true">Alt+3</kbd>
+              </button>
+            </div>
+          </div>
+          <output id="size" aria-label="Compressed payload size" hidden
+            ><span class="size-label">Payload</span><span id="size-current"></span
+            ><span class="size-limit">/ 3 KB</span></output
+          >
+        </div>
+      </div>
+      <main>
+        <section id="play" role="tabpanel" aria-labelledby="play-tab">
+          <section id="workbench" hidden>
+            <pre id="editor-highlight" aria-hidden="true" tabindex="-1"></pre>
+            <div id="editor-lines" aria-hidden="true"><pre id="editor-line-numbers"></pre></div>
+            <textarea
+              id="editor"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              aria-label="JavaScript code"
+              wrap="off"
+            ></textarea>
+          </section>
+          <div
+            id="divider"
+            hidden
+            role="separator"
+            aria-label="Resize editor and game"
+            aria-orientation="vertical"
+            aria-valuemin="15"
+            aria-valuemax="85"
+            aria-valuenow="50"
+            tabindex="0"
+          ></div>
+          <section id="game">
+            <div id="viewport">
+              <div id="picture">
+                <div class="stage">
+                  <div
+                    id="screen"
+                    tabindex="0"
+                    role="application"
+                    aria-label="Game: arrows or WASD, Z or J for A, X or K for B"
+                  >
+                    <canvas
+                      id="display"
+                      width="640"
+                      height="576"
+                      aria-label="Game screen, 160 by 144 pixels"
+                      role="img"
+                    ></canvas>
+                    <button id="start-game" hidden>Tap to play</button>
+                  </div>
+                </div>
+              </div>
+              <div id="error-notice" role="alert" hidden>
+                <button id="error-line" aria-keyshortcuts="Alt+E" hidden>Line</button>
+                <pre id="error" tabindex="0" hidden></pre>
+              </div>
+              <p
+                id="keyboard-controls"
+                hidden
+                aria-label="Keyboard controls: arrow keys or WASD, A on Z or J, B on X or K"
+              >
+                <span>MOVE: <kbd>↑↓←→</kbd>·<kbd>WASD</kbd></span
+                ><span>A: <kbd>Z</kbd>·<kbd>J</kbd> B: <kbd>X</kbd>·<kbd>K</kbd></span>
+              </p>
+            </div>
+            <div class="touch" aria-label="Game controls">
+              <div class="dpad">
+                <button data-input="0" aria-label="Up">↑</button
+                ><button data-input="2" aria-label="Left">←</button
+                ><button data-input="1" aria-label="Down">↓</button
+                ><button data-input="3" aria-label="Right">→</button>
+              </div>
+              <div class="touch-right">
+                <div class="ab">
+                  <button data-input="5">B</button><button data-input="4">A</button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="editor-status" hidden><span id="filename"></span></div>
+        </section>
+        <section id="info" role="tabpanel" aria-labelledby="info-tab" hidden>
+          <section id="colors" aria-label="Color palette">
+            <div id="palette"></div>
+          </section>
+          <div class="reference-scroll">
+            <nav class="reference-tabs" role="tablist" aria-label="Reference">
+              <button id="about-tab" data-ref="about" role="tab" aria-controls="about">
+                About
+              </button>
+              <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
+              <button
+                id="emoji-tab"
+                data-ref="emoji"
+                data-category="emoji"
+                role="tab"
+                aria-controls="characters"
+              >
+                Emoji
+              </button>
+              <button
+                id="symbols-tab"
+                data-ref="symbols"
+                data-category="symbols"
+                role="tab"
+                aria-controls="characters"
+              >
+                Symbols
+              </button>
+              <button
+                id="letters-tab"
+                data-ref="letters"
+                data-category="letters"
+                role="tab"
+                aria-controls="characters"
+              >
+                Alphabet
+              </button>
+              <button
+                id="kana-tab"
+                data-ref="kana"
+                data-category="kana"
+                role="tab"
+                aria-controls="characters"
+              >
+                Kana
+              </button>
+              <button id="examples-tab" data-ref="examples" role="tab" aria-controls="examples">
+                Examples
+              </button>
+            </nav>
+          </div>
+          <section id="about" role="tabpanel" aria-labelledby="about-tab">
+            <div class="about-content">
+              <h2>Playload</h2>
+              <p class="about-tagline">A tiny game engine that lets you share games as URLs</p>
+              <p class="about-links">{{SOURCE_LINK}}</p>
+              <h3>Specifications</h3>
+              <ul class="about-features">
+                <li>Up to 3 KB of compressed JavaScript</li>
+                <li>API with 6 functions, 2 variables and 1 callback</li>
+                <li>160 × 144 pixels, 8 colors, CRT display</li>
+                <li>Built-in 8 × 8 Unicode letters, symbols and emoji</li>
+                <li>ZX 128 PLAY-compatible, 3 sound channels</li>
+                <li>4-direction and 2-button input</li>
+                <li>A complete game in one URL — a <strong>playable payload</strong></li>
+              </ul>
+              <h3>Create and share</h3>
+              <div class="about-instructions">
+                <p>
+                  Edit your game in the <strong>CODE</strong> editor and press <strong>Run</strong>.
+                  The URL updates as you edit: share it to send the game and its code, or bookmark
+                  it to save that version. Start your code with <code>// @title My Game</code> to
+                  name the browser tab and bookmark.
+                </p>
+              </div>
+              <h3>Support Playload</h3>
+              <p>
+                If you enjoy Playload, please consider
+                <a href="{{REPOSITORY}}" target="_blank" rel="noopener"
+                  >starring the project on GitHub ↗</a
+                >. It helps more people discover the project.
+              </p>
+              <p>
+                Playload is free to use. If you would like to support its development, you can
+                <a href="https://github.com/sponsors/kitao" target="_blank" rel="noopener"
+                  >sponsor me on GitHub ↗</a
+                >
+                or
+                <a href="https://ko-fi.com/H2H27VDKD" target="_blank" rel="noopener"
+                  >buy me a coffee on Ko-fi ↗</a
+                >. Your support helps cover development costs and gives me more time to improve
+                Playload. Thank you for helping keep it going.
+              </p>
+              <div class="about-license">
+                <h3>License</h3>
+                <p>
+                  Playload's code and documentation are licensed under
+                  <a href="/playload/LICENSE" target="_blank" rel="noopener">MIT</a>.
+                </p>
+                <p>Bundled third-party materials retain their own licenses:</p>
+                <ul>
+                  <li>
+                    <a href="https://ggbot.itch.io/public-pixel-font" target="_blank" rel="noopener"
+                      >Public Pixel</a
+                    >: CC0.
+                  </li>
+                  <li>
+                    <a href="https://github.com/viznut/unscii" target="_blank" rel="noopener"
+                      >Unscii-8</a
+                    >: public domain / CC0.
+                  </li>
+                  <li>
+                    <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener"
+                      >Twemoji color reference</a
+                    >:
+                    <a
+                      href="https://creativecommons.org/licenses/by/4.0/"
+                      target="_blank"
+                      rel="noopener"
+                      >CC BY 4.0</a
+                    >.
+                  </li>
+                  <li>
+                    <a href="https://littlelimit.net/misaki.htm" target="_blank" rel="noopener"
+                      >Misaki Gothic</a
+                    >: use, modification and redistribution permitted, including commercial use.
+                  </li>
+                  <li>
+                    <a href="https://www.unicode.org/Public/17.0.0/" target="_blank" rel="noopener"
+                      >Unicode data</a
+                    >:
+                    <a href="https://www.unicode.org/license.txt" target="_blank" rel="noopener"
+                      >Unicode License v3</a
+                    >.
+                  </li>
+                  <li>
+                    <a
+                      href="https://pixeljoint.com/forum/forum_posts.asp?TID=26050"
+                      target="_blank"
+                      rel="noopener"
+                      >DB8</a
+                    >
+                    (palette): Richard Fhager (DawnBringer).
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl"
+                      target="_blank"
+                      rel="noopener"
+                      >CRT-Lottes</a
+                    >: public domain.
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/mamedev/mame/blob/dd06c01bbbd7d0c1c8aefa477c095861c7f8bf31/src/devices/sound/ay8910.cpp"
+                      target="_blank"
+                      rel="noopener"
+                      >AY volume measurements</a
+                    >: public domain.
+                  </li>
+                  <li>
+                    <a href="https://prismjs.com/" target="_blank" rel="noopener">Prism</a>: MIT.
+                  </li>
+                  <li>
+                    <a
+                      href="https://fonts.google.com/specimen/Press+Start+2P"
+                      target="_blank"
+                      rel="noopener"
+                      >Press Start 2P</a
+                    >
+                    (logo and favicon): SIL OFL 1.1.
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/digital-sound-antiques/emu2149"
+                      target="_blank"
+                      rel="noopener"
+                      >emu2149</a
+                    >
+                    (test reference): MIT.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section id="characters" role="tabpanel" aria-labelledby="emoji-tab" hidden>
+            <div id="catalog" tabindex="0" aria-label="Unicode characters">
+              <div id="catalog-space"><div id="catalog-window"></div></div>
+            </div>
+          </section>
+          <section id="examples" role="tabpanel" aria-labelledby="examples-tab" hidden>
+            <ul class="example-links"></ul>
+          </section>
+          <section id="api" role="tabpanel" aria-labelledby="api-tab" hidden>{{REFERENCE}}</section>
+        </section>
+      </main>
+      <output id="status" role="status" aria-live="polite"></output>
+    </div>
+  </body>
+</html>

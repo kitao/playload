@@ -1,3 +1,4 @@
+import { baseURL } from '../../playwright.config.js';
 import { test, expect } from '@playwright/test';
 
 const messages = {
@@ -66,7 +67,7 @@ for (const scenario of [
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     try {
-      await page.goto('http://127.0.0.1:8765/');
+      await page.goto(baseURL + '/playload/');
       const compact = await page.locator('#tools-toggle').isVisible();
       if ((await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'false') {
         if (compact) await page.locator('#tools-toggle').click();
@@ -174,7 +175,7 @@ for (const scenario of [
 test('syntax and title-less URL errors preserve the image and have no invented source link', async ({
   page,
 }, testInfo) => {
-  await page.goto('/');
+  await page.goto('/playload/');
   await page.locator('#editor').fill('function tick() { cls(3) }');
   await page.locator('#run').click();
   await expect(page.locator('#pause')).toBeEnabled();
@@ -187,7 +188,7 @@ test('syntax and title-less URL errors preserve the image and have no invented s
   expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(image);
   expect(await page.locator('#screen').boundingBox()).toEqual(bounds);
   await page.screenshot({ path: testInfo.outputPath('syntax.png') });
-  await page.goto('/#invalid-payload');
+  await page.goto('/playload/#invalid-payload');
   await expect(page.getByRole('alert')).toContainText('Invalid game URL');
   await expect(page.locator('#error-line')).toBeHidden();
 });

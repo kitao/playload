@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
-import { Runtime, Sound } from '../src/runtime.js';
-import { compileScore } from '../src/sound.js';
+import { Runtime, Sound } from '../src/app/runtime.js';
+import { compileScore } from '../src/engine/sound.js';
 
 function mockWorker(t) {
   const originalWorker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
@@ -256,7 +256,7 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
 });
 
 test('cached pages retain execution and media, then restore the watchdog and prior pause state', async (t) => {
-  const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
   const lifecycle = source.slice(
     source.indexOf("window.addEventListener('beforeunload'"),
     source.indexOf("window.addEventListener('hashchange'"),
@@ -277,12 +277,12 @@ test('cached pages retain execution and media, then restore the watchdog and pri
   mockWorker(t);
 
   for (const state of [
-    { running: true, paused: false, view: 'code' },
-    { running: true, paused: true, view: 'code' },
-    { running: false, paused: false, view: 'code' },
+    { running: true, paused: false, view: 'play' },
+    { running: true, paused: true, view: 'play' },
+    { running: false, paused: false, view: 'play' },
     { running: true, paused: false, view: 'info' },
-    { running: true, paused: true, view: 'code', awaitingStart: true, compact: true },
-    { running: true, paused: false, view: 'code', compact: true, toolsOpen: true },
+    { running: true, paused: true, view: 'play', awaitingStart: true, compact: true },
+    { running: true, paused: false, view: 'play', compact: true, toolsOpen: true },
   ]) {
     const handlers = new Map();
     const runtime = new Runtime(() => {}, assert.fail);
@@ -391,7 +391,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
 });
 
 test('pending audio initialization cannot start video capture after navigation', async (t) => {
-  const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
   const frame = source.slice(
     source.indexOf('async function frame('),
     source.indexOf('function run('),
@@ -463,7 +463,7 @@ test('pending audio initialization cannot start video capture after navigation',
 });
 
 test('game input follows keyboard labels and releases the original physical keys', async () => {
-  const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
   const handlersSource = source.slice(
     source.indexOf('const keyCodes ='),
     source.indexOf("const dpad = document.querySelector('.dpad');"),
@@ -490,7 +490,7 @@ test('game input follows keyboard labels and releases the original physical keys
     'runtime',
     'audio',
     'keys',
-    'let view = "code", running = true, paused = false, gamepadMask = 0; ' +
+    'let view = "play", running = true, paused = false, gamepadMask = 0; ' +
       'let compact = false, toolsOpen = false, awaitingStart = false; ' +
       'const pointers = new Map(), directions = new Set(), startKeys = new Set(); ' +
       'const readGamepads = () => 0;\n' +

@@ -6,7 +6,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { AY, compileScore } from '../src/sound.js';
+import { AY, compileScore } from '../src/engine/sound.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const temporary = mkdtempSync(join(tmpdir(), 'playload-psg-'));
@@ -36,7 +36,7 @@ const report = {
   reference: 'emu2149',
   revision,
   soundSourceSHA256: createHash('sha256')
-    .update(readFileSync(join(root, 'src/sound.js')))
+    .update(readFileSync(join(root, 'src/engine/sound.js')))
     .digest('hex'),
   clock,
   toneCases: 0,

@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Playload Symbol Fallback';
-  src: url('glyph-fallback.woff?v=2') format('woff');
+  src: url('glyph-fallback.woff') format('woff');
   font-display: swap;
   unicode-range: U+10000-10FFFF;
 }
@@ -232,7 +232,7 @@ header::after {
   font-size: 12px;
   color: var(--muted);
 }
-#code {
+#play {
   display: grid;
   grid-template-columns: minmax(140px, var(--editor-width, calc((100% - 8px) / 2))) 8px minmax(
       0,
@@ -404,6 +404,7 @@ body.resizing {
   border: 1px solid var(--line);
   background: var(--face);
 }
+#about,
 #api,
 #characters,
 #examples {
@@ -441,6 +442,7 @@ body.resizing {
     }
   }
 }
+#about,
 #api,
 #examples,
 #catalog {
@@ -481,6 +483,9 @@ body.resizing {
   gap: 8px;
 }
 .color {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: auto;
   min-width: 0;
   height: 68px;
@@ -995,7 +1000,7 @@ body[data-touch='true'] #keyboard-controls {
 .capture-tools {
   display: contents;
 }
-body[data-editor-closed='true'] #code {
+body[data-editor-closed='true'] #play {
   grid-template-columns: 1fr;
 }
 body[data-editor-closed='true'] #game {
@@ -1032,6 +1037,7 @@ button * {
   -webkit-touch-callout: none;
 }
 #workbench,
+#about,
 #api,
 #characters,
 #examples,
@@ -1088,7 +1094,7 @@ body[data-touch='true'] #screen:focus {
   }
 }
 @container (width < calc(52ch + 56px)) {
-  body[data-compact='true'][data-view='code'] header p {
+  body[data-compact='true'][data-view='play'] header p {
     display: none;
   }
 }
@@ -1317,7 +1323,7 @@ body[data-compact='true'] #size {
   border: 0;
   font-size: 16px;
 }
-body[data-compact='true'][data-editor-closed='true'] #code {
+body[data-compact='true'][data-editor-closed='true'] #play {
   grid-template-rows: minmax(0, 1fr);
 }
 body[data-compact='true'] main {
@@ -1378,38 +1384,38 @@ body[data-compact='true'] #picture {
 }
 
 @media (max-width: 599px), (pointer: coarse) and (orientation: portrait) {
-  body[data-view='code'][data-editor-closed='false'] #app {
+  body[data-view='play'][data-editor-closed='false'] #app {
     height: auto;
     min-height: 100dvh;
   }
-  body[data-view='code'][data-editor-closed='false'] #code {
+  body[data-view='play'][data-editor-closed='false'] #play {
     grid-template-columns: 1fr;
     grid-template-rows: min(320px, calc(100dvh - 80px)) auto auto;
     height: auto;
   }
-  body[data-view='code'][data-editor-closed='false'] #divider {
+  body[data-view='play'][data-editor-closed='false'] #divider {
     display: none;
   }
-  body[data-view='code'][data-editor-closed='false'] #game {
+  body[data-view='play'][data-editor-closed='false'] #game {
     grid-column: 1;
     grid-row: 3;
     height: auto;
     margin-top: 12px;
   }
-  body[data-view='code'][data-editor-closed='false'] #viewport {
+  body[data-view='play'][data-editor-closed='false'] #viewport {
     flex: none;
     aspect-ratio: 10 / 9;
   }
-  body[data-touch='true'][data-view='code'][data-editor-closed='false'] #viewport {
+  body[data-touch='true'][data-view='play'][data-editor-closed='false'] #viewport {
     max-height: calc(100dvh - 188px);
   }
-  body[data-touch='false'][data-view='code'][data-editor-closed='false'] main {
+  body[data-touch='false'][data-view='play'][data-editor-closed='false'] main {
     display: grid;
   }
-  body[data-touch='false'][data-view='code'][data-editor-closed='false'] #code {
+  body[data-touch='false'][data-view='play'][data-editor-closed='false'] #play {
     grid-template-rows: min(320px, calc(100dvh - 80px)) auto minmax(0, 1fr);
   }
-  body[data-touch='false'][data-view='code'][data-editor-closed='false'] #viewport {
+  body[data-touch='false'][data-view='play'][data-editor-closed='false'] #viewport {
     flex: 1;
   }
 }
@@ -1441,4 +1447,36 @@ body[data-compact='true'] #picture {
   .example-description {
     grid-column: 1 / -1;
   }
+}
+
+.about-content {
+  max-width: 760px;
+  padding: 8px 12px 24px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.about-content h2 {
+  margin: 0 0 8px;
+  color: var(--active);
+  font-size: 22px;
+  font-weight: normal;
+}
+.about-content h3 {
+  margin: 24px 0 8px;
+  color: var(--active);
+  font-size: 14px;
+  font-weight: normal;
+}
+.about-content p,
+.about-content ul {
+  margin: 8px 0 12px;
+}
+.about-content ul {
+  padding-left: 20px;
+}
+.about-content li {
+  margin: 3px 0;
+}
+.about-content code {
+  color: var(--active);
 }

@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
+export const baseURL = 'http://127.0.0.1:8767';
+
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: true,
@@ -9,14 +11,14 @@ export default defineConfig({
   use: {
     browserName: 'chromium',
     channel: process.env.PLAYLOAD_BROWSER_CHANNEL || undefined,
-    baseURL: 'http://127.0.0.1:8765',
+    baseURL,
     viewport: { width: 1400, height: 1000 },
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'npm run dev -- --no-open',
-    env: { PORT: '8765' },
-    url: 'http://127.0.0.1:8765',
-    reuseExistingServer: !process.env.CI,
+    command: 'npm run dev -- --no-open --no-watch',
+    env: { PORT: new URL(baseURL).port },
+    url: baseURL + '/playload/',
+    reuseExistingServer: false,
   },
 });

@@ -1,63 +1,131 @@
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import { basename } from 'node:path';
+import { cp, mkdir, mkdtemp, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
+import { basename, dirname, join, resolve, sep } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { escapeHTML, renderReference } from './reference.js';
 
-const root = fileURLToPath(new URL('..', import.meta.url));
-const output = new URL('../dist/', import.meta.url);
-await rm(output, { recursive: true, force: true });
-await mkdir(output, { recursive: true });
+const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
-const { metafile } = await build({
-  absWorkingDir: root,
-  entryPoints: ['src/app.js', 'src/style.css'],
-  outdir: 'dist',
-  entryNames: '[name]-[hash]',
-  assetNames: '[name]-[hash]',
-  bundle: true,
-  minify: true,
-  format: 'esm',
-  target: 'es2022',
-  charset: 'utf8',
-  loader: { '.woff': 'file' },
-  define: { module: 'undefined' },
-  legalComments: 'inline',
-  metafile: true,
-});
-
-function asset(entry) {
-  const [path] = Object.entries(metafile.outputs).find(
-    ([, details]) => details.entryPoint?.replaceAll('\\', '/') === entry,
-  );
-  return basename(path);
+function fill(template, values) {
+  return template.replace(/\{\{([A-Z_]+)\}\}/g, (_, name) => {
+    if (!(name in values)) throw new Error('Unknown template field: ' + name);
+    return values[name];
+  });
 }
 
-const html = (await readFile(new URL('../index.html', import.meta.url), 'utf8'))
-  .replace(/^\s*<link rel="modulepreload"[^>]+>\s*$/gm, '')
-  .replace(/src\/app\.js\?v=\d+/, asset('src/app.js'))
-  .replace(/src\/style\.css\?v=\d+/, asset('src/style.css'));
-await writeFile(new URL('index.html', output), html);
-for (const name of ['logo.svg', 'favicon.svg', 'LICENSE']) {
-  await cp(new URL('../' + name, import.meta.url), new URL(name, output));
+async function canonicalPath(path) {
+  try {
+    return await realpath(path);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    return join(await canonicalPath(dirname(path)), basename(path));
+  }
 }
 
-const notices = [
-  'data/fonts/public-pixel-LICENSE.txt',
-  'data/fonts/unscii-README.md',
-  'data/fonts/unscii-sources.txt',
-  'data/fonts/misaki.txt',
-  'data/fonts/twemoji-color-LICENSE.txt',
-  'data/fonts/unicode-LICENSE.txt',
-  'data/fonts/press-start-2p-OFL.txt',
-  'data/fonts/press-start-2p-FONTLOG.txt',
-  'node_modules/prismjs/LICENSE',
-];
-const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
-let notice =
-  'Playload resources and source: https://github.com/kitao/playload\n\n' +
-  readme.slice(readme.indexOf('## License\n'));
-for (const path of notices) {
-  notice += '\n' + path + '\n\n' + (await readFile(new URL('../' + path, import.meta.url), 'utf8'));
+export async function buildSite({ minify = true, directory = join(root, 'dist') } = {}) {
+  directory = await canonicalPath(resolve(directory));
+  if (
+    directory === root ||
+    root.startsWith(directory + sep) ||
+    (directory.startsWith(root + sep) && directory !== join(root, 'dist'))
+  )
+    throw new Error('Build output must be dist/ or outside the repository.');
+  await mkdir(dirname(directory), { recursive: true });
+  const stage = await mkdtemp(join(dirname(directory), '.playload-build-'));
+  const output = pathToFileURL(stage + '/');
+  try {
+    const project = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+    const homepage = new URL(project.homepage);
+    if (homepage.pathname !== '/playload/')
+      throw new Error('The stable publication path must remain /playload/.');
+    const base = homepage.pathname;
+    const repository = project.repository.url.replace(/\.git$/, '');
+    await mkdir(new URL('playload/', output), { recursive: true });
+
+    const { metafile } = await build({
+      absWorkingDir: root,
+      entryPoints: {
+        app: 'src/app/main.js',
+        'app-style': 'src/app/style.css',
+        'site-style': 'src/site/style.css',
+      },
+      outdir: join(stage, 'playload/assets/bundles'),
+      entryNames: '[name]-[hash]',
+      assetNames: '[name]-[hash]',
+      bundle: true,
+      minify,
+      format: 'esm',
+      target: 'es2022',
+      charset: 'utf8',
+      loader: { '.woff': 'file' },
+      define: { module: 'undefined' },
+      legalComments: 'inline',
+      banner: {
+        js:
+          '/*!\n' +
+          (await readFile(new URL('../data/fonts/unicode-LICENSE.txt', import.meta.url), 'utf8')) +
+          '\nTwemoji color reference: Twitter and contributors.\n' +
+          'https://github.com/jdecked/twemoji\n' +
+          'Used to derive emoji colors. Licensed under CC BY 4.0, provided as-is:\n' +
+          'https://creativecommons.org/licenses/by/4.0/\n*/',
+      },
+      metafile: true,
+    });
+    function asset(entry) {
+      const match = Object.entries(metafile.outputs).find(
+        ([, details]) => details.entryPoint === entry,
+      );
+      if (!match) throw new Error('Missing bundled entry: ' + entry);
+      return base + 'assets/bundles/' + basename(match[0]);
+    }
+    for (const name of ['logo.svg', 'favicon.svg'])
+      await cp(
+        new URL('../assets/' + name, import.meta.url),
+        new URL('playload/assets/' + name, output),
+      );
+    await cp(new URL('../LICENSE', import.meta.url), new URL('playload/LICENSE', output));
+    await cp(new URL('../src/site/_headers', import.meta.url), new URL('_headers', output));
+    const common = {
+      VERSION: escapeHTML(project.version),
+      DESCRIPTION: escapeHTML(project.description),
+      REPOSITORY: escapeHTML(repository),
+      SOURCE_LINK: `<a href="${escapeHTML(repository)}" target="_blank" rel="noopener">Source code ↗</a>`,
+      SITE_STYLE: asset('src/site/style.css'),
+    };
+    async function page(source, destination, values) {
+      const template = await readFile(new URL('../' + source, import.meta.url), 'utf8');
+      const target = new URL('playload/' + destination, output);
+      await mkdir(new URL('.', target), { recursive: true });
+      await writeFile(target, fill(template, { ...common, ...values }));
+    }
+    const reference = await renderReference();
+    await page('src/app/index.html', 'index.html', {
+      APP_SCRIPT: asset('src/app/main.js'),
+      APP_STYLE: asset('src/app/style.css'),
+      REFERENCE: reference.html,
+    });
+    await page('src/site/404.html', '404.html', {});
+    const backup = stage + '-previous';
+    let previous = false;
+    try {
+      await rename(directory, backup);
+      previous = true;
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+    try {
+      await rename(stage, directory);
+    } catch (error) {
+      if (previous) await rename(backup, directory);
+      throw error;
+    }
+    if (previous) await rm(backup, { recursive: true, force: true });
+  } finally {
+    await rm(stage, { recursive: true, force: true });
+  }
 }
-await writeFile(new URL('NOTICE.txt', output), notice);
-console.log('Built Playload in dist/.');
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  await buildSite();
+  console.log('Built Playload in dist/playload/.');
+}

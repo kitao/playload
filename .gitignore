@@ -6,3 +6,6 @@ coverage/
 dist/
 .venv/
 __pycache__/
+
+.wrangler/
+.playload-build-*/

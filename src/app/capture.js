@@ -1,4 +1,4 @@
-import { VideoBuffer, video } from './video.js?v=14';
+import { WebMBuffer, exportWebM } from './webm.js';
 
 export class Capture {
   constructor(canvas, audioStream, onChange) {
@@ -45,7 +45,7 @@ export class Capture {
   start() {
     if (!this.stream) return;
     this.clear();
-    this.buffer = new VideoBuffer();
+    this.buffer = new WebMBuffer();
     this.closed = false;
     this.error = null;
     this.begin();
@@ -96,7 +96,7 @@ export class Capture {
               session === this.session &&
               !session.buffer.frames.length
             ) {
-              this.buffer = new VideoBuffer();
+              this.buffer = new WebMBuffer();
               return;
             }
             throw error;
@@ -104,7 +104,7 @@ export class Capture {
           session.buffer.trim(request.end);
           if (request.resolve) {
             try {
-              request.resolve(video(session.buffer, this.mime, request.end));
+              request.resolve(exportWebM(session.buffer, this.mime, request.end));
             } catch (error) {
               request.reject(error);
             }

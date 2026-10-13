@@ -10,12 +10,12 @@ test('CRT reconstruction agrees with the frozen Lottes shader at matched setting
   expect(createHash('sha256').update(source).digest('hex')).toBe(
     '699a947fc2744eb7e2dc4adb2c08a8b74e31685baa77cbc1face9593106b57ef',
   );
-  await page.goto('/');
+  await page.goto('/playload/');
   const result = await page.evaluate(
     async ({ source, reference }) => {
-      const { createCRT } = await import('/src/crt.js'),
-        { palette, createEngine } = await import('/src/engine.js'),
-        { glyphs } = await import('/src/glyphs.js');
+      const { createCRT } = await import('/src/app/crt.js'),
+        { palette, createEngine } = await import('/src/engine/engine.js'),
+        { glyphs } = await import('/src/engine/glyphs.js');
       const renderer = createCRT(palette),
         drawReference = new Function('return (' + reference + ')')();
       const canvas = document.createElement('canvas');
@@ -72,12 +72,12 @@ test('CRT reconstruction agrees with the frozen Lottes shader at matched setting
 });
 
 test('CRT glass preserves every edge pixel and its phosphor glow', async ({ page }) => {
-  const source = await readFile(new URL('../../src/crt.js', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../../src/app/crt.js', import.meta.url), 'utf8');
   expect(source).toContain('mix(background, srgb + surround, glass)');
-  await page.goto('/');
+  await page.goto('/playload/');
   const result = await page.evaluate(async (source) => {
-    const { createCRT } = await import('/src/crt.js'),
-      { palette } = await import('/src/engine.js');
+    const { createCRT } = await import('/src/app/crt.js'),
+      { palette } = await import('/src/engine/engine.js');
     const unmaskedSource = source.replace(
       'mix(background, srgb + surround, glass)',
       'srgb + surround',

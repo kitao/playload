@@ -1,21 +1,16 @@
-# Dependencies and local test output.
-node_modules/
-test-results/
-playwright-report/
-coverage/
-dist/
-
 # Frozen source assets, notices, and independent reference implementations.
-data/
+data/fonts/
+data/ay-volume-source.json
 tests/reference/
 tests/browser/reference/
 *.svg
 
 # Generated artifacts: checked by their own generators.
-src/glyphs.js
-src/glyph-fallback.woff
-src/editor-highlighter.js
-src/example-links.js
+src/engine/glyphs.js
+src/app/glyph-fallback.woff
+src/app/editor-highlighter.js
+src/app/examples.js
 docs/glyph-coverage.json
-docs/retro-validation.json
 package-lock.json
+
+docs/reference.md

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createEngine, palette } from '../src/engine.js';
-import { glyphs } from '../src/glyphs.js';
+import { createEngine, palette } from '../src/engine/engine.js';
+import { glyphs } from '../src/engine/glyphs.js';
 
 const pixel = (engine, x, y = 0) => engine.pixels[y * 160 + x];
 

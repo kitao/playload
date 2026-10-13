@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { glyphFallback } from './glyph-fallback.js';
 import { colorPolicy, emojiColor } from './emoji-colors.js';
-import { palette } from '../src/engine.js';
+import { palette } from '../src/engine/engine.js';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (name) => readFileSync(root + '/data/fonts/' + name, 'utf8');
 const selection = JSON.parse(read('selection.json'));
@@ -238,9 +238,9 @@ for (const g of glyphs) {
   report.sources[g.source] = (report.sources[g.source] ?? 0) + 1;
 }
 for (const [name, content] of [
-  ['src/glyphs.js', output],
+  ['src/engine/glyphs.js', output],
   ['docs/glyph-coverage.json', JSON.stringify(report, null, 2) + '\n'],
-  ['src/glyph-fallback.woff', fallback.bytes],
+  ['src/app/glyph-fallback.woff', fallback.bytes],
 ]) {
   if (process.argv.includes('--check'))
     assert.deepEqual(

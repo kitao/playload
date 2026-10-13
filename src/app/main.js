@@ -1,12 +1,12 @@
-import { palette, createEngine } from './engine.js?v=16';
-import { glyphs } from './glyphs.js?v=18';
-import { encode, decode, gameURL } from './payload.js?v=14';
-import { Runtime, Sound } from './runtime.js?v=29';
-import { Capture, download } from './capture.js?v=23';
-import { createDisplay } from './display.js?v=17';
-import { createCRT } from './crt.js?v=17';
-import { highlightJavaScript } from './editor-highlighter.js?v=14';
-import { starter, exampleLinks } from './example-links.js?v=34';
+import { palette, createEngine } from '../engine/engine.js';
+import { glyphs } from '../engine/glyphs.js';
+import { encode, decode, gameURL, MAX_COMPRESSED_BYTES, MAX_URL_LENGTH } from '../payload.js';
+import { Runtime, Sound } from './runtime.js';
+import { Capture, download } from './capture.js';
+import { createDisplay } from './display.js';
+import { createCRT } from './crt.js';
+import { highlightJavaScript } from './editor-highlighter.js';
+import { starter, exampleLinks } from './examples.js';
 
 const $ = (id) => document.getElementById(id);
 const initialHash = location.hash;
@@ -26,8 +26,8 @@ let pendingSource = '',
   running = false,
   paused = false,
   crt = true;
-let view = 'code',
-  reference = 'api',
+let view = 'play',
+  reference = 'about',
   capture,
   payload,
   revision = 0,
@@ -48,6 +48,7 @@ let compact = touch;
 let editorOpen = !touch && innerWidth >= 600;
 let toolsOpen = false,
   awaitingStart = false;
+let focusedPane = 'screen';
 let pointers = new Map(),
   directions = new Set(),
   keys = new Map(),
@@ -71,7 +72,7 @@ const runtime = new Runtime(frame, (error) => {
     const editor = $('editor'),
       lines = editor.value.split('\n');
     const start = lines.slice(0, error.line - 1).reduce((sum, line) => sum + line.length + 1, 0);
-    setView('code');
+    setView('play');
     setEditorOpen(true);
     editor.setSelectionRange(start, start + (lines[error.line - 1]?.length ?? 0));
     focusEditor();
@@ -173,7 +174,7 @@ function setView(next) {
   if ($('catalog').clientHeight) catalogScroll = $('catalog').scrollTop;
   view = next;
   document.body.dataset.view = next;
-  for (const id of ['code', 'info']) $(id).hidden = id !== view;
+  for (const id of ['play', 'info']) $(id).hidden = id !== view;
   for (const button of document.querySelectorAll('[data-view]')) {
     button.setAttribute('aria-selected', String(button.dataset.view === view));
     button.tabIndex = button.dataset.view === view ? 0 : -1;
@@ -181,7 +182,7 @@ function setView(next) {
   release();
   syncPlayback();
   controls();
-  if (view === 'code' && editorOpen && innerWidth >= 600) setSplit(split);
+  if (view === 'play' && editorOpen && innerWidth >= 600) setSplit(split);
   requestAnimationFrame(fitGame);
   if (view === 'info' && reference === 'characters') renderCharacters();
 }
@@ -281,11 +282,11 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForSt
     runtime.suspend(document.hidden);
   }
 }
-function runCurrentSource() {
+function runCurrentSource(takeFocus = false) {
   if (reading) return;
   toolsOpen = false;
   unlockSound();
-  run($('editor').value, true);
+  run($('editor').value, takeFocus);
 }
 function unlockSound() {
   audio.init().catch(() => {
@@ -301,22 +302,17 @@ function startGame(takeFocus = true) {
   fitGame();
 }
 function targetsPlayer(target) {
-  return (
-    view === 'code' &&
-    (!!target.closest('#game') ||
-      !target.closest('#workbench, button, a, input, select, [contenteditable], #divider'))
-  );
+  return view === 'play' && !!target.closest('#game');
 }
 document.addEventListener(
   'pointerdown',
   (event) => {
-    if (!awaitingStart) return;
-    const player = targetsPlayer(event.target);
-    if (player) {
+    if (view === 'play' && !event.target.closest('#workbench, #game, #divider'))
       event.preventDefault();
-      event.stopPropagation();
-    }
-    startGame(player);
+    if (!awaitingStart || !targetsPlayer(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    startGame();
   },
   true,
 );
@@ -335,13 +331,16 @@ function focusEditor() {
   if (compact || innerWidth < 600) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function focusGame(reveal = true) {
-  if (view !== 'code') setView('code');
+  if (view !== 'play') setView('play');
   const screen = $('screen'),
     target = touch ? $('game') : screen,
     bounds = target.getBoundingClientRect();
   screen.focus({ preventScroll: true });
   if (reveal && (bounds.top < 0 || bounds.bottom > innerHeight))
     target.scrollIntoView({ block: 'center', behavior: 'instant' });
+}
+function focusPane() {
+  if (view === 'play') $(editorOpen ? focusedPane : 'screen').focus({ preventScroll: true });
 }
 function focusAfterRun() {
   if (
@@ -370,7 +369,7 @@ function readGamepads() {
   if (
     running &&
     !paused &&
-    view === 'code' &&
+    view === 'play' &&
     !(compact && toolsOpen) &&
     document.hasFocus() &&
     document.activeElement === $('screen')
@@ -396,10 +395,7 @@ function readGamepads() {
 for (const button of document.querySelectorAll('[data-view]'))
   button.onclick = () => {
     setView(button.dataset.view);
-    if (view === 'code') {
-      if (editorOpen) focusEditor();
-      else if (running) focusGame();
-    }
+    focusPane();
   };
 const tabs = $('views');
 tabs.onkeydown = (event) => {
@@ -407,12 +403,12 @@ tabs.onkeydown = (event) => {
   event.preventDefault();
   const next =
     event.key === 'Home'
-      ? 'code'
+      ? 'play'
       : event.key === 'End'
         ? 'info'
-        : view === 'code'
+        : view === 'play'
           ? 'info'
-          : 'code';
+          : 'play';
   setView(next);
   $(next + '-tab').focus();
 };
@@ -443,8 +439,6 @@ $('pause').onclick = () => {
   audio.unlock();
   syncPlayback();
   controls();
-  if (paused && editorOpen) focusEditor();
-  else if (!toolsOpen) focusGame();
   fitGame();
 };
 $('tools-toggle').onclick = () => {
@@ -453,19 +447,9 @@ $('tools-toggle').onclick = () => {
   audio.unlock();
   syncPlayback();
   controls();
-  if (!toolsOpen && running && !editorOpen) focusGame(false);
+  focusPane();
   fitGame();
 };
-document.querySelector('.game-tools').addEventListener('click', (event) => {
-  const button = event.target.closest('button');
-  if (
-    running &&
-    !(compact && toolsOpen) &&
-    button &&
-    !['load', 'code-toggle', 'run', 'pause', 'crt', 'sound'].includes(button.id)
-  )
-    focusGame();
-});
 $('crt').onclick = () => {
   crt = !crt;
   $('crt').setAttribute('aria-pressed', String(crt));
@@ -476,8 +460,6 @@ $('sound').onclick = () => {
   audio.mute(audio.enabled);
   $('sound').setAttribute('aria-pressed', String(audio.enabled));
 };
-for (const id of ['crt', 'sound']) $(id).onmousedown = (event) => event.preventDefault();
-$('screenshot').onpointerdown = (event) => event.preventDefault();
 $('screenshot').onclick = () =>
   canvas.toBlob((blob) => {
     if (blob) download(blob, 'playload.png');
@@ -516,7 +498,7 @@ $('video').onclick = async () => {
       document.activeElement === document.body &&
       compact &&
       toolsOpen &&
-      view === 'code' &&
+      view === 'play' &&
       !$('video').disabled
     )
       $('video').focus({ preventScroll: true });
@@ -585,15 +567,16 @@ function scheduleURL(delay = 250) {
       if (version !== urlRevision || code !== $('editor').value) return;
       const url = new URL(location.href);
       url.searchParams.delete('edit');
-      url.hash = encoded.hash;
+      url.hash =
+        initialHash && editRevision === 0 && code === loadedSource ? initialHash : encoded.hash;
       payload = encoded;
       $('size-current').textContent = (encoded.bytes / 1024).toFixed(2) + ' KB';
       $('size').title = encoded.bytes + ' bytes · ' + url.href.length + ' URL characters';
       urlError = '';
-      if (encoded.bytes > 3072 || url.href.length > 4096) {
+      if (encoded.bytes > MAX_COMPRESSED_BYTES || url.href.length > MAX_URL_LENGTH) {
         url.hash = '';
         urlError =
-          encoded.bytes > 3072
+          encoded.bytes > MAX_COMPRESSED_BYTES
             ? 'Code exceeds 3 KB compressed.'
             : 'Bookmark URL exceeds 4,096 characters.';
       }
@@ -648,7 +631,7 @@ function discard() {
   );
 }
 function readRequest() {
-  return { edit: editRevision, focus: focusRevision };
+  return { edit: editRevision };
 }
 async function readFile(file, request, handle = null) {
   const text = await file.text();
@@ -664,7 +647,8 @@ async function readFile(file, request, handle = null) {
   filename = file.name;
   editRevision++;
   highlightEditor();
-  run(loadedSource, true, request.focus);
+  toolsOpen = false;
+  run(loadedSource);
   return true;
 }
 async function chooseFile(request) {
@@ -761,11 +745,14 @@ $('file').onchange = async () => {
     controls();
   }
 };
-$('run').onclick = runCurrentSource;
+$('run').onclick = () => runCurrentSource();
 $('editor').oninput = changed;
 $('editor').onfocus = release;
+$('workbench').onpointerdown = () => $('editor').focus({ preventScroll: true });
 document.addEventListener('focusin', () => {
   focusRevision++;
+  if (['editor', 'screen'].includes(document.activeElement.id))
+    focusedPane = document.activeElement.id;
   if (document.activeElement !== $('screen')) release();
 });
 $('editor').onkeydown = (event) => {
@@ -780,18 +767,18 @@ function setReference(next) {
   dismissCopy();
   if ($('catalog').clientHeight) catalogScroll = $('catalog').scrollTop;
   const selected = next === 'characters' ? category : next,
-    resetScroll = !['api', 'examples'].includes(selected) && selected !== category;
+    resetScroll = !['about', 'api', 'examples'].includes(selected) && selected !== category;
   if (resetScroll) {
     category = selected;
     catalogScroll = 0;
   }
-  reference = ['api', 'examples'].includes(selected) ? selected : 'characters';
+  reference = ['about', 'api', 'examples'].includes(selected) ? selected : 'characters';
   for (const button of document.querySelectorAll('[data-ref]')) {
     const active = button.dataset.ref === selected;
     button.setAttribute('aria-selected', String(active));
     button.tabIndex = active ? 0 : -1;
   }
-  for (const id of ['api', 'characters', 'examples']) $(id).hidden = id !== reference;
+  for (const id of ['about', 'api', 'characters', 'examples']) $(id).hidden = id !== reference;
   if (reference === 'characters') {
     $('characters').setAttribute('aria-labelledby', selected + '-tab');
     renderCharacters();
@@ -949,21 +936,18 @@ $('catalog').onkeydown = (event) => {
     ?.focus({ preventScroll: true });
 };
 for (let index = 0; index < 8; index++) {
-  const button = document.createElement('button'),
+  const color = document.createElement('div'),
     swatch = document.createElement('span');
   const number = document.createElement('span'),
     detail = document.createElement('span');
-  button.className = 'color';
-  button.setAttribute('aria-label', 'Copy color ' + index);
-  button.title = index + ' · ' + palette[index].toUpperCase();
+  color.className = 'color';
   swatch.className = 'swatch';
   swatch.style.background = palette[index];
   number.textContent = index;
   detail.className = 'hex';
   detail.textContent = palette[index].toUpperCase();
-  button.append(swatch, number, detail);
-  button.onclick = () => copy(String(index), button);
-  $('palette').append(button);
+  color.append(swatch, number, detail);
+  $('palette').append(color);
 }
 
 const keyCodes = {
@@ -992,25 +976,36 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     return;
   }
-  if (awaitingStart) {
-    const player = targetsPlayer(document.activeElement);
-    startGame(player);
-    if (player) {
-      event.preventDefault();
-      startKeys.add(event.code);
-      return;
-    }
+  if (event.key === 'Tab' && view === 'play') {
+    event.preventDefault();
+    return;
+  }
+  if (
+    awaitingStart &&
+    targetsPlayer(document.activeElement) &&
+    !event.ctrlKey &&
+    !event.metaKey &&
+    !event.altKey &&
+    !['Shift', 'Control', 'Alt', 'Meta', 'Escape'].includes(event.key)
+  ) {
+    startGame();
+    event.preventDefault();
+    startKeys.add(event.code);
+    return;
   }
   if (event.isComposing) return;
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey) {
     const id = { Enter: 'run', NumpadEnter: 'run', KeyO: 'load' }[event.code];
-    if (id && view === 'code' && !$(id).disabled) {
+    if (id && view === 'play' && !$(id).disabled) {
       event.preventDefault();
-      if (!event.repeat) $(id).click();
+      if (!event.repeat) {
+        if (id === 'run') runCurrentSource(true);
+        else $(id).click();
+      }
     }
     return;
   }
-  if (view !== 'code') return;
+  if (view !== 'play') return;
   if (
     event.key === 'Escape' &&
     !event.shiftKey &&
@@ -1019,7 +1014,11 @@ document.addEventListener('keydown', (event) => {
     !event.metaKey
   ) {
     event.preventDefault();
-    if (!event.repeat && !$('pause').disabled) $('pause').click();
+    if (!event.repeat && !$('pause').disabled) {
+      $('pause').click();
+      if (paused && editorOpen) focusEditor();
+      else if (!toolsOpen) focusGame();
+    }
     return;
   }
   if (editable(event.target)) return;
@@ -1079,7 +1078,7 @@ function padMask(event, previous = 0) {
 }
 for (const control of [dpad, ...document.querySelectorAll('.ab [data-input]')]) {
   control.onpointerdown = (event) => {
-    if (!(running || runtime.pending) || view !== 'code' || (compact && toolsOpen)) return;
+    if (!(running || runtime.pending) || view !== 'play' || (compact && toolsOpen)) return;
     if (paused) return;
     event.preventDefault();
     focusGame(false);
@@ -1105,7 +1104,7 @@ document.addEventListener('pointermove', (event) => {
 function nativeTouch(target) {
   const scroll = target.closest('.reference-scroll, #workspace-toolbar');
   return (
-    target.closest('#workbench, #api, #characters, #examples, #error-notice') ||
+    target.closest('#workbench, #about, #api, #characters, #examples, #error-notice') ||
     (editorOpen && target.closest('#viewport')) ||
     (scroll &&
       (scroll.scrollWidth > scroll.clientWidth || scroll.scrollHeight > scroll.clientHeight))
@@ -1202,7 +1201,7 @@ function setEditorOpen(open) {
   for (const el of [$('workbench'), $('divider'), document.querySelector('.editor-status')])
     el.hidden = !open;
   $('code-toggle').setAttribute('aria-pressed', String(open));
-  if (open && view === 'code' && innerWidth >= 600) setSplit(split);
+  if (open && view === 'play' && innerWidth >= 600) setSplit(split);
   fitGame();
 }
 $('code-toggle').onclick = () => {
@@ -1210,8 +1209,7 @@ $('code-toggle').onclick = () => {
   toolsOpen = false;
   controls();
   syncPlayback();
-  if (editorOpen) focusEditor();
-  else if (running) focusGame();
+  focusPane();
 };
 function touchLayout() {
   return matchMedia('(pointer:coarse)').matches;
@@ -1227,13 +1225,13 @@ function layout() {
   $('start-game').textContent = touch ? 'Tap to play' : 'Click to play';
   controls();
   syncPlayback();
-  if (view === 'code' && editorOpen && innerWidth >= 600) setSplit(split);
+  if (view === 'play' && editorOpen && innerWidth >= 600) setSplit(split);
   else fitGame();
 }
 let split = 0.5,
   dragging;
 function setSplit(value) {
-  const area = $('code'),
+  const area = $('play'),
     available = Math.max(1, area.clientWidth - 8);
   const min = Math.min(0.35, 140 / available),
     max = 1 - Math.min(0.6, 240 / available);
@@ -1249,13 +1247,12 @@ $('divider').onpointerdown = (event) => {
   if (event.button !== 0) return;
   event.preventDefault();
   dragging = event.pointerId;
-  $('divider').focus();
   $('divider').setPointerCapture(event.pointerId);
   document.body.classList.add('resizing');
 };
 $('divider').onpointermove = (event) => {
   if (dragging !== event.pointerId) return;
-  const rect = $('code').getBoundingClientRect();
+  const rect = $('play').getBoundingClientRect();
   setSplit((event.clientX - rect.left - 4) / Math.max(1, rect.width - 8));
 };
 for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'])
@@ -1325,7 +1322,7 @@ function animate(time) {
     running &&
     !document.hidden &&
     !paused &&
-    view === 'code' &&
+    view === 'play' &&
     !(compact && toolsOpen) &&
     time - lastFrame >= 1000 / 60 - 0.5
   ) {
@@ -1334,7 +1331,7 @@ function animate(time) {
     lastFrame = time - lastFrame > interval * 2 ? time : lastFrame + interval;
     runtime.frame();
   }
-  if (capture?.stream && running && paused && view === 'code' && !document.hidden) paint();
+  if (capture?.stream && running && paused && view === 'play' && !document.hidden) paint();
   requestAnimationFrame(animate);
 }
 function showPlayer() {
@@ -1362,17 +1359,13 @@ if (initialHash) {
       loadedSource = code;
       $('editor').value = code;
       highlightEditor();
-      run(code, view === 'code', initialFocus, true);
+      run(code, view === 'play', initialFocus, true);
     })
     .catch((error) => {
       if (initialEdit !== editRevision) return;
       gameError = error.message;
       updateError();
       showPlayer();
-      if (view === 'code' && initialFocus === focusRevision) focusGame();
+      if (view === 'play' && initialFocus === focusRevision) focusGame();
     });
-} else if (touch || !editorOpen) run(starter, true, focusRevision, true);
-else {
-  run(starter, false, focusRevision, true);
-  focusEditor();
-}
+} else run(starter, true, focusRevision, true);

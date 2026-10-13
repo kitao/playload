@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { AY, compileScore } from '../src/sound.js';
+import { AY, compileScore } from '../src/engine/sound.js';
 
 test('all sixteen AY volume levels preserve the pinned Westcott measurements', () => {
   const { volts } = JSON.parse(readFileSync('data/ay-volume-source.json', 'utf8'));

@@ -19,7 +19,7 @@ structure, glow and curved glass. These are separate references, not one complet
 - The browser fades mute, pause and reset transitions over 4 ms. Speaker mute preserves the
   recording feed; pause freezes synthesis time.
 
-[Resource adoption](resource-adoption.md#sound) identifies the specifications and measurements.
+[AY volume source](../data/ay-volume-source.json) records the fixed measurements and normalization.
 This implementation does not copy MAME's synthesis code or model a particular analog board,
 amplifier or speaker. Register-level programming and complete ROM behavior are outside the API.
 
@@ -48,6 +48,7 @@ techniques. At small sizes, masks and scanlines are approximations of physical t
 [Chiptune](../examples/chiptune.js) provides melody, bass and noise drums. Inspect at desktop
 and phone sizes, and listen at normal playback levels.
 
-[Retro validation](retro-validation.md) records independent comparisons, automated checks,
-measured differences and reproduction commands. It separates renderer/synthesis agreement
-from physical-hardware fidelity and listening acceptance.
+Run `npm run test:reference` for the independent sound comparison and `npm run test:browser`
+for the renderer, input and capture checks. The [sound reference](../tests/reference/README.md)
+and [CRT reference](../tests/browser/reference/README.md) describe their conditions.
+These checks do not establish physical-hardware fidelity or listening acceptance.

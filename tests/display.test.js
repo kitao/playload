@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createDisplay } from '../src/display.js';
-import { palette } from '../src/engine.js';
+import { createDisplay } from '../src/app/display.js';
+import { palette } from '../src/engine/engine.js';
 
 const rgb = palette.map((hex) =>
   [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16)),

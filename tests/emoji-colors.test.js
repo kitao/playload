@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { palette } from '../src/engine.js';
-import { glyphs } from '../src/glyphs.js';
+import { palette } from '../src/engine/engine.js';
+import { glyphs } from '../src/engine/glyphs.js';
 import {
   colorPolicy,
   contrast,

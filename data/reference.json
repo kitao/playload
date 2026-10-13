@@ -1,0 +1,198 @@
+{
+  "api": [
+    {
+      "title": "Functions",
+      "entries": [
+        {
+          "name": "cls(col)",
+          "description": "Fill the character screen with col.",
+          "example": "cls(0)"
+        },
+        {
+          "name": "put(cx, cy, str, col1?, col2?)",
+          "description": "8px-cell text stays; foreground / background.",
+          "example": "put(1, 1, \"HI\\n👾\")\nput(1, 1, \"HI\\n👾\", 6)\nput(1, 1, \"HI\\n👾\", 6, 0)"
+        },
+        {
+          "name": "spr(x, y, chr, col)",
+          "description": "Draw above text for this tick.",
+          "example": "spr(76, 68, \"👾\", 6)"
+        },
+        {
+          "name": "btn(id)",
+          "description": "True while the button is held.",
+          "example": "if (btn(3)) put(1, 1, \"→\") // Held",
+          "buttons": ["0 ↑ · 1 ↓ · 2 ← · 3 →", "4 A (Z/J) · 5 B (X/K)"]
+        },
+        {
+          "name": "btnp(id)",
+          "description": "New press; same IDs as btn.",
+          "example": "if (btnp(4)) play(1, \"O6N1C\")"
+        },
+        {
+          "name": "play(ch, str)",
+          "description": "Play sound on channel 0–2 using ZX 128 PLAY.",
+          "example": "play(0, \"T150O5N3ceg))\")\nplay(0, \"\") // Stop"
+        }
+      ]
+    },
+    {
+      "title": "Variables",
+      "entries": [
+        {
+          "name": "pcg[chr]",
+          "description": "8-byte pattern and foreground/background colors.",
+          "example": "pcg[\"↑\"].pat[0] = 0x18\npcg[\"↑\"].pat = \"183c7e1818181800\"\npcg[\"👾\"].col = [6, 0]"
+        },
+        {
+          "name": "scr[cy][cx]",
+          "description": "Cell characters and colors; null follows PCG.",
+          "example": "scr[4][3].chr = \"👾\" // [cy][cx]\nscr[4][3].col = [null, 1]"
+        }
+      ]
+    },
+    {
+      "title": "Callback",
+      "entries": [
+        {
+          "name": "tick()",
+          "description": "Update the game at 60 Hz.",
+          "example": "function tick() { // 60 Hz\n  spr(76, 68, \"👾\", 6)\n}"
+        }
+      ]
+    }
+  ],
+  "sound": [
+    {
+      "title": "Notes",
+      "entries": [
+        {
+          "name": "cdefgab",
+          "description": "Notes in the current octave.",
+          "example": "\"ceg\""
+        },
+        {
+          "name": "CDEFGAB",
+          "description": "Notes one octave higher.",
+          "example": "\"CEG\""
+        },
+        {
+          "name": "O0–O8",
+          "description": "Set octave; O5c is middle C.",
+          "example": "\"O5c\""
+        },
+        {
+          "name": "# · $ · &",
+          "description": "Sharp, flat and rest.",
+          "example": "\"#c $b &\""
+        }
+      ]
+    },
+    {
+      "title": "Lengths",
+      "entries": [
+        {
+          "name": "10–12",
+          "description": "Triplets apply to the next three notes.",
+          "example": "\"10cde\""
+        },
+        {
+          "name": "_",
+          "description": "Tie by adding note lengths together.",
+          "example": "\"3_5c\""
+        }
+      ],
+      "description": "Write the length before notes: 5ceg = quarter notes. Default: 5.",
+      "lengths": true
+    },
+    {
+      "title": "Tempo",
+      "entries": [
+        {
+          "name": "T60–T240",
+          "description": "Tempo in BPM; set on channel 0.",
+          "example": "\"T150\""
+        }
+      ]
+    },
+    {
+      "title": "Volume & Envelope",
+      "entries": [
+        {
+          "name": "V0–V15",
+          "description": "Set volume, from silent to loud.",
+          "example": "\"V12\""
+        },
+        {
+          "name": "U · X0–X65535",
+          "description": "U: envelope unless V is used. X: period (X0 = X1/2).",
+          "example": "\"UX1000W6\"\n\"X0\""
+        },
+        {
+          "name": "W0–W7",
+          "description": "Select a volume envelope shape.",
+          "envelopes": true
+        }
+      ]
+    },
+    {
+      "title": "Mixer",
+      "entries": [
+        {
+          "name": "M1–M63",
+          "description": "Tone bits 1/2/4; noise bits 8/16/32.",
+          "example": "\"M7\"\n\"M56\""
+        }
+      ]
+    },
+    {
+      "title": "Control",
+      "entries": [
+        {
+          "name": "(…) · ))",
+          "description": "Repeat twice / loop forever.",
+          "example": "\"(ceg) ceg))\""
+        },
+        {
+          "name": "H",
+          "description": "Stop all channels at this point.",
+          "example": "\"cegH\""
+        },
+        {
+          "name": "N",
+          "description": "Separate adjacent numbers.",
+          "example": "\"O5N3ceg\""
+        },
+        {
+          "name": "!…!",
+          "description": "Ignore text between ! marks.",
+          "example": "\"!intro!ceg\""
+        }
+      ]
+    }
+  ],
+  "lengths": [
+    ["1", "1/16"],
+    ["2", "3/32"],
+    ["3", "1/8"],
+    ["4", "3/16"],
+    ["5", "1/4"],
+    ["6", "3/8"],
+    ["7", "1/2"],
+    ["8", "3/4"],
+    ["9", "1"],
+    ["10", "1/16 triplet"],
+    ["11", "1/8 triplet"],
+    ["12", "1/4 triplet"]
+  ],
+  "envelopes": [
+    ["W0", "decay → 0"],
+    ["W1", "attack → 0"],
+    ["W2", "decay; hold 0"],
+    ["W3", "attack; hold 15"],
+    ["W4", "repeat decay"],
+    ["W5", "repeat attack"],
+    ["W6", "attack / decay"],
+    ["W7", "decay / attack"]
+  ]
+}

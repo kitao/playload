@@ -2,13 +2,13 @@ import { spawn } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
-import { exampleLinks } from '../src/example-links.js';
+import { exampleLinks } from '../src/app/examples.js';
 
 const viewport = { width: 1600, height: 900 };
-const directory = new URL('../docs/images/', import.meta.url);
+const directory = new URL('../assets/images/', import.meta.url);
 const server = spawn(
   process.execPath,
-  [fileURLToPath(new URL('serve.js', import.meta.url)), '--no-open'],
+  [fileURLToPath(new URL('serve.js', import.meta.url)), '--no-open', '--no-watch'],
   {
     env: { ...process.env, PORT: '0' },
     stdio: ['ignore', 'pipe', 'inherit'],
@@ -20,7 +20,7 @@ try {
     let output = '';
     server.stdout.on('data', (data) => {
       output += data;
-      const match = output.match(/http:\/\/127\.0\.0\.1:\d+\//);
+      const match = output.match(/http:\/\/127\.0\.0\.1:\d+\/playload\//);
       if (match) resolve(match[0]);
     });
     server.once('error', reject);
@@ -104,6 +104,7 @@ try {
       null,
       { polling: 50 },
     );
+    await page.locator('#screen').click({ force: true });
     if (errors.length) throw new Error(`${entry.name}: ${errors.join('\n')}`);
     if (await page.locator('#error-notice').isVisible())
       throw new Error(`${entry.name}: ${await page.locator('#error').textContent()}`);

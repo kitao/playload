@@ -1,6 +1,6 @@
-import { createEngine } from './engine.js?v=16';
-import { compileScore, AY } from './sound.js?v=13';
-import { glyphs } from './glyphs.js?v=18';
+import { createEngine } from '../engine/engine.js';
+import { compileScore, AY } from '../engine/sound.js';
+import { glyphs } from '../engine/glyphs.js';
 
 function gameWorker(presets, engineFactory, compiler) {
   let engine, tick;

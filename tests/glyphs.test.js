@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
-import { glyphs } from '../src/glyphs.js';
-import { createEngine } from '../src/engine.js';
+import { glyphs } from '../src/engine/glyphs.js';
+import { createEngine } from '../src/engine/engine.js';
 const key = (ch) => ch.normalize('NFC').replace(/[\uFE0E\uFE0F]/g, '');
 const bank = new Map(glyphs.map((g) => [key(g.ch), g]));
 
@@ -68,7 +68,7 @@ test('the bank follows the declared source repertoires within its transfer budge
   ]);
   assert.equal(bank.size, glyphs.length);
   assert.equal(bank.size, allowed.size);
-  assert(gzipSync(readFileSync('src/glyphs.js')).length <= selection.maximumGzipBytes);
+  assert(gzipSync(readFileSync('src/engine/glyphs.js')).length <= selection.maximumGzipBytes);
   for (const g of glyphs) {
     assert(allowed.has(key(g.ch)), g.ch);
     assert.equal(g.rows.length, 8, g.ch);

@@ -13,7 +13,7 @@ for (const name of ['core', 'clike', 'javascript'])
     '\n';
 output +=
   'export function highlightJavaScript(source) { return Prism.highlight(source, Prism.languages.javascript, "javascript"); }\n';
-const target = new URL('src/editor-highlighter.js', root);
+const target = new URL('src/app/editor-highlighter.js', root);
 if (process.argv.includes('--check')) {
   if ((await readFile(target, 'utf8')) !== output)
     throw new Error('Editor highlighter is stale; run npm run editor');
