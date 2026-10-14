@@ -1,0 +1,274 @@
+import { test, expect } from '@playwright/test';
+import { decode, encode } from '../../src/payload.js';
+
+const source = '// @title Format Check\n\n\n\nfunction tick(){cls(0)}\n\n';
+const formatted = '// @title Format Check\n\nfunction tick() {\n  cls(0);\n}\n';
+
+test.beforeEach(async ({ page }) => {
+  await page.goto('/playload/');
+  await expect(page.locator('#format')).toBeVisible();
+});
+
+test('Format removes excess blank lines, updates the shared source and remains one undo action', async ({
+  page,
+}) => {
+  const requests = [];
+  page.on('request', (request) => {
+    if (/\/formatter-[A-Z0-9]+\.js$/.test(new URL(request.url()).pathname))
+      requests.push(request.url());
+  });
+  const editor = page.locator('#editor');
+  await editor.fill(source);
+  await expect.poll(() => page.url().includes('#v1.')).toBe(true);
+  expect(requests).toEqual([]);
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue(formatted);
+  await expect(editor).toBeFocused();
+  await expect(page.locator('#format')).toBeEnabled();
+  expect(requests).toHaveLength(1);
+  await expect.poll(async () => decode(new URL(page.url()).hash)).toBe(formatted);
+  const encoded = await encode(formatted);
+  await expect(page.locator('#size')).toHaveAttribute(
+    'title',
+    `${encoded.bytes} bytes · ${page.url().length} URL characters`,
+  );
+  await expect(page.locator('#editor-highlight')).toHaveText(formatted + '\n');
+  await expect(page.locator('#editor-line-numbers')).toHaveText('1\n2\n3\n4\n5\n6');
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(source);
+  await editor.press('ControlOrMeta+Shift+z');
+  await expect(editor).toHaveValue(formatted);
+});
+
+test('typing after Format is grouped separately and both edits survive Undo and Redo', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  await editor.fill(source);
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue(formatted);
+  await editor.evaluate((element) =>
+    element.setSelectionRange(element.value.length, element.value.length),
+  );
+  await editor.pressSequentially('// typed');
+  const typed = formatted + '// typed';
+  await expect(editor).toHaveValue(typed);
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(formatted);
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(source);
+  await editor.press('ControlOrMeta+Shift+z');
+  await expect(editor).toHaveValue(formatted);
+  await editor.press('ControlOrMeta+Shift+z');
+  await expect(editor).toHaveValue(typed);
+});
+
+test('loading a file starts a fresh history without discarding its formatting undo', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  await editor.fill(source);
+  const loaded = 'function tick(){cls(2)}';
+  await page.locator('#file').setInputFiles({
+    name: 'loaded.js',
+    mimeType: 'text/javascript',
+    buffer: Buffer.from(loaded),
+  });
+  await expect(editor).toHaveValue(loaded);
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(loaded);
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue('function tick() {\n  cls(2);\n}\n');
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(loaded);
+});
+
+test('moving focus during formatting keeps the source and the new focus', async ({ page }) => {
+  let release;
+  const blocked = new Promise((resolve) => (release = resolve));
+  let arrived;
+  const requested = new Promise((resolve) => (arrived = resolve));
+  await page.route('**/formatter-*.js', async (route) => {
+    arrived();
+    await blocked;
+    await route.continue();
+  });
+  await page.locator('#editor').fill(source);
+  await page.locator('#format').click();
+  await requested;
+  await page.locator('#screen').focus();
+  release();
+  await expect(page.locator('#format')).toBeEnabled();
+  await expect(page.locator('#editor')).toHaveValue(source);
+  await expect(page.locator('#screen')).toBeFocused();
+  await expect(page.locator('#status')).toContainText('focus or selection changed');
+});
+
+test('Format preserves template string contents, comments and a backward selection', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  const original = '// comment\nconst text=`first\n\n\nlast`;\nfunction tick(){cls(0)}';
+  await editor.fill(original);
+  await editor.evaluate((element) => {
+    const start = element.value.indexOf('cls');
+    element.setSelectionRange(start, start + 3, 'backward');
+  });
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue(
+    '// comment\nconst text = `first\n\n\nlast`;\nfunction tick() {\n  cls(0);\n}\n',
+  );
+  expect(
+    await editor.evaluate((element) => ({
+      selected: element.value.slice(element.selectionStart, element.selectionEnd),
+      direction: element.selectionDirection,
+    })),
+  ).toEqual({ selected: 'cls', direction: 'backward' });
+});
+
+test('Shift+Alt+F formats only inside the editor and leaves find, repeats and IME composition alone', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  await editor.fill(source);
+  await page.locator('#screen').focus();
+  await page.keyboard.press('Alt+Shift+f');
+  await expect(editor).toHaveValue(source);
+  await editor.focus();
+  for (const modifiers of [{ metaKey: true }, { ctrlKey: true }, { isComposing: true }]) {
+    expect(
+      await editor.evaluate((element, modifiers) => {
+        const event = new KeyboardEvent('keydown', {
+          key: 'f',
+          code: 'KeyF',
+          altKey: !!modifiers.isComposing,
+          shiftKey: !!modifiers.isComposing,
+          ...modifiers,
+          bubbles: true,
+          cancelable: true,
+        });
+        return element.dispatchEvent(event);
+      }, modifiers),
+    ).toBe(true);
+  }
+  await editor.dispatchEvent('keydown', {
+    key: 'F',
+    code: 'KeyF',
+    altKey: true,
+    shiftKey: true,
+    repeat: true,
+  });
+  await expect(editor).toHaveValue(source);
+  await editor.press('Alt+Shift+f');
+  await expect(editor).toHaveValue(formatted);
+  await expect(page.locator('#format')).toHaveAttribute('aria-keyshortcuts', 'Alt+Shift+F');
+  await expect(page.locator('#format')).toHaveText('Format');
+});
+
+test('syntax errors leave the source and selection intact, and the next format still works', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  await editor.fill('function tick(){');
+  const selection = await editor.evaluate((element) => [
+    element.selectionStart,
+    element.selectionEnd,
+  ]);
+  await page.locator('#format').click();
+  await expect(page.locator('#status')).toContainText('Format:');
+  await expect(page.locator('#format')).toBeEnabled();
+  await expect(editor).toHaveValue('function tick(){');
+  expect(
+    await editor.evaluate((element) => [element.selectionStart, element.selectionEnd]),
+  ).toEqual(selection);
+  await editor.fill(source);
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue(formatted);
+  await expect(page.locator('#status')).toBeEmpty();
+});
+
+test('edits made while the formatter is loading take precedence over its result', async ({
+  page,
+}) => {
+  let release;
+  const blocked = new Promise((resolve) => (release = resolve));
+  let arrived;
+  const requested = new Promise((resolve) => (arrived = resolve));
+  await page.route('**/formatter-*.js', async (route) => {
+    arrived();
+    await blocked;
+    await route.continue();
+  });
+  const editor = page.locator('#editor');
+  await editor.fill(source);
+  await page.locator('#format').click();
+  await requested;
+  await expect(page.locator('#format')).toBeDisabled();
+  const newer = source + '// newer edit';
+  await editor.fill(newer);
+  release();
+  await expect(page.locator('#status')).toHaveText(
+    'Code changed while formatting. Your edits were kept.',
+  );
+  await expect(editor).toHaveValue(newer);
+  await expect(page.locator('#format')).toBeEnabled();
+});
+
+test('a formatter load failure keeps the source and enables retry', async ({ page }) => {
+  await page.route('**/formatter-*.js', (route) => route.abort());
+  await page.locator('#editor').fill(source);
+  await page.locator('#format').click();
+  await expect(page.locator('#status')).toHaveText('Format: The formatter could not load.');
+  await expect(page.locator('#editor')).toHaveValue(source);
+  await expect(page.locator('#format')).toBeEnabled();
+  await page.unroute('**/formatter-*.js');
+  await page.locator('#format').click();
+  await expect(page.locator('#editor')).toHaveValue(formatted);
+});
+
+test('formatting an already formatted source does not add an undo step or disturb the caret', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  await editor.fill(source);
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue(formatted);
+  const caret = await editor.evaluate((element) => element.selectionStart);
+  await page.locator('#format').click();
+  await expect(page.locator('#format')).toBeEnabled();
+  await expect(editor).toHaveValue(formatted);
+  expect(await editor.evaluate((element) => element.selectionStart)).toBe(caret);
+  await editor.focus();
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(source);
+});
+
+test('the floating button does not resize the workspace and hides with CODE', async ({ page }) => {
+  const selectors = ['#workbench', '#editor', '#game', '#viewport', '#workspace-toolbar'];
+  const measure = () =>
+    page.evaluate(
+      (selectors) =>
+        selectors.map((selector) => {
+          const { x, y, width, height } = document.querySelector(selector).getBoundingClientRect();
+          return { x, y, width, height };
+        }),
+      selectors,
+    );
+  const initial = await measure();
+  const button = await page.locator('#format').boundingBox();
+  const editor = await page.locator('#editor').boundingBox();
+  expect(button.width).toBeLessThan(54);
+  expect(button.height).toBe(18);
+  expect(button.x - editor.x).toBe(4);
+  expect(editor.y + editor.height - button.y - button.height).toBe(4);
+  await page.locator('#format').evaluate((element) => (element.style.display = 'none'));
+  expect(await measure()).toEqual(initial);
+  await page.locator('#format').evaluate((element) => element.style.removeProperty('display'));
+  await page.locator('#code-toggle').click();
+  await expect(page.locator('#format')).toBeHidden();
+  await page.locator('#code-toggle').click();
+  await expect(page.locator('#format')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('#format')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

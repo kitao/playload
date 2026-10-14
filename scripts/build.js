@@ -46,6 +46,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       absWorkingDir: root,
       entryPoints: {
         app: 'src/app/main.js',
+        formatter: 'src/app/formatter.js',
         'app-style': 'src/app/style.css',
         'site-style': 'src/site/style.css',
       },
@@ -67,7 +68,9 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
           '\nTwemoji color reference: Twitter and contributors.\n' +
           'https://github.com/jdecked/twemoji\n' +
           'Used to derive emoji colors. Licensed under CC BY 4.0, provided as-is:\n' +
-          'https://creativecommons.org/licenses/by/4.0/\n*/',
+          'https://creativecommons.org/licenses/by/4.0/\n\n' +
+          (await readFile(new URL('../node_modules/prettier/LICENSE', import.meta.url), 'utf8')) +
+          '\n*/',
       },
       metafile: true,
     });
@@ -101,6 +104,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
     const reference = await renderReference();
     await page('src/app/index.html', 'index.html', {
       APP_SCRIPT: asset('src/app/main.js'),
+      FORMAT_SCRIPT: asset('src/app/formatter.js'),
       APP_STYLE: asset('src/app/style.css'),
       REFERENCE: reference.html,
     });

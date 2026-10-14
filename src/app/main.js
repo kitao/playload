@@ -6,6 +6,7 @@ import { Capture, download } from './capture.js';
 import { createDisplay } from './display.js';
 import { createCRT } from './crt.js';
 import { highlightJavaScript } from './editor-highlighter.js';
+import { EditorHistory } from './editor-history.js';
 import { starter, exampleLinks } from './examples.js';
 
 const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -22,6 +23,7 @@ if (!stylesheet.sheet)
   });
 
 const $ = (id) => document.getElementById(id);
+let editorHistory;
 const initialHash = location.hash;
 const canvas = $('display'),
   context = canvas.getContext('2d');
@@ -56,6 +58,7 @@ let editRevision = 0,
   fileHandle;
 let checkingFile = false,
   fileError = '';
+let formatting = false;
 let editorErrorLine = null,
   gameError = '',
   urlError = '';
@@ -166,6 +169,7 @@ function controls() {
   $('pause').disabled = !running || awaitingStart;
   $('screenshot').disabled = !running;
   $('run').disabled = reading;
+  $('format').disabled = reading || formatting;
   $('pause').firstChild.textContent = paused && !awaitingStart ? 'Resume' : 'Pause';
   $('record').disabled = !running || !capture?.stream || !!capture?.saveRequest;
   $('video').disabled =
@@ -658,6 +662,61 @@ function changed() {
   $('error-line').disabled = true;
   controls();
 }
+async function formatCurrentSource() {
+  if (reading || formatting) return;
+  const editor = $('editor'),
+    source = editor.value,
+    edit = editRevision,
+    focus = focusRevision,
+    start = editor.selectionStart,
+    end = editor.selectionEnd,
+    direction = editor.selectionDirection,
+    scrollTop = editor.scrollTop,
+    scrollLeft = editor.scrollLeft;
+  let worker, timer;
+  formatting = true;
+  controls();
+  try {
+    const script = new URL($('format').dataset.formatter, location.href).href;
+    worker = new Worker(script, { type: 'module' });
+    const result = await new Promise((resolve, reject) => {
+      worker.onmessage = ({ data }) => (data.error ? reject(new Error(data.error)) : resolve(data));
+      worker.onerror = (event) => {
+        event.preventDefault();
+        reject(new Error('The formatter could not load.'));
+      };
+      timer = setTimeout(() => reject(new Error('Formatting took too long.')), 10000);
+      worker.postMessage({ source, start, end });
+    });
+    if (edit !== editRevision || source !== editor.value) {
+      status('Code changed while formatting. Your edits were kept.');
+      return;
+    }
+    if (
+      focus !== focusRevision ||
+      start !== editor.selectionStart ||
+      end !== editor.selectionEnd ||
+      direction !== editor.selectionDirection
+    ) {
+      status('Formatting canceled because the editor focus or selection changed.');
+      return;
+    }
+    if (result.source === source) return;
+    editor.focus({ preventScroll: true });
+    editorHistory.replace(result.source, result.start, result.end, direction);
+    editor.scrollTop = scrollTop;
+    editor.scrollLeft = scrollLeft;
+    syncEditorScroll();
+    status();
+  } catch (error) {
+    status('Format: ' + error.message);
+  } finally {
+    clearTimeout(timer);
+    worker?.terminate();
+    formatting = false;
+    controls();
+  }
+}
 function discard() {
   return (
     $('editor').value === loadedSource ||
@@ -678,6 +737,7 @@ async function readFile(file, request, handle = null) {
   declinedFileSource = null;
   loadedSource = text;
   $('editor').value = loadedSource;
+  editorHistory.reset();
   filename = file.name;
   editRevision++;
   highlightEditor();
@@ -737,6 +797,7 @@ async function refreshFile() {
     declinedFileSource = null;
     loadedSource = text;
     editor.value = text;
+    editorHistory.reset();
     changed();
     run(text);
   } catch (error) {
@@ -780,9 +841,12 @@ $('file').onchange = async () => {
   }
 };
 $('run').onclick = () => runCurrentSource();
+$('format').onclick = formatCurrentSource;
 $('editor').oninput = changed;
 $('editor').onfocus = release;
-$('workbench').onpointerdown = () => $('editor').focus({ preventScroll: true });
+$('workbench').onpointerdown = (event) => {
+  if (!event.target.closest('button')) $('editor').focus({ preventScroll: true });
+};
 document.addEventListener('focusin', () => {
   focusRevision++;
   if (['editor', 'screen'].includes(document.activeElement.id))
@@ -790,12 +854,18 @@ document.addEventListener('focusin', () => {
   if (document.activeElement !== $('screen')) release();
 });
 $('editor').onkeydown = (event) => {
-  if (event.key === 'Tab' && !event.shiftKey) {
+  if (event.isComposing) return;
+  if (event.code === 'KeyF' && event.altKey && event.shiftKey && !event.ctrlKey && !event.metaKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!event.repeat) formatCurrentSource();
+  } else if (event.key === 'Tab' && !event.shiftKey) {
     event.preventDefault();
     document.execCommand('insertText', false, '  ');
   }
 };
 $('editor').value = starter;
+editorHistory = new EditorHistory($('editor'));
 
 function setReference(next) {
   dismissCopy();
@@ -1405,6 +1475,7 @@ if (initialHash) {
       if (initialEdit !== editRevision) return;
       loadedSource = code;
       $('editor').value = code;
+      editorHistory.reset();
       highlightEditor();
       run(code, view === 'play', initialFocus, true);
     })

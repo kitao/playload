@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src blob:; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src 'self' blob:; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'"
     />
     <meta name="description" content="{{DESCRIPTION}}" />
     <title>Playload</title>
@@ -98,6 +98,15 @@
               aria-label="JavaScript code"
               wrap="off"
             ></textarea>
+            <button
+              id="format"
+              type="button"
+              title="Format code"
+              aria-keyshortcuts="Alt+Shift+F"
+              data-formatter="{{FORMAT_SCRIPT}}"
+            >
+              Format
+            </button>
           </section>
           <div
             id="divider"

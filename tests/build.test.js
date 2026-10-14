@@ -52,6 +52,12 @@ test('the complete publication stays under Playload and every local document lin
       'Only the tool, its required assets, fallback and project license are published.',
     );
     const home = await readFile(join(directory, 'playload/index.html'), 'utf8');
+    const headers = await readFile(join(directory, '_headers'), 'utf8');
+    assert.equal(
+      /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(home)[1],
+      /Content-Security-Policy: ([^\n]+)/.exec(headers)[1].replace("; frame-ancestors 'none'", ''),
+      'The document and HTTP response permit the same script and worker sources.',
+    );
     assert.match(home, /id="about-tab"[\s\S]*id="api-tab"/);
     assert.equal((home.match(/<script /g) || []).length, 1);
     assert.match(home, /src="\/playload\/assets\/bundles\/app-[A-Z0-9]+\.js"/);
@@ -66,7 +72,11 @@ test('the complete publication stays under Playload and every local document lin
       ),
       'utf8',
     );
-    for (const path of ['data/fonts/unicode-LICENSE.txt', 'node_modules/prismjs/LICENSE']) {
+    for (const path of [
+      'data/fonts/unicode-LICENSE.txt',
+      'node_modules/prismjs/LICENSE',
+      'node_modules/prettier/LICENSE',
+    ]) {
       const license = await readFile(new URL('../' + path, import.meta.url), 'utf8');
       assert(script.includes(license), 'The bundle retains the original notice: ' + path);
     }

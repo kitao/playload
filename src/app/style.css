@@ -266,7 +266,7 @@ header::after {
   min-height: 0;
   width: 100%;
   resize: none;
-  padding: 16px 16px 16px calc(var(--gutter-width) + 16px);
+  padding: 16px 16px 26px calc(var(--gutter-width) + 16px);
   border: 1px solid var(--line);
   outline: 0;
   background: transparent;
@@ -285,7 +285,7 @@ header::after {
   position: absolute;
   inset: 0;
   margin: 0;
-  padding: 16px 0 16px calc(var(--gutter-width) + 16px);
+  padding: 16px 0 26px calc(var(--gutter-width) + 16px);
   border: 1px solid transparent;
   overflow: auto scroll;
   pointer-events: none;
@@ -293,6 +293,26 @@ header::after {
   overflow-wrap: normal;
   font: inherit;
   tab-size: 2;
+}
+#format {
+  position: absolute;
+  z-index: 3;
+  bottom: 4px;
+  left: 4px;
+  width: auto;
+  height: auto;
+  padding: 2px 4px;
+  border: 0;
+  background: #8f8598;
+  color: #1c1822;
+}
+#format:hover,
+#format:focus-visible {
+  background: #8f8598;
+  filter: brightness(1.1);
+}
+#format:disabled {
+  opacity: 0.6;
 }
 #editor-lines {
   position: absolute;
