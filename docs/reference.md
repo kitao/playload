@@ -9,8 +9,8 @@
 | API | Meaning |
 | --- | --- |
 | `cls(col)` | Fill the character screen with col. |
-| `put(cx, cy, str, col1?, col2?)` | 8px-cell text stays; foreground / background. |
-| `spr(x, y, chr, col)` | Draw above text for this tick. |
+| `put(cx, cy, str, col1?, col2?)` | Cell text stays; foreground/background, omit/null = PCG. |
+| `spr(x, y, str, col)` | 8px-spaced text; newlines, transparent, this tick. |
 | `btn(id)` | True while the button is held. |
 | `btnp(id)` | New press; same IDs as btn. |
 | `play(ch, str)` | Play sound on channel 0–2 using ZX 128 PLAY. |
@@ -21,12 +21,13 @@ cls(0)
 
 ```js
 put(1, 1, "HI\n👾")
-put(1, 1, "HI\n👾", 6)
 put(1, 1, "HI\n👾", 6, 0)
+put(1, 1, "HI\n👾", null, 0)
 ```
 
 ```js
 spr(76, 68, "👾", 6)
+spr(72, 64, "AB\nCD", 6)
 ```
 
 0 ↑ · 1 ↓ · 2 ← · 3 → · 4 A (Z/J) · 5 B (X/K)

@@ -46,7 +46,7 @@ function placeGem() {
   if (Math.abs(x - gx * 8) < 24 && Math.abs(y - gy * 8) < 24) {
     gx = gx < 10 ? 17 : 1;
   }
-  put(gx, gy, '💎', 4, 1);
+  put(gx, gy, '💎', null, 1);
 }
 
 function startRound() {
@@ -62,7 +62,7 @@ function startRound() {
   status = [];
 
   cls(1);
-  put(gx, gy, '💎', 4, 1);
+  put(gx, gy, '💎', null, 1);
   put(1, 15, 'ARROWS MOVE A DASH', 7, 1);
   drawStatus();
   for (let ch = 0; ch < 3; ch++) play(ch, ch === 0 ? 'T240' : '');

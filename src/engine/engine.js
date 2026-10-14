@@ -180,7 +180,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     cx = origin;
     cy = coordinate(cy);
     if (typeof str !== 'string') throw new TypeError('Text must be a string');
-    const pair = [col1 === undefined ? null : color(col1), col2 === undefined ? null : color(col2)];
+    const pair = [col1 == null ? null : color(col1), col2 == null ? null : color(col2)];
     for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
       if (segment === '\n') {
         cx = origin;
@@ -196,8 +196,36 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       cx++;
     }
   }
-  function spr(x, y, chr, col) {
-    sprites.push({ x: coordinate(x), y: coordinate(y), chr: characterKey(chr), col: color(col) });
+  function spr(x, y, str, col) {
+    const origin = coordinate(x);
+    x = origin;
+    y = coordinate(y);
+    if (typeof str !== 'string') throw new TypeError('Text must be a string');
+    col = color(col);
+    // Keep individual ASCII, kana and emoji sprites on the existing fast path.
+    if (
+      (str.length === 1 || (str.length === 2 && str.codePointAt(0) > 0xffff)) &&
+      str !== '\r' &&
+      str !== '\n'
+    ) {
+      sprites.push({ x, y, chr: characterKey(str), col });
+      return;
+    }
+    const start = sprites.length;
+    try {
+      for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
+        if (segment === '\n') {
+          x = origin;
+          y += 8;
+          continue;
+        }
+        sprites.push({ x, y, chr: characterKey(segment), col });
+        x += 8;
+      }
+    } catch (error) {
+      sprites.length = start;
+      throw error;
+    }
   }
   function play(ch, str) {
     if (!Number.isInteger(ch) || ch < 0 || ch > 2)

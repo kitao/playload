@@ -195,10 +195,7 @@ function tick() {
   for (const target of targets) {
     if (!target.alive) continue;
     if (waves[wave].health) {
-      spr(target.x - 4, target.y, '①', 3);
-      spr(target.x + 4, target.y, '②', 3);
-      spr(target.x - 4, target.y + 8, '③', 3);
-      spr(target.x + 4, target.y + 8, '④', 3);
+      spr(target.x - 4, target.y, '①②\n③④', 3);
     } else {
       spr(target.x, target.y, '👾', [3, 5, 4][target.row]);
     }

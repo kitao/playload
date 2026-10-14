@@ -107,7 +107,7 @@ test('the production build plays games and audio with one compressed, cached scr
 cls(1);
 pcg['①'].pat = [24, 60, 126, 24, 24, 24, 24, 0];
 pcg['①'].col = [6, 1];
-put(1, 1, 'BUILD', undefined, 1);
+put(1, 1, 'BUILD', null, 1);
 scr[1][1].chr = '①';
 let x = 76;
 play(0, 'T120M35V12O5N8c');
@@ -117,6 +117,7 @@ function tick() {
   x = Math.max(0, Math.min(152, x + btn(3) - btn(2)));
   if (btnp(4)) put(1, 2, 'PRESSED', 6, 1);
   spr(x, 68, '👾', 4);
+  spr(8, 32, 'AB\\nCD', 6);
 }`;
     const { hash } = await encode(source);
     for (const touch of [false, true]) {
@@ -4217,7 +4218,7 @@ test('the reference documents six functions and two variables; every example run
   await expect(page.locator('.api-guide dt')).toHaveText([
     'cls(col)',
     'put(cx, cy, str, col1?, col2?)',
-    'spr(x, y, chr, col)',
+    'spr(x, y, str, col)',
     'btn(id)',
     'btnp(id)',
     'play(ch, str)',

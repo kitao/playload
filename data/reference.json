@@ -10,13 +10,13 @@
         },
         {
           "name": "put(cx, cy, str, col1?, col2?)",
-          "description": "8px-cell text stays; foreground / background.",
-          "example": "put(1, 1, \"HI\\n👾\")\nput(1, 1, \"HI\\n👾\", 6)\nput(1, 1, \"HI\\n👾\", 6, 0)"
+          "description": "Cell text stays; foreground/background, omit/null = PCG.",
+          "example": "put(1, 1, \"HI\\n👾\")\nput(1, 1, \"HI\\n👾\", 6, 0)\nput(1, 1, \"HI\\n👾\", null, 0)"
         },
         {
-          "name": "spr(x, y, chr, col)",
-          "description": "Draw above text for this tick.",
-          "example": "spr(76, 68, \"👾\", 6)"
+          "name": "spr(x, y, str, col)",
+          "description": "8px-spaced text; newlines, transparent, this tick.",
+          "example": "spr(76, 68, \"👾\", 6)\nspr(72, 64, \"AB\\nCD\", 6)"
         },
         {
           "name": "btn(id)",

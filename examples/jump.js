@@ -175,9 +175,7 @@ function tick() {
     update();
   }
 
-  if (ferry) {
-    for (let i = 0; i < ferry.width; i += 8) spr(ferry.x + i, ferry.y, '▀', 4);
-  }
+  if (ferry) spr(ferry.x, ferry.y, '▀'.repeat(ferry.width / 8), 4);
   if (hazard) spr(hazard.x, hazard.y, '💀', 3);
   if (state !== 'OVER') spr(x, y, '👾', 6);
 }

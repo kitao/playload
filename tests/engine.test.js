@@ -94,6 +94,30 @@ test('standard PCG colors and patterns update existing cells while per-cell over
   assert.equal(pixel(engine, 25), 5);
 });
 
+test('put accepts null independently for both colors and keeps following each character PCG', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  for (const chr of ['X', 'Y']) api.pcg[chr].pat = '8000000000000000';
+  api.pcg.X.col = [6, 1];
+  api.pcg.Y.col = [5, 2];
+  api.put(0, 0, 'XY', null, null);
+  api.put(2, 0, 'X', null, 0);
+  api.put(3, 0, 'Y', 0, null);
+  api.pcg.X.col = [3, 4];
+  api.pcg.Y.col = [7, 5];
+  assert.deepEqual(
+    [0, 8, 16, 24].map((x) => pixel(engine, x)),
+    [3, 7, 3, 0],
+  );
+  assert.deepEqual(
+    [1, 9, 17, 25].map((x) => pixel(engine, x)),
+    [4, 5, 0, 5],
+  );
+  assert.deepEqual([...api.scr[0][0].col], [null, null]);
+  assert.deepEqual([...api.scr[0][2].col], [null, 0]);
+  assert.deepEqual([...api.scr[0][3].col], [0, null]);
+});
+
 test('scr can be read for collision and changed directly without reissuing put', () => {
   const engine = createEngine(),
     { api } = engine;
@@ -186,6 +210,83 @@ test('emoji selectors and normalized multi-codepoint graphemes occupy one cell',
   api.scr[0][2].chr = 'e\u0301';
   assert.equal(api.scr[0][2].chr, 'é');
   assert.equal(api.pcg['⛩'], api.pcg['⛩\ufe0e']);
+});
+
+test('sprite strings use 8px spacing, reset at CRLF and truncate only the origin', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  api.pcg.X.pat = '8080808080808080';
+  api.pcg.Y.pat = '0101010101010101';
+  engine.step(() => api.spr(1.9, 2.9, 'XY\r\nYX', 0));
+  const expected = Uint8Array.from({ length: 160 * 144 }, (_, i) => {
+    const x = i % 160,
+      y = Math.floor(i / 160);
+    return (y >= 2 && y < 10 && (x === 1 || x === 16)) ||
+      (y >= 10 && y < 18 && (x === 8 || x === 9))
+      ? 0
+      : 4;
+  });
+  assert.deepEqual(engine.pixels, expected);
+  assert(api.scr.every((row) => row.every((cell) => cell.chr === ' ')));
+  engine.step(() => {});
+  assert(engine.pixels.every((col) => col === 4));
+});
+
+test('sprite strings advance once per normalized grapheme, including selectors and joined emoji', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  api.pcg['é'].pat = '8000000000000000';
+  api.pcg['⛩'].pat = '4000000000000000';
+  api.pcg['👨‍👩‍👧‍👦'].pat = '2000000000000000';
+  engine.step(() => api.spr(3, 2, 'e\u0301⛩️👨‍👩‍👧‍👦', 6));
+  const expected = new Uint8Array(160 * 144).fill(4);
+  for (const x of [3, 12, 21]) expected[2 * 160 + x] = 6;
+  assert.deepEqual(engine.pixels, expected);
+});
+
+test('multiline sprite strings clip as a 16 by 16 image without wrapping at screen edges', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  api.pcg.X.pat = 'FFFFFFFFFFFFFFFF';
+  for (const [x, y] of [
+    [-3, -3],
+    [153, 137],
+    [-16, 20],
+    [160, 20],
+    [20, 144],
+  ]) {
+    engine.step(() => api.spr(x, y, 'XX\nXX', 6));
+    const expected = Uint8Array.from({ length: 160 * 144 }, (_, i) => {
+      const px = i % 160,
+        py = Math.floor(i / 160);
+      return px >= x && px < x + 16 && py >= y && py < y + 16 ? 6 : 4;
+    });
+    assert.deepEqual(engine.pixels, expected);
+  }
+});
+
+test('empty sprite strings draw nothing and later sprite calls cover the entire string', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  api.pcg.X.pat = 'FFFFFFFFFFFFFFFF';
+  engine.step(() => {
+    api.spr(0, 0, '', 6);
+    api.spr(0, 0, '\n\r\n', 6);
+  });
+  assert(engine.pixels.every((col) => col === 4));
+  engine.step(() => {
+    api.spr(1, 2, 'XX\nXX', 6);
+    api.spr(9, 10, 'X', 0);
+  });
+  assert.equal(pixel(engine, 1, 2), 6);
+  assert.equal(pixel(engine, 9, 2), 6);
+  assert.equal(pixel(engine, 1, 10), 6);
+  assert.equal(pixel(engine, 9, 10), 0);
+  assert.equal(pixel(engine, 17, 10), 4);
 });
 
 test('sprite zero bits are transparent and color zero is opaque black', () => {
@@ -302,16 +403,21 @@ test('invalid commands leave existing screen and sprite state intact', () => {
     }
     for (const value of [-1, 8, 1.5, NaN, Infinity, '1', null]) {
       assert.throws(() => api.cls(value), RangeError);
-      assert.throws(() => api.put(0, 0, 'X', 6, value), RangeError);
+      if (value !== null) {
+        assert.throws(() => api.put(0, 0, 'X', value, 6), RangeError);
+        assert.throws(() => api.put(0, 0, 'X', 6, value), RangeError);
+      }
       assert.throws(() => api.spr(0, 0, 'X', value), RangeError);
     }
     for (const chr of ['', 'AB', '\n', null, 1]) {
       assert.throws(() => {
         api.scr[0][0].chr = chr;
       }, TypeError);
-      assert.throws(() => api.spr(0, 0, chr, 6), TypeError);
+      if (typeof chr !== 'string') assert.throws(() => api.spr(0, 0, chr, 6), TypeError);
       if (typeof chr === 'string') assert.throws(() => api.pcg[chr], TypeError);
     }
+    for (const str of ['\r', 'X\r', 'X\n\ufe0f'])
+      assert.throws(() => api.spr(0, 0, str, 6), TypeError);
     assert.throws(() => api.spr(0, 1), TypeError);
     assert.throws(() => api.spr(0), TypeError);
     assert.throws(() => api.spr(0, 0, 'X'), RangeError);
