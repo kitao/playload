@@ -138,7 +138,7 @@ function tick() {
       moves++;
       cleared = isClear();
       drawStatus();
-      play(0, cleared ? 'T240O5N2cegC' : 'T240V10O5N1c');
+      play(0, cleared ? 'T240V12O5N2cegC' : 'T240V10O5N1c');
     }
   }
 

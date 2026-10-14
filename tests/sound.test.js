@@ -298,6 +298,22 @@ test('tones above Nyquist do not become an audible folded tone at low sample rat
   assert(ay.render(4000).every((value) => Number.isFinite(value) && Math.abs(value) < 1e-6));
 });
 
+test('the fixed V12 output reference remains stable across audio sample rates', () => {
+  for (const rate of [44100, 48000, 96000]) {
+    for (const [notes, minimum, maximum] of [
+      ['c', 0.05, 0.052],
+      ['ceg', 0.087, 0.09],
+    ]) {
+      const ay = new AY(rate);
+      [...notes].forEach((note, ch) => ay.play(ch, compileScore('V12O5N9' + note + '))')));
+      ay.render(rate / 2);
+      const samples = ay.render(rate),
+        rms = Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length);
+      assert(rms >= minimum && rms <= maximum, rate + ' Hz, ' + notes);
+    }
+  }
+});
+
 test('three loud channels remain finite and within the audio output range', () => {
   for (const rate of [44100, 48000]) {
     const ay = new AY(rate);

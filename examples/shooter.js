@@ -93,7 +93,7 @@ function finish(nextState) {
   bullets = [];
   drawStatus();
   play(2, '');
-  play(0, state === 'OVER' ? 'T180M7O3N2gec' : 'T240M7O5N2cegC');
+  play(0, state === 'OVER' ? 'T180M7V12O3N2gec' : 'T240M7V12O5N2cegC');
 }
 
 restart();

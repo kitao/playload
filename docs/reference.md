@@ -37,11 +37,11 @@ if (btn(3)) put(1, 1, "→") // Held
 ```
 
 ```js
-if (btnp(4)) play(1, "O6N1C")
+if (btnp(4)) play(1, "V12O6N1C")
 ```
 
 ```js
-play(0, "T150O5N3ceg))")
+play(0, "T150V12O5N3ceg))")
 play(0, "") // Stop
 ```
 

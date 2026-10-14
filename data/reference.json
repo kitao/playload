@@ -27,12 +27,12 @@
         {
           "name": "btnp(id)",
           "description": "New press; same IDs as btn.",
-          "example": "if (btnp(4)) play(1, \"O6N1C\")"
+          "example": "if (btnp(4)) play(1, \"V12O6N1C\")"
         },
         {
           "name": "play(ch, str)",
           "description": "Play sound on channel 0–2 using ZX 128 PLAY.",
-          "example": "play(0, \"T150O5N3ceg))\")\nplay(0, \"\") // Stop"
+          "example": "play(0, \"T150V12O5N3ceg))\")\nplay(0, \"\") // Stop"
         }
       ]
     },

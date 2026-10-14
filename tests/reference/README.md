@@ -12,6 +12,10 @@ The AY volume mode is selected explicitly. emu2149's reset tone polarity is inve
 
 The independent tone output receives the same FIR filter, DC blocker and maximum-level gain as Playload to isolate synthesis differences. The volume tables are compared separately, without fitting away their differences. This does not establish analog-board equivalence, equivalence of every possible register-write sequence, or expert listening approval. Envelope period zero is checked against MAME's documented half-period behavior by the normal unit tests, separately from this reference.
 
+The per-channel DAC gain stays fixed at 0.2. Normal examples specify V12, or V10 for softer effects, rather than relying on the default V15. Envelope-controlled sounds use U.
+
+The fixed normal-level reference is a continuous C4 tone or C4/E4/G4 chord, with V12 on every voice. At 48 kHz, a ten-second measurement with mono duplicated into stereo gives approximately −23.2 LUFS for the tone and −18.3 LUFS for the chord. [sound.test.js](../sound.test.js) checks their mono RMS ranges at 44.1, 48 and 96 kHz so example edits do not change the output calibration.
+
 ## Color
 
 `color/` contains the published CIEDE2000 test pairs; see [their source](color/SOURCE.md).

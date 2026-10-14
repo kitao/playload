@@ -89,7 +89,7 @@ function finish(next) {
   put(1, 16, ' '.repeat(18), 7, 1);
   put(Math.floor((20 - hint.length) / 2), 16, hint, 7, 1);
   drawStatus();
-  play(0, next === 'OVER' ? 'T180O3N2gec' : 'T180O5N2cegC');
+  play(0, next === 'OVER' ? 'T180V12O3N2gec' : 'T180V12O5N2cegC');
 }
 
 reset();
@@ -110,7 +110,7 @@ function tick() {
     if (btnp(4) && cooldown === 0) {
       dash = 18;
       cooldown = 90;
-      play(2, 'O4N1cG');
+      play(2, 'V10O4N1cG');
     }
     const speed = dash > 0 ? 3 : 1;
     if (dash > 0) dash--;
@@ -122,7 +122,7 @@ function tick() {
       collected++;
       score++;
       put(gx, gy, ' ', 7, 1);
-      play(1, 'O6N1GC');
+      play(1, 'V12O6N1GC');
       if (collected === rounds[round].gems) {
         finish(round === rounds.length - 1 ? 'WON' : 'CLEAR');
       } else {

@@ -300,6 +300,7 @@ export class AY {
       const noise = !(this.mixer & (8 << ch)) || this.noise & 1;
       if (noise) sum += tone * this.levels[voice.envelope ? this.envelopeLevel : voice.volume];
     }
+    // Fixed DAC gain leaves headroom for three voices; author loudness with V.
     return sum * 0.2;
   }
   sample() {

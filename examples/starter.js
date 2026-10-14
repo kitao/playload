@@ -22,7 +22,7 @@ function tick() {
     gx = Math.floor(Math.random() * 20);
     gy = 2 + Math.floor(Math.random() * 16);
     draw();
-    play(0, 'T240O6N1cG');
+    play(0, 'T240V12O6N1cG');
   }
 
   spr(x, y, '👾', 6);
