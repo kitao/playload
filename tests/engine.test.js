@@ -151,6 +151,26 @@ test('cls fills spaces, preserves cell references and sprites, and uses the shar
   assert(engine.pixels.every((value) => value === 0));
 });
 
+test('ASCII cells retain normalization and newline rejection, including control characters', () => {
+  const { api } = createEngine(),
+    cell = api.scr[0][0];
+  for (let code = 0; code < 128; code++) {
+    const chr = String.fromCharCode(code);
+    if (chr === '\r' || chr === '\n') {
+      const previous = cell.chr;
+      assert.throws(() => {
+        cell.chr = chr;
+      }, TypeError);
+      assert.equal(cell.chr, previous);
+      assert.throws(() => api.pcg[chr], TypeError);
+    } else {
+      cell.chr = chr;
+      assert.equal(cell.chr, chr);
+      assert.equal(api.pcg[chr], api.pcg[chr + '\ufe0f']);
+    }
+  }
+});
+
 test('emoji selectors and normalized multi-codepoint graphemes occupy one cell', () => {
   const engine = createEngine(glyphs),
     { api } = engine;

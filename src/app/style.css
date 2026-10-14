@@ -74,7 +74,8 @@ button {
   touch-action: manipulation;
   flex-shrink: 0;
 }
-button:not(:disabled):hover {
+button:not(:disabled):hover,
+#catalog .glyph:focus-visible {
   background: var(--soft);
 }
 button:disabled {
@@ -915,7 +916,7 @@ body[data-touch='true'] #keyboard-controls {
   width: 100%;
   cursor: pointer;
   outline: 0;
-  background: #000;
+  background: var(--face);
 }
 #start-game {
   position: absolute;

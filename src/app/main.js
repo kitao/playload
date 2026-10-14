@@ -1,21 +1,37 @@
 import { palette, createEngine } from '../engine/engine.js';
 import { glyphs } from '../engine/glyphs.js';
 import { encode, decode, gameURL, MAX_COMPRESSED_BYTES, MAX_URL_LENGTH } from '../payload.js';
-import { Runtime, Sound } from './runtime.js';
+import { Runtime, Sound, MAX_FRAME_STEPS } from './runtime.js';
 import { Capture, download } from './capture.js';
 import { createDisplay } from './display.js';
 import { createCRT } from './crt.js';
 import { highlightJavaScript } from './editor-highlighter.js';
 import { starter, exampleLinks } from './examples.js';
 
+const stylesheet = document.querySelector('link[rel="stylesheet"]');
+if (!stylesheet.sheet)
+  await new Promise((resolve, reject) => {
+    stylesheet.addEventListener('load', resolve, { once: true });
+    stylesheet.addEventListener(
+      'error',
+      () => reject(new Error('The stylesheet could not load.')),
+      {
+        once: true,
+      },
+    );
+  });
+
 const $ = (id) => document.getElementById(id);
 const initialHash = location.hash;
 const canvas = $('display'),
   context = canvas.getContext('2d');
 const screenBackground = getComputedStyle($('viewport')).getPropertyValue('--face').trim();
-const display = createDisplay(palette, canvas.width, canvas.height, screenBackground);
+if (!screenBackground) throw new Error('The stylesheet could not load.');
+const display = createDisplay(palette, canvas.width, canvas.height);
 const image = new ImageData(display.render(new Uint8Array(160 * 144)), canvas.width, canvas.height);
 let screenPixels = new Uint8Array(160 * 144);
+let paintedFrame = false,
+  lastCaptureFrame = 0;
 let crtDisplay;
 let pendingSource = '',
   pendingFocus,
@@ -33,7 +49,7 @@ let view = 'play',
   revision = 0,
   columns = 12;
 let category = 'emoji',
-  lastFrame = 0;
+  lastFrame = null;
 let editRevision = 0,
   focusRevision = 0,
   fileRequest,
@@ -164,6 +180,8 @@ function controls() {
     button.disabled = !running && !awaitingStart;
 }
 function syncPlayback() {
+  if (!running || paused || document.hidden || view === 'info' || (compact && toolsOpen))
+    lastFrame = null;
   audio.pause(!running || paused || view === 'info' || (compact && toolsOpen));
   capture?.suspend(
     document.hidden || !running || view === 'info' || awaitingStart || (compact && toolsOpen),
@@ -186,15 +204,22 @@ function setView(next) {
   requestAnimationFrame(fitGame);
   if (view === 'info' && reference === 'characters') renderCharacters();
 }
-function render(pixels) {
+function render(pixels, force = false) {
+  let changed = force;
+  for (let i = 0; !changed && i < pixels.length; i++) changed = pixels[i] !== screenPixels[i];
   screenPixels = pixels;
-  paint();
+  if (changed) paint();
 }
 function paint() {
+  paintedFrame = true;
   canvas.dataset.crt = String(crt);
   if (crt && crtDisplay === undefined) {
     try {
       crtDisplay = createCRT(palette, canvas.width, canvas.height, screenBackground);
+      crtDisplay?.canvas.addEventListener('webglcontextlost', () => {
+        disableCRT();
+        paint();
+      });
     } catch {
       crtDisplay = null;
     }
@@ -203,11 +228,19 @@ function paint() {
     context.drawImage(crtDisplay.canvas, 0, 0);
     return;
   }
-  display.render(screenPixels, crt);
+  if (crt) disableCRT();
+  display.render(screenPixels);
   context.putImageData(image, 0, 0);
 }
+function disableCRT() {
+  crt = false;
+  canvas.dataset.crt = 'false';
+  $('crt').disabled = true;
+  $('crt').setAttribute('aria-pressed', 'false');
+  $('crt').title = 'CRT is unavailable in this browser.';
+}
 async function frame(pixels, sounds, ready) {
-  render(pixels);
+  render(pixels, ready);
   audio.play(sounds);
   if (!ready) return;
   running = true;
@@ -236,6 +269,7 @@ async function frame(pixels, sounds, ready) {
         controls,
       );
       capture.start();
+      paintedFrame = false;
       syncPlayback();
     }
   } catch (error) {
@@ -1276,7 +1310,7 @@ window.addEventListener('resize', () => {
   if (reference === 'characters' && view === 'info') renderCharacters();
 });
 document.addEventListener('visibilitychange', () => {
-  lastFrame = 0;
+  lastFrame = null;
   if (document.hidden) startKeys.clear();
   release();
   runtime.suspend(document.hidden);
@@ -1304,7 +1338,7 @@ window.addEventListener('pagehide', (event) => {
 });
 window.addEventListener('pageshow', (event) => {
   if (!event.persisted) return;
-  lastFrame = 0;
+  lastFrame = null;
   capture?.leave(false);
   runtime.suspend(document.hidden);
   syncPlayback();
@@ -1318,20 +1352,32 @@ window.addEventListener('hashchange', () => {
 function animate(time) {
   const padMask = readGamepads();
   if (padMask !== gamepadMask) syncInput(padMask);
+  if (running && !document.hidden && !paused && view === 'play' && !(compact && toolsOpen)) {
+    const interval = 1000 / 60;
+    if (lastFrame === null) lastFrame = time;
+    const elapsed = time - lastFrame;
+    if (elapsed >= interval - 0.5) {
+      // Catch up short rendering stalls with fixed updates and one picture.
+      // Bound the work and discard long gaps, rather than queueing old input.
+      const steps =
+        elapsed > 250 ? 1 : Math.min(MAX_FRAME_STEPS, Math.floor((elapsed + 0.5) / interval));
+      if (runtime.frame(steps))
+        lastFrame = elapsed > interval * MAX_FRAME_STEPS ? time : lastFrame + steps * interval;
+    }
+  } else lastFrame = null;
   if (
+    capture?.stream &&
+    !capture.suspended &&
     running &&
     !document.hidden &&
-    !paused &&
-    view === 'play' &&
-    !(compact && toolsOpen) &&
-    time - lastFrame >= 1000 / 60 - 0.5
+    time - lastCaptureFrame >= 1000 / 30
   ) {
-    const interval = 1000 / 60;
-    // Keep fractional frame time on high-refresh displays; discard long pauses.
-    lastFrame = time - lastFrame > interval * 2 ? time : lastFrame + interval;
-    runtime.frame();
+    // Static games and paused recordings still need fresh video timestamps.
+    // Reuse the already-rendered picture instead of re-running the CRT shader.
+    if (!paintedFrame) context.drawImage(canvas, 0, 0);
+    paintedFrame = false;
+    lastCaptureFrame = time;
   }
-  if (capture?.stream && running && paused && view === 'play' && !document.hidden) paint();
   requestAnimationFrame(animate);
 }
 function showPlayer() {
@@ -1339,6 +1385,7 @@ function showPlayer() {
   document.body.removeAttribute('data-loading');
 }
 
+$('app').hidden = false;
 paint();
 setEditorOpen(editorOpen);
 setReference(reference);

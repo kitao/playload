@@ -33,6 +33,9 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   };
   const characterKey = (chr) => {
     if (typeof chr !== 'string') throw new TypeError('Character must be a string');
+    // cls() writes 360 spaces per tick. ASCII needs no Unicode normalization
+    // or grapheme segmentation; keep the same newline rejection as below.
+    if (chr.length === 1 && chr.charCodeAt(0) < 128 && chr !== '\r' && chr !== '\n') return chr;
     const normalized = chr.normalize('NFC').replace(/[\ufe0e\ufe0f]/g, '');
     if (
       !normalized ||

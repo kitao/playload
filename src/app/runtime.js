@@ -2,7 +2,9 @@ import { createEngine } from '../engine/engine.js';
 import { compileScore, AY } from '../engine/sound.js';
 import { glyphs } from '../engine/glyphs.js';
 
-function gameWorker(presets, engineFactory, compiler) {
+export const MAX_FRAME_STEPS = 5;
+
+function gameWorker(presets, engineFactory, compiler, maxSteps) {
   let engine, tick;
   self.onmessage = ({ data }) => {
     try {
@@ -23,10 +25,20 @@ function gameWorker(presets, engineFactory, compiler) {
         case 'input':
           engine?.input(data.mask);
           break;
-        case 'frame':
-          engine.step(tick);
-          postMessage({ type: 'frame', pixels: engine.pixels, sounds: engine.sounds() });
+        case 'frame': {
+          const steps = data.steps;
+          if (!Number.isInteger(steps) || steps < 1 || steps > maxSteps)
+            throw new Error('Invalid game step count.');
+          const sounds = [];
+          // Keep tick() at 60 Hz, but rasterize and transfer only the last
+          // state. Intermediate ticks still consume btnp and emit sound.
+          for (let frame = 0; frame < steps; frame++) {
+            engine.step(tick);
+            for (const command of engine.sounds()) sounds.push({ ...command, frame });
+          }
+          postMessage({ type: 'frame', pixels: engine.pixels, sounds, steps });
           break;
+        }
       }
     } catch (error) {
       const line = /playload-game\.js:(\d+):/.exec(error?.stack ?? '');
@@ -58,9 +70,15 @@ export class Runtime {
   }
   load(source) {
     this.stop();
-    const code = `(${gameWorker})(${workerPresets},${createEngine},${compileScore});`;
-    this.workerURL = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
-    this.worker = new Worker(this.workerURL);
+    const code = `(${gameWorker})(${workerPresets},${createEngine},${compileScore},${MAX_FRAME_STEPS});`;
+    try {
+      if (typeof Worker !== 'function') throw new Error('This browser cannot run games.');
+      this.workerURL = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+      this.worker = new Worker(this.workerURL);
+    } catch (error) {
+      this.fail({ message: String(error?.message ?? error) });
+      return;
+    }
     this.pending = true;
     this.worker.onmessage = ({ data }) => {
       if (data?.type === 'error') {
@@ -70,18 +88,25 @@ export class Runtime {
         });
         return;
       }
+      const steps = data?.type === 'ready' ? 1 : (data?.steps ?? 1);
       if (
         !['ready', 'frame'].includes(data?.type) ||
+        !Number.isInteger(steps) ||
+        steps < 1 ||
+        steps > MAX_FRAME_STEPS ||
+        (data.type === 'frame' && steps !== this.pendingSteps) ||
         !(data.pixels instanceof Uint8Array) ||
         data.pixels.length !== 160 * 144 ||
         data.pixels.some((c) => c > 7) ||
         !Array.isArray(data.sounds) ||
-        data.sounds.length > 256 ||
+        data.sounds.length > 256 * steps ||
         !data.sounds.every(
           (command) =>
             Number.isInteger(command?.ch) &&
             command.ch >= 0 &&
             command.ch <= 2 &&
+            (command.frame === undefined ||
+              (Number.isInteger(command.frame) && command.frame >= 0 && command.frame < steps)) &&
             command.score &&
             Array.isArray(command.score.code) &&
             command.score.code.length <= 16384 &&
@@ -115,11 +140,21 @@ export class Runtime {
     this.stop();
     this.onError(error);
   }
-  frame() {
-    if (!this.worker || this.pending || this.suspended) return;
+  frame(steps = 1) {
+    if (
+      !this.worker ||
+      this.pending ||
+      this.suspended ||
+      !Number.isInteger(steps) ||
+      steps < 1 ||
+      steps > MAX_FRAME_STEPS
+    )
+      return false;
     this.pending = true;
-    this.worker.postMessage({ type: 'frame' });
+    this.pendingSteps = steps;
+    this.worker.postMessage({ type: 'frame', steps });
     this.watch();
+    return true;
   }
   input(mask) {
     this.worker?.postMessage({ type: 'input', mask });
@@ -131,6 +166,7 @@ export class Runtime {
     if (this.workerURL) URL.revokeObjectURL(this.workerURL);
     this.workerURL = null;
     this.pending = false;
+    this.pendingSteps = 1;
     this.suspended = false;
   }
 }
@@ -164,13 +200,28 @@ export class Sound {
           this.lastSample = 0;
           this.previous = 0;
           this.transition = 0;
+          this.samples = 0;
+          this.commands = [];
 
           this.port.onmessage = ({ data }) => {
-            if (data.type === 'play') this.ay.play(data.ch, data.score);
+            if (data.type === 'play') {
+              // A newer game frame makes any remaining older effects overdue.
+              // Apply them in order before the new batch, so a brief stall
+              // cannot build an audio backlog or restart an old effect later.
+              for (const command of this.commands) this.ay.play(command.ch, command.score);
+              this.commands = [];
+              for (const command of data.commands)
+                this.commands.push({
+                  ...command,
+                  at: this.samples + Math.round((command.frame ?? 0) * sampleRate / 60)
+                });
+              this.commands.sort((a, b) => a.at - b.at);
+            }
             if (data.type === 'reset') {
               this.previous = this.lastSample;
               this.transition = 1;
               this.ay.reset();
+              this.commands = [];
             }
             if (data.type === 'pause') this.paused = data.value;
           };
@@ -184,14 +235,20 @@ export class Sound {
             for (let i = 0; i < output.length; i++) {
               this.gain = Math.max(0, Math.min(1, this.gain + (this.paused ? -step : step)));
               if (!this.paused) {
+                while (this.commands.length && this.commands[0].at <= this.samples) {
+                  const command = this.commands.shift();
+                  this.ay.play(command.ch, command.score);
+                }
                 this.transition = Math.max(0, this.transition - step);
                 this.lastSample =
                   this.previous * this.transition + this.ay.sample() * (1 - this.transition);
+                this.samples++;
               }
               output[i] = this.lastSample * this.gain;
             }
           } catch (error) {
             this.ay.reset();
+            this.commands = [];
             this.port.postMessage({ error: error.message });
           }
           return true;
@@ -228,7 +285,7 @@ export class Sound {
     else this.queue.push(command);
   }
   play(commands) {
-    for (const command of commands) this.send({ type: 'play', ...command });
+    this.send({ type: 'play', commands });
   }
   reset() {
     this.queue = [];

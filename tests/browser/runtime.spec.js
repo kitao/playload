@@ -7,6 +7,8 @@ import { join, relative, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
 import { encode } from '../../src/payload.js';
+import { WebMBuffer } from '../../src/app/webm.js';
+import { request } from 'node:http';
 
 const test = base.extend({
   runtimeErrors: [
@@ -31,7 +33,6 @@ const test = base.extend({
     { auto: true },
   ],
 });
-test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL('../..', import.meta.url));
 
@@ -78,6 +79,22 @@ test('an occupied development port exits promptly and removes its temporary buil
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }
+});
+
+test('a malformed request returns an error without stopping the development server', async ({
+  page,
+}) => {
+  const status = await new Promise((resolve, reject) => {
+    const outgoing = request(baseURL, { path: 'http://[' }, (response) => {
+      response.resume();
+      resolve(response.statusCode);
+    });
+    outgoing.on('error', reject);
+    outgoing.end();
+  });
+  expect(status).toBe(404);
+  await page.goto('/playload/');
+  await expect(page.locator('#display')).toBeVisible();
 });
 
 test('the production build plays games and audio with one compressed, cached script', async ({
@@ -326,7 +343,7 @@ async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
   await expect(page.locator('#pause')).toBeEnabled();
 }
 
-test('startup shows a finished layout and welcome screen even when scripts load slowly', async ({
+test('startup shows a finished layout and welcome screen even when styles and scripts load slowly', async ({
   browser,
 }, testInfo) => {
   const { hash } = await encode('// @title Shared\nfunction tick() { spr(76, 68, "👾", 6) }');
@@ -337,71 +354,107 @@ test('startup shows a finished layout and welcome screen even when scripts load 
     ['tablet-landscape', 1024, 768, true, hash],
     ['desktop', 1280, 800, false, ''],
   ]) {
-    const page = await browser.newPage({
-      viewport: { width, height },
-      hasTouch: touch,
-      isMobile: touch,
-    });
-    const criticalRequests = [];
-    page.on('request', (request) => {
-      const file = new URL(request.url()).pathname.split('/').pop();
-      if (/^app-[A-Z0-9]+\.js$/.test(file)) criticalRequests.push(file);
-    });
-    let release;
-    const gate = new Promise((resolve) => (release = resolve));
-    await page.route('**/playload/assets/bundles/app-*.js', async (route) => {
-      await gate;
-      await route.continue();
-    });
-    await page.addInitScript(() => {
-      requestAnimationFrame(function firstPaint() {
-        const app = document.querySelector('#app');
-        const game = document.querySelector('#game');
-        if (
-          !app ||
-          getComputedStyle(app).visibility === 'hidden' ||
-          !game ||
-          getComputedStyle(game).visibility === 'hidden'
-        ) {
-          requestAnimationFrame(firstPaint);
-          return;
-        }
-        window.firstWorkspacePaint = {
-          welcome: !document.querySelector('#start-game').hidden,
-          error: !document.querySelector('#error-notice').hidden,
-          screen: document.querySelector('#display').getBoundingClientRect().toJSON(),
-        };
+    for (const delayed of ['styles', 'scripts', 'both']) {
+      const page = await browser.newPage({
+        viewport: { width, height },
+        hasTouch: touch,
+        isMobile: touch,
       });
-    });
-    const loading = page.goto(baseURL + '/playload/' + fragment);
-    try {
-      await page.locator('#display').waitFor({ state: 'attached' });
-      await expect(page.locator('#app')).toBeHidden();
-      await expect.poll(() => criticalRequests.length).toBe(1);
-      release();
-      await loading;
-      expect(criticalRequests.length).toBe(1);
-      await expect(page.locator('#app')).toBeVisible();
-      await page.waitForFunction(() => window.firstWorkspacePaint);
-      const first = await page.evaluate(() => window.firstWorkspacePaint);
-      if (fragment === '#invalid') {
-        expect(first.error).toBe(true);
-        await expect(page.locator('#error')).toHaveText('Invalid game URL');
-      } else {
-        expect(first.welcome).toBe(true);
-        await expectCenteredWelcome(page);
+      const criticalRequests = [];
+      page.on('request', (request) => {
+        const file = new URL(request.url()).pathname.split('/').pop();
+        if (/^app-[A-Z0-9]+\.js$/.test(file)) criticalRequests.push(file);
+      });
+      let release;
+      const gate = new Promise((resolve) => (release = resolve));
+      if (delayed !== 'scripts')
+        await page.route('**/playload/assets/bundles/app-style-*.css', async (route) => {
+          await gate;
+          await route.continue();
+        });
+      if (delayed !== 'styles')
+        await page.route('**/playload/assets/bundles/app-*.js', async (route) => {
+          await gate;
+          await route.continue();
+        });
+      await page.addInitScript(() => {
+        requestAnimationFrame(function firstPaint() {
+          const app = document.querySelector('#app');
+          const game = document.querySelector('#game');
+          if (
+            !app ||
+            app.hidden ||
+            getComputedStyle(app).visibility === 'hidden' ||
+            !game ||
+            getComputedStyle(game).visibility === 'hidden'
+          ) {
+            requestAnimationFrame(firstPaint);
+            return;
+          }
+          window.firstWorkspacePaint = {
+            welcome: !document.querySelector('#start-game').hidden,
+            error: !document.querySelector('#error-notice').hidden,
+            screen: document.querySelector('#display').getBoundingClientRect().toJSON(),
+          };
+        });
+      });
+      const loading = page.goto(baseURL + '/playload/' + fragment);
+      try {
+        await page.locator('#display').waitFor({ state: 'attached' });
+        await expect(page.locator('#app')).toBeHidden();
+        await expect.poll(() => criticalRequests.length).toBe(1);
+        release();
+        await loading;
+        expect(criticalRequests.length).toBe(1);
+        await expect(page.locator('#app')).toBeVisible();
+        await page.waitForFunction(() => window.firstWorkspacePaint);
+        const first = await page.evaluate(() => window.firstWorkspacePaint);
+        if (fragment === '#invalid') {
+          expect(first.error).toBe(true);
+          await expect(page.locator('#error')).toHaveText('Invalid game URL');
+        } else {
+          expect(first.welcome).toBe(true);
+          await expectCenteredWelcome(page);
+        }
+        expect(
+          await page.locator('#display').evaluate((canvas) =>
+            canvas
+              .getContext('2d')
+              .getImageData(0, 0, canvas.width, canvas.height)
+              .data.some((value, index) => index % 4 !== 3 && value !== 0),
+          ),
+        ).toBe(true);
+        const screen = await page.locator('#display').boundingBox();
+        for (const key of ['x', 'y', 'width', 'height']) {
+          expect(Math.abs(first.screen[key] - screen[key])).toBeLessThanOrEqual(1);
+        }
+        await page.screenshot({ path: testInfo.outputPath(`${name}-${delayed}-ready.png`) });
+      } finally {
+        release();
+        await loading;
+        await page.close();
       }
-      const screen = await page.locator('#display').boundingBox();
-      for (const key of ['x', 'y', 'width', 'height']) {
-        expect(Math.abs(first.screen[key] - screen[key])).toBeLessThanOrEqual(1);
-      }
-      await page.screenshot({ path: testInfo.outputPath(`${name}-ready.png`) });
-    } finally {
-      release();
-      await loading;
-      await page.close();
     }
   }
+});
+
+base('a missing or empty stylesheet keeps the uninitialized workspace hidden', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const status of [404, 200]) {
+    errors.length = 0;
+    await page.route('**/playload/assets/bundles/app-style-*.css', (route) =>
+      route.fulfill({ status, contentType: 'text/css', body: '' }),
+    );
+    await page.goto('/playload/');
+    await expect(page.locator('#app')).toBeHidden();
+    expect(await page.locator('#display').getAttribute('data-crt')).toBeNull();
+    expect(errors.every((message) => message === 'The stylesheet could not load.')).toBe(true);
+    await page.unroute('**/playload/assets/bundles/app-style-*.css');
+  }
+  await page.goto('/playload/');
+  await expect(page.locator('#app')).toBeVisible();
+  await expectCenteredWelcome(page);
 });
 
 test('a new page focuses the game and selecting the editor keeps playback waiting', async ({
@@ -1149,7 +1202,7 @@ test('unavailable or permission-blocked gamepad access leaves keyboard games wor
   }
 });
 
-for (const hz of [60, 90, 120, 144, 165]) {
+for (const hz of [12, 15, 20, 30, 60, 90, 120, 144, 165]) {
   test(`${hz} Hz displays keep 60 game updates per second without catching up after a long pause`, async ({
     page,
   }) => {
@@ -1164,12 +1217,14 @@ for (const hz of [60, 90, 120, 144, 165]) {
       };
       const NativeWorker = window.Worker;
       window.completedFrames = 0;
+      window.renderedFrames = 0;
       window.Worker = class extends NativeWorker {
         constructor(...args) {
           super(...args);
           this.addEventListener('message', ({ data }) => {
             if (data.type === 'frame') {
-              window.completedFrames++;
+              window.completedFrames += data.steps;
+              window.renderedFrames++;
             }
           });
         }
@@ -1182,9 +1237,10 @@ for (const hz of [60, 90, 120, 144, 165]) {
         }
       };
     });
-    await run(page, 'function tick() { cls(4); }');
+    await run(page, 'let ticks = 0; function tick() { cls(++ticks % 8); }');
     await expect(page.locator('#pause')).toBeEnabled();
     const frames = await page.evaluate(async (hz) => {
+      window.nextAnimate(0);
       for (let i = 1; i <= hz; i++) {
         window.nextAnimate((i * 1000) / hz);
         await window.frameFinished;
@@ -1192,6 +1248,12 @@ for (const hz of [60, 90, 120, 144, 165]) {
       return window.completedFrames;
     }, hz);
     expect(frames).toBe(60);
+    expect(await page.evaluate(() => window.renderedFrames)).toBe(Math.min(hz, 60));
+    // The initial load already ran one tick. Check actual game state as well
+    // as the worker's reported updates, even when rendering only 12 Hz.
+    await page.locator('#crt').click();
+    expect(await pixel(page, 320, 288)).toEqual([100, 185, 100, 255]);
+    await page.locator('#crt').click();
     const afterPause = await page.evaluate(async () => {
       for (const time of [10000, 10000 + 1000 / 60]) {
         window.nextAnimate(time);
@@ -1200,6 +1262,36 @@ for (const hz of [60, 90, 120, 144, 165]) {
       return window.completedFrames;
     });
     expect(afterPause).toBe(62);
+  });
+}
+
+for (const denied of [false, true]) {
+  test(`${denied ? 'denied' : 'unavailable'} game workers show an error and Run can retry`, async ({
+    page,
+  }) => {
+    await page.addInitScript((denied) => {
+      window.SupportedWorker = window.Worker;
+      window.Worker = denied
+        ? class {
+            constructor() {
+              throw new DOMException('Game workers are blocked.', 'SecurityError');
+            }
+          }
+        : undefined;
+    }, denied);
+    await run(page, 'function tick() { cls(4) }', true);
+    await expect(page.locator('#error')).toHaveText(
+      denied ? 'Game workers are blocked.' : 'This browser cannot run games.',
+    );
+    await expect(page.locator('#pause')).toBeDisabled();
+    await expect(page.locator('#run')).toBeEnabled();
+    await page.evaluate(() => {
+      window.Worker = window.SupportedWorker;
+    });
+    await page.locator('#run').click();
+    await expect(page.locator('#pause')).toBeEnabled();
+    await expect(page.locator('#error')).toBeHidden();
+    await expect.poll(() => pixel(page, 320, 288)).toEqual([80, 140, 215, 255]);
   });
 }
 
@@ -1521,11 +1613,15 @@ function tick() {
   }
 });
 
-test('activation on the game pad is consumed through a tap, hold or drag', async ({ browser }) => {
+test('activation on the game pad is consumed through a tap, hold or drag', async ({
+  browser,
+  browserName,
+}) => {
   const page = await browser.newPage({
     viewport: { width: 390, height: 844 },
     hasTouch: true,
-    isMobile: true,
+    // Firefox's mobile emulation does not emit PointerEvents for mouse input.
+    isMobile: browserName !== 'firefox',
   });
   const { hash } = await encode(`let color = 6;
 function tick() {
@@ -1897,7 +1993,7 @@ test('an error during sound initialization cannot start a recording after the ga
   await expect(page.locator('#record')).toBeDisabled();
   await page.locator('#editor').fill('function tick() { cls(4) }');
   await page.locator('#run').click();
-  await expect.poll(() => page.evaluate(() => window.recordingStarts)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.recordingStarts)).toBeGreaterThan(0);
   await expect(page.locator('#error-notice')).toBeHidden();
 });
 
@@ -2254,6 +2350,43 @@ test('CRT video exports the curved frame with the same surround as the player', 
   expect(result.center[0]).toBeGreaterThan(100);
 });
 
+test('static and paused CRT games keep recording recent frames without repeating the shader', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const draw = WebGLRenderingContext.prototype.drawArrays;
+    window.crtPaints = 0;
+    WebGLRenderingContext.prototype.drawArrays = function (...args) {
+      window.crtPaints++;
+      return draw.apply(this, args);
+    };
+  });
+  await run(page, 'function tick() { cls(7) }');
+  await expect(page.locator('#record')).toBeEnabled();
+  await page.locator('#record').click();
+  const paints = await page.evaluate(() => window.crtPaints);
+  expect(paints).toBeGreaterThan(0);
+  // Cross the rolling limit, including several seconds of a paused game.
+  await page.waitForTimeout(6500);
+  await page.locator('#pause').click();
+  await page.waitForTimeout(6850);
+  expect(await page.evaluate(() => window.crtPaints)).toBe(paints);
+  const pending = page.waitForEvent('download');
+  await page.locator('#video').click();
+  const chunks = [];
+  for await (const chunk of await (await pending).createReadStream()) chunks.push(chunk);
+  const buffer = new WebMBuffer();
+  buffer.begin(0);
+  buffer.append(Buffer.concat(chunks));
+  const pictures = buffer.frames.filter((frame) => frame.kind === 1);
+  expect(pictures.length).toBeGreaterThan(100);
+  expect(pictures.at(-1).time - pictures[0].time).toBeGreaterThan(7800);
+  expect(pictures.at(-1).time - pictures[0].time).toBeLessThanOrEqual(10000);
+  for (let i = 1; i < pictures.length; i++)
+    expect(pictures[i].time - pictures[i - 1].time).toBeLessThan(500);
+  await expect(page.locator('#status')).toBeEmpty();
+});
+
 test('a black CRT screen retains a visible curved contour without recoloring game black', async ({
   page,
 }) => {
@@ -2465,7 +2598,9 @@ test('the CRT shader reconstructs glowing phosphors while retaining black and a 
   expect(result.black).toBe(true);
 });
 
-test('CRT retains a usable captured picture when WebGL is unavailable', async ({ page }) => {
+test('WebGL being unavailable disables CRT and retains a flat captured picture', async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     const getContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (type, ...args) {
@@ -2474,13 +2609,16 @@ test('CRT retains a usable captured picture when WebGL is unavailable', async ({
   });
   await run(page, 'function tick() { cls(7) }');
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
-  expect(await pixel(page)).toEqual([33, 28, 41, 255]);
-  expect((await pixel(page, 320, 288))[0]).toBeGreaterThan(100);
-  await page.getByRole('button', { name: 'CRT', exact: true }).click();
+  await expect(page.locator('#crt')).toBeDisabled();
+  await expect(page.locator('#crt')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('#display')).toHaveAttribute('data-crt', 'false');
+  expect(await pixel(page, 320, 288)).toEqual([220, 245, 255, 255]);
   expect(await pixel(page)).toEqual([220, 245, 255, 255]);
 });
 
-test('losing the WebGL context switches the player to the CPU CRT renderer', async ({ page }) => {
+test('losing the WebGL context disables CRT and keeps the game drawing flat frames', async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     const getContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (type, ...args) {
@@ -2495,8 +2633,8 @@ test('losing the WebGL context switches the player to the CPU CRT renderer', asy
     const { createDisplay } = await import('/src/app/display.js'),
       { palette } = await import('/src/engine/engine.js'),
       canvas = document.querySelector('#display'),
-      display = createDisplay(palette, canvas.width, canvas.height, '#211c29');
-    window.cpuCRT = display.render(new Uint8Array(160 * 144).fill(7), true).slice();
+      display = createDisplay(palette, canvas.width, canvas.height);
+    window.flatFrame = display.render(new Uint8Array(160 * 144).fill(7)).slice();
     if (!window.gameGL) throw new Error('Expected an active WebGL context');
     const loss = window.gameGL.getExtension('WEBGL_lose_context');
     if (!loss) throw new Error('Expected WEBGL_lose_context');
@@ -2507,17 +2645,18 @@ test('losing the WebGL context switches the player to the CPU CRT renderer', asy
     .poll(() =>
       page.locator('#display').evaluate((canvas) => {
         const actual = canvas.getContext('2d').getImageData(0, 0, 640, 576).data;
-        return actual.every((value, index) => value === window.cpuCRT[index]);
+        return actual.every((value, index) => value === window.flatFrame[index]);
       }),
     )
     .toBe(true);
   await expect(page.locator('#error')).toBeHidden();
-  await page.locator('#crt').click();
+  await expect(page.locator('#crt')).toBeDisabled();
+  await expect(page.locator('#crt')).toHaveAttribute('aria-pressed', 'false');
   expect(await pixel(page)).toEqual([220, 245, 255, 255]);
 });
 
 for (const fallback of [false, true]) {
-  test(`the waiting screen uses CRT before Run${fallback ? ' without WebGL' : ''}`, async ({
+  test(`the waiting screen uses ${fallback ? 'a flat picture without WebGL' : 'CRT'} before Run`, async ({
     page,
   }) => {
     if (fallback)
@@ -2531,8 +2670,14 @@ for (const fallback of [false, true]) {
     await expect(page.locator('#screen')).toBeFocused();
     await expect(page.locator('#display')).toBeVisible();
     await expect(page.locator('#pause')).toBeDisabled();
-    expect(await pixel(page)).toEqual([33, 28, 41, 255]);
+    expect(await pixel(page)).toEqual(fallback ? [0, 0, 0, 255] : [33, 28, 41, 255]);
     await expectCenteredWelcome(page);
+    if (fallback) {
+      await expect(page.locator('#crt')).toBeDisabled();
+      await expect(page.locator('#crt')).toHaveAttribute('aria-pressed', 'false');
+      await expect(page.locator('#start-game')).toBeVisible();
+      return;
+    }
     const widths = await page.locator('#display').evaluate((canvas) => {
       const pixels = canvas.getContext('2d').getImageData(0, 0, 640, 576).data;
       return [8, 288].map((y) => {
@@ -2556,6 +2701,10 @@ for (const fallback of [false, true]) {
 
 test.describe('touch player', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 375, height: 812 } });
+  test.beforeEach(async ({ page }) => {
+    // Establish a mobile viewport before resizing the otherwise empty page.
+    await page.setContent('<meta name="viewport" content="width=device-width">');
+  });
   test('slow glyph loading never exposes the editor or desktop toolbar', async ({
     page,
   }, testInfo) => {
@@ -2614,10 +2763,15 @@ test.describe('touch player', () => {
     ]) {
       for (const control of await page.locator(selector).all()) {
         const selection = await control.evaluate((element) => {
-          const style = getComputedStyle(element);
-          return { standard: style.userSelect, webkit: style.webkitUserSelect };
+          // Firefox reports auto on descendants; its used value follows the parent.
+          while (element) {
+            const style = getComputedStyle(element),
+              value = style.userSelect || style.webkitUserSelect;
+            if (value && value !== 'auto') return value;
+            element = element.parentElement;
+          }
         });
-        expect(selection.standard === 'none' || selection.webkit === 'none').toBe(true);
+        expect(selection).toBe('none');
       }
     }
     await expect(page.locator('.dpad')).toHaveCSS('touch-action', 'none');
@@ -2722,7 +2876,7 @@ test.describe('touch player', () => {
     await page.locator('#tools-toggle').tap();
     await page.locator('#code-toggle').tap();
     await expect(editor).toBeHidden();
-    await expect(page.locator('#version')).toHaveCSS('-webkit-user-select', 'none');
+    await expect(page.locator('#app')).toHaveCSS('user-select', 'none');
     expect(
       await page.evaluate(() => ({
         tools: window.toolClicks['tools-toggle'],
@@ -3160,7 +3314,8 @@ function tick() {
       await page.evaluate((event) => {
         window.requiredAudioEvent = event;
       }, event);
-      await page.locator('#start-game').tap();
+      if (event === 'touchend') await page.locator('#viewport').tap({ position: { x: 3, y: 3 } });
+      else await page.locator('#start-game').tap();
       await expect(page.locator('#start-game')).toBeHidden();
       await expect
         .poll(() => page.evaluate(() => window.gameAudioContexts.map((context) => context.state)))
@@ -3601,7 +3756,7 @@ function tick() {
       .locator('#editor')
       .fill('let presses = 0; function tick() { if (btnp(0)) presses++; cls(presses ? 3 : 4) }');
     await page.locator('#tools-toggle').tap();
-    await page.locator('#run').click();
+    await page.locator('#run').tap();
     await expect(page.locator('#editor')).toBeFocused();
     await page.locator('#screen').tap();
     await expect(page.locator('#screen')).toBeFocused();
@@ -5101,18 +5256,30 @@ test('JavaScript coloring preserves source, literal markup, typing and scrolling
     element.scrollLeft = 140;
     element.dispatchEvent(new Event('scroll'));
   });
-  expect(await page.locator('#editor-highlight').evaluate((element) => element.scrollLeft)).toBe(
-    await editor.evaluate((element) => element.scrollLeft),
-  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.getElementById('editor-highlight').scrollLeft -
+          document.getElementById('editor').scrollLeft,
+      ),
+    )
+    .toBe(0);
   await expect(editor).toHaveValue(longLine);
   await editor.fill('// line\n'.repeat(120) + 'function tick() { cls(7) }');
   await editor.evaluate((element) => {
     element.scrollTop = 800;
     element.dispatchEvent(new Event('scroll'));
   });
-  expect(await page.locator('#editor-highlight').evaluate((element) => element.scrollTop)).toBe(
-    await editor.evaluate((element) => element.scrollTop),
-  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.getElementById('editor-highlight').scrollTop -
+          document.getElementById('editor').scrollTop,
+      ),
+    )
+    .toBe(0);
   await page.locator('#run').click();
   await expect(page.locator('#pause')).toBeEnabled();
 });
@@ -5172,6 +5339,7 @@ test.describe('visible scrollbars', () => {
 
   test('reference tabs and API expose usable scrollbars without moving the page', async ({
     page,
+    browserName,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/playload/');
@@ -5186,10 +5354,19 @@ test.describe('visible scrollbars', () => {
     expect(tabGeometry.scrollHeight).toBe(tabGeometry.height);
     const api = page.locator('#api'),
       box = await api.boundingBox();
-    await page.mouse.move(box.x + 60, box.y + box.height - 6);
-    await page.mouse.down();
-    await page.mouse.move(box.x + 160, box.y + box.height - 6, { steps: 10 });
-    await page.mouse.up();
+    if (
+      browserName === 'firefox' &&
+      (await api.evaluate((element) => getComputedStyle(element).scrollbarWidth)) === 'none'
+    ) {
+      // Firefox's headless driver forcibly hides native scrollbar handles.
+      await page.mouse.move(box.x + 100, box.y + 80);
+      await page.mouse.wheel(300, 0);
+    } else {
+      await page.mouse.move(box.x + 60, box.y + box.height - 6);
+      await page.mouse.down();
+      await page.mouse.move(box.x + 160, box.y + box.height - 6, { steps: 10 });
+      await page.mouse.up();
+    }
     await expect.poll(() => api.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
     await page.mouse.move(box.x + 100, box.y + 80);
     await page.mouse.wheel(0, 300);

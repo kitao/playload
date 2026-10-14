@@ -1,4 +1,4 @@
-// Keep encoded WebM blocks; exporting changes only timestamps and track IDs.
+// Keep encoded WebM blocks; exporting changes only timing fields and track IDs.
 export class WebMBuffer {
   constructor() {
     this.frames = [];
@@ -76,6 +76,7 @@ export class WebMBuffer {
         const flags = content[track.width + 2],
           frame = {
             time: this.offset + ((this.clusterTime + relative) * this.scale) / 1000000,
+            sourceScale: this.scale,
             kind,
             keyframe:
               kind === 1 &&
@@ -90,6 +91,42 @@ export class WebMBuffer {
     }
     this.pending = data.slice(position);
     if (this.pending.length > 64 * 1024 * 1024) throw new Error('Video recording exceeded 64 MiB');
+  }
+  merge(parser) {
+    this.header ??= parser.header;
+    this.info ??= parser.info;
+    this.timeScale ??= parser.timeScale;
+    if (parser.tracks) {
+      this.trackEntries ??= new Map();
+      const header = elements(parser.tracks)[0];
+      for (const track of elements(parser.tracks, header.body, header.end).filter(
+        (field) => field.id === 0xae,
+      )) {
+        const fields = elements(parser.tracks, track.body, track.end),
+          type = fields.find((field) => field.id === 0x83),
+          kind = type && uint(parser.tracks.subarray(type.body, type.end));
+        if (kind !== 1 && kind !== 2) throw new Error('Unsupported WebM track');
+        this.trackEntries.set(
+          kind,
+          element(
+            0xae,
+            join([
+              element(0xd7, unsigned(kind)),
+              element(0x73c5, unsigned(kind)),
+              ...fields
+                .filter((field) => ![0xd7, 0x73c5, 0xbf].includes(field.id))
+                .map((field) => parser.tracks.subarray(field.start, field.end)),
+            ]),
+          ),
+        );
+      }
+      this.tracks = element(
+        0x1654ae6b,
+        join([...this.trackEntries].sort(([a], [b]) => a - b).map(([, entry]) => entry)),
+      );
+    }
+    this.frames.push(...parser.frames);
+    parser.frames = [];
   }
   trim(end) {
     const cutoff = end - 10000,
@@ -139,12 +176,21 @@ export function exportWebM(buffer, mime, end) {
     blocks = [];
   }
   for (const frame of frames) {
-    const timestamp = Math.round(((frame.time - first.time) * 1000000) / timeScale);
+    const exactTimestamp = ((frame.time - first.time) * 1000000) / timeScale,
+      timestamp = Math.round(exactTimestamp);
     if (timestamp - time >= clusterSpan) {
       flush();
       time = timestamp;
     }
-    blocks.push(rewriteBlock(frame.data, tracks.get(frame.kind), timestamp - time));
+    blocks.push(
+      rewriteBlock(
+        frame.data,
+        tracks.get(frame.kind),
+        timestamp - time,
+        (frame.sourceScale ?? timeScale) / timeScale,
+        exactTimestamp,
+      ),
+    );
   }
   flush();
   if (!clusters.length) throw new Error('No video frames were received');
@@ -180,7 +226,7 @@ function opusDuration(packet) {
     count = code === 0 ? 1 : code === 3 ? packet[1] & 63 : 2;
   return duration * count;
 }
-function rewriteBlock(bytes, number, time) {
+function rewriteBlock(bytes, number, time, scale = 1, exactTime = time) {
   const field = elements(bytes)[0];
   if (field.id === 0xa0)
     return element(
@@ -188,11 +234,20 @@ function rewriteBlock(bytes, number, time) {
       join(
         elements(bytes, field.body, field.end)
           .filter((child) => child.id !== 0xbf)
-          .map((child) =>
-            child.id === 0xa1
-              ? rewriteBlock(bytes.subarray(child.start, child.end), number, time)
-              : bytes.subarray(child.start, child.end),
-          ),
+          .map((child) => {
+            if (child.id === 0xa1)
+              return rewriteBlock(bytes.subarray(child.start, child.end), number, time);
+            if (scale !== 1 && (child.id === 0x9b || child.id === 0xfb)) {
+              const content = bytes.subarray(child.body, child.end),
+                value = child.id === 0xfb ? signed(content) : uint(content),
+                scaled =
+                  child.id === 0xfb
+                    ? Math.round(exactTime + value * scale) - Math.round(exactTime)
+                    : Math.round(value * scale);
+              return element(child.id, child.id === 0xfb ? signedBytes(scaled) : unsigned(scaled));
+            }
+            return bytes.subarray(child.start, child.end);
+          }),
       ),
     );
   const content = bytes.subarray(field.body, field.end),
@@ -238,6 +293,19 @@ function elements(bytes, start = 0, end = bytes.length) {
 }
 function uint(bytes) {
   return bytes.reduce((value, byte) => value * 256 + byte, 0);
+}
+function signed(bytes) {
+  return bytes.reduce((value, byte) => value * 256 + byte, bytes[0] & 128 ? -1 : 0);
+}
+function signedBytes(value) {
+  let width = 1;
+  while (value < -(2 ** (8 * width - 1)) || value >= 2 ** (8 * width - 1)) width++;
+  const bytes = new Uint8Array(width);
+  for (let i = width - 1; i >= 0; i--) {
+    bytes[i] = value;
+    value = Math.floor(value / 256);
+  }
+  return bytes;
 }
 function unsigned(value) {
   const bytes = [];

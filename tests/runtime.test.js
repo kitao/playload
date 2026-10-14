@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
-import { Runtime, Sound } from '../src/app/runtime.js';
+import { Runtime, Sound, MAX_FRAME_STEPS } from '../src/app/runtime.js';
 import { compileScore } from '../src/engine/sound.js';
 
 function mockWorker(t) {
@@ -90,6 +90,49 @@ test('worker source remains readable until the worker is replaced or stopped', a
   runtime.stop();
   assert.equal(second.terminated, true);
   await assert.rejects(fetch(second.url), TypeError);
+});
+
+test('unavailable or denied workers report an error, release their URL, and allow retry', async (t) => {
+  mockWorker(t);
+  const SupportedWorker = globalThis.Worker,
+    createURL = URL.createObjectURL.bind(URL),
+    urls = [],
+    errors = [],
+    frames = t.mock.fn(),
+    runtime = new Runtime(frames, (error) => errors.push(error));
+  t.after(() => runtime.stop());
+  t.mock.method(URL, 'createObjectURL', (blob) => {
+    const url = createURL(blob);
+    urls.push(url);
+    return url;
+  });
+  for (const Worker of [
+    undefined,
+    class {
+      constructor() {
+        throw new DOMException('Game workers are blocked.', 'SecurityError');
+      }
+    },
+  ]) {
+    Object.defineProperty(globalThis, 'Worker', { value: Worker, configurable: true });
+    assert.doesNotThrow(() => runtime.load('function tick() {}'));
+    assert.equal(runtime.worker, null);
+    assert.equal(runtime.workerURL, null);
+    assert.equal(runtime.pending, false);
+  }
+  assert.deepEqual(
+    errors.map((error) => error.message),
+    ['This browser cannot run games.', 'Game workers are blocked.'],
+  );
+  assert.equal(urls.length, 1);
+  await assert.rejects(fetch(urls[0]), TypeError);
+  Object.defineProperty(globalThis, 'Worker', { value: SupportedWorker, configurable: true });
+  runtime.load('function tick() {}');
+  runtime.worker.onmessage({
+    data: { type: 'ready', pixels: new Uint8Array(160 * 144), sounds: [] },
+  });
+  assert.equal(frames.mock.callCount(), 1);
+  assert.equal(errors.length, 2);
 });
 
 test('invalid sound frames stop the worker and valid playback recovers after loading again', (t) => {
@@ -207,6 +250,12 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
     await sound.init();
     sound.play([{ ch: 0, score: compileScore('V15O5N9a))') }]);
     const processor = sound.node.processor;
+    const played = [];
+    const play = processor.ay.play.bind(processor.ay);
+    processor.ay.play = (ch, score) => {
+      played.push({ at: processor.samples, ch, score });
+      play(ch, score);
+    };
     const render = (length) => {
       const output = new Float32Array(length);
       assert.equal(processor.process([], [[output]]), true);
@@ -247,12 +296,245 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
     assert(Math.abs(reset[0] - previous) < Math.abs(previous) / ramp + 1e-6);
     assert(reset.subarray(ramp).every((x) => Math.abs(x) < 1e-6));
     assert.equal(processor.ay.voices.filter(Boolean).length, 0);
+
+    // Catch-up sounds retain their 1/60-second spacing across render blocks.
+    const scores = ['c', 'd', 'e'].map((note) => compileScore('V15' + note));
+    played.length = 0;
+    const start = processor.samples;
+    sound.play(scores.map((score, frame) => ({ ch: 0, score, frame })));
+    render(1601);
+    assert.deepEqual(
+      played.map(({ at }) => at - start),
+      [0, 800, 1600],
+    );
+    assert.deepEqual(
+      played.map(({ score }) => score),
+      scores,
+    );
+
+    // A later update flushes overdue effects before its current effect,
+    // rather than letting a stale sound replace the new one in the future.
+    played.length = 0;
+    sound.play([{ ch: 0, score: scores[0], frame: 4 }]);
+    sound.play([{ ch: 0, score: scores[1], frame: 0 }]);
+    render(4000);
+    assert.deepEqual(
+      played.map(({ score }) => score),
+      [scores[0], scores[1]],
+    );
+
+    played.length = 0;
+    sound.play([{ ch: 0, score: scores[2], frame: 4 }]);
+    sound.reset();
+    render(4000);
+    assert.deepEqual(played, []);
   } finally {
     if (originalContext) Object.defineProperty(globalThis, 'AudioContext', originalContext);
     else delete globalThis.AudioContext;
     if (originalNode) Object.defineProperty(globalThis, 'AudioWorkletNode', originalNode);
     else delete globalThis.AudioWorkletNode;
   }
+});
+
+test('batched worker ticks match individual ticks, rasterize once, and consume a press only once', async (t) => {
+  mockWorker(t);
+  const runtime = new Runtime(() => {}, assert.fail);
+  t.after(() => runtime.stop());
+  runtime.load('function tick() {}');
+  const source = await (await fetch(runtime.worker.url)).text();
+  const create = () => {
+    const messages = [];
+    const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
+    runInNewContext(source, context);
+    const send = (data) => context.self.onmessage({ data });
+    send({
+      type: 'load',
+      source: `
+      let ticks = 0, presses = 0;
+      function tick() {
+        ticks++;
+        if (btnp(4)) presses++;
+        cls(ticks % 8);
+        put(0, 0, String(presses));
+        spr(ticks, 32, 'A', 7);
+        play(0, ['c', 'd', 'e', 'f', 'g'][ticks % 5]);
+      }
+    `,
+    });
+    return { send, messages };
+  };
+  const individual = create(),
+    batch = create();
+  individual.send({ type: 'input', mask: 16 });
+  batch.send({ type: 'input', mask: 16 });
+  for (let i = 0; i < MAX_FRAME_STEPS; i++) individual.send({ type: 'frame', steps: 1 });
+  batch.send({ type: 'frame', steps: MAX_FRAME_STEPS });
+  const combined = batch.messages.at(-1);
+  assert.equal(combined.type, 'frame');
+  assert.equal(combined.steps, 5);
+  assert.equal(batch.messages.length, 2);
+  assert.deepEqual(combined.pixels, individual.messages.at(-1).pixels);
+  assert.deepEqual(
+    combined.sounds,
+    individual.messages
+      .slice(1)
+      .flatMap((message, frame) => message.sounds.map((command) => ({ ...command, frame }))),
+  );
+});
+
+test('the scheduler keeps time when a worker is busy and bounds recovery after rendering stalls', async () => {
+  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
+  const animateSource = source.slice(
+    source.indexOf('function animate('),
+    source.indexOf('function showPlayer('),
+  );
+  const accepted = [],
+    attempted = [];
+  let busy = false;
+  const context = {
+    readGamepads: () => 0,
+    gamepadMask: 0,
+    syncInput: assert.fail,
+    running: true,
+    document: { hidden: false },
+    paused: false,
+    view: 'play',
+    compact: false,
+    toolsOpen: false,
+    lastFrame: null,
+    MAX_FRAME_STEPS,
+    runtime: {
+      frame(steps) {
+        attempted.push(steps);
+        if (busy) return false;
+        accepted.push(steps);
+        return true;
+      },
+    },
+    capture: undefined,
+    requestAnimationFrame() {},
+    paint: assert.fail,
+  };
+  runInNewContext(animateSource, context);
+  context.animate(0);
+  busy = true;
+  context.animate(1000 / 60);
+  context.animate(1000 / 30);
+  busy = false;
+  context.animate(50);
+  assert.deepEqual(accepted, [3]);
+  assert.equal(context.lastFrame, 50);
+  context.animate(250);
+  assert.deepEqual(accepted, [3, 5]);
+  context.animate(10000);
+  assert.deepEqual(accepted, [3, 5, 1]);
+  context.paused = true;
+  context.animate(20000);
+  context.paused = false;
+  context.animate(30000);
+  context.animate(30000 + 1000 / 60);
+  assert.deepEqual(accepted, [3, 5, 1, 1]);
+  assert(attempted.every((steps) => steps >= 1 && steps <= 5));
+});
+
+test('runtime refuses extra outstanding batches and rejects invalid catch-up sound positions', (t) => {
+  mockWorker(t);
+  const errors = t.mock.fn();
+  const runtime = new Runtime(() => {}, errors);
+  t.after(() => runtime.stop());
+  const pixels = new Uint8Array(160 * 144);
+  for (const frame of [-1, 2, 0.5]) {
+    runtime.load('function tick() {}');
+    const worker = runtime.worker;
+    worker.onmessage({ data: { type: 'ready', pixels, sounds: [] } });
+    for (const steps of [0, 6, 1.5, NaN]) assert.equal(runtime.frame(steps), false);
+    assert.equal(runtime.frame(2), true);
+    assert.equal(runtime.frame(2), false);
+    assert.equal(worker.messages.filter((message) => message.type === 'frame').length, 1);
+    worker.onmessage({
+      data: {
+        type: 'frame',
+        pixels,
+        steps: 2,
+        sounds: [{ ch: 0, score: compileScore('c'), frame }],
+      },
+    });
+    assert.equal(worker.terminated, true);
+  }
+  assert.equal(errors.mock.callCount(), 3);
+});
+
+test('identical game pictures avoid CRT work, but a new game forces a fresh picture', async () => {
+  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
+  const renderSource = source.slice(
+    source.indexOf('function render('),
+    source.indexOf('function paint('),
+  );
+  let paints = 0;
+  const context = {
+    screenPixels: new Uint8Array(160 * 144),
+    paint() {
+      paints++;
+    },
+  };
+  runInNewContext(renderSource, context);
+  const pixels = new Uint8Array(160 * 144);
+  context.render(pixels.slice());
+  assert.equal(paints, 0);
+  pixels[200] = 7;
+  context.render(pixels.slice());
+  assert.equal(paints, 1);
+  context.render(pixels.slice());
+  assert.equal(paints, 1);
+  context.render(pixels.slice(), true);
+  assert.equal(paints, 2);
+});
+
+test('paused video refreshes cached pixels at 30 Hz without running CRT or advancing the game', async () => {
+  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
+  const animateSource = source.slice(
+    source.indexOf('function animate('),
+    source.indexOf('function showPlayer('),
+  );
+  const copies = [];
+  const canvas = {};
+  const context = {
+    readGamepads: () => 0,
+    gamepadMask: 0,
+    syncInput: assert.fail,
+    running: true,
+    document: { hidden: false },
+    paused: true,
+    view: 'play',
+    compact: false,
+    toolsOpen: false,
+    lastFrame: null,
+    MAX_FRAME_STEPS,
+    runtime: { frame: assert.fail },
+    requestAnimationFrame() {},
+    paint: assert.fail,
+    capture: { stream: {}, suspended: false },
+    paintedFrame: false,
+    lastCaptureFrame: 0,
+    canvas,
+    context: {
+      drawImage(...args) {
+        copies.push(args);
+      },
+    },
+  };
+  runInNewContext(animateSource, context);
+  context.animate(1000);
+  context.animate(1010);
+  assert.deepEqual(copies, [[canvas, 0, 0]]);
+  context.paintedFrame = true;
+  context.animate(1040);
+  assert.equal(copies.length, 1);
+  context.animate(1080);
+  assert.equal(copies.length, 2);
+  context.capture.suspended = true;
+  context.animate(2000);
+  assert.equal(copies.length, 2);
 });
 
 test('cached pages retain execution and media, then restore the watchdog and prior pause state', async (t) => {
@@ -361,7 +643,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     assert.equal(worker.messages.length, messages);
 
     handlers.get('pageshow')({ persisted: true });
-    assert.deepEqual(clock(), { lastFrame: 0, revision: 0 });
+    assert.deepEqual(clock(), { lastFrame: null, revision: 0 });
     assert.equal(runtime.suspended, false);
     assert.equal(timers.size, 1);
     assert.equal([...timers.values()][0].delay, 1500);

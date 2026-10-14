@@ -114,7 +114,9 @@ for (const scenario of [
         const bounds = element.parentElement.getBoundingClientRect();
         return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
       });
-      expect(anchor).toEqual(await page.locator('#viewport').boundingBox());
+      const viewport = await page.locator('#viewport').boundingBox();
+      for (const key of ['x', 'y', 'width', 'height'])
+        expect(anchor[key]).toBeCloseTo(viewport[key], 3);
       expect(notice.x).toBeCloseTo(anchor.x + 7, 1);
       expect(notice.y).toBeCloseTo(anchor.y + 3, 1);
       expect(notice.x + notice.width).toBeLessThanOrEqual(anchor.x + anchor.width + 1);

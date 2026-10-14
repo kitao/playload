@@ -15,15 +15,26 @@ const blocks = Buffer.from(
   'hex',
 );
 const recording = Buffer.concat([header, blocks]);
+const videoOnly = Buffer.from(
+  '1a45dfa38018538067ff1549a966872ad7b18307a1201654ae6b88ae86d78107838101' +
+    '1f43b6758ae78100a38587000080aa1f43b6758be78203e8a38587000080bb',
+  'hex',
+);
+const audioOnly = Buffer.from(
+  '1a45dfa38018538067ff1549a966872ad7b1830f42401654ae6b88ae86d78105838102' +
+    '1f43b6758be78100a38685000000f8001f43b6758ce78203e8a38685000000f800',
+  'hex',
+);
 // Chrome's final output when a recorder stops before its first frame.
 const emptyRecording = Buffer.concat([
   Buffer.from('1a45dfa39f4286810142f7810142f2810442f381084282847765626d4287810442858102', 'hex'),
   Buffer.alloc(74),
 ]);
 
-function setup(t) {
+function setup(t, keyframeInterval = true) {
   const previous = globalThis.MediaRecorder,
     previousReader = globalThis.FileReader,
+    previousStream = globalThis.MediaStream,
     recorders = [];
   globalThis.FileReader = class {
     readAsArrayBuffer(data) {
@@ -58,7 +69,8 @@ function setup(t) {
     static isTypeSupported() {
       return true;
     }
-    constructor() {
+    constructor(stream, options) {
+      this.options = keyframeInterval ? { ...options } : { mimeType: options.mimeType };
       this.state = 'inactive';
       recorders.push(this);
     }
@@ -71,7 +83,12 @@ function setup(t) {
     resume() {
       this.state = 'recording';
     }
-    requestData() {}
+    requestData() {
+      if (keyframeInterval) return;
+      const chunk = this.chunk ?? new Blob();
+      this.chunk = null;
+      queueMicrotask(() => this.emit(chunk));
+    }
     stop() {
       this.state = 'inactive';
       queueMicrotask(() => {
@@ -83,11 +100,23 @@ function setup(t) {
       this.ondataavailable({ data });
     }
   };
+  globalThis.MediaStream = class {
+    constructor(tracks) {
+      this.tracks = tracks;
+    }
+    getAudioTracks() {
+      return this.tracks.filter((track) => track.kind !== 'video');
+    }
+    getVideoTracks() {
+      return this.tracks.filter((track) => track.kind === 'video');
+    }
+  };
   const audioTracks = [],
     capture = new Capture(
       {
         captureStream: () => ({
           getAudioTracks: () => audioTracks,
+          getVideoTracks: () => [{ kind: 'video', stop() {} }],
           addTrack: (track) => audioTracks.push(track),
         }),
       },
@@ -101,6 +130,7 @@ function setup(t) {
     capture.clear();
     globalThis.MediaRecorder = previous;
     globalThis.FileReader = previousReader;
+    globalThis.MediaStream = previousStream;
   });
   return {
     capture,
@@ -176,6 +206,120 @@ test('WebM timestamps retain a nondefault time scale through export', async () =
       [1000, 1],
     ],
   );
+});
+
+test('separate video and audio parsers retain partial input, timestamps and encoded packets', async () => {
+  const buffer = new WebMBuffer(),
+    video = new WebMBuffer(),
+    audio = new WebMBuffer();
+  video.begin(100);
+  audio.begin(120);
+  video.append(videoOnly.subarray(0, videoOnly.length - 2));
+  const pending = video.pending.slice(),
+    packet = video.frames[0].data;
+  buffer.merge(video);
+  assert.equal(video.frames.length, 0);
+  assert.deepEqual(video.pending, pending);
+  assert.equal(buffer.frames[0].data, packet);
+  video.append(videoOnly.subarray(videoOnly.length - 2));
+  audio.append(audioOnly);
+  buffer.merge(audio);
+  buffer.merge(video);
+  assert.deepEqual(
+    buffer.frames.filter((frame) => frame.kind === 1).map((frame) => frame.time),
+    [100, 600],
+  );
+  assert.deepEqual(
+    buffer.frames.filter((frame) => frame.kind === 2).map((frame) => frame.time),
+    [120, 1120],
+  );
+  const exported = new WebMBuffer();
+  exported.begin(0);
+  exported.append(new Uint8Array(await exportWebM(buffer, 'video/webm', 1300).arrayBuffer()));
+  assert.deepEqual(
+    [...exported.trackTypes],
+    [
+      [1, 1],
+      [2, 2],
+    ],
+  );
+  assert.deepEqual(
+    exported.frames.map((frame) => [frame.kind, frame.time, frame.duration]),
+    [
+      [1, 0, 0],
+      [2, 20, 20],
+      [1, 500, 0],
+      [2, 1020, 20],
+    ],
+  );
+  assert.deepEqual(
+    exported.frames.filter((frame) => frame.kind === 1).map((frame) => frame.data.at(-1)),
+    [0xaa, 0xbb],
+  );
+});
+
+test('mixed-scale BlockGroups preserve duration, signed references and nanosecond padding', async () => {
+  const headerEnd = audioOnly.indexOf(Buffer.from('1f43b675', 'hex'));
+  for (const [group, reference] of [
+    ['1f43b675a0e78100a09ba18685000000f8009b8114fb88ffffffffffffffec75a2830000ff', 'fb81d8'],
+    ['1f43b67599e78100a094a18685000000f8009b8114fb814075a2830000ff', 'fb820080'],
+  ]) {
+    const buffer = new WebMBuffer(),
+      video = new WebMBuffer(),
+      audio = new WebMBuffer();
+    video.begin(0);
+    audio.begin(10);
+    video.append(videoOnly);
+    audio.append(Buffer.concat([audioOnly.subarray(0, headerEnd), Buffer.from(group, 'hex')]));
+    buffer.merge(video);
+    buffer.merge(audio);
+    const saved = new WebMBuffer();
+    saved.begin(0);
+    saved.append(new Uint8Array(await exportWebM(buffer, 'video/webm', 1100).arrayBuffer()));
+    const frame = saved.frames.find((frame) => frame.kind === 2),
+      bytes = Buffer.from(frame.data);
+    assert.equal(frame.time, 10);
+    assert.equal(frame.duration, 20);
+    assert.ok(bytes.includes(Buffer.from('9b8128', 'hex')));
+    assert.ok(bytes.includes(Buffer.from(reference, 'hex')));
+    assert.ok(bytes.includes(Buffer.from('75a2830000ff', 'hex')));
+    assert.ok(bytes.includes(Buffer.from('f800', 'hex')));
+  }
+});
+
+test('mixed-scale references follow the rounded target frame instead of referring to themselves', async () => {
+  const headerEnd = videoOnly.indexOf(Buffer.from('1f43b675', 'hex')),
+    target = new WebMBuffer(),
+    source = new WebMBuffer(),
+    buffer = new WebMBuffer(),
+    targetHeader = Buffer.from(videoOnly.subarray(0, headerEnd));
+  targetHeader.writeUIntBE(1000000, targetHeader.indexOf(Buffer.from('2ad7b183', 'hex')) + 4, 3);
+  target.begin(0);
+  target.append(targetHeader);
+  buffer.merge(target);
+  source.begin(0);
+  source.append(
+    Buffer.concat([
+      videoOnly.subarray(0, headerEnd),
+      Buffer.from(
+        '1f43b6758ae78100a38587000080aa1f43b67592e78101a08da18587000000bbfb81ff9b8101',
+        'hex',
+      ),
+    ]),
+  );
+  assert.deepEqual(
+    source.frames.map((frame) => frame.time),
+    [0, 0.5],
+  );
+  buffer.merge(source);
+  const saved = new WebMBuffer();
+  saved.begin(0);
+  saved.append(new Uint8Array(await exportWebM(buffer, 'video/webm', 10).arrayBuffer()));
+  assert.deepEqual(
+    saved.frames.map((frame) => frame.time),
+    [0, 1],
+  );
+  assert.ok(Buffer.from(saved.frames[1].data).includes(Buffer.from('fb81ff', 'hex')));
 });
 
 test('restarted WebM remaps retained packets to the latest track numbers', async () => {
@@ -265,7 +409,7 @@ test('reference reading suspends the clip clock and preserves buffered play', ()
       this.state = 'recording';
     },
   };
-  capture.session = { requests: [] };
+  capture.session = { recorder: capture.recorder, requests: [] };
   capture.suspend(true);
   const seconds = capture.seconds;
   // Model a long reference visit without making this test wait a minute.
@@ -535,6 +679,170 @@ test('closing during navigation releases a deferred read without reading the Blo
   assert.equal(reads, 0);
   assert.equal(capture.buffer.bytes, 0);
   assert.equal(capture.leaving, false);
+});
+
+test('video-only recording requests no Opus encoder until audio is attached', async (t) => {
+  const { capture, recorders } = setup(t);
+  assert.equal(recorders[0].options.mimeType, 'video/webm;codecs=vp8');
+  capture.audio({ getAudioTracks: () => [{}] });
+  await capture.restart;
+  assert.equal(recorders[1].options.mimeType, 'video/webm;codecs=vp8,opus');
+});
+
+test('a new clip retains audio that arrives while the previous recorder is stopping', async (t) => {
+  const { capture, recorders } = setup(t),
+    track = {};
+  capture.audio({ getAudioTracks: () => [track] });
+  capture.start();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(capture.stream.getAudioTracks(), [track]);
+  assert.equal(recorders.at(-1).options.mimeType, 'video/webm;codecs=vp8,opus');
+  assert.equal(recorders.at(-1).state, 'recording');
+  assert.equal(capture.restarting, false);
+  assert.equal(capture.buffer.frames.length, 0);
+});
+
+test('split saves wait for audio and keep both encoders through pause and clip replacement', async (t) => {
+  const { capture, time } = setup(t, false);
+  capture.audio({ getAudioTracks: () => [{}] });
+  const video = capture.recorder,
+    audio = capture.audioSession.recorder;
+  let release;
+  video.chunk = new Blob([videoOnly]);
+  audio.chunk = {
+    arrayBuffer: () =>
+      new Promise((resolve) => {
+        release = resolve;
+      }),
+  };
+  time(2500);
+  let settled = false;
+  const saving = capture.save().finally(() => {
+    settled = true;
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(settled, false);
+  release(audioOnly);
+  const exported = new WebMBuffer();
+  exported.begin(0);
+  exported.append(new Uint8Array(await (await saving).arrayBuffer()));
+  assert.equal(capture.rollover, false);
+  assert.equal(exported.frames.filter((frame) => frame.kind === 1).length, 2);
+  assert.equal(exported.frames.filter((frame) => frame.kind === 2).length, 2);
+  capture.suspend(true);
+  assert.equal(video.state, 'paused');
+  assert.equal(audio.state, 'paused');
+  capture.suspend(false);
+  assert.equal(video.state, 'recording');
+  assert.equal(audio.state, 'recording');
+  capture.start();
+  assert.equal(video.state, 'inactive');
+  assert.equal(audio.state, 'inactive');
+  assert.notEqual(capture.recorder, video);
+  assert.notEqual(capture.audioSession.recorder, audio);
+  video.onerror();
+  audio.onerror();
+  assert.equal(capture.error, null);
+});
+
+test('video rollover preserves continuous audio and recording errors release all encoders', async (t) => {
+  t.mock.timers.enable({ apis: ['setInterval'] });
+  const { capture, recorders, time } = setup(t, false);
+  capture.audio({ getAudioTracks: () => [{}] });
+  const video = capture.recorder,
+    audio = capture.audioSession.recorder;
+  const delayedKeyframe = Buffer.from(videoOnly);
+  delayedKeyframe.writeUInt16BE(5000, delayedKeyframe.indexOf(Buffer.from('e78203e8', 'hex')) + 2);
+  delayedKeyframe[delayedKeyframe.length - 2] = 0;
+  video.chunk = new Blob([delayedKeyframe]);
+  time(2500);
+  capture.flush();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(capture.rollover, true);
+  t.mock.timers.tick(2000);
+  await capture.restart;
+  assert.equal(video.state, 'inactive');
+  assert.notEqual(capture.recorder, video);
+  assert.equal(capture.audioSession.recorder, audio);
+  assert.equal(audio.state, 'recording');
+  capture.recorder.state = 'inactive';
+  capture.recorder.onerror();
+  assert.equal(audio.state, 'inactive');
+  assert.equal(capture.restarting, false);
+  await assert.rejects(capture.save(), /Video recording failed/);
+  const count = recorders.length;
+  time(10000);
+  t.mock.timers.tick(10000);
+  capture.restartVideo();
+  assert.equal(recorders.length, count);
+  assert.equal(capture.restarting, false);
+  capture.start();
+  assert.equal(capture.error, null);
+  assert.equal(capture.rollover, false);
+  assert.equal(capture.recorder.state, 'recording');
+  assert.equal(capture.audioSession.recorder.state, 'recording');
+});
+
+test('a late keyframe already present in encoded output does not restart the video recorder', async (t) => {
+  const { capture, time } = setup(t, false),
+    video = capture.recorder,
+    keyframes = Buffer.from(videoOnly);
+  keyframes.writeUInt16BE(4400, keyframes.indexOf(Buffer.from('e78203e8', 'hex')) + 2);
+  video.chunk = new Blob([keyframes]);
+  time(5000);
+  capture.flush();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(capture.rollover, false);
+  assert.equal(capture.recorder, video);
+  assert.equal(video.state, 'recording');
+});
+
+test('a rejected late audio encoder reports the recording error and stops video', async (t) => {
+  const { capture } = setup(t, false),
+    Recorder = globalThis.MediaRecorder;
+  globalThis.MediaRecorder = class extends Recorder {
+    constructor(stream, options) {
+      if (options.mimeType.startsWith('audio/')) throw new Error('Audio recorder unavailable');
+      super(stream, options);
+    }
+  };
+  capture.audio({ getAudioTracks: () => [{}] });
+  assert.equal(capture.error.message, 'Audio recorder unavailable');
+  assert.equal(capture.recorder.state, 'inactive');
+  await assert.rejects(capture.save(), /Audio recorder unavailable/);
+});
+
+test('unfinished split video output fails without orphaning the continuous audio buffer', async (t) => {
+  const { capture } = setup(t, false);
+  capture.audio({ getAudioTracks: () => [{}] });
+  const buffer = capture.buffer,
+    video = capture.recorder,
+    audio = capture.audioSession.recorder;
+  video.stop = () => {
+    video.state = 'inactive';
+    queueMicrotask(() => {
+      video.emit(new Blob([emptyRecording]));
+      video.onstop();
+    });
+  };
+  capture.restartVideo();
+  await capture.restart;
+  assert.ok(capture.error);
+  assert.equal(capture.buffer, buffer);
+  assert.equal(audio.state, 'inactive');
+  assert.equal(capture.restarting, false);
+  await assert.rejects(capture.save(), (error) => error === capture.error);
+});
+
+test('split recording applies the memory limit across all pending parsers', async (t) => {
+  const { capture } = setup(t, false);
+  capture.audio({ getAudioTracks: () => [{}] });
+  for (const session of capture.sessions())
+    Object.defineProperty(session.parser, 'bytes', { get: () => 40 * 1024 * 1024 });
+  capture.recorder.chunk = new Blob([videoOnly]);
+  await assert.rejects(capture.save(), /exceeded 64 MiB/);
+  assert.equal(capture.recorder.state, 'inactive');
+  assert.equal(capture.audioSession.recorder.state, 'inactive');
 });
 
 test('late audio restarts once and a save waits for the replacement recorder', async (t) => {

@@ -8,4 +8,8 @@ dist/
 __pycache__/
 
 .wrangler/
+.env
+.env.*
+.dev.vars
+.dev.vars.*
 .playload-build-*/

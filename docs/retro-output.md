@@ -29,7 +29,7 @@ The WebGL renderer adapts Timothy Lottes' public-domain
 [CRT-Lottes shader](https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl),
 whose reference is an RGB-input CGA arcade monitor. It retains Gaussian reconstruction,
 scanline beam weighting, bloom, an RGB phosphor mask, curvature and sRGB/linear-light conversion.
-WebGL and CPU rendering use the upstream curvature coefficients, **warpX = 0.031** and
+The renderer uses the upstream curvature coefficients, **warpX = 0.031** and
 **warpY = 0.041**. Playload adds an aperture-grille mask, an inset to retain edge content,
 rounded glass and edge shading.
 
@@ -37,7 +37,7 @@ Display, PNG export and WebM capture use the same **640×576 canvas**. The area 
 curved glass takes the play window's background color, so exports retain its contour.
 Flat mode preserves palette colors and uses nearest-neighbor screen scaling. CRT mode allows
 interpolation of reconstructed phosphors at fractional sizes. If WebGL is unavailable or its
-context is lost, the CPU renderer supplies simpler curvature, scanlines and shading.
+context is lost, CRT is disabled and the CPU renderer supplies the flat picture.
 
 The [Libretro CRT guide](https://docs.libretro.com/shader/crt/) explains the reconstruction
 techniques. At small sizes, masks and scanlines are approximations of physical tube optics.
@@ -51,4 +51,7 @@ and phone sizes, and listen at normal playback levels.
 Run `npm run test:reference` for the independent sound comparison and `npm run test:browser`
 for the renderer, input and capture checks. The [sound reference](../tests/reference/README.md)
 and [CRT reference](../tests/browser/reference/README.md) describe their conditions.
+Set `PLAYLOAD_BROWSER=firefox` or `PLAYLOAD_BROWSER=webkit` to run the same browser checks
+with either engine. Install the matching test browser with `npx playwright install firefox`
+or `npx playwright install webkit` first.
 These checks do not establish physical-hardware fidelity or listening acceptance.

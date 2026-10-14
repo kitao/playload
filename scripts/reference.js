@@ -71,7 +71,10 @@ export async function renderReference() {
         body += `| \`${cell(entry.name)}\` | ${cell(entry.description)} |\n`;
       body += '\n';
       if (title === 'API') {
-        for (const entry of group.entries) body += `\`\`\`js\n${entry.example}\n\`\`\`\n\n`;
+        for (const entry of group.entries) {
+          if (entry.buttons) body += entry.buttons.join(' · ') + '\n\n';
+          body += `\`\`\`js\n${entry.example}\n\`\`\`\n\n`;
+        }
       }
       if (group.entries.some((entry) => entry.envelopes))
         body +=

@@ -2,8 +2,6 @@ import { baseURL } from '../../playwright.config.js';
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
-test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
-
 test('alphabet previews and clipboard preserve the original letter case', async ({ page }) => {
   await page.addInitScript(() => {
     window.copied = [];
@@ -460,6 +458,30 @@ test('the curated game catalog scrolls continuously without search or pagination
       .toBe(first);
   }
   expect(errors).toEqual([]);
+});
+
+test('keyboard catalog navigation visibly marks the focused glyph without adding an outline', async ({
+  page,
+}) => {
+  await page.goto('/playload/');
+  await page.getByRole('tab', { name: 'Info', exact: true }).click();
+  await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
+  await page.mouse.move(0, 0);
+  await page.locator('#catalog button').first().focus();
+  await page.keyboard.press('ArrowRight');
+  const focused = await page.evaluate(() => {
+    const active = document.activeElement,
+      other = document.querySelector('#catalog .glyph:not(:focus)');
+    return {
+      visible: active.matches('#catalog .glyph:focus-visible'),
+      outline: getComputedStyle(active).outlineStyle,
+      background: getComputedStyle(active).backgroundColor,
+      otherBackground: getComputedStyle(other).backgroundColor,
+    };
+  });
+  expect(focused.visible).toBe(true);
+  expect(focused.outline).toBe('none');
+  expect(focused.background).not.toBe(focused.otherBackground);
 });
 
 test('scrolling a focused virtual catalog retains keyboard navigation', async ({ page }) => {

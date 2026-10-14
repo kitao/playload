@@ -18,14 +18,14 @@ export class Capture {
     if (active) {
       this.suspendedAt = performance.now();
       this.suspended = true;
-      if (this.recorder?.state === 'recording') {
-        this.recorder.pause();
-        if (!this.restarting) this.flush();
-      }
+      for (const session of this.sessions())
+        if (session.recorder.state === 'recording') session.recorder.pause();
+      if (!this.restarting || this.split) this.flush();
     } else {
       this.heldTime = (this.heldTime ?? 0) + performance.now() - this.suspendedAt;
       this.suspended = false;
-      if (this.recorder?.state === 'paused') this.recorder.resume();
+      for (const session of this.sessions())
+        if (session.recorder.state === 'paused') session.recorder.resume();
     }
     this.onChange?.();
   }
@@ -36,7 +36,7 @@ export class Capture {
       this.returned = new Promise((resolve) => {
         this.returnResolve = resolve;
       });
-      this.session?.reader?.abort();
+      for (const session of this.sessions()) session.reader?.abort();
     } else {
       this.returnResolve?.();
       this.returnResolve = null;
@@ -44,23 +44,59 @@ export class Capture {
   }
   start() {
     if (!this.stream) return;
+    const audio = this.nextAudio;
     this.clear();
+    for (const track of audio?.getAudioTracks() ?? []) this.stream.addTrack(track);
     this.buffer = new WebMBuffer();
     this.closed = false;
     this.error = null;
+    this.rollover = false;
     this.begin();
     this.timer = setInterval(() => {
-      if (!this.suspended && !this.restarting && !this.leaving) this.flush();
+      if (this.error || this.closed || this.suspended || this.restarting || this.leaving) return;
+      this.flush();
+      // Allow for the few milliseconds spent starting the previous recorder.
+      if (this.rollover && this.now - this.session.start >= 1900) this.restartVideo();
     }, 1000);
     this.onChange();
   }
-  begin() {
-    this.buffer.begin(this.now);
-    const recorder = new MediaRecorder(this.stream, {
-      mimeType: this.mime,
-      videoKeyFrameIntervalDuration: 1000,
-    });
-    const session = { recorder, buffer: this.buffer, requests: [], pending: Promise.resolve() };
+  sessions() {
+    return [this.session, this.audioSession].filter(Boolean);
+  }
+  begin(audio = false) {
+    let intervalSupported = false;
+    const options = {
+      // Request only codecs with an input track; an unused Opus encoder can
+      // prevent Firefox from finishing a video-only recording.
+      mimeType: this.stream.getAudioTracks().length ? this.mime : this.mime.replace(',opus', ''),
+      get videoKeyFrameIntervalDuration() {
+        intervalSupported = true;
+        return 1000;
+      },
+    };
+    let recorder;
+    if (this.split === undefined) {
+      recorder = new MediaRecorder(this.stream, options);
+      this.split = !intervalSupported;
+    }
+    if (this.split) {
+      // A continuous audio encoder avoids Opus padding at video joins. Only
+      // the video recorder restarts if encoded keyframes remain too far apart.
+      const tracks = audio ? this.stream.getAudioTracks() : this.stream.getVideoTracks();
+      recorder = new MediaRecorder(new MediaStream(tracks), {
+        mimeType: audio ? 'audio/webm;codecs=opus' : this.mime.replace(',opus', ''),
+      });
+    } else recorder ??= new MediaRecorder(this.stream, options);
+    const parser = this.split ? new WebMBuffer() : this.buffer;
+    parser.begin(this.now);
+    const session = {
+      recorder,
+      parser,
+      start: this.now,
+      buffer: this.buffer,
+      requests: [],
+      pending: Promise.resolve(),
+    };
     recorder.ondataavailable = ({ data }) => {
       const request = session.requests.shift();
       if (!request) return;
@@ -87,11 +123,25 @@ export class Capture {
           } while (bytes === null);
           if (session.buffer !== this.buffer || this.closed) return;
           try {
-            session.buffer.append(new Uint8Array(bytes));
+            session.parser.append(new Uint8Array(bytes));
+            if (this.split) {
+              if (session === this.session && !this.rollover)
+                for (const frame of session.parser.frames) {
+                  if (frame.keyframe) session.lastKeyframe = frame.time;
+                  if (
+                    frame.kind === 1 &&
+                    session.lastKeyframe !== undefined &&
+                    frame.time - session.lastKeyframe > 2100
+                  )
+                    this.rollover = true;
+                }
+              session.buffer.merge(session.parser);
+            }
           } catch (error) {
             // Chrome can stop an empty recorder with an unfinished WebM header.
             if (
               request.final &&
+              !this.split &&
               this.restarting &&
               session === this.session &&
               !session.buffer.frames.length
@@ -102,7 +152,15 @@ export class Capture {
             throw error;
           }
           session.buffer.trim(request.end);
-          if (request.resolve) {
+          if (
+            this.split &&
+            session.buffer.bytes +
+              this.sessions().reduce((sum, active) => sum + active.parser.bytes, 0) >
+              64 * 1024 * 1024
+          )
+            throw new Error('Video recording exceeded 64 MiB');
+          if (request.done) request.done();
+          else if (request.resolve) {
             try {
               request.resolve(exportWebM(session.buffer, this.mime, request.end));
             } catch (error) {
@@ -113,9 +171,7 @@ export class Capture {
         })
         .catch((error) => {
           if (session.buffer === this.buffer && !this.closed) {
-            this.error = error;
-            this.saveRequest?.reject(error);
-            this.onChange();
+            this.fail(error);
           }
           request.reject?.(error);
         });
@@ -123,67 +179,115 @@ export class Capture {
     recorder.onstop = async () => {
       await session.pending;
       if (session !== this.session || this.closed || !this.restarting) return;
+      if (this.error) {
+        this.restarting = false;
+        this.restartResolve?.();
+        this.restartResolve = null;
+        return;
+      }
       try {
-        for (const track of this.nextAudio.getAudioTracks()) this.stream.addTrack(track);
+        for (const track of this.nextAudio?.getAudioTracks() ?? []) this.stream.addTrack(track);
         this.nextAudio = null;
         this.restarting = false;
         this.begin();
       } catch (error) {
-        this.error = error;
-        this.saveRequest?.reject(error);
+        this.fail(error);
       }
-      this.restartResolve();
+      this.restartResolve?.();
       this.restartResolve = null;
       this.onChange();
     };
     recorder.onerror = () => {
-      if (session !== this.session || this.closed) return;
-      this.error = new Error('Video recording failed');
-      this.saveRequest?.reject(this.error);
-      this.onChange();
+      if (!this.sessions().includes(session) || this.closed) return;
+      this.fail(new Error('Video recording failed'));
     };
-    this.session = session;
-    this.recorder = recorder;
+    if (audio) this.audioSession = session;
+    else {
+      this.session = session;
+      this.recorder = recorder;
+    }
     recorder.start();
     if (this.suspended) recorder.pause();
+    if (this.split && !audio && !this.audioSession && this.stream.getAudioTracks().length)
+      this.begin(true);
   }
   flush(request = { end: this.now }) {
+    const sessions = this.sessions();
+    if (this.split && request.resolve) {
+      let remaining = sessions.length;
+      const done = () => {
+        if (--remaining) return;
+        try {
+          request.resolve(exportWebM(this.buffer, this.mime, request.end));
+        } catch (error) {
+          request.reject(error);
+        }
+      };
+      for (const session of sessions)
+        this.flushSession(session, { end: request.end, done, reject: request.reject });
+    } else for (const session of sessions) this.flushSession(session, { ...request });
+  }
+  flushSession(session, request) {
     if (this.error) {
       request.reject?.(this.error);
       return;
     }
-    if (!['recording', 'paused'].includes(this.recorder?.state)) {
+    if (!['recording', 'paused'].includes(session.recorder.state)) {
       request.reject?.(new Error('Video is not available'));
       return;
     }
-    this.session.requests.push(request);
+    session.requests.push(request);
     try {
-      this.recorder.requestData();
+      session.recorder.requestData();
     } catch (error) {
-      this.session.requests.pop();
+      session.requests.pop();
       request.reject?.(error);
     }
   }
-  stop() {
-    if (!['recording', 'paused'].includes(this.recorder?.state)) return;
-    this.session.requests.push({ end: this.now, final: true });
-    this.recorder.stop();
+  stop(session = this.session) {
+    if (!['recording', 'paused'].includes(session?.recorder.state)) return;
+    session.requests.push({ end: this.now, final: true });
+    session.recorder.stop();
   }
   audio(stream) {
     if (!stream || !this.stream || this.stream.getAudioTracks().length || this.closed || this.error)
       return;
+    if (this.split) {
+      try {
+        for (const track of stream.getAudioTracks()) this.stream.addTrack(track);
+        this.begin(true);
+      } catch (error) {
+        this.fail(error);
+      }
+      return;
+    }
     this.nextAudio = stream;
-    if (this.restarting) return;
+    this.restartVideo();
+  }
+  restartVideo() {
+    if (this.restarting || this.error || this.closed) return;
     this.restarting = true;
     this.restart = new Promise((resolve) => {
       this.restartResolve = resolve;
     });
     this.stop();
   }
+  fail(error) {
+    if (this.closed || this.error) return;
+    this.error = error;
+    clearInterval(this.timer);
+    this.saveRequest?.reject(error);
+    this.restarting = false;
+    this.restartResolve?.();
+    this.restartResolve = null;
+    for (const session of this.sessions()) this.stop(session);
+    this.onChange();
+  }
   get seconds() {
     return this.closed ? 0 : (this.buffer?.seconds(this.now) ?? 0);
   }
   async save() {
+    if (this.error) throw this.error;
     if (this.saveRequest) throw new Error('Video is already being saved');
     const request = {};
     this.saveRequest = request;
@@ -211,14 +315,16 @@ export class Capture {
   clear() {
     this.closed = true;
     this.leave(false);
-    this.session?.reader?.abort();
+    for (const session of this.sessions()) session.reader?.abort();
     this.restarting = false;
     clearInterval(this.timer);
     this.saveRequest?.reject(new Error('Recording was replaced'));
     this.saveRequest = null;
     this.restartResolve?.();
     this.restartResolve = null;
-    this.stop();
+    this.nextAudio = null;
+    for (const session of this.sessions()) this.stop(session);
+    this.audioSession = null;
   }
   close() {
     this.clear();

@@ -83,8 +83,8 @@ async function serve(request, response) {
     response.writeHead(405, { Allow: 'GET, HEAD' });
     return response.end();
   }
-  const url = new URL(request.url, 'http://localhost');
   try {
+    const url = new URL(request.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
     if (pathname === '/playload') return redirect(response, url, '/playload/');
     const source = !production && pathname.startsWith('/src/');
