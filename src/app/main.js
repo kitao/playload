@@ -640,6 +640,29 @@ function highlightEditor() {
   updateEditorLines();
   syncEditorScroll();
 }
+function syncFormatPosition(entry) {
+  const editor = $('editor'),
+    style = getComputedStyle(editor),
+    measuredHeight =
+      entry.borderBoxSize[0].blockSize -
+      entry.contentBoxSize[0].blockSize -
+      parseFloat(style.paddingTop) -
+      parseFloat(style.paddingBottom) -
+      parseFloat(style.borderTopWidth) -
+      parseFloat(style.borderBottomWidth),
+    // Observed boxes can differ by a fraction of a pixel even without a scrollbar.
+    height = measuredHeight > 1 ? measuredHeight : 0,
+    thumbInset =
+      height > 0 && CSS.supports('selector(::-webkit-scrollbar-thumb)')
+        ? parseFloat(getComputedStyle(editor, '::-webkit-scrollbar-thumb').borderTopWidth) || 0
+        : 0,
+    workbench = $('workbench');
+  workbench.style.setProperty('--editor-scrollbar-height', height + 'px');
+  workbench.style.setProperty(
+    '--editor-format-scrollbar-offset',
+    (height > 0 ? Math.max(0, height - thumbInset) + 1 : 0) + 'px',
+  );
+}
 function updateEditorLines() {
   const count = $('editor').value.split('\n').length;
   $('workbench').style.setProperty('--line-number-digits', Math.max(2, String(count).length));
@@ -1373,6 +1396,8 @@ $('divider').onkeydown = (event) => {
 };
 const gameLayout = new ResizeObserver(() => requestAnimationFrame(fitGame));
 gameLayout.observe($('picture'));
+const editorLayout = new ResizeObserver(([entry]) => syncFormatPosition(entry));
+editorLayout.observe($('editor'));
 window.addEventListener('resize', () => {
   dismissCopy();
   release();

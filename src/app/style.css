@@ -297,7 +297,7 @@ header::after {
 #format {
   position: absolute;
   z-index: 3;
-  bottom: 4px;
+  bottom: calc(4px + var(--editor-format-scrollbar-offset, 0px));
   left: 4px;
   width: auto;
   height: auto;
@@ -319,7 +319,7 @@ header::after {
   z-index: 2;
   left: 1px;
   top: 1px;
-  bottom: 1px;
+  bottom: calc(1px + var(--editor-scrollbar-height, 0px));
   width: var(--gutter-width);
   overflow: hidden;
   background: #1c1822;

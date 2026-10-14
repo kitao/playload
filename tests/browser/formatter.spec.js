@@ -272,3 +272,106 @@ test('the floating button does not resize the workspace and hides with CODE', as
   await expect(page.locator('#format')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('Format clears the horizontal scrollbar only while it occupies space, including after resize and undo', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  const measure = () =>
+    page.evaluate(() => {
+      const editor = document.querySelector('#editor'),
+        style = getComputedStyle(editor),
+        bounds = editor.getBoundingClientRect(),
+        button = document.querySelector('#format').getBoundingClientRect(),
+        height =
+          editor.offsetHeight -
+          editor.clientHeight -
+          parseFloat(style.borderTopWidth) -
+          parseFloat(style.borderBottomWidth),
+        thumbInset =
+          height > 0 && CSS.supports('selector(::-webkit-scrollbar-thumb)')
+            ? parseFloat(getComputedStyle(editor, '::-webkit-scrollbar-thumb').borderTopWidth) || 0
+            : 0;
+      return {
+        scrollbar: height,
+        bottom: bounds.bottom - button.bottom,
+        left: button.left - bounds.left,
+        visibleBottomGap:
+          bounds.bottom - parseFloat(style.borderBottomWidth) - height + thumbInset - button.bottom,
+        visibleLeftGap: button.left - bounds.left - parseFloat(style.borderLeftWidth),
+        width: button.width,
+        height: button.height,
+      };
+    });
+  const original = await measure();
+  expect(original.scrollbar).toBe(0);
+  expect(original.bottom).toBe(4);
+  await editor.fill('// ' + 'wide '.repeat(200) + '\nfunction tick() {}');
+  await expect.poll(async () => (await measure()).scrollbar).toBeGreaterThan(0);
+  await expect
+    .poll(async () => {
+      const measured = await measure();
+      return measured.visibleBottomGap - measured.visibleLeftGap;
+    })
+    .toBe(1);
+  const wide = await measure();
+  expect(wide.left).toBe(original.left);
+  expect(wide.width).toBe(original.width);
+  expect(wide.height).toBe(original.height);
+  const gutter = await page.locator('#editor-lines').boundingBox();
+  const editorBounds = await editor.boundingBox();
+  const border = await editor.evaluate((element) =>
+    parseFloat(getComputedStyle(element).borderBottomWidth),
+  );
+  expect(gutter.y + gutter.height).toBeCloseTo(
+    editorBounds.y + editorBounds.height - border - wide.scrollbar,
+    3,
+  );
+  await editor.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth;
+    element.dispatchEvent(new Event('scroll'));
+  });
+  expect(await measure()).toEqual(wide);
+  await page.locator('#code-toggle').click();
+  await page.locator('#code-toggle').click();
+  await expect.poll(async () => (await measure()).bottom).toBe(wide.bottom);
+  await editor.fill('// ' + 'wide '.repeat(20) + '\nfunction tick() {}');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(async () => {
+      const measured = await measure();
+      return measured.visibleBottomGap - measured.visibleLeftGap;
+    })
+    .toBe(1);
+  await page.setViewportSize({ width: 3000, height: 1000 });
+  await expect.poll(async () => (await measure()).scrollbar).toBe(0);
+  await expect.poll(async () => (await measure()).bottom).toBe(4);
+  await editor.fill(source);
+  await page.locator('#format').click();
+  await expect(editor).toHaveValue(formatted);
+  await editor.press('ControlOrMeta+z');
+  await expect(editor).toHaveValue(source);
+  await expect.poll(async () => (await measure()).bottom).toBe(4);
+});
+
+test('fractional layout scales do not leave scrollbar space after a wide line is removed', async ({
+  page,
+}) => {
+  const editor = page.locator('#editor');
+  const bottom = () =>
+    page.evaluate(() => {
+      const bounds = document.querySelector('#editor').getBoundingClientRect(),
+        button = document.querySelector('#format').getBoundingClientRect(),
+        zoom = parseFloat(getComputedStyle(document.documentElement).zoom);
+      return (bounds.bottom - button.bottom) / zoom;
+    });
+  for (const zoom of [0.9, 1.1, 1.25, 1.5]) {
+    await page.evaluate((zoom) => {
+      document.documentElement.style.zoom = zoom;
+    }, zoom);
+    await editor.fill('// ' + 'wide '.repeat(200) + '\nfunction tick() {}');
+    await expect.poll(bottom).toBeGreaterThan(10);
+    await editor.fill('function tick() {}');
+    await expect.poll(bottom).toBeCloseTo(4, 1);
+  }
+});
