@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self'; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'"
     />
     <meta name="description" content="{{DESCRIPTION}}" />
     <title>Playload</title>
@@ -28,7 +28,41 @@
         </p>
         <p align="center">URLでゲームを共有できる、小さなゲームエンジン</p>
         <h3 align="center"><a href="{{APP_PATH}}">Playloadを開く →</a></h3>
-        <p align="center">
+        <p class="badges" align="center">
+          <a href="https://github.com/kitao/playload"
+            ><img
+              src="https://img.shields.io/github/stars/kitao/playload?style=social"
+              alt="GitHub stars"
+              height="20"
+              loading="lazy"
+              decoding="async"
+          /></a>
+          <a href="https://github.com/kitao/playload"
+            ><img
+              src="https://img.shields.io/github/forks/kitao/playload?style=social"
+              alt="GitHub forks"
+              height="20"
+              loading="lazy"
+              decoding="async"
+          /></a>
+          <a href="https://github.com/sponsors/kitao"
+            ><img
+              src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social"
+              alt="GitHub Sponsors"
+              height="20"
+              loading="lazy"
+              decoding="async"
+          /></a>
+          <a href="https://ko-fi.com/H2H27VDKD"
+            ><img
+              src="https://ko-fi.com/img/githubbutton_sm.svg"
+              alt="Support me on Ko-fi"
+              height="20"
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </p>
+        <p class="screenshots" align="center">
           <a href="/playload/assets/images/example-glyph-quest@2x.png">
             <img
               loading="lazy"
@@ -86,14 +120,13 @@
         </p>
         <h2>開発を支援する</h2>
         <p>
-          Playloadを気に入っていただけたら、<a href="{{REPOSITORY}}">GitHubでスターを付けて</a
-          >いただけるとうれしいです。 より多くの人にプロジェクトを知ってもらうきっかけになります。
-        </p>
-        <p>
-          Playloadは無料で利用できます。開発を支援していただける方は、
-          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>や
-          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>をご利用ください。
-          いただいた支援は開発費用を支え、Playloadの改善に取り組む時間につながります。ご支援ありがとうございます。
+          Playloadは無料で利用できます。もし気に入ったら、<a href="{{REPOSITORY}}"
+            >GitHubでのスター登録</a
+          >や、<a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>・<a
+            href="https://ko-fi.com/H2H27VDKD"
+            >Ko-fi</a
+          >を通じた寄付で応援していただけるとうれしいです。
+          いただいた支援は開発費用を支え、Playloadの改善に取り組む時間につながります。
         </p>
         <h2>ライセンス</h2>
         <p>

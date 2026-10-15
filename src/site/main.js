@@ -44,19 +44,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   const preview = document.querySelector('#image-preview');
-  const enlarged = preview.querySelector('img');
+  let enlarged = preview.querySelector('img');
+  let previewSelection = 0;
   const close = preview.querySelector('button');
-  for (const link of document.querySelectorAll('.readme a:has(> img)')) {
+  for (const link of document.querySelectorAll('.screenshots a')) {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) {
       link.removeAttribute('href');
       continue;
     }
     link.setAttribute('aria-haspopup', 'dialog');
-    link.addEventListener('click', (event) => {
+    link.addEventListener('click', async (event) => {
       if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      enlarged.src = link.href;
-      enlarged.alt = link.querySelector('img').alt;
+      const selection = ++previewSelection;
+      const image = new Image();
+      image.alt = link.querySelector('img').alt;
+      image.src = link.href;
+      try {
+        await image.decode();
+      } catch {
+        return;
+      }
+      if (selection !== previewSelection) return;
+      enlarged.replaceWith(image);
+      enlarged = image;
       preview.setAttribute('aria-label', enlarged.alt);
       close.setAttribute(
         'aria-label',
@@ -65,5 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
       preview.showModal();
     });
   }
-  preview.addEventListener('click', () => preview.close());
+  preview.addEventListener('click', () => {
+    previewSelection++;
+    preview.close();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') previewSelection++;
+  });
 });

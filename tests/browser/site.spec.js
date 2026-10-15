@@ -41,7 +41,7 @@ test('the introduction follows README without local setup and opens the app with
     'href',
     '/playload/app/',
   );
-  const images = page.locator('.readme:visible a > img');
+  const images = page.locator('.readme:visible .screenshots img');
   expect(
     await images.evaluateAll((items) => items.map((image) => image.getAttribute('src'))),
   ).toEqual([
@@ -78,6 +78,62 @@ test('the introduction follows README without local setup and opens the app with
 });
 
 for (const touch of [false, true]) {
+  test(`project badges keep ordinary links and fit on ${touch ? 'phone' : 'desktop'}`, async ({
+    browser,
+  }) => {
+    const page = await browser.newPage({
+      viewport: touch ? { width: 390, height: 844 } : { width: 1400, height: 1000 },
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    try {
+      await page.route(/^https:\/\/(?:img\.shields\.io\/|ko-fi\.com\/img\/)/, (route) =>
+        route.fulfill({
+          contentType: 'image/svg+xml',
+          body: '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="20"><rect width="180" height="20" fill="silver"/></svg>',
+        }),
+      );
+      await page.goto(baseURL + '/playload/');
+      const badges = page.locator('.readme:visible .badges');
+      await expect(badges.locator('a')).toHaveCount(4);
+      await badges
+        .locator('img')
+        .evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+      expect(
+        await badges.locator('a').evaluateAll((links) => links.map((link) => link.href)),
+      ).toEqual([
+        'https://github.com/kitao/playload',
+        'https://github.com/kitao/playload',
+        'https://github.com/sponsors/kitao',
+        'https://ko-fi.com/H2H27VDKD',
+      ]);
+      await expect(badges.locator('[aria-haspopup]')).toHaveCount(0);
+      const boxes = await badges.locator('img').evaluateAll((images) =>
+        images.map((image) => {
+          const box = image.getBoundingClientRect();
+          return {
+            top: box.top,
+            right: box.right,
+            height: box.height,
+            cursor: getComputedStyle(image).cursor,
+          };
+        }),
+      );
+      expect(new Set(boxes.map((box) => Math.round(box.top))).size).toBe(touch ? 2 : 1);
+      expect(boxes.every((box) => box.height === 20 && box.cursor !== 'zoom-in')).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+      await page.route('https://github.com/sponsors/kitao', (route) =>
+        route.fulfill({ contentType: 'text/html', body: '<title>Sponsor destination</title>' }),
+      );
+      await badges.getByRole('link', { name: 'GitHub Sponsors', exact: true }).click();
+      await expect(page).toHaveURL('https://github.com/sponsors/kitao');
+    } finally {
+      await page.close();
+    }
+  });
+
   test(`the language switch remembers a manual choice on ${touch ? 'phone' : 'desktop'}`, async ({
     browser,
   }, testInfo) => {
@@ -145,7 +201,7 @@ for (const touch of [false, true]) {
         if (path.endsWith('@2x.png')) enlargedRequests.push(path);
       });
       await page.goto(baseURL + '/playload/');
-      const links = page.locator('.readme:visible a:has(> img)');
+      const links = page.locator('.readme:visible .screenshots a');
       const preview = page.getByRole('dialog');
       const thumbnails = links.locator('img');
       await thumbnails.evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
@@ -227,6 +283,92 @@ for (const touch of [false, true]) {
     }
   });
 }
+
+test('image previews wait for the new image and remain closed if loading fails', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  let release;
+  const gate = new Promise((resolve) => (release = resolve));
+  await page.route('**/info-api@2x.png', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto('/playload/');
+  const links = page.locator('.readme:visible .screenshots a');
+  const preview = page.getByRole('dialog');
+  await links.nth(0).click();
+  await expect(preview).toBeVisible();
+  await preview.locator('img').click();
+  await expect(preview).not.toBeVisible();
+  const requested = page.waitForRequest('**/info-api@2x.png');
+  await links.nth(1).click();
+  await requested;
+  await expect(preview).not.toBeVisible();
+  release();
+  await expect(preview).toBeVisible();
+  await expect(preview.locator('img')).toHaveJSProperty('complete', true);
+  await expect(preview.locator('img')).toHaveAttribute('src', /info-api@2x\.png$/);
+  await preview.locator('img').click();
+  await page.route('**/info-emoji@2x.png', (route) => route.abort());
+  const failed = page.waitForEvent('requestfailed', (request) =>
+    request.url().endsWith('/info-emoji@2x.png'),
+  );
+  await links.nth(2).click();
+  await failed;
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect(preview).not.toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('late image loads cannot replace a newer choice or reopen after Escape', async ({ page }) => {
+  let release;
+  const gate = new Promise((resolve) => (release = resolve));
+  await page.route('**/info-api@2x.png', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto('/playload/');
+  const links = page.locator('.readme:visible .screenshots a');
+  const preview = page.getByRole('dialog');
+  const requested = page.waitForRequest('**/info-api@2x.png');
+  await links.nth(1).click();
+  await requested;
+  await links.nth(2).click();
+  await expect(preview).toBeVisible();
+  const finished = page.waitForEvent('requestfinished', (request) =>
+    request.url().endsWith('/info-api@2x.png'),
+  );
+  release();
+  await finished;
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect(preview.locator('img')).toHaveAttribute('src', /info-emoji@2x\.png$/);
+  await preview.locator('img').click();
+  let cancelRelease;
+  const cancelGate = new Promise((resolve) => (cancelRelease = resolve));
+  await page.route('**/info-examples@2x.png', async (route) => {
+    await cancelGate;
+    await route.continue();
+  });
+  const cancelRequested = page.waitForRequest('**/info-examples@2x.png');
+  await links.nth(3).click();
+  await cancelRequested;
+  await page.keyboard.press('Escape');
+  const cancelFinished = page.waitForEvent('requestfinished', (request) =>
+    request.url().endsWith('/info-examples@2x.png'),
+  );
+  cancelRelease();
+  await cancelFinished;
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect(preview).not.toBeVisible();
+});
 
 test('language selection still works when browser storage is unavailable', async ({ page }) => {
   const errors = [];

@@ -8,7 +8,14 @@
 
 <h3 align="center"><a href="https://kitao.dev/playload/app/">Open Playload →</a></h3>
 
-<p align="center">
+<p class="badges" align="center">
+  <a href="https://github.com/kitao/playload"><img src="https://img.shields.io/github/stars/kitao/playload?style=social" alt="GitHub stars" height="20" loading="lazy" decoding="async"></a>
+  <a href="https://github.com/kitao/playload"><img src="https://img.shields.io/github/forks/kitao/playload?style=social" alt="GitHub forks" height="20" loading="lazy" decoding="async"></a>
+  <a href="https://github.com/sponsors/kitao"><img src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social" alt="GitHub Sponsors" height="20" loading="lazy" decoding="async"></a>
+  <a href="https://ko-fi.com/H2H27VDKD"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="20" loading="lazy" decoding="async"></a>
+</p>
+
+<p class="screenshots" align="center">
   <a href="assets/images/example-glyph-quest@2x.png"><img src="assets/images/example-glyph-quest.png" alt="The code editor beside a running Glyph Quest game" width="400"></a>
   <a href="assets/images/info-api@2x.png"><img src="assets/images/info-api.png" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a><br>
   <a href="assets/images/info-emoji@2x.png"><img src="assets/images/info-emoji.png" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>

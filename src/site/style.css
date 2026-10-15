@@ -29,9 +29,10 @@ a:hover {
   color: #fff2b7;
 }
 a:focus-visible,
-.language-switch button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 5px;
+.language-switch button:focus-visible,
+#image-preview button:focus-visible {
+  outline: 1px solid var(--muted);
+  outline-offset: 3px;
 }
 .language-switch {
   position: absolute;
@@ -93,7 +94,7 @@ html:lang(ja) .readme[lang='en'] {
   text-wrap: balance;
 }
 .readme > h3 {
-  margin: 24px 0 32px;
+  margin: 24px 0 16px;
   font-size: 1.25rem;
 }
 .readme h2 {
@@ -108,22 +109,40 @@ html:lang(ja) .readme[lang='en'] {
 .readme ul {
   padding-left: 24px;
 }
-.readme p:has(> a > img) {
+.readme .badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 28px;
+}
+.badges a {
+  display: inline-flex;
+  max-width: 100%;
+}
+.badges img {
+  display: block;
+  width: auto;
+  height: 20px;
+  object-fit: contain;
+}
+.readme .screenshots {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin: 0 0 40px;
 }
-.readme p:has(> a > img) br {
+.screenshots br {
   display: none;
 }
-.readme a:has(> img) {
+.screenshots a {
   display: block;
 }
-.readme a[href]:has(> img) {
+.screenshots a[href] {
   cursor: zoom-in;
 }
-.readme a > img {
+.screenshots img {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -136,6 +155,11 @@ html:lang(ja) .readme[lang='en'] {
   line-height: 1.6;
 }
 .readme :not(pre) > code {
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: var(--panel);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.875em;
   white-space: nowrap;
 }
 html:has(#image-preview[open]) {
@@ -167,10 +191,6 @@ html:has(#image-preview[open]) {
   background: transparent;
   cursor: inherit;
 }
-#image-preview button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
 #image-preview img {
   display: block;
   max-width: calc(100vw - 32px);
@@ -186,8 +206,17 @@ html:has(#image-preview[open]) {
     padding: 0 20px;
   }
 }
+@media (max-width: 880px) {
+  .readme .badges {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    max-width: 400px;
+    margin-inline: auto;
+  }
+}
 @media (max-width: 540px) {
-  .readme p:has(> a > img) {
+  .readme .screenshots {
     grid-template-columns: 1fr;
   }
 }
