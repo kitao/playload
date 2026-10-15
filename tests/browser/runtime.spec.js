@@ -4118,12 +4118,12 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
   await expect(page.locator('#play')).toBeVisible();
   await expect(page.locator('#info')).toBeHidden();
   await expect(page.locator('#logo')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open Playload in a new tab' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: 'Playload home' })).toHaveAttribute(
     'href',
-    '/playload/app/',
+    '/playload/',
   );
   await expect(page.locator('#home-link #logo')).toBeVisible();
-  await expect(page.locator('#home-link')).toHaveAttribute('target', '_blank');
+  await expect(page.locator('#home-link')).not.toHaveAttribute('target');
   await expect(page.locator('.intro a')).toHaveCount(0);
   await expect
     .poll(() =>
@@ -4192,18 +4192,15 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
       [page, false],
       [phone, true],
     ]) {
-      const url = original.url();
-      const source = await original.locator('#editor').inputValue();
-      const opened = original.waitForEvent('popup');
+      const pages = original.context().pages().length;
       if (touch) await original.locator('#home-link').tap();
-      else await original.locator('#home-link').click();
-      const popup = await opened;
-      await popup.waitForLoadState('domcontentloaded');
-      expect(popup.url()).toBe(baseURL + '/playload/app/');
-      expect(await popup.evaluate(() => window.opener === null)).toBe(true);
-      expect(original.url()).toBe(url);
-      await expect(original.locator('#editor')).toHaveValue(source);
-      await popup.close();
+      else {
+        await original.locator('#home-link').focus();
+        await original.keyboard.press('Enter');
+      }
+      await expect(original).toHaveURL(baseURL + '/playload/');
+      await expect(original.locator('.readme:visible')).toBeVisible();
+      expect(original.context().pages()).toHaveLength(pages);
     }
   } finally {
     await phone.close();
