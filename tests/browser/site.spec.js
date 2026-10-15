@@ -595,7 +595,7 @@ for (const touch of [false, true]) {
         'https://ko-fi.com/H2H27VDKD',
       );
       await expect(
-        page.locator('#about').getByRole('link', { name: 'Source code ↗' }),
+        page.locator('#about .about-features + p').getByRole('link', { name: 'Source code ↗' }),
       ).toHaveAttribute('href', 'https://github.com/kitao/playload');
       await expect(page.getByRole('link', { name: 'sponsor me on GitHub ↗' })).toHaveAttribute(
         'href',

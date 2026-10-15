@@ -85,17 +85,24 @@ html:lang(ja) .readme[lang='en'] {
   display: none;
 }
 .readme > p:first-child {
-  margin: 0 0 24px;
+  margin: 0 0 20px;
 }
 .readme > p:first-child img {
+  display: block;
+  margin-inline: auto;
   image-rendering: pixelated;
 }
 .readme > p:first-child + p {
+  margin: 0;
   text-wrap: balance;
 }
 .readme > h3 {
-  margin: 24px 0 16px;
+  /* Balance the visible gaps above the letters and below the underline. */
+  margin: 22px 0 34px;
   font-size: 1.25rem;
+}
+.readme[lang='en'] > h3 {
+  margin: 23px 0 33px;
 }
 .readme h2 {
   margin: 40px 0 16px;
@@ -115,7 +122,7 @@ html:lang(ja) .readme[lang='en'] {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin: 0 0 28px;
+  margin: 0 0 32px;
 }
 .badges a {
   display: inline-flex;

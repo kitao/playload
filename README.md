@@ -32,6 +32,8 @@
 - 4-direction and 2-button input
 - A complete game in one URL — a **playable payload**
 
+[Source code](https://github.com/kitao/playload)
+
 ## Create and share
 
 Edit your game in the **CODE** editor and press **Run**. The URL updates as you edit:
