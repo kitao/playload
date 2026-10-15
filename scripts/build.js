@@ -117,6 +117,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
     const images = new Set();
     const readme = marked
       .parse(await readFile(new URL('../README.md', import.meta.url), 'utf8'))
+      .replace(/<h2>Run locally<\/h2>[\s\S]*?(?=<h2>|$)/, '')
       .replace(/\b(href|src)="([^"]+)"/g, (attribute, name, href) => {
         if (href === new URL(app, homepage).href) return `${name}="${app}"`;
         if (/^(?:[a-z][a-z\d+.-]*:|\/|#)/i.test(href)) return attribute;

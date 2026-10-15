@@ -89,6 +89,7 @@ html:lang(ja) .readme[lang='en'] {
 }
 .readme a:has(> img) {
   display: block;
+  cursor: zoom-in;
 }
 .readme a > img {
   display: block;
@@ -104,6 +105,45 @@ html:lang(ja) .readme[lang='en'] {
 }
 .readme :not(pre) > code {
   white-space: nowrap;
+}
+html:has(#image-preview[open]) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+#image-preview {
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  cursor: zoom-out;
+}
+#image-preview[open] {
+  display: grid;
+  place-items: center;
+}
+#image-preview::backdrop {
+  background: rgb(0 0 0 / 85%);
+}
+#image-preview button {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: inherit;
+}
+#image-preview button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+#image-preview img {
+  display: block;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  object-fit: contain;
 }
 @media (max-width: 720px) {
   h1 {

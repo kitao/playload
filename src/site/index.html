@@ -90,16 +90,6 @@
           <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>をご利用ください。
           いただいた支援は開発費用を支え、Playloadの改善に取り組む時間につながります。ご支援ありがとうございます。
         </p>
-        <h2>ローカルで実行する</h2>
-        <p><strong>Node.js 24以上</strong>が必要です。</p>
-        <pre><code>git clone https://github.com/kitao/playload.git
-cd playload
-npm ci
-npm run dev
-</code></pre>
-        <p>
-          開発サーバーがアプリをビルドし、ソースの変更を監視して、既定のブラウザでPlayloadを開きます。
-        </p>
         <h2>ライセンス</h2>
         <p>
           Playloadのコードとドキュメントは<a href="/playload/LICENSE">MITライセンス</a
@@ -149,5 +139,8 @@ npm run dev
         </ul>
       </article>
     </main>
+    <dialog id="image-preview" aria-label="Image preview">
+      <button type="button" aria-label="Close image"><img alt="" /></button>
+    </dialog>
   </body>
 </html>

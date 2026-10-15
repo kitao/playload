@@ -17,3 +17,25 @@ function openSharedGame() {
 }
 openSharedGame();
 window.addEventListener('hashchange', openSharedGame);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const preview = document.querySelector('#image-preview');
+  const enlarged = preview.querySelector('img');
+  const close = preview.querySelector('button');
+  for (const link of document.querySelectorAll('.readme a:has(> img)')) {
+    link.setAttribute('aria-haspopup', 'dialog');
+    link.addEventListener('click', (event) => {
+      if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      enlarged.src = link.href;
+      enlarged.alt = link.querySelector('img').alt;
+      preview.setAttribute('aria-label', enlarged.alt);
+      close.setAttribute(
+        'aria-label',
+        document.documentElement.lang === 'ja' ? '画像を閉じる' : 'Close image',
+      );
+      preview.showModal();
+    });
+  }
+  preview.addEventListener('click', () => preview.close());
+});

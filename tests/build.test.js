@@ -64,7 +64,7 @@ test('the complete publication stays under Playload and every local document lin
     }
     assert.doesNotMatch(home, /id="editor"|\/bundles\/app-/);
     assert.match(home, /href="\/playload\/app\/">Open Playload/);
-    assert.match(home, /<h2>Run locally<\/h2>/);
+    assert.doesNotMatch(home, /Run locally|ローカルで実行する|git clone|npm run dev/);
     assert.match(
       home,
       /href="https:\/\/github.com\/kitao\/playload\/blob\/main\/data\/fonts\/unicode-LICENSE.txt"/,

@@ -7,7 +7,7 @@ import { encode } from '../../src/payload.js';
 const legacy = '#1.09dXcCjJLMlJVfBJTU9MruRKK81LLsnMz1MoyUzO1tBUqFZIzinWMNG0VqgFAA';
 const source = '// @title Legacy\nfunction tick() { cls(4); }';
 
-test('the introduction follows README and opens the app without loading app code first', async ({
+test('the introduction follows README without local setup and opens the app without loading app code first', async ({
   page,
 }, testInfo) => {
   const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
@@ -19,6 +19,15 @@ test('the introduction follows README and opens the app without loading app code
   await page.goto('/playload/');
   const content = await page.evaluate((html) => {
     const expected = new DOMParser().parseFromString(html, 'text/html');
+    const localHeading = Array.from(expected.querySelectorAll('h2')).find(
+      (node) => node.textContent === 'Run locally',
+    );
+    for (let node = localHeading?.nextElementSibling; node && node.tagName !== 'H2';) {
+      const next = node.nextElementSibling;
+      node.remove();
+      node = next;
+    }
+    localHeading?.remove();
     const normalize = (value) => value.replace(/\s+/g, ' ').trim();
     return {
       actual: normalize(document.querySelector('.readme[lang="en"]').textContent),
@@ -62,6 +71,64 @@ test('the introduction follows README and opens the app without loading app code
   await expect(page).toHaveURL(baseURL + '/playload/app/');
   await expect(page.locator('#start-game')).toBeVisible();
 });
+
+for (const touch of [false, true]) {
+  test(`introduction images enlarge and close in place on ${touch ? 'phone' : 'desktop'}`, async ({
+    browser,
+  }, testInfo) => {
+    const viewport = touch ? { width: 390, height: 844 } : { width: 1400, height: 1000 };
+    const page = await browser.newPage({
+      locale: touch ? 'ja-JP' : 'en-US',
+      viewport,
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    try {
+      await page.goto(baseURL + '/playload/');
+      const links = page.locator('.readme:visible a:has(> img)');
+      const preview = page.getByRole('dialog');
+      for (let index = 0; index < 4; index++) {
+        const link = links.nth(index);
+        await link.scrollIntoViewIfNeeded();
+        const before = await page.evaluate(() => ({ url: location.href, scroll: scrollY }));
+        const href = await link.getAttribute('href');
+        if (touch) await link.tap();
+        else await link.click();
+        await expect(preview).toBeVisible();
+        const image = preview.locator('img');
+        await expect(image).toHaveJSProperty('src', new URL(href, baseURL).href);
+        await expect(image).toHaveAttribute('alt', await link.locator('img').getAttribute('alt'));
+        await image.evaluate((image) => image.decode());
+        const bounds = await image.boundingBox();
+        expect(bounds.width).toBeGreaterThan(0);
+        expect(bounds.height).toBeGreaterThan(0);
+        expect(bounds.x).toBeGreaterThanOrEqual(16);
+        expect(bounds.y).toBeGreaterThanOrEqual(16);
+        expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width - 16);
+        expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height - 16);
+        expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe(
+          'hidden',
+        );
+        if (index === 0) {
+          await page.screenshot({ path: testInfo.outputPath('image-preview.png') });
+          if (touch) await image.tap();
+          else await image.click();
+        } else if (index === 1) {
+          if (touch) await page.touchscreen.tap(8, 8);
+          else await page.mouse.click(8, 8);
+        } else if (index === 2) await page.keyboard.press('Escape');
+        else await page.keyboard.press('Enter');
+        await expect(preview).not.toBeVisible();
+        await expect(link).toBeFocused();
+        expect(await page.evaluate(() => ({ url: location.href, scroll: scrollY }))).toEqual(
+          before,
+        );
+      }
+    } finally {
+      await page.close();
+    }
+  });
+}
 
 for (const [languages, language] of [
   [['ja-JP', 'en-US'], 'ja'],
