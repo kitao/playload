@@ -37,7 +37,7 @@ test('the introduction follows README without local setup and opens the app with
   expect(content.actual).toBe(content.expected);
   expect(appRequests).toEqual([]);
   await expect(page.locator('#editor')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Open Playload →' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: 'Open Playload' })).toHaveAttribute(
     'href',
     '/playload/app/',
   );
@@ -72,7 +72,7 @@ test('the introduction follows README without local setup and opens the app with
       fullPage: true,
     });
   }
-  await page.getByRole('link', { name: 'Open Playload →' }).click();
+  await page.getByRole('link', { name: 'Open Playload' }).click();
   await expect(page).toHaveURL(baseURL + '/playload/app/');
   await expect(page.locator('#start-game')).toBeVisible();
 });
@@ -410,7 +410,7 @@ for (const [languages, language] of [
     await expect(page).toHaveURL(baseURL + '/playload/');
     if (language === 'ja') {
       await expect(page.getByRole('heading', { name: '仕様', exact: true })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Playloadを開く →' })).toHaveAttribute(
+      await expect(page.getByRole('link', { name: 'Playloadを開く' })).toHaveAttribute(
         'href',
         '/playload/app/',
       );
@@ -452,7 +452,7 @@ test('the Japanese introduction uses the same images and licenses and changes la
     await expect(page.getByRole('heading', { name: 'Specifications' })).toBeVisible();
     await expect(page.getByRole('heading', { name: '仕様', exact: true })).toHaveCount(0);
     await expect(page).toHaveURL(baseURL + '/playload/');
-    await page.getByRole('link', { name: 'Open Playload →' }).click();
+    await page.getByRole('link', { name: 'Open Playload' }).click();
     await expect(page).toHaveURL(baseURL + '/playload/app/');
   } finally {
     await page.close();
@@ -622,7 +622,7 @@ for (const touch of [false, true]) {
         await page.locator('.about-instructions p').first().evaluate(typography),
       );
       await expect(
-        page.locator('.about-license').getByRole('link', { name: 'MIT', exact: true }),
+        page.locator('.about-license p').getByRole('link', { name: 'MIT', exact: true }),
       ).toHaveAttribute('href', '/playload/LICENSE');
       await expect(page.locator('#about')).not.toContainText('Resource notices');
       await expect(

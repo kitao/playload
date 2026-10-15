@@ -27,7 +27,7 @@
           <img src="/playload/assets/logo.svg" alt="Playload" width="384" />
         </p>
         <p align="center">URLでゲームを共有できる、小さなゲームエンジン</p>
-        <h3 align="center"><a href="{{APP_PATH}}">Playloadを開く →</a></h3>
+        <h3 align="center"><a href="{{APP_PATH}}">Playloadを開く</a></h3>
         <p class="badges" align="center">
           <a href="https://github.com/kitao/playload"
             ><img
@@ -102,31 +102,30 @@
         </p>
         <h2>仕様</h2>
         <ul>
-          <li>圧縮後3 KBまでのJavaScript</li>
-          <li>6つの関数、2つの変数、1つのコールバックからなるAPI</li>
+          <li>圧縮後サイズで3KBまでのJavaScript</li>
+          <li>6関数、2変数、1コールバックのAPI</li>
           <li>160×144ピクセル、8色、CRT表示</li>
-          <li>8×8ピクセルのUnicode文字・記号・絵文字を内蔵</li>
+          <li>文字・記号・絵文字の8×8ドット内蔵Unicodeフォント</li>
           <li>ZX 128 PLAY互換の3チャンネルサウンド</li>
           <li>4方向・2ボタン入力</li>
-          <li>ゲーム全体を1つのURLに — <strong>playable payload</strong></li>
+          <li>ゲーム全体がURLに収まる — <strong>Playable&nbsp;Payload</strong></li>
         </ul>
         <p><a href="{{REPOSITORY}}">ソースコード</a></p>
         <h2>作って共有する</h2>
         <p>
           <strong>CODE</strong>エディタでゲームを編集し、<strong>Run</strong>を押します。
-          編集に合わせてURLが更新されるので、そのURLを共有すればゲームとコードを一緒に送れます。
+          コードを編集するとURLも更新されます。URLを送るだけで、ゲームとソースコードを共有できます。
           ブックマークすれば、そのバージョンを保存できます。 コードの先頭に<code
             >// @title My Game</code
-          >を書くと、ブラウザのタブやブックマークに名前を付けられます。
+          >と書くと、ブラウザのタブやブックマークにゲーム名が表示されます。
         </p>
         <h2>開発を支援する</h2>
         <p>
-          Playloadは無料で利用できます。もし気に入ったら、<a href="{{REPOSITORY}}"
-            >GitHubでのスター登録</a
+          Playloadは無料で使えます。もし気に入ったら、<a href="{{REPOSITORY}}">GitHubのスター</a
           >や、<a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>・<a
             href="https://ko-fi.com/H2H27VDKD"
             >Ko-fi</a
-          >を通じた寄付で応援していただけるとうれしいです。
+          >からの寄付で応援していただけるとうれしいです。
           いただいた支援は開発費用を支え、Playloadの改善に取り組む時間につながります。
         </p>
         <h2>ライセンス</h2>
@@ -136,19 +135,25 @@
         </p>
         <p>同梱する外部の素材には、それぞれのライセンスが適用されます。</p>
         <ul>
-          <li><a href="https://ggbot.itch.io/public-pixel-font">Public Pixel</a>: CC0</li>
-          <li><a href="https://github.com/viznut/unscii">Unscii-8</a>: パブリックドメイン / CC0</li>
+          <li>
+            <a href="https://ggbot.itch.io/public-pixel-font">Public Pixel</a>:
+            <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+          </li>
+          <li>
+            <a href="https://github.com/viznut/unscii">Unscii-8</a>: パブリックドメイン /
+            <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+          </li>
           <li>
             <a href="https://github.com/jdecked/twemoji">Twemojiの色参照</a>:
             <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
           </li>
           <li>
             <a href="https://littlelimit.net/misaki.htm">美咲ゴシック</a>:
-            商用を含む使用・改変・再配布が可能
+            <a href="https://littlelimit.net/font.htm">商用を含む使用・改変・再配布が可能</a>
           </li>
           <li>
             <a href="https://www.unicode.org/Public/17.0.0/">Unicodeデータ</a>:
-            <a href="{{REPOSITORY}}/blob/main/data/fonts/unicode-LICENSE.txt">Unicode License v3</a>
+            <a href="https://www.unicode.org/license.txt">Unicode License v3</a>
           </li>
           <li>
             <a href="https://pixeljoint.com/forum/forum_posts.asp?TID=26050">DB8</a>（パレット）:
@@ -166,14 +171,21 @@
               >AYの音量測定値</a
             >: パブリックドメイン
           </li>
-          <li><a href="https://prismjs.com/">Prism</a>: MIT</li>
+          <li>
+            <a href="https://prismjs.com/">Prism</a>:
+            <a href="https://github.com/PrismJS/prism/blob/v1.30.0/LICENSE">MIT</a>
+          </li>
           <li>
             <a href="https://fonts.google.com/specimen/Press+Start+2P">Press Start 2P</a
-            >（ロゴとファビコン）: SIL OFL 1.1
+            >（ロゴとファビコン）:
+            <a href="https://openfontlicense.org/open-font-license-official-text/">SIL OFL 1.1</a>
           </li>
           <li>
             <a href="https://github.com/digital-sound-antiques/emu2149">emu2149</a>（テスト用参照）:
-            MIT
+            <a
+              href="https://github.com/digital-sound-antiques/emu2149/blob/441f3dc295a9b82db16921461f0678b483db8304/LICENSE"
+              >MIT</a
+            >
           </li>
         </ul>
       </article>
