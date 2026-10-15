@@ -56,7 +56,7 @@ async function startServer(...args) {
     let output = '';
     server.stdout.on('data', (data) => {
       output += data;
-      const address = output.match(/https?:\/\/127\.0\.0\.1:\d+\/playload\//);
+      const address = output.match(/https?:\/\/127\.0\.0\.1:\d+\/playload\/app\//);
       if (address) resolve(address[0]);
     });
     server.once('error', reject);
@@ -93,7 +93,7 @@ test('a malformed request returns an error without stopping the development serv
     outgoing.end();
   });
   expect(status).toBe(404);
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.locator('#display')).toBeVisible();
 });
 
@@ -270,7 +270,7 @@ test('the HTTPS server opens a stable secure player and never serves its private
 });
 
 async function run(page, source, flat = false) {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Play' }).click();
   await page.getByRole('textbox', { name: 'JavaScript code' }).fill(source);
   await page.getByRole('button', { name: 'Run', exact: false }).click();
@@ -339,7 +339,7 @@ async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
       return [window.testFileHandle];
     };
   }, source);
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.locator('#load').click();
   await expect(page.locator('#pause')).toBeEnabled();
 }
@@ -399,7 +399,7 @@ test('startup shows a finished layout and welcome screen even when styles and sc
           };
         });
       });
-      const loading = page.goto(baseURL + '/playload/' + fragment);
+      const loading = page.goto(baseURL + '/playload/app/' + fragment);
       try {
         await page.locator('#display').waitFor({ state: 'attached' });
         await expect(page.locator('#app')).toBeHidden();
@@ -447,13 +447,13 @@ base('a missing or empty stylesheet keeps the uninitialized workspace hidden', a
     await page.route('**/playload/assets/bundles/app-style-*.css', (route) =>
       route.fulfill({ status, contentType: 'text/css', body: '' }),
     );
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await expect(page.locator('#app')).toBeHidden();
     expect(await page.locator('#display').getAttribute('data-crt')).toBeNull();
     expect(errors.every((message) => message === 'The stylesheet could not load.')).toBe(true);
     await page.unroute('**/playload/assets/bundles/app-style-*.css');
   }
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.locator('#app')).toBeVisible();
   await expectCenteredWelcome(page);
 });
@@ -474,7 +474,7 @@ test('a new page focuses the game and selecting the editor keeps playback waitin
       isMobile: touch,
     });
     try {
-      await page.goto(baseURL + '/playload/');
+      await page.goto(baseURL + '/playload/app/');
       const editor = page.locator('#editor');
       if (!touch && width >= 600) {
         await expect(page.locator('#screen')).toBeFocused();
@@ -514,7 +514,7 @@ test('a new page focuses the game and selecting the editor keeps playback waitin
 test('the untouched starter keeps a plain URL until one character changes, including after Run', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.getByRole('textbox', { name: 'JavaScript code' });
   const starter = await editor.inputValue();
   await expect(page.locator('#size')).toBeVisible();
@@ -557,7 +557,7 @@ test('the untouched starter keeps a plain URL until one character changes, inclu
 });
 
 test('workspace tabs do not change the URL or select the opening screen', async ({ page }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.getByRole('tab', { name: 'Play', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
@@ -571,7 +571,7 @@ test('workspace tabs do not change the URL or select the opening screen', async 
     'aria-selected',
     'true',
   );
-  await page.goto('/playload/?ref=examples');
+  await page.goto('/playload/app/?ref=examples');
   await expect(page.getByRole('tab', { name: 'Play', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
@@ -591,7 +591,7 @@ for (const limit of ['compressed source', 'full URL']) {
       }).join(''),
       large = `// @title Large\n// ${noise}\nfunction tick() { cls(4); }`,
       small = '// @title Small\nfunction tick() { cls(5); }',
-      path = limit === 'full URL' ? '/playload/?padding=' + 'x'.repeat(3500) : '/playload/';
+      path = limit === 'full URL' ? '/playload/app/?padding=' + 'x'.repeat(3500) : '/playload/app/';
     if (limit === 'full URL') await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(path);
     if (limit === 'full URL') await page.locator('#code-toggle').click();
@@ -649,7 +649,7 @@ for (const limit of ['compressed source', 'full URL']) {
       await expect(page.locator('#error')).toHaveText('Game failure');
       await expect(page.locator('#error-line')).toBeVisible();
       await expect(page.locator('#error-line')).toBeEnabled();
-      await expect(page).toHaveURL(baseURL + '/playload/');
+      await expect(page).toHaveURL(baseURL + '/playload/app/');
 
       await editor.fill(small);
       await expect
@@ -684,7 +684,7 @@ test('Starter opens a plain URL in a new tab and preserves the current code and 
       isMobile: touch,
     });
     try {
-      const path = touch ? '/playload/' : '/playload/index.html?test=starter';
+      const path = touch ? '/playload/app/' : '/playload/app/index.html?test=starter';
       await page.goto(baseURL + path);
       const editor = page.locator('#editor'),
         starter = await editor.inputValue(),
@@ -706,7 +706,7 @@ test('Starter opens a plain URL in a new tab and preserves the current code and 
       await page.locator('#info-tab').click();
       await page.getByRole('tab', { name: 'Examples', exact: true }).click();
       const home = page.getByRole('link', { name: 'Play Starter', exact: true });
-      await expect(home).toHaveAttribute('href', baseURL + '/playload/');
+      await expect(home).toHaveAttribute('href', baseURL + '/playload/app/');
       for (const keyboard of [false, true]) {
         const opened = page.waitForEvent('popup');
         if (keyboard) {
@@ -716,7 +716,7 @@ test('Starter opens a plain URL in a new tab and preserves the current code and 
         else await home.click();
         const fresh = await opened;
         try {
-          await expect(fresh).toHaveURL(baseURL + '/playload/');
+          await expect(fresh).toHaveURL(baseURL + '/playload/app/');
           await expect(fresh.locator('#editor')).toHaveValue(starter);
           await expect(fresh).toHaveTitle('Playload');
           await expect(fresh.locator('#play-tab')).toHaveAttribute('aria-selected', 'true');
@@ -741,14 +741,14 @@ test('Starter opens a plain URL in a new tab and preserves the current code and 
 });
 
 test('a shared URL containing the starter remains a playable bookmark', async ({ page }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.getByRole('textbox', { name: 'JavaScript code' });
   const starter = await editor.inputValue();
   const hash = await page.evaluate(async (code) => {
     const { encode } = await import('/src/payload.js');
     return (await encode(code)).hash;
   }, starter);
-  await page.goto('/playload/' + hash);
+  await page.goto('/playload/app/' + hash);
   await expect(editor).toHaveValue(starter);
   await expect(page).toHaveTitle('My Game — Playload');
   await page.locator('#start-game').click();
@@ -766,7 +766,7 @@ test('a shared URL containing the starter remains a playable bookmark', async ({
 test('loading a file starts bookmark URLs even when its code matches the starter', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.evaluate(() => {
     window.showOpenFilePicker = undefined;
   });
@@ -795,7 +795,7 @@ test('loading a file starts bookmark URLs even when its code matches the starter
 test('Load and Run shortcuts work; the address follows edits and restores a bookmark', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.evaluate(() => {
     window.showOpenFilePicker = undefined;
   });
@@ -845,7 +845,7 @@ test('shared games preserve a leading source BOM and restore their title and gam
   page,
 }) => {
   const source = '\ufeff// @title BOM Game\nfunction tick() { cls(4) }';
-  await page.goto('/playload/' + (await encode(source)).hash);
+  await page.goto('/playload/app/' + (await encode(source)).hash);
   await expect(page.locator('#editor')).toHaveValue(source);
   await expect(page).toHaveTitle('BOM Game — Playload');
   await page.locator('#start-game').click();
@@ -857,7 +857,7 @@ test('shared games preserve a leading source BOM and restore their title and gam
 test('title comments update before Run and survive bookmarks, edits and a fresh URL', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page).toHaveTitle('Playload');
   const editor = page.getByRole('textbox', { name: 'JavaScript code' });
   const source = '//\n/* A small game. */\n// @title Star Catcher\nfunction tick() { cls(4) }\n';
@@ -893,7 +893,7 @@ test('title comments update before Run and survive bookmarks, edits and a fresh 
 test('title metadata reads opening comments in different styles and keeps literal text', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.getByRole('textbox', { name: 'JavaScript code' });
   for (const [source, title] of [
     [
@@ -940,7 +940,7 @@ test('title metadata reads opening comments in different styles and keeps litera
 });
 
 test('file Load restores title metadata rather than the edited title', async ({ page }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.evaluate(() => {
     window.showOpenFilePicker = undefined;
   });
@@ -971,7 +971,7 @@ test('removing the URL hash restores the starter instead of an old browser draft
   await page.addInitScript(() =>
     localStorage.setItem('playload-code-v2', 'function tick() { cls(3) }'),
   );
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.getByRole('textbox', { name: 'JavaScript code' });
   await expect(editor).toHaveValue(/spr\(x, y, ['"]👾['"], 6\)/);
   const starter = await editor.inputValue(),
@@ -1333,12 +1333,12 @@ test('paused keyboard and touch presses do not become game actions on resume', a
     hasTouch: true,
     isMobile: true,
   });
-  await phone.goto(baseURL + '/playload/');
+  await phone.goto(baseURL + '/playload/app/');
   const hash = await phone.evaluate(async (source) => {
     const { encode } = await import('/src/payload.js');
     return (await encode(source)).hash;
   }, source);
-  await phone.goto(baseURL + '/playload/' + hash);
+  await phone.goto(baseURL + '/playload/app/' + hash);
   await phone.locator('#start-game').tap();
   await expect(phone.locator('#pause')).toBeEnabled();
   await phone.locator('#tools-toggle').tap();
@@ -1402,13 +1402,13 @@ function tick() {
 }
 
 test('a shared URL starts the player with the same game', async ({ page }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const hash = await page.evaluate(async () => {
     const { encode } = await import('/src/payload.js');
     return (await encode('let color = 6; function tick() { if (btnp(4)) color = 5; cls(color) }'))
       .hash;
   });
-  await page.goto('/playload/' + hash);
+  await page.goto('/playload/app/' + hash);
   await expect(page.locator('#start-game')).toHaveText('Click to play');
   await expect(page.getByRole('button', { name: 'Pause' })).toBeDisabled();
   await expect(page.getByRole('tab', { name: 'Play' })).toBeVisible();
@@ -1438,7 +1438,7 @@ test('the welcome screen starts with ordinary keys or a mouse click and uses edi
   page,
 }) => {
   for (const key of ['Enter', 'Space', 'q']) {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#screen').focus();
     await page.keyboard.press(key);
@@ -1448,7 +1448,7 @@ test('the welcome screen starts with ordinary keys or a mouse click and uses edi
   }
 
   for (const button of ['left', 'middle', 'right']) {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.locator('#editor').fill('function tick() { cls(5) }');
     await expect(page.locator('#start-game')).toBeVisible();
     await expect(page.locator('#editor')).toBeFocused();
@@ -1461,7 +1461,7 @@ test('the welcome screen starts with ordinary keys or a mouse click and uses edi
   }
 
   for (const selector of ['#editor', '#crt', '#sound', '#play-tab']) {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator(selector).click();
     await expect(page.locator('#start-game')).toBeVisible();
@@ -1469,7 +1469,7 @@ test('the welcome screen starts with ordinary keys or a mouse click and uses edi
     if (selector === '#editor') await expect(page.locator('#editor')).toBeFocused();
   }
 
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.locator('#start-game')).toBeVisible();
   const original = await page.locator('#editor').inputValue();
   await page.locator('#editor').focus();
@@ -1484,7 +1484,7 @@ test('the welcome screen starts with ordinary keys or a mouse click and uses edi
 test('Play keeps its input pane through margins, toolbar actions, Info and resizing', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     screen = page.locator('#screen');
   await expect(screen).toBeFocused();
@@ -1563,7 +1563,7 @@ function tick() {
     ['z', [100, 185, 100, 255]],
   ]) {
     await page.goto('about:blank');
-    await page.goto('/playload/' + hash);
+    await page.goto('/playload/app/' + hash);
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#crt').evaluate((button) => button.click());
     await page.keyboard.down(key);
@@ -1586,7 +1586,7 @@ function tick() {
   }
 
   await page.goto('about:blank');
-  await page.goto('/playload/' + hash);
+  await page.goto('/playload/app/' + hash);
   await expect(page.locator('#start-game')).toBeVisible();
   await page.locator('#crt').evaluate((button) => button.click());
   await page.mouse.click(2, 2);
@@ -1601,7 +1601,7 @@ function tick() {
 
   for (const key of ['Space', 'Enter']) {
     await page.goto('about:blank');
-    await page.goto('/playload/' + hash);
+    await page.goto('/playload/app/' + hash);
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#crt').evaluate((button) => button.click());
     await page.locator('#start-game').focus();
@@ -1636,7 +1636,7 @@ function tick() {
       ['.ab [data-input="4"]', [100, 185, 100, 255]],
     ]) {
       await page.goto('about:blank');
-      await page.goto('/playload/' + hash);
+      await page.goto('/playload/app/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
       await page.locator('#crt').evaluate((button) => button.click());
       const pad = page.locator(selector);
@@ -1653,7 +1653,7 @@ function tick() {
       await expect.poll(() => pixel(page)).toEqual(color);
       await page.mouse.up();
       await page.goto('about:blank');
-      await page.goto('/playload/' + hash);
+      await page.goto('/playload/app/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
       await page.locator('#crt').evaluate((button) => button.click());
       await pad.tap();
@@ -1666,7 +1666,7 @@ function tick() {
 });
 
 test('malformed worker frames are rejected before display or playback', async ({ page }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const result = await page.evaluate(async () => {
     const { Runtime } = await import('/src/app/runtime.js');
     return await new Promise((resolve) => {
@@ -1803,7 +1803,7 @@ function tick() { put(1, 1, String(frames++)); }
 test('CRT and sound preserve pane focus and the editor selection before Run, while playing and while paused', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor');
   for (const state of ['ready', 'playing', 'paused']) {
     if (state === 'playing') {
@@ -1889,7 +1889,7 @@ test('the first Run unlocks audio for both a click and the keyboard shortcut', a
     };
   });
   for (const method of ['click', 'shortcut']) {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.locator('#editor').fill('play(0, "V15O5N9a))");\nfunction tick() { cls(0); }');
     if (method === 'click') await page.locator('#run').click();
     else await page.keyboard.press('ControlOrMeta+Enter');
@@ -1906,7 +1906,7 @@ test('the first Run unlocks audio for both a click and the keyboard shortcut', a
 test('the serialized synthesizer runs in a real AudioWorklet and mute leaves capture audio connected', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const result = await page.evaluate(async () => {
     const { Sound } = await import('/src/app/runtime.js');
     const { compileScore } = await import('/src/engine/sound.js');
@@ -2010,7 +2010,7 @@ test('desktop controls stay visible and wrap through editing, play and window re
     [375, 650],
   ]) {
     await page.setViewportSize({ width, height });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await expect(page.locator('#tools-toggle')).toBeHidden();
     await expect(page.locator('#workspace-toolbar')).toBeVisible();
     await expect(page.locator('.touch')).toBeHidden();
@@ -2146,7 +2146,7 @@ test('touch tools enable Save only after frames arrive and preserve keyboard foc
         }
       };
     });
-    await page.goto(baseURL + '/playload/');
+    await page.goto(baseURL + '/playload/app/');
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
     await expect.poll(() => page.evaluate(() => typeof window.finishGameLoad)).toBe('function');
@@ -2411,12 +2411,12 @@ test('the shared chiptune demo exports audible music while speaker monitoring is
   page,
 }) => {
   const source = await readFile(new URL('../../examples/chiptune.js', import.meta.url), 'utf8');
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const hash = await page.evaluate(
     async (source) => (await (await import('/src/payload.js')).encode(source)).hash,
     source,
   );
-  await page.goto('/playload/' + hash);
+  await page.goto('/playload/app/' + hash);
   await page.locator('#start-game').click();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await page.locator('#screen').click();
@@ -2543,7 +2543,7 @@ test('video keeps the latest ten seconds with continuous sound and advances afte
 test('the CRT shader reconstructs glowing phosphors while retaining black and a readable white level', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const result = await page.evaluate(async () => {
     const { createCRT } = await import('/src/app/crt.js'),
       { palette } = await import('/src/engine/engine.js');
@@ -2667,7 +2667,7 @@ for (const fallback of [false, true]) {
           return type === 'webgl' ? null : getContext.call(this, type, ...args);
         };
       });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await expect(page.locator('#screen')).toBeFocused();
     await expect(page.locator('#display')).toBeVisible();
     await expect(page.locator('#pause')).toBeDisabled();
@@ -2724,7 +2724,7 @@ test.describe('touch player', () => {
       };
       await page.route('**/playload/assets/bundles/app-*.js', holdGlyphs);
       try {
-        await page.goto('/playload/', { waitUntil: 'commit' });
+        await page.goto('/playload/app/', { waitUntil: 'commit' });
         await page.locator('#logo').waitFor({ state: 'attached' });
         await expect(page.locator('#app')).toBeHidden();
         await expect(page.locator('#editor')).toBeHidden();
@@ -2746,7 +2746,7 @@ test.describe('touch player', () => {
   test('touch controls prevent text selection and long-press menus without blocking the editor', async ({
     page,
   }) => {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     for (const selector of [
       '#app',
       'header',
@@ -2890,7 +2890,7 @@ test.describe('touch player', () => {
   test('tapping the play frame padding starts play and returns focus from open tools', async ({
     page,
   }) => {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#play-tab').focus();
     await page.evaluate(() => {
@@ -2921,7 +2921,7 @@ test.describe('touch player', () => {
   });
 
   test('CRT and sound taps preserve the focused pane while tools are open', async ({ page }) => {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
     await page.locator('#code-toggle').tap();
@@ -2961,7 +2961,7 @@ function tick() {
       [1024, 768],
     ]) {
       await page.setViewportSize({ width, height });
-      await page.goto('/playload/');
+      await page.goto('/playload/app/');
       await page.locator('#tools-toggle').tap();
       await page.locator('#code-toggle').tap();
       const editor = page.locator('#editor');
@@ -3090,7 +3090,7 @@ function tick() {
       [768, 1024],
     ]) {
       await page.setViewportSize({ width, height });
-      await page.goto('/playload/');
+      await page.goto('/playload/app/');
       await page.locator('#tools-toggle').tap();
       await page.locator('#code-toggle').tap();
       await page
@@ -3213,8 +3213,8 @@ function tick() {
             return Math.max(...samples.map(Math.abs));
           });
         await page.setViewportSize({ width, height });
-        await page.goto('/playload/');
-        await page.goto('/playload/' + hash);
+        await page.goto('/playload/app/');
+        await page.goto('/playload/app/' + hash);
         await expect(page.locator('#start-game')).toHaveText(
           touch ? 'Tap to play' : 'Click to play',
         );
@@ -3308,8 +3308,8 @@ function tick() {
     });
     const { hash } = await encode('play(0, "T240O5N3c))"); function tick() { cls(0); }');
     for (const event of ['pointerup', 'touchend']) {
-      await page.goto('/playload/');
-      await page.goto('/playload/' + hash);
+      await page.goto('/playload/app/');
+      await page.goto('/playload/app/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
       expect(await page.evaluate(() => window.gameAudioContexts.length)).toBe(0);
       await page.evaluate((event) => {
@@ -3355,7 +3355,7 @@ function tick() {
       [1366, 1024],
     ]) {
       await page.setViewportSize({ width, height });
-      await page.goto('/playload/');
+      await page.goto('/playload/app/');
       await expect(page.locator('#start-game')).toBeVisible();
       await expect(page.locator('#editor')).toBeHidden();
       await expect(page.locator('#pause kbd')).toBeHidden();
@@ -3414,7 +3414,7 @@ function tick() {
       expect(menu.y + menu.height).toBeLessThanOrEqual(height);
     }
     await page.setViewportSize({ width: 568, height: 220 });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.locator('#tools-toggle').tap();
     const toolbar = page.locator('#workspace-toolbar');
     expect(await toolbar.evaluate((element) => element.scrollHeight)).toBeGreaterThan(
@@ -3444,14 +3444,14 @@ function tick() {
   test('tools, Info, pause and rotation retain the game and its prior pause state', async ({
     page,
   }) => {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     const hash = await page.evaluate(async () => {
       const { encode } = await import('/src/payload.js');
       return (
         await encode('let frames = 0; function tick() { cls(0); put(1, 1, String(frames++)); }')
       ).hash;
     });
-    await page.goto('/playload/' + hash);
+    await page.goto('/playload/app/' + hash);
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
     await page.locator('#pause').tap();
@@ -3488,7 +3488,7 @@ function tick() {
   test('phone tools keep Resume accessible and Run restarts the source', async ({ page }) => {
     const source = 'let color = 4; function tick() { if (btnp(4)) color = 5; cls(color); }';
     const { hash } = await encode(source);
-    await page.goto('/playload/' + hash);
+    await page.goto('/playload/app/' + hash);
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
     await page.locator('#crt').tap();
@@ -3520,7 +3520,7 @@ function tick() {
   test('video can be saved from the phone tools while recording is temporarily paused', async ({
     page,
   }) => {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     const supported = await page.evaluate(
       () =>
         typeof MediaRecorder !== 'undefined' &&
@@ -3548,7 +3548,7 @@ function tick() {
     await page.addInitScript(() => {
       delete window.showOpenFilePicker;
     });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.locator('#tools-toggle').tap();
     await page.locator('#crt').tap();
     const pending = page.waitForEvent('filechooser');
@@ -3579,7 +3579,7 @@ function tick() {
     const { hash } = await encode(
       'function tick() { for (let id = 0; id < 6; id++) put(id, 0, " ", 0, btn(id) ? 7 : 0); }',
     );
-    await page.goto('/playload/' + hash);
+    await page.goto('/playload/app/' + hash);
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
     await page.locator('#crt').tap();
@@ -3750,7 +3750,7 @@ function tick() {
     browserName,
   }) => {
     await page.setViewportSize({ width: 375, height: 350 });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.locator('#tools-toggle').tap();
     await page.locator('#code-toggle').click();
     await page
@@ -3803,13 +3803,13 @@ function tick() {
     }
   });
   test('CRT and touch input work in the phone player layout', async ({ page }) => {
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     const hash = await page.evaluate(async () => {
       const { encode } = await import('/src/payload.js');
       return (await encode('let color = 7; function tick() { if(btnp(4)) color = 6; cls(color) }'))
         .hash;
     });
-    await page.goto('/playload/' + hash);
+    await page.goto('/playload/app/' + hash);
     await expect(page.locator('#editor')).toBeHidden();
     await expect(page.locator('#code-toggle')).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('#start-game')).toBeVisible();
@@ -3834,7 +3834,7 @@ function tick() {
       [812, 375],
     ]) {
       await page.setViewportSize({ width, height });
-      await page.goto('/playload/');
+      await page.goto('/playload/app/');
       await page.locator('#tools-toggle').tap();
       await expect(page.locator('#screenshot')).toHaveAccessibleName('Screenshot');
       if ((await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'false')
@@ -3868,7 +3868,7 @@ function tick() {
 test('the starter reaches every screen edge and keeps collecting gems with short sounds', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const source = await page.locator('#editor').inputValue();
   const result = await page.evaluate(async (source) => {
     const { createEngine } = await import('/src/engine/engine.js');
@@ -4054,7 +4054,7 @@ test('keyboard bindings stay visible in Play without opening code or reference',
   page,
   browser,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const guide = page.locator('#keyboard-controls');
   await expect(guide).toHaveText('MOVE: ↑↓←→·WASDA: Z·J B: X·K');
   await expect(guide).toBeVisible();
@@ -4096,7 +4096,7 @@ test('keyboard bindings stay visible in Play without opening code or reference',
   await expect(guide).toBeVisible();
 
   const phone = await browser.newPage({ viewport: { width: 375, height: 800 }, hasTouch: true });
-  await phone.goto(baseURL + '/playload/');
+  await phone.goto(baseURL + '/playload/app/');
   await expect(phone.locator('.touch')).toBeVisible();
   await expect(phone.locator('#keyboard-controls')).toBeHidden();
   await phone.close();
@@ -4106,14 +4106,14 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
   page,
   browser,
 }, testInfo) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.getByRole('tab', { name: 'Play' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#play')).toBeVisible();
   await expect(page.locator('#info')).toBeHidden();
   await expect(page.locator('#logo')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open Playload in a new tab' })).toHaveAttribute(
     'href',
-    '/playload/',
+    '/playload/app/',
   );
   await expect(page.locator('#home-link #logo')).toBeVisible();
   await expect(page.locator('#home-link')).toHaveAttribute('target', '_blank');
@@ -4180,7 +4180,7 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
     isMobile: true,
   });
   try {
-    await phone.goto(baseURL + '/playload/');
+    await phone.goto(baseURL + '/playload/app/');
     for (const [original, touch] of [
       [page, false],
       [phone, true],
@@ -4192,7 +4192,7 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
       else await original.locator('#home-link').click();
       const popup = await opened;
       await popup.waitForLoadState('domcontentloaded');
-      expect(popup.url()).toBe(baseURL + '/playload/');
+      expect(popup.url()).toBe(baseURL + '/playload/app/');
       expect(await popup.evaluate(() => window.opener === null)).toBe(true);
       expect(original.url()).toBe(url);
       await expect(original.locator('#editor')).toHaveValue(source);
@@ -4207,7 +4207,7 @@ test('the reference documents six functions and two variables; every example run
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1710, height: 895 });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'API', exact: true }).click();
   await expect(page.locator('#info')).toBeVisible();
@@ -4407,7 +4407,7 @@ test('the bundled page avoids stale source modules and initializes every toggle'
       body: 'throw new Error("Old cached module loaded")',
     });
   });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.getByRole('tab', { name: 'Play' })).toHaveAttribute('aria-selected', 'true');
   const code = page.locator('#code-toggle');
   await code.click();
@@ -4437,7 +4437,7 @@ test('the bundled page avoids stale source modules and initializes every toggle'
 test('empty filename rows leave matching side and bottom margins in Play and Info', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   for (const width of [1280, 1024, 800, 375]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.locator('.editor-status')).toBeHidden();
@@ -4482,7 +4482,7 @@ test('panel frames stay rectangular after resizing and focus colors cover all fo
   page,
 }) => {
   await page.addInitScript(() => localStorage.setItem('playload-split', '.45127597'));
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     viewport = page.locator('#viewport');
   for (const width of [1401, 999]) {
@@ -4530,7 +4530,7 @@ test('page loads center the divider while resizing retains and clamps its curren
 }) => {
   await page.addInitScript(() => localStorage.setItem('playload-split', '.45127597'));
   await page.setViewportSize({ width: 1535, height: 1000 });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const divider = page.locator('#divider');
   await expect(divider).toHaveAttribute('aria-valuenow', '50');
   await divider.focus();
@@ -4540,7 +4540,7 @@ test('page loads center the divider while resizing retains and clamps its curren
   await expect(divider).toHaveAttribute('aria-valuenow', '45');
   const other = await page.context().newPage();
   try {
-    await other.goto('/playload/');
+    await other.goto('/playload/app/');
     await expect(other.locator('#divider')).toHaveAttribute('aria-valuenow', '50');
   } finally {
     await other.close();
@@ -4574,7 +4574,7 @@ test('page loads center the divider while resizing retains and clamps its curren
 test('Run preserves clicked input focus while editor shortcuts hand input to the game', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.locator('#crt').click();
   const editor = page.locator('#editor'),
     screen = page.locator('#screen');
@@ -4611,7 +4611,7 @@ test('Run preserves clicked input focus while editor shortcuts hand input to the
 test('the whole play frame accepts focus before Run and keeps keyboard input and error links usable', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     screen = page.locator('#screen'),
     viewport = page.locator('#viewport');
@@ -4698,7 +4698,7 @@ test('the displayed Pause shortcut resumes the existing game; Run applies edited
 test('Escape pauses once, releases held input and moves focus only to a visible editor', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     screen = page.locator('#screen'),
     pause = page.locator('#pause');
@@ -4766,7 +4766,7 @@ test('Escape pauses once, releases held input and moves focus only to a visible 
 test('Tab keeps input focus in Play and normal navigation remains available in Info', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     source = await editor.inputValue();
   await expect(page.locator('#screen')).toBeFocused();
@@ -4806,7 +4806,7 @@ test('Run applies editor changes and Control+Enter restarts without rereading a 
 test('disabled Pause ignores Escape and the removed Reload shortcut is no longer intercepted', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     source = await editor.inputValue();
   await editor.press('Escape');
@@ -5035,7 +5035,7 @@ test('Load preserves edits made during a pending file read', async ({ page }) =>
         },
       ]),
   );
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.locator('#load').click();
   await expect(page.locator('#run')).toBeDisabled();
   await expect(page.locator('#load')).toBeDisabled();
@@ -5129,7 +5129,7 @@ test('Load confirms only edits to the opened shared game', async ({ page }) => {
       throw new DOMException('Canceled', 'AbortError');
     };
   });
-  await page.goto('/playload/' + (await encode(source)).hash);
+  await page.goto('/playload/app/' + (await encode(source)).hash);
   const editor = page.locator('#editor');
   await expect(editor).toHaveValue(source);
   await expect(page.locator('#start-game')).toBeVisible();
@@ -5163,7 +5163,7 @@ test('Load reselects files when handles are unavailable and confirms before repl
   page,
 }) => {
   await page.addInitScript(() => (window.showOpenFilePicker = undefined));
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const select = async (name, source) => {
     const chooser = page.waitForEvent('filechooser');
     await page.locator('#load').click();
@@ -5198,7 +5198,7 @@ test('canceling a fallback Load restores controls and preserves the source and U
   page,
 }) => {
   await page.addInitScript(() => (window.showOpenFilePicker = undefined));
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const source = await page.locator('#editor').inputValue(),
     url = page.url();
   const chooser = page.waitForEvent('filechooser');
@@ -5216,7 +5216,7 @@ test('canceling a fallback Load restores controls and preserves the source and U
 test('JavaScript coloring preserves source, literal markup, typing and scrolling', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor');
   const source = '// comment\nlet x = 7\nconst label = "<img src=x>"\nfunction tick() { cls(x) }\n';
   await editor.fill(source);
@@ -5288,7 +5288,7 @@ test('JavaScript coloring preserves source, literal markup, typing and scrolling
 test.describe('visible scrollbars', () => {
   test('editor text and line numbers remain aligned at every scroll edge', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     const editor = page.locator('#editor');
     for (const source of [
       'x'.repeat(80),
@@ -5343,7 +5343,7 @@ test.describe('visible scrollbars', () => {
     browserName,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.getByRole('tab', { name: 'Info', exact: true }).click();
     await page.getByRole('tab', { name: 'API', exact: true }).click();
     const tabGeometry = await page.locator('.reference-scroll').evaluate((element) => ({
@@ -5394,7 +5394,7 @@ test.describe('visible scrollbars', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 854, height: 1000 });
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.getByRole('tab', { name: 'Info', exact: true }).click();
     const widths = [await page.locator('#about').evaluate((element) => element.clientWidth)];
     await page.getByRole('tab', { name: 'API', exact: true }).click();
@@ -5420,7 +5420,7 @@ test.describe('visible scrollbars', () => {
 test('line numbers follow edits and scrolling without becoming part of the source', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     numbers = page.locator('#editor-line-numbers');
   await editor.fill('let x = 1\n\n');
@@ -5501,7 +5501,7 @@ test('Examples starts with Starter and other game links contain their actual sou
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1710, height: 895 });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Examples', exact: true }).click();
   await expect(page.locator('[data-ref]').last()).toHaveText('Examples');
@@ -5544,13 +5544,13 @@ test('Examples starts with Starter and other game links contain their actual sou
     await link.click();
     const game = await opened;
     if (id === 'starter') {
-      await expect(game).toHaveURL(baseURL + '/playload/');
+      await expect(game).toHaveURL(baseURL + '/playload/app/');
       await expect(game).toHaveTitle('Playload');
       await expect(game.locator('#screen')).toBeFocused();
       await expect(game.locator('#start-game')).toBeVisible();
       await expectCenteredWelcome(game);
       await game.locator('#start-game').click();
-      await expect(game).toHaveURL(baseURL + '/playload/');
+      await expect(game).toHaveURL(baseURL + '/playload/app/');
     } else {
       await expect(game).toHaveTitle((await link.textContent()) + ' — Playload');
       await game.locator('#start-game').click();
@@ -5594,7 +5594,7 @@ test('examples respond to touch controls and fit a narrow player', async ({
       hasTouch: true,
       isMobile: true,
     });
-    await phone.goto(baseURL + '/playload/');
+    await phone.goto(baseURL + '/playload/app/');
     if (entry.id === 'snake') {
       await phone.getByRole('tab', { name: 'Info', exact: true }).click();
       await phone.getByRole('tab', { name: 'Examples', exact: true }).click();
@@ -5613,7 +5613,7 @@ test('examples respond to touch controls and fit a narrow player', async ({
       const { encode } = await import('/src/payload.js');
       return (await encode(source)).hash;
     }, source);
-    await phone.goto(baseURL + '/playload/' + hash);
+    await phone.goto(baseURL + '/playload/app/' + hash);
     await phone.locator('#start-game').tap();
     await expect(phone.locator('#pause')).toBeEnabled();
     await expect(phone.locator('#editor')).toBeHidden();
@@ -5638,7 +5638,7 @@ test('examples respond to touch controls and fit a narrow player', async ({
 test('a shared game does not steal editor focus chosen while its worker is starting', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const hash = await page.evaluate(
     async () => (await (await import('/src/payload.js')).encode('function tick() { cls(4) }')).hash,
   );
@@ -5653,7 +5653,7 @@ test('a shared game does not steal editor focus chosen while its worker is start
       }
     };
   });
-  await page.goto('/playload/' + hash);
+  await page.goto('/playload/app/' + hash);
   await page.locator('#start-game').click();
   await expect.poll(() => page.evaluate(() => typeof window.finishInitialLoad)).toBe('function');
   await page.locator('#editor').focus();
@@ -5690,7 +5690,7 @@ test('Info interactions stay in Info when a shared URL finishes decoding', async
     try {
       for (const action of ['pointer', 'key']) {
         await page.goto('about:blank');
-        await page.goto('/playload/' + hash);
+        await page.goto('/playload/app/' + hash);
         await page.waitForFunction(() => typeof window.releaseDecode === 'function');
         await page.locator('#info-tab').click();
         await page.getByRole('tab', { name: 'API', exact: true }).click();
@@ -5718,7 +5718,7 @@ test('Info interactions stay in Info when a shared URL finishes decoding', async
 test('an invalid shared URL focuses the visible player and keeps its error readable', async ({
   page,
 }) => {
-  await page.goto('/playload/#invalid-payload');
+  await page.goto('/playload/app/#invalid-payload');
   await expect(page.getByRole('alert')).toContainText('Invalid game URL');
   await expect(page.locator('#screen')).toBeFocused();
   await expect(page.locator('#editor')).toBeVisible();
@@ -5735,7 +5735,7 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
     });
     try {
       const page = await context.newPage();
-      await page.goto('/playload/');
+      await page.goto('/playload/app/');
       const playPositions = new Map();
       for (const view of ['Play', 'Info']) {
         await page.getByRole('tab', { name: view, exact: true }).click();
@@ -5794,7 +5794,7 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
 test('Workspace and reference tabs share bar spacing; keyboard focus adds no decoration', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   const style = async (selector) =>
     page.locator(selector).evaluate((element) => {

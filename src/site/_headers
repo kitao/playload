@@ -4,6 +4,10 @@
 
 /playload/
   Cache-Control: public, max-age=0, must-revalidate
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+
+/playload/app/
+  Cache-Control: public, max-age=0, must-revalidate
   Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src 'self' blob:; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
 
 /playload/assets/bundles/*

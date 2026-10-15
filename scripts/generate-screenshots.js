@@ -20,7 +20,7 @@ try {
     let output = '';
     server.stdout.on('data', (data) => {
       output += data;
-      const match = output.match(/http:\/\/127\.0\.0\.1:\d+\/playload\//);
+      const match = output.match(/http:\/\/127\.0\.0\.1:\d+\/playload\/app\//);
       if (match) resolve(match[0]);
     });
     server.once('error', reject);

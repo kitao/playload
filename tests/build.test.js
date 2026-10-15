@@ -37,30 +37,43 @@ test('the complete publication stays under Playload and every local document lin
     assert(output.every((path) => path === '_headers' || path.startsWith('playload/')));
     assert(
       !output.some(
-        (path) =>
-          path.startsWith('playload/app/') ||
-          path.startsWith('playload/user-guide/') ||
-          path === 'playload/README.md',
+        (path) => path.startsWith('playload/user-guide/') || path === 'playload/README.md',
       ),
     );
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|404\.html|LICENSE|assets\/(?:logo\.svg|favicon\.svg|bundles\/[^/]+\.(?:js|css|woff))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|404\.html|LICENSE|assets\/(?:logo\.svg|favicon\.svg|images\/(?:example-glyph-quest|info-api|info-emoji|info-examples)\.jpg|bundles\/[^/]+\.(?:js|css|woff))))$/.test(
           path,
         ),
       ),
-      'Only the tool, its required assets, fallback and project license are published.',
+      'Only the introduction, app, required assets, fallback and project license are published.',
     );
     const home = await readFile(join(directory, 'playload/index.html'), 'utf8');
+    const app = await readFile(join(directory, 'playload/app/index.html'), 'utf8');
     const headers = await readFile(join(directory, '_headers'), 'utf8');
-    assert.equal(
-      /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(home)[1],
-      /Content-Security-Policy: ([^\n]+)/.exec(headers)[1].replace("; frame-ancestors 'none'", ''),
-      'The document and HTTP response permit the same script and worker sources.',
+    for (const [path, document] of [
+      ['/playload/', home],
+      ['/playload/app/', app],
+    ]) {
+      const rule = headers.split('\n' + path + '\n')[1].split('\n\n')[0];
+      assert.equal(
+        /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(document)[1],
+        /Content-Security-Policy: ([^\n]+)/.exec(rule)[1].replace("; frame-ancestors 'none'", ''),
+        'The document and HTTP response permit the same sources at ' + path,
+      );
+    }
+    assert.doesNotMatch(home, /id="editor"|\/bundles\/app-/);
+    assert.match(home, /href="\/playload\/app\/">Open Playload/);
+    assert.match(home, /<h2>Run locally<\/h2>/);
+    assert.match(
+      home,
+      /href="https:\/\/github.com\/kitao\/playload\/blob\/main\/data\/fonts\/unicode-LICENSE.txt"/,
     );
-    assert.match(home, /id="about-tab"[\s\S]*id="api-tab"/);
+    assert.match(app, /id="about-tab"[\s\S]*id="api-tab"/);
     assert.equal((home.match(/<script /g) || []).length, 1);
-    assert.match(home, /src="\/playload\/assets\/bundles\/app-[A-Z0-9]+\.js"/);
+    assert.match(home, /src="\/playload\/assets\/bundles\/site-[A-Z0-9]+\.js"/);
+    assert.equal((app.match(/<script /g) || []).length, 1);
+    assert.match(app, /src="\/playload\/assets\/bundles\/app-[A-Z0-9]+\.js"/);
     assert.match(home, /https:\/\/ko-fi.com\/H2H27VDKD/);
     assert.match(home, /href="https:\/\/github.com\/kitao\/playload"/);
     assert.match(home, /href="https:\/\/github.com\/sponsors\/kitao"/);

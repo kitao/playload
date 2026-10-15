@@ -17,6 +17,10 @@
 body {
   margin: 0;
 }
+img {
+  max-width: 100%;
+  height: auto;
+}
 a {
   color: var(--accent);
   text-underline-offset: 0.2em;
@@ -40,8 +44,78 @@ h1 {
   margin: 10vh auto;
   padding: 32px;
 }
+.readme {
+  max-width: 880px;
+  margin: 48px auto 80px;
+  padding: 0 32px;
+}
+html:lang(en) .readme[lang='ja'],
+html:lang(ja) .readme[lang='en'] {
+  display: none;
+}
+.readme > p:first-child {
+  margin: 0 0 24px;
+}
+.readme > p:first-child img {
+  image-rendering: pixelated;
+}
+.readme > p:first-child + p {
+  text-wrap: balance;
+}
+.readme > h3 {
+  margin: 24px 0 32px;
+  font-size: 1.25rem;
+}
+.readme h2 {
+  margin: 40px 0 16px;
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+.readme p,
+.readme ul {
+  margin: 16px 0;
+}
+.readme ul {
+  padding-left: 24px;
+}
+.readme p:has(> a > img) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 40px;
+}
+.readme p:has(> a > img) br {
+  display: none;
+}
+.readme a:has(> img) {
+  display: block;
+}
+.readme a > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.readme pre {
+  overflow: auto;
+  padding: 16px 20px;
+  background: var(--panel);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.readme :not(pre) > code {
+  white-space: nowrap;
+}
 @media (max-width: 720px) {
   h1 {
     font-size: 1.8rem;
+  }
+  .readme {
+    margin: 32px auto 48px;
+    padding: 0 20px;
+  }
+}
+@media (max-width: 540px) {
+  .readme p:has(> a > img) {
+    grid-template-columns: 1fr;
   }
 }

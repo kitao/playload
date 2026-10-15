@@ -6,7 +6,7 @@
   A tiny game engine that lets you share games as URLs
 </p>
 
-<h3 align="center"><a href="https://kitao.dev/playload/">Open Playload →</a></h3>
+<h3 align="center"><a href="https://kitao.dev/playload/app/">Open Playload →</a></h3>
 
 <p align="center">
   <a href="assets/images/example-glyph-quest.jpg"><img src="assets/images/example-glyph-quest.jpg" alt="The code editor beside a running Glyph Quest game" width="400"></a>
@@ -33,7 +33,7 @@ Start your code with `// @title My Game` to name the browser tab and bookmark.
 
 ## Support Playload
 
-If you enjoy Playload, please consider starring the project on GitHub.
+If you enjoy Playload, please consider [starring the project on GitHub](https://github.com/kitao/playload).
 It helps more people discover the project.
 
 Playload is free to use. If you would like to support its development, you can

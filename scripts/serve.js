@@ -162,7 +162,7 @@ server.on('error', (error) => {
 server.listen(Number(process.env.PORT ?? (secure ? 8766 : 8765)), host, () => {
   const address = ['0.0.0.0', '::'].includes(host) ? '127.0.0.1' : host;
   const hostname = address.includes(':') ? `[${address}]` : address;
-  const url = `${secure ? 'https' : 'http'}://${hostname}:${server.address().port}/playload/`;
+  const url = `${secure ? 'https' : 'http'}://${hostname}:${server.address().port}/playload/app/`;
   console.log(`Playload · ${url}`);
   if (process.argv.includes('--no-open')) return;
   const [command, args] =
@@ -200,6 +200,7 @@ if (!production && !process.argv.includes('--no-watch')) {
   for (const path of [
     'src',
     'assets',
+    'README.md',
     'package.json',
     'data/reference.json',
     'data/fonts/unicode-LICENSE.txt',

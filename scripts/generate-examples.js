@@ -12,7 +12,10 @@ for (const entry of entries) {
       ? starter
       : await readFile(new URL(`examples/${entry.id}.js`, root), 'utf8');
   const { hash, bytes } = await encode(source);
-  if (bytes > MAX_COMPRESSED_BYTES || gameURL(project.homepage, hash).length > MAX_URL_LENGTH)
+  if (
+    bytes > MAX_COMPRESSED_BYTES ||
+    gameURL(new URL('app/', project.homepage).href, hash).length > MAX_URL_LENGTH
+  )
     throw new Error(`${entry.id} exceeds the shared game limit`);
   links.push({ ...entry, bytes, hash: entry.id === 'starter' ? '' : hash });
 }

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="description" content="{{DESCRIPTION}}" />
+    <title>Playload</title>
+    <link rel="canonical" href="{{HOME_URL}}" />
+    <link rel="icon" href="/playload/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="{{SITE_STYLE}}" />
+    <script src="{{SITE_SCRIPT}}"></script>
+  </head>
+  <body>
+    <main aria-label="Playload">
+      <article class="readme" lang="en">{{README}}</article>
+      <article class="readme" lang="ja">
+        <p align="center">
+          <img src="/playload/assets/logo.svg" alt="Playload" width="384" />
+        </p>
+        <p align="center">URLでゲームを共有できる、小さなゲームエンジン</p>
+        <h3 align="center"><a href="{{APP_PATH}}">Playloadを開く →</a></h3>
+        <p align="center">
+          <a href="/playload/assets/images/example-glyph-quest.jpg">
+            <img
+              loading="lazy"
+              decoding="async"
+              src="/playload/assets/images/example-glyph-quest.jpg"
+              alt="コードエディタと実行中のGlyph Quest"
+              width="400"
+            />
+          </a>
+          <a href="/playload/assets/images/info-api.jpg">
+            <img
+              loading="lazy"
+              decoding="async"
+              src="/playload/assets/images/info-api.jpg"
+              alt="ゲームAPIとZX 128 PLAYのサウンドリファレンス"
+              width="400"
+            />
+          </a>
+          <a href="/playload/assets/images/info-emoji.jpg">
+            <img
+              loading="lazy"
+              decoding="async"
+              src="/playload/assets/images/info-emoji.jpg"
+              alt="絵文字と内蔵の8×8ピクセル画像"
+              width="400"
+            />
+          </a>
+          <a href="/playload/assets/images/info-examples.jpg">
+            <img
+              loading="lazy"
+              decoding="async"
+              src="/playload/assets/images/info-examples.jpg"
+              alt="ソースコードをURLに収めたゲームとサウンドの作例"
+              width="400"
+            />
+          </a>
+        </p>
+        <h2>仕様</h2>
+        <ul>
+          <li>圧縮後3 KBまでのJavaScript</li>
+          <li>6つの関数、2つの変数、1つのコールバックからなるAPI</li>
+          <li>160×144ピクセル、8色、CRT表示</li>
+          <li>8×8ピクセルのUnicode文字・記号・絵文字を内蔵</li>
+          <li>ZX 128 PLAY互換の3チャンネルサウンド</li>
+          <li>4方向・2ボタン入力</li>
+          <li>ゲーム全体を1つのURLに — <strong>playable payload</strong></li>
+        </ul>
+        <h2>作って共有する</h2>
+        <p>
+          <strong>CODE</strong>エディタでゲームを編集し、<strong>Run</strong>を押します。
+          編集に合わせてURLが更新されるので、そのURLを共有すればゲームとコードを一緒に送れます。
+          ブックマークすれば、そのバージョンを保存できます。 コードの先頭に<code
+            >// @title My Game</code
+          >を書くと、ブラウザのタブやブックマークに名前を付けられます。
+        </p>
+        <h2>開発を支援する</h2>
+        <p>
+          Playloadを気に入っていただけたら、<a href="{{REPOSITORY}}">GitHubでスターを付けて</a
+          >いただけるとうれしいです。 より多くの人にプロジェクトを知ってもらうきっかけになります。
+        </p>
+        <p>
+          Playloadは無料で利用できます。開発を支援していただける方は、
+          <a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>や
+          <a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>をご利用ください。
+          いただいた支援は開発費用を支え、Playloadの改善に取り組む時間につながります。ご支援ありがとうございます。
+        </p>
+        <h2>ローカルで実行する</h2>
+        <p><strong>Node.js 24以上</strong>が必要です。</p>
+        <pre><code>git clone https://github.com/kitao/playload.git
+cd playload
+npm ci
+npm run dev
+</code></pre>
+        <p>
+          開発サーバーがアプリをビルドし、ソースの変更を監視して、既定のブラウザでPlayloadを開きます。
+        </p>
+        <h2>ライセンス</h2>
+        <p>
+          Playloadのコードとドキュメントは<a href="/playload/LICENSE">MITライセンス</a
+          >で公開しています。
+        </p>
+        <p>同梱する外部の素材には、それぞれのライセンスが適用されます。</p>
+        <ul>
+          <li><a href="https://ggbot.itch.io/public-pixel-font">Public Pixel</a>: CC0</li>
+          <li><a href="https://github.com/viznut/unscii">Unscii-8</a>: パブリックドメイン / CC0</li>
+          <li>
+            <a href="https://github.com/jdecked/twemoji">Twemojiの色参照</a>:
+            <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+          </li>
+          <li>
+            <a href="https://littlelimit.net/misaki.htm">美咲ゴシック</a>:
+            商用を含む使用・改変・再配布が可能
+          </li>
+          <li>
+            <a href="https://www.unicode.org/Public/17.0.0/">Unicodeデータ</a>:
+            <a href="{{REPOSITORY}}/blob/main/data/fonts/unicode-LICENSE.txt">Unicode License v3</a>
+          </li>
+          <li>
+            <a href="https://pixeljoint.com/forum/forum_posts.asp?TID=26050">DB8</a>（パレット）:
+            Richard Fhager（DawnBringer）
+          </li>
+          <li>
+            <a
+              href="https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl"
+              >CRT-Lottes</a
+            >: パブリックドメイン
+          </li>
+          <li>
+            <a
+              href="https://github.com/mamedev/mame/blob/dd06c01bbbd7d0c1c8aefa477c095861c7f8bf31/src/devices/sound/ay8910.cpp"
+              >AYの音量測定値</a
+            >: パブリックドメイン
+          </li>
+          <li><a href="https://prismjs.com/">Prism</a>: MIT</li>
+          <li>
+            <a href="https://fonts.google.com/specimen/Press+Start+2P">Press Start 2P</a
+            >（ロゴとファビコン）: SIL OFL 1.1
+          </li>
+          <li>
+            <a href="https://github.com/digital-sound-antiques/emu2149">emu2149</a>（テスト用参照）:
+            MIT
+          </li>
+        </ul>
+      </article>
+    </main>
+  </body>
+</html>

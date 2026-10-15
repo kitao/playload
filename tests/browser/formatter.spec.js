@@ -5,7 +5,7 @@ const source = '// @title Format Check\n\n\n\nfunction tick(){cls(0)}\n\n';
 const formatted = '// @title Format Check\n\nfunction tick() {\n  cls(0);\n}\n';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await expect(page.locator('#format')).toBeVisible();
 });
 

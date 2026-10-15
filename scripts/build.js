@@ -2,6 +2,7 @@ import { build } from 'esbuild';
 import { cp, mkdir, mkdtemp, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { marked } from 'marked';
 import { escapeHTML, renderReference } from './reference.js';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -39,6 +40,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
     if (homepage.pathname !== '/playload/')
       throw new Error('The stable publication path must remain /playload/.');
     const base = homepage.pathname;
+    const app = base + 'app/';
     const repository = project.repository.url.replace(/\.git$/, '');
     await mkdir(new URL('playload/', output), { recursive: true });
 
@@ -49,6 +51,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
         formatter: 'src/app/formatter.js',
         'app-style': 'src/app/style.css',
         'site-style': 'src/site/style.css',
+        site: 'src/site/main.js',
       },
       outdir: join(stage, 'playload/assets/bundles'),
       entryNames: '[name]-[hash]',
@@ -89,6 +92,9 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
     await cp(new URL('../LICENSE', import.meta.url), new URL('playload/LICENSE', output));
     await cp(new URL('../src/site/_headers', import.meta.url), new URL('_headers', output));
     const common = {
+      HOME_URL: escapeHTML(homepage.href),
+      APP_URL: escapeHTML(new URL(app, homepage).href),
+      APP_PATH: app,
       VERSION: escapeHTML(project.version),
       DESCRIPTION: escapeHTML(project.description),
       REPOSITORY: escapeHTML(repository),
@@ -102,11 +108,36 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       await writeFile(target, fill(template, { ...common, ...values }));
     }
     const reference = await renderReference();
-    await page('src/app/index.html', 'index.html', {
+    await page('src/app/index.html', 'app/index.html', {
       APP_SCRIPT: asset('src/app/main.js'),
       FORMAT_SCRIPT: asset('src/app/formatter.js'),
       APP_STYLE: asset('src/app/style.css'),
       REFERENCE: reference.html,
+    });
+    const images = new Set();
+    const readme = marked
+      .parse(await readFile(new URL('../README.md', import.meta.url), 'utf8'))
+      .replace(/\b(href|src)="([^"]+)"/g, (attribute, name, href) => {
+        if (href === new URL(app, homepage).href) return `${name}="${app}"`;
+        if (/^(?:[a-z][a-z\d+.-]*:|\/|#)/i.test(href)) return attribute;
+        if (href.startsWith('assets/')) {
+          images.add(href);
+          return `${name}="${base + href}"`;
+        }
+        return `${name}="${escapeHTML(href === 'LICENSE' ? base + href : repository + '/blob/main/' + href)}"`;
+      })
+      .replace(
+        /<img src="([^"]*\/images\/[^"]+)"/g,
+        '<img loading="lazy" decoding="async" src="$1"',
+      );
+    for (const image of images) {
+      const target = new URL('playload/' + image, output);
+      await mkdir(new URL('.', target), { recursive: true });
+      await cp(new URL('../' + image, import.meta.url), target);
+    }
+    await page('src/site/index.html', 'index.html', {
+      README: readme,
+      SITE_SCRIPT: asset('src/site/main.js'),
     });
     await page('src/site/404.html', '404.html', {});
     const backup = stage + '-previous';

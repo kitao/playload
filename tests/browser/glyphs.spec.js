@@ -9,7 +9,7 @@ test('alphabet previews and clipboard preserve the original letter case', async 
       value: { writeText: async (text) => window.copied.push(text) },
     });
   });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Alphabet', exact: true }).click();
   for (const chr of ['A', 'a', 'µ']) {
@@ -41,7 +41,7 @@ test('landscape phone Info leaves readable palette labels and space to browse ev
     isMobile: true,
   });
   try {
-    await page.goto(baseURL + '/playload/');
+    await page.goto(baseURL + '/playload/app/');
     await page.locator('#info-tab').tap();
     await page.getByRole('tab', { name: 'API', exact: true }).tap();
     for (const [width, height] of [
@@ -103,7 +103,7 @@ test('catalog browsing position survives rotating while API, Examples or Play is
     isMobile: true,
   });
   try {
-    await page.goto(baseURL + '/playload/');
+    await page.goto(baseURL + '/playload/app/');
     await page.locator('#info-tab').tap();
     for (const away of ['API', 'Examples', 'Play']) {
       await page.setViewportSize({ width: 844, height: 390 });
@@ -157,7 +157,7 @@ for (const touch of [false, true]) {
         value: { writeText: async () => {} },
       }),
     );
-    await page.goto(baseURL + '/playload/');
+    await page.goto(baseURL + '/playload/app/');
     await page.getByRole('tab', { name: 'Info', exact: true }).click();
     const notice = page.locator('#status');
     let noticeBox;
@@ -217,7 +217,7 @@ test('reduced motion keeps the copy confirmation still until it disappears', asy
       value: { writeText: async () => {} },
     }),
   );
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.locator('#info-tab').click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   await page.locator('#catalog button').first().click();
@@ -241,7 +241,7 @@ for (const action of ['switch tab', 'scroll']) {
         },
       }),
     );
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.getByRole('tab', { name: 'Info', exact: true }).click();
     await page.getByRole('tab', { name: 'Alphabet', exact: true }).click();
     await page.locator('#catalog button').first().click();
@@ -285,7 +285,7 @@ for (const result of ['success', 'failure']) {
         },
       });
     }, result);
-    await page.goto('/playload/');
+    await page.goto('/playload/app/');
     await page.getByRole('tab', { name: 'Info', exact: true }).click();
     await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
     await page.locator('#catalog button').first().click();
@@ -324,7 +324,7 @@ test('catalog copies clean up the fallback after a recent success', async ({ pag
       },
     });
   });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   await page.locator('#catalog button').first().click();
@@ -356,7 +356,7 @@ test('a failed copy reports briefly without leaving a field or stealing focus', 
     Object.defineProperty(navigator, 'clipboard', { value: undefined });
     document.execCommand = () => false;
   });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   const glyph = page.locator('#catalog button').first();
@@ -379,7 +379,7 @@ test('HTTP glyph taps copy real text without leaving a field', async ({ browser,
     permissions: ['clipboard-read', 'clipboard-write'],
   });
   const secure = await context.newPage();
-  await secure.goto(baseURL + '/playload/');
+  await secure.goto(baseURL + '/playload/app/');
   const original = await secure.evaluate(() => navigator.clipboard.readText());
   try {
     await context.route('http://playload.test/**', async (route) => {
@@ -388,7 +388,7 @@ test('HTTP glyph taps copy real text without leaving a field', async ({ browser,
       await route.fulfill({ response });
     });
     const phone = await context.newPage();
-    await phone.goto('http://playload.test/playload/');
+    await phone.goto('http://playload.test/playload/app/');
     expect(await phone.evaluate(() => isSecureContext)).toBe(false);
     expect(await phone.evaluate(() => typeof navigator.clipboard)).toBe('undefined');
     await phone.getByRole('tab', { name: 'Info', exact: true }).tap();
@@ -414,7 +414,7 @@ test('the curated game catalog scrolls continuously without search or pagination
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.setViewportSize({ width: 1710, height: 895 });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   await expect(page.getByRole('tab', { name: 'Emoji', exact: true })).toHaveAttribute(
@@ -463,7 +463,7 @@ test('the curated game catalog scrolls continuously without search or pagination
 test('keyboard catalog navigation visibly marks the focused glyph without adding an outline', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   await page.mouse.move(0, 0);
@@ -486,7 +486,7 @@ test('keyboard catalog navigation visibly marks the focused glyph without adding
 
 test('scrolling a focused virtual catalog retains keyboard navigation', async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 400 });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   await page.locator('#catalog button').first().focus();
@@ -510,7 +510,7 @@ test('supplementary catalog symbols have a source-faithful font fallback', async
   page.on('console', (entry) => {
     if (entry.type() === 'error') errors.push(entry.text());
   });
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
   const result = await page.evaluate(async () => {
@@ -544,7 +544,7 @@ test('supplementary catalog symbols have a source-faithful font fallback', async
 test('catalog artwork matches real worker output, including European accents, kana and emoji selectors', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const samples = [
     'é',
     'Ґ',
@@ -603,7 +603,7 @@ test('catalog artwork matches real worker output, including European accents, ka
 test('CRT reconstruction scales smoothly at fractional sizes while flat pixels remain sharp', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Play' }).click();
   await page
     .getByRole('textbox', { name: 'JavaScript code' })
@@ -626,7 +626,7 @@ test('CRT reconstruction scales smoothly at fractional sizes while flat pixels r
 test('all 108 algorithm-colored emoji retain their default ink in a real game worker', async ({
   page,
 }) => {
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const { code, expected } = await page.evaluate(async () => {
     const { glyphs } = await import('/src/engine/glyphs.js');
     const { palette } = await import('/src/engine/engine.js');
@@ -672,13 +672,13 @@ test('all 108 algorithm-colored emoji retain their default ink in a real game wo
 test('a shared pictogram dungeon starts with CRT and sound', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1710, height: 895 });
   const source = await readFile(new URL('../../examples/glyph-quest.js', import.meta.url), 'utf8');
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const hash = await page.evaluate(async (source) => {
     const { encode } = await import('/src/payload.js');
     return (await encode(source)).hash;
   }, source);
   expect(hash.length).toBeLessThan(4096);
-  await page.goto('/playload/' + hash);
+  await page.goto('/playload/app/' + hash);
   await page.getByRole('button', { name: 'Click to play', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'CRT', exact: true })).toHaveAttribute(

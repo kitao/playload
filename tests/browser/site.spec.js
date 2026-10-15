@@ -2,9 +2,150 @@ import { baseURL } from '../../playwright.config.js';
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { marked } from 'marked';
+import { encode } from '../../src/payload.js';
 
 const legacy = '#1.09dXcCjJLMlJVfBJTU9MruRKK81LLsnMz1MoyUzO1tBUqFZIzinWMNG0VqgFAA';
 const source = '// @title Legacy\nfunction tick() { cls(4); }';
+
+test('the introduction follows README and opens the app without loading app code first', async ({
+  page,
+}, testInfo) => {
+  const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
+  const appRequests = [];
+  page.on('request', (request) => {
+    if (/\/(?:app|formatter)-[A-Z0-9]+\.js$/.test(new URL(request.url()).pathname))
+      appRequests.push(request.url());
+  });
+  await page.goto('/playload/');
+  const content = await page.evaluate((html) => {
+    const expected = new DOMParser().parseFromString(html, 'text/html');
+    const normalize = (value) => value.replace(/\s+/g, ' ').trim();
+    return {
+      actual: normalize(document.querySelector('.readme[lang="en"]').textContent),
+      expected: normalize(expected.body.textContent),
+    };
+  }, marked.parse(readme));
+  expect(content.actual).toBe(content.expected);
+  expect(appRequests).toEqual([]);
+  await expect(page.locator('#editor')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Open Playload →' })).toHaveAttribute(
+    'href',
+    '/playload/app/',
+  );
+  const images = page.locator('.readme:visible a > img');
+  expect(
+    await images.evaluateAll((items) => items.map((image) => image.getAttribute('src'))),
+  ).toEqual([
+    '/playload/assets/images/example-glyph-quest.jpg',
+    '/playload/assets/images/info-api.jpg',
+    '/playload/assets/images/info-emoji.jpg',
+    '/playload/assets/images/info-examples.jpg',
+  ]);
+  await expect
+    .poll(() =>
+      images.evaluateAll((items) =>
+        items.every((image) => image.complete && image.naturalWidth > 0),
+      ),
+    )
+    .toBe(true);
+  for (const width of [1400, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({
+      path: testInfo.outputPath(`introduction-${width}.png`),
+      fullPage: true,
+    });
+  }
+  await page.getByRole('link', { name: 'Open Playload →' }).click();
+  await expect(page).toHaveURL(baseURL + '/playload/app/');
+  await expect(page.locator('#start-game')).toBeVisible();
+});
+
+for (const [languages, language] of [
+  [['ja-JP', 'en-US'], 'ja'],
+  [['en-GB', 'ja-JP'], 'en'],
+  [['fr-FR', 'ja-JP', 'en-US'], 'ja'],
+  [['fr-FR'], 'en'],
+]) {
+  test(`one introduction URL selects ${language} from ${languages.join(', ')}`, async ({
+    page,
+  }) => {
+    await page.addInitScript((languages) => {
+      Object.defineProperty(navigator, 'languages', { value: languages, configurable: true });
+    }, languages);
+    await page.goto('/playload/');
+    await expect(page.locator('html')).toHaveAttribute('lang', language);
+    await expect(page.locator('.readme:visible')).toHaveCount(1);
+    await expect(page.locator('.readme:visible')).toHaveAttribute('lang', language);
+    await expect(page).toHaveURL(baseURL + '/playload/');
+    if (language === 'ja') {
+      await expect(page.getByRole('heading', { name: '仕様', exact: true })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Playloadを開く →' })).toHaveAttribute(
+        'href',
+        '/playload/app/',
+      );
+    } else {
+      await expect(page.getByRole('heading', { name: 'Specifications' })).toBeVisible();
+    }
+  });
+}
+
+test('the Japanese introduction uses the same images and licenses and changes language in place', async ({
+  browser,
+}, testInfo) => {
+  const page = await browser.newPage({ locale: 'ja-JP', viewport: { width: 1400, height: 1000 } });
+  try {
+    await page.goto(baseURL + '/playload/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
+    for (const selector of ['a > img', 'ul:last-child a']) {
+      const links = (items) =>
+        items.map((item) => item.getAttribute(item.tagName === 'IMG' ? 'src' : 'href'));
+      expect(await page.locator('.readme[lang="ja"] ' + selector).evaluateAll(links)).toEqual(
+        await page.locator('.readme[lang="en"] ' + selector).evaluateAll(links),
+      );
+    }
+    for (const width of [1400, 390]) {
+      await page.setViewportSize({ width, height: 1000 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+      await page.screenshot({
+        path: testInfo.outputPath(`introduction-ja-${width}.png`),
+        fullPage: true,
+      });
+    }
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'languages', { value: ['en-US'], configurable: true });
+      window.dispatchEvent(new Event('languagechange'));
+    });
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.getByRole('heading', { name: 'Specifications' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '仕様', exact: true })).toHaveCount(0);
+    await expect(page).toHaveURL(baseURL + '/playload/');
+    await page.getByRole('link', { name: 'Open Playload →' }).click();
+    await expect(page).toHaveURL(baseURL + '/playload/app/');
+  } finally {
+    await page.close();
+  }
+});
+
+test('existing shared root URLs preserve their code and query when opening the app', async ({
+  page,
+}) => {
+  for (const hash of [legacy, (await encode(source)).hash]) {
+    await page.goto('/playload/?ref=shared' + hash);
+    await expect(page).toHaveURL(baseURL + '/playload/app/?ref=shared' + hash);
+    await expect(page.locator('#editor')).toHaveValue(source);
+  }
+  await page.goto('/playload/#specifications');
+  await expect(page.locator('.readme:visible')).toBeVisible();
+  await expect(page).toHaveURL(baseURL + '/playload/#specifications');
+  await page.evaluate((hash) => (location.hash = hash), legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
+  await expect(page.locator('#editor')).toHaveValue(source);
+});
 
 test('the project license declares UTF-8 and renders its original text', async ({
   page,
@@ -24,7 +165,7 @@ test('README and About use the same introduction, section order, specifications,
   page,
 }) => {
   const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
-  await page.goto('/playload/');
+  await page.goto('/playload/app/');
   const content = await page.evaluate((html) => {
     const document = new DOMParser().parseFromString(html, 'text/html');
     const normalize = (text) => text.replace(/\s*↗/g, '').replace(/\s+/g, ' ').trim();
@@ -107,7 +248,7 @@ for (const touch of [false, true]) {
       isMobile: touch,
     });
     try {
-      await page.goto(baseURL + '/playload/' + legacy);
+      await page.goto(baseURL + '/playload/app/' + legacy);
       await expect(page.locator('#editor')).toHaveValue(source);
       const original = page.url();
       await page.getByRole('tab', { name: 'Info', exact: true }).click();
@@ -220,12 +361,13 @@ test('slash normalization retains a legacy fragment and unavailable paths return
   page,
 }) => {
   await page.goto('/playload?ref=legacy' + legacy);
-  await expect(page).toHaveURL(baseURL + '/playload/?ref=legacy' + legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/?ref=legacy' + legacy);
   await expect(page.locator('#editor')).toHaveValue(source);
   await page.goto('/playload/index.html?ref=legacy' + legacy);
-  await expect(page).toHaveURL(baseURL + '/playload/?ref=legacy' + legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/?ref=legacy' + legacy);
+  await page.goto('/playload/app?ref=legacy' + legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/?ref=legacy' + legacy);
   for (const path of [
-    '/playload/app/',
     '/playload/user-guide/',
     '/playload/missing/',
     '/playload/NOTICE.txt',
@@ -253,7 +395,7 @@ test('palette swatches display their codes without copying or changing the draft
       value: { writeText: async (text) => window.paletteCopies.push(text) },
     });
   });
-  await page.goto('/playload/' + legacy);
+  await page.goto('/playload/app/' + legacy);
   await expect(page.locator('#editor')).toHaveValue(source);
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
   const original = page.url();
