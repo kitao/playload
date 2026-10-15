@@ -23,11 +23,11 @@
     <main aria-label="Playload">
       <article class="readme" lang="en">{{README}}</article>
       <article class="readme" lang="ja">
-        <p align="center">
+        <h1 align="center">
           <img src="/playload/assets/logo.svg" alt="Playload" width="384" />
-        </p>
+        </h1>
         <p align="center">URLでゲームを共有できる、小さなゲームエンジン</p>
-        <h3 align="center"><a href="{{APP_PATH}}">Playloadを開く</a></h3>
+        <p class="app-link" align="center"><a href="{{APP_PATH}}">Playloadを開く</a></p>
         <p class="badges" align="center">
           <a href="https://github.com/kitao/playload"
             ><img
@@ -121,12 +121,14 @@
         </p>
         <h2>開発を支援する</h2>
         <p>
-          Playloadは無料で使えます。もし気に入ったら、<a href="{{REPOSITORY}}">GitHubのスター</a
-          >や、<a href="https://github.com/sponsors/kitao">GitHub Sponsors</a>・<a
-            href="https://ko-fi.com/H2H27VDKD"
-            >Ko-fi</a
-          >からの寄付で応援していただけるとうれしいです。
-          いただいた支援は開発費用を支え、Playloadの改善に取り組む時間につながります。
+          もしPlayloadを気に入ったら、<a href="{{REPOSITORY}}">GitHubのスター</a
+          >で応援していただけるとうれしいです。Playloadをより多くの人に知ってもらうきっかけになります。
+        </p>
+        <p>
+          Playloadは無料で使えます。開発への寄付は、<a href="https://github.com/sponsors/kitao"
+            >GitHub Sponsors</a
+          >・<a href="https://ko-fi.com/H2H27VDKD">Ko-fi</a>で受け付けています。
+          いただいた寄付は開発費用を補い、Playloadの改善に使える時間を増やす助けになります。
         </p>
         <h2>ライセンス</h2>
         <p>
@@ -174,6 +176,10 @@
           <li>
             <a href="https://prismjs.com/">Prism</a>:
             <a href="https://github.com/PrismJS/prism/blob/v1.30.0/LICENSE">MIT</a>
+          </li>
+          <li>
+            <a href="https://prettier.io/">Prettier</a>:
+            <a href="https://github.com/prettier/prettier/blob/3.9.9/LICENSE">MIT</a>
           </li>
           <li>
             <a href="https://fonts.google.com/specimen/Press+Start+2P">Press Start 2P</a

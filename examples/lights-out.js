@@ -40,11 +40,24 @@ let x;
 let y;
 let moves;
 let cleared;
+let board;
 
-pcg['●'].pat = '3c7effffffff7e3c';
-pcg['●'].col = [6, 0];
-pcg['○'].pat = '3c4281818181423c';
-pcg['○'].col = [4, 0];
+// Four 8×8 characters form each 16×16 lamp, with four pixels between lamps.
+const lampPatterns = [
+  '071f3f7f7fffffff',
+  'e0f8fcfefeffffff',
+  'ffffff7f7f3f1f07',
+  'fffffffefefcf8e0',
+  '0718204040808080',
+  'e018040202010101',
+  '8080804040201807',
+  '01010102020418e0',
+];
+for (const [i, chr] of [...'①②③④⑤⑥⑦⑧'].entries()) pcg[chr].pat = lampPatterns[i];
+pcg['┌'].pat = 'f880808080000000';
+pcg['┐'].pat = '1f01010101000000';
+pcg['└'].pat = '00000080808080f8';
+pcg['┘'].pat = '000000010101011f';
 
 function flip(cx, cy) {
   for (const [dx, dy] of [
@@ -57,41 +70,27 @@ function flip(cx, cy) {
     const nx = cx + dx;
     const ny = cy + dy;
     if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5) {
-      // The screen cells are also the board's state.
-      const cell = scr[4 + ny * 2][6 + nx * 2];
-      cell.chr = cell.chr === '●' ? '○' : '●';
+      board[ny][nx] = !board[ny][nx];
     }
   }
 }
 
 function isClear() {
-  for (let cy = 0; cy < 5; cy++) {
-    for (let cx = 0; cx < 5; cx++) {
-      if (scr[4 + cy * 2][6 + cx * 2].chr === '●') return false;
-    }
-  }
-  return true;
+  return board.every((row) => row.every((light) => !light));
 }
 
 function drawStatus() {
   const last = level === puzzles.length - 1;
-  let title = 'TURN LIGHTS OFF';
-  let action = 'ARROWS SELECT';
-  if (cleared) {
-    title = last ? 'ALL BOARDS CLEAR!' : 'BOARD CLEAR!';
-    action = last ? 'A PLAY AGAIN' : 'A NEXT BOARD';
+  const messages = [
+    `LIGHTS OUT ${level + 1}/${puzzles.length}`,
+    `MOVES ${moves}  PAR ${puzzles[level].length}`,
+    cleared ? (last ? 'ALL BOARDS CLEAR!' : 'BOARD CLEAR!') : 'TURN ALL LIGHTS OFF',
+    cleared ? (last ? 'A AGAIN  B RESTART' : 'A NEXT  B RETRY') : '↑↓←→ A FLIP B RETRY',
+  ];
+  for (const [i, row] of [0, 1, 16, 17].entries()) {
+    put(0, row, ' '.repeat(20));
+    put(Math.floor((20 - messages[i].length) / 2), row, messages[i], i === 0 ? 6 : 7);
   }
-  put(3, 1, `LIGHTS OUT ${level + 1}/${puzzles.length}`, 6);
-  put(1, 2, ' '.repeat(18));
-  put(Math.floor((20 - title.length) / 2), 2, title);
-  const score = `MOVES ${moves}  PAR ${puzzles[level].length}`;
-  put(1, 14, ' '.repeat(18));
-  put(Math.floor((20 - score.length) / 2), 14, score);
-  put(1, 15, ' '.repeat(18));
-  put(Math.floor((20 - action.length) / 2), 15, action);
-  const retry = cleared ? (last ? 'B RESTART' : 'B RETRY') : 'A FLIP  B RETRY';
-  put(1, 16, ' '.repeat(18));
-  put(Math.floor((20 - retry.length) / 2), 16, retry);
 }
 
 function startPuzzle() {
@@ -99,15 +98,10 @@ function startPuzzle() {
   y = 2;
   moves = 0;
   cleared = false;
+  board = Array.from({ length: 5 }, () => Array(5).fill(false));
 
   cls(0);
-  for (let cy = 0; cy < 5; cy++) {
-    for (let cx = 0; cx < 5; cx++) {
-      put(6 + cx * 2, 4 + cy * 2, '○');
-    }
-  }
   for (const [cx, cy] of puzzles[level]) flip(cx, cy);
-  scr[4 + y * 2][6 + x * 2].col[1] = 1;
   drawStatus();
   play(0, '');
 }
@@ -124,15 +118,8 @@ function tick() {
       startPuzzle();
     }
   } else {
-    const previousX = x;
-    const previousY = y;
     x = Math.max(0, Math.min(4, x + btnp(3) - btnp(2)));
     y = Math.max(0, Math.min(4, y + btnp(1) - btnp(0)));
-
-    if (x !== previousX || y !== previousY) {
-      scr[4 + previousY * 2][6 + previousX * 2].col[1] = null;
-      scr[4 + y * 2][6 + x * 2].col[1] = 1;
-    }
     if (btnp(4)) {
       flip(x, y);
       moves++;
@@ -142,5 +129,15 @@ function tick() {
     }
   }
 
-  spr(40 + x * 16, 32 + y * 16, '→', 7);
+  for (let cy = 0; cy < 5; cy++) {
+    for (let cx = 0; cx < 5; cx++) {
+      spr(32 + cx * 20, 24 + cy * 20, board[cy][cx] ? '①②\n③④' : '⑤⑥\n⑦⑧', board[cy][cx] ? 6 : 4);
+    }
+  }
+  const px = 32 + x * 20;
+  const py = 24 + y * 20;
+  spr(px - 2, py - 2, '┌', 7);
+  spr(px + 10, py - 2, '┐', 7);
+  spr(px - 2, py + 10, '└', 7);
+  spr(px + 10, py + 10, '┘', 7);
 }

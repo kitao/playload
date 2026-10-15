@@ -170,7 +170,7 @@ for (const touch of [false, true]) {
       await expect(page.locator('.readme:visible')).toHaveAttribute('lang', 'ja');
       await page.evaluate(() => document.fonts.ready);
       const controlsBox = await controls.boundingBox();
-      const logoBox = await page.locator('.readme:visible > p:first-child img').boundingBox();
+      const logoBox = await page.locator('.readme:visible > h1 img').boundingBox();
       expect(controlsBox.x).toBeGreaterThan(viewport.width / 2);
       expect(controlsBox.x + controlsBox.width).toBeLessThanOrEqual(viewport.width - 16);
       expect(controlsBox.y + controlsBox.height + 8).toBeLessThanOrEqual(logoBox.y);
@@ -459,13 +459,13 @@ test('the Japanese introduction uses the same images and licenses and changes la
   }
 });
 
-test('existing shared root URLs preserve their code and query when opening the app', async ({
+test('existing shared root URLs restore their code and drop tracking parameters', async ({
   page,
 }) => {
   for (const hash of [legacy, (await encode(source)).hash]) {
     await page.goto('/playload/?ref=shared' + hash);
-    await expect(page).toHaveURL(baseURL + '/playload/app/?ref=shared' + hash);
     await expect(page.locator('#editor')).toHaveValue(source);
+    await expect(page).toHaveURL(baseURL + '/playload/app/' + hash);
   }
   await page.goto('/playload/#specifications');
   await expect(page.locator('.readme:visible')).toBeVisible();
@@ -630,7 +630,7 @@ for (const touch of [false, true]) {
       ).toHaveAttribute('href', 'https://github.com/kitao/playload');
       const licenses = page.locator('.about-license');
       await expect(page.locator('#about details, #about summary')).toHaveCount(0);
-      await expect(licenses.locator('li')).toHaveCount(11);
+      await expect(licenses.locator('li')).toHaveCount(12);
       const listStyle = (element) => {
         const style = getComputedStyle(element);
         return [
@@ -689,12 +689,12 @@ test('slash normalization retains a legacy fragment and unavailable paths return
   page,
 }) => {
   await page.goto('/playload?ref=legacy' + legacy);
-  await expect(page).toHaveURL(baseURL + '/playload/app/?ref=legacy' + legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
   await expect(page.locator('#editor')).toHaveValue(source);
   await page.goto('/playload/index.html?ref=legacy' + legacy);
-  await expect(page).toHaveURL(baseURL + '/playload/app/?ref=legacy' + legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
   await page.goto('/playload/app?ref=legacy' + legacy);
-  await expect(page).toHaveURL(baseURL + '/playload/app/?ref=legacy' + legacy);
+  await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
   for (const path of [
     '/playload/user-guide/',
     '/playload/missing/',

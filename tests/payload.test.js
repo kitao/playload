@@ -1,7 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateRawSync } from 'node:zlib';
-import { encode, decode, gameURL } from '../src/payload.js';
+import twitterText from 'twitter-text';
+import {
+  encode,
+  decode,
+  gameURL,
+  formatPayloadSize,
+  fitsURLLimit,
+  MAX_COMPRESSED_BYTES,
+} from '../src/payload.js';
+import { sharedGameSource } from './fixtures/shared-game.js';
 
 test('UTF-8 source, emoji and newlines round-trip through a URL payload', async () => {
   const source = 'let 漢="👾⛩️"\nfunction tick(){put(3,7,漢)}';
@@ -59,4 +68,55 @@ test('the fixed legacy v1 payload remains readable and new URLs use the explicit
   for (const prefix of ['#v0.', '#v2.', '#v01.', '#V1.']) {
     await assert.rejects(decode(prefix + legacy.slice(3)), /Invalid game URL/);
   }
+});
+
+test('3 KB means 3,000 bytes and remains one complete URL in X text', async () => {
+  assert.equal(MAX_COMPRESSED_BYTES, 3000);
+  const source = sharedGameSource(3906),
+    payload = await encode(source),
+    url = gameURL('https://kitao.dev/playload/app/?ref=tracking', payload.hash);
+  assert.equal(payload.bytes, 3000);
+  assert.equal(url.length, 4035);
+  assert.equal(new URL(url).search, '');
+  assert(fitsURLLimit(url));
+  assert.equal(await decode(new URL(url).hash), source);
+  for (const text of [url, `ゲームを作りました。\n${url}\n#playload`, `「${url}」`]) {
+    assert.deepEqual(twitterText.extractUrls(text), [url]);
+    assert(twitterText.parseTweet(text).valid);
+  }
+  assert.equal(twitterText.parseTweet(url).weightedLength, 23);
+});
+
+test('the full URL length check agrees with X, including protocol overhead', () => {
+  for (const protocol of ['http:', 'https:']) {
+    const base = protocol + '//kitao.dev/playload/app/#v1.';
+    const boundary = 4096 - protocol.length - 2;
+    for (const length of [boundary, boundary + 1]) {
+      const url = base + 'A'.repeat(length - base.length);
+      const fits = length === boundary;
+      assert.equal(fitsURLLimit(url), fits);
+      assert.equal(twitterText.extractUrls(url).includes(url), fits);
+    }
+  }
+});
+
+test('an over-limit game never rounds down to 3.00 KB', async () => {
+  const payload = await encode(sharedGameSource(3908));
+  assert.equal(payload.bytes, 3001);
+  assert.equal(formatPayloadSize(3000), '3.00 KB');
+  assert.equal(formatPayloadSize(payload.bytes), '3.01 KB');
+  for (const bytes of [0, 1, 999, 1000, 2999, 3000, 3001, 3072]) {
+    assert(Number.parseFloat(formatPayloadSize(bytes)) * 1000 >= bytes);
+  }
+});
+
+test('earlier 3 KiB URLs remain decodable but are outside the new share budget', async () => {
+  const source = sharedGameSource(4003),
+    payload = await encode(source),
+    url = gameURL('https://kitao.dev/playload/app/', payload.hash);
+  assert.equal(payload.bytes, 3072);
+  assert.equal(await decode(payload.hash), source);
+  assert.equal(await decode(payload.hash.replace('#v1.', '#1.')), source);
+  assert.equal(twitterText.parseTweet(url).valid, false);
+  assert.equal(fitsURLLimit(url), false);
 });

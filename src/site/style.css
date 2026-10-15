@@ -84,24 +84,25 @@ html:lang(en) .readme[lang='ja'],
 html:lang(ja) .readme[lang='en'] {
   display: none;
 }
-.readme > p:first-child {
+.readme > h1 {
   margin: 0 0 20px;
 }
-.readme > p:first-child img {
+.readme > h1 img {
   display: block;
   margin-inline: auto;
   image-rendering: pixelated;
 }
-.readme > p:first-child + p {
+.readme > h1 + p {
   margin: 0;
   text-wrap: balance;
 }
-.readme > h3 {
+.readme > .app-link {
   /* Balance the visible gaps above the letters and below the underline. */
   margin: 22px 0 34px;
   font-size: 1.25rem;
+  font-weight: 700;
 }
-.readme[lang='en'] > h3 {
+.readme[lang='en'] > .app-link {
   margin: 23px 0 33px;
 }
 .readme h2 {

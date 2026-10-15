@@ -1,6 +1,13 @@
 import { palette, createEngine } from '../engine/engine.js';
 import { glyphs } from '../engine/glyphs.js';
-import { encode, decode, gameURL, MAX_COMPRESSED_BYTES, MAX_URL_LENGTH } from '../payload.js';
+import {
+  encode,
+  decode,
+  gameURL,
+  formatPayloadSize,
+  fitsURLLimit,
+  MAX_COMPRESSED_BYTES,
+} from '../payload.js';
 import { Runtime, Sound, MAX_FRAME_STEPS } from './runtime.js';
 import { Capture, download } from './capture.js';
 import { createDisplay } from './display.js';
@@ -603,28 +610,26 @@ function scheduleURL(delay = 250) {
     try {
       const encoded = await encode(code);
       if (version !== urlRevision || code !== $('editor').value) return;
-      const url = new URL(location.href);
-      url.searchParams.delete('edit');
-      url.hash =
-        initialHash && editRevision === 0 && code === loadedSource ? initialHash : encoded.hash;
+      const original = initialHash && editRevision === 0 && code === loadedSource,
+        url = new URL(gameURL(location.href, original ? initialHash : encoded.hash));
       payload = encoded;
-      $('size-current').textContent = (encoded.bytes / 1024).toFixed(2) + ' KB';
+      $('size-current').textContent = formatPayloadSize(encoded.bytes);
       $('size').title = encoded.bytes + ' bytes · ' + url.href.length + ' URL characters';
       urlError = '';
-      if (encoded.bytes > MAX_COMPRESSED_BYTES || url.href.length > MAX_URL_LENGTH) {
-        url.hash = '';
+      if (encoded.bytes > MAX_COMPRESSED_BYTES || !fitsURLLimit(url.href)) {
+        // Older links remain playable and keep their source until the user edits it.
+        if (!original) url.hash = '';
         urlError =
           encoded.bytes > MAX_COMPRESSED_BYTES
             ? 'Code exceeds 3 KB compressed.'
-            : 'Bookmark URL exceeds 4,096 characters.';
+            : 'Game URL is too long to share on X.';
       }
       updateError();
       if (writeURL) history.replaceState(null, '', url);
       controls();
     } catch (error) {
       if (version !== urlRevision) return;
-      const url = new URL(location.href);
-      url.hash = '';
+      const url = new URL(gameURL(location.href, ''));
       if (writeURL) history.replaceState(null, '', url);
       payload = null;
       urlError = error.message;
@@ -922,7 +927,7 @@ for (const entry of exampleLinks) {
   playLink.target = '_blank';
   playLink.rel = 'noopener';
   size.className = 'example-size';
-  size.textContent = (entry.bytes / 1024).toFixed(2) + ' KB';
+  size.textContent = formatPayloadSize(entry.bytes);
   description.className = 'example-description';
   description.textContent = entry.description;
   row.append(playLink, size, description);

@@ -22,13 +22,13 @@ let status;
 
 function drawStatus() {
   const seconds = Math.ceil(time / 60);
-  const rows = [1, 2];
+  const rows = [0, 1];
   const messages = [
     `ROUND ${round + 1}/${rounds.length} GEMS ${collected}/${rounds[round].gems}`,
     `TIME ${seconds}  SCORE ${score}`,
   ];
   if (state === 'PLAY') {
-    rows.push(16);
+    rows.push(17);
     messages.push(cooldown ? `WAIT ${Math.ceil(cooldown / 60)}  B RESTART` : 'READY  B RESTART');
   }
   for (const [i, message] of messages.entries()) {
@@ -40,11 +40,11 @@ function drawStatus() {
 }
 
 function placeGem() {
-  gx = 1 + Math.floor(Math.random() * 17);
-  gy = 3 + Math.floor(Math.random() * 12);
+  gx = Math.floor(Math.random() * 20);
+  gy = 2 + Math.floor(Math.random() * 14);
   // Keep a new gem far enough away to require another move.
   if (Math.abs(x - gx * 8) < 24 && Math.abs(y - gy * 8) < 24) {
-    gx = gx < 10 ? 17 : 1;
+    gx = gx < 10 ? 19 : 0;
   }
   put(gx, gy, '💎', null, 1);
 }
@@ -63,7 +63,7 @@ function startRound() {
 
   cls(1);
   put(gx, gy, '💎', null, 1);
-  put(1, 15, 'ARROWS MOVE A DASH', 7, 1);
+  put(1, 16, 'ARROWS MOVE A DASH', 7, 1);
   drawStatus();
   for (let ch = 0; ch < 3; ch++) play(ch, ch === 0 ? 'T240' : '');
 }
@@ -84,10 +84,10 @@ function finish(next) {
     OVER: ['TIME UP!', 'A / B TRY AGAIN'],
   };
   const [message, hint] = messages[next];
-  put(1, 15, ' '.repeat(18), 7, 1);
-  put(Math.floor((20 - message.length) / 2), 15, message, next === 'OVER' ? 3 : 6, 1);
   put(1, 16, ' '.repeat(18), 7, 1);
-  put(Math.floor((20 - hint.length) / 2), 16, hint, 7, 1);
+  put(Math.floor((20 - message.length) / 2), 16, message, next === 'OVER' ? 3 : 6, 1);
+  put(1, 17, ' '.repeat(18), 7, 1);
+  put(Math.floor((20 - hint.length) / 2), 17, hint, 7, 1);
   drawStatus();
   play(0, next === 'OVER' ? 'T180V12O3N2gec' : 'T180V12O5N2cegC');
 }
@@ -114,8 +114,8 @@ function tick() {
     }
     const speed = dash > 0 ? 3 : 1;
     if (dash > 0) dash--;
-    x = Math.max(8, Math.min(144, x + (btn(3) - btn(2)) * speed));
-    y = Math.max(24, Math.min(112, y + (btn(1) - btn(0)) * speed));
+    x = Math.max(0, Math.min(152, x + (btn(3) - btn(2)) * speed));
+    y = Math.max(16, Math.min(120, y + (btn(1) - btn(0)) * speed));
     time--;
 
     if (Math.abs(x - gx * 8) < 6 && Math.abs(y - gy * 8) < 6) {

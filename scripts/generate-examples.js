@@ -1,5 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { encode, gameURL, MAX_COMPRESSED_BYTES, MAX_URL_LENGTH } from '../src/payload.js';
+import { encode, gameURL, fitsURLLimit, MAX_COMPRESSED_BYTES } from '../src/payload.js';
 
 const root = new URL('../', import.meta.url);
 const project = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
@@ -14,7 +14,7 @@ for (const entry of entries) {
   const { hash, bytes } = await encode(source);
   if (
     bytes > MAX_COMPRESSED_BYTES ||
-    gameURL(new URL('app/', project.homepage).href, hash).length > MAX_URL_LENGTH
+    !fitsURLLimit(gameURL(new URL('app/', project.homepage).href, hash))
   )
     throw new Error(`${entry.id} exceeds the shared game limit`);
   links.push({ ...entry, bytes, hash: entry.id === 'starter' ? '' : hash });

@@ -33,17 +33,15 @@ pcg['③'].pat = '7f7f3f1f0f1b3300';
 pcg['④'].pat = 'fefefcf8f0d8cc00';
 
 function drawStatus() {
-  put(1, 1, `WAVE ${wave + 1}/${waves.length}  ♥${lives}`, 6);
+  put(1, 0, `WAVE ${wave + 1}/${waves.length}  ♥${lives}`, 6);
   const boss = wave === waves.length - 1 ? ` BOSS ${targets[0].health}` : '';
-  put(1, 2, (`SCORE ${String(score).padStart(4, '0')}` + boss).padEnd(19), 7);
+  put(1, 1, (`SCORE ${String(score).padStart(4, '0')}` + boss).padEnd(19), 7);
   let instruction = '←→ A FIRE B RESET';
   if (state !== 'PLAY') {
-    const message = { CLEAR: 'WAVE CLEAR', WON: 'ALL WAVES CLEAR', OVER: 'GAME OVER' }[state];
-    put(Math.floor((20 - message.length) / 2), 8, message, state === 'OVER' ? 3 : 6, 0);
     instruction = state === 'CLEAR' ? 'A NEXT B RESET' : 'A / B PLAY AGAIN';
   }
-  put(1, 16, ' '.repeat(18), 7, 0);
-  put(Math.floor((20 - instruction.length) / 2), 16, instruction, 7, 0);
+  put(1, 17, ' '.repeat(18), 7, 0);
+  put(Math.floor((20 - instruction.length) / 2), 17, instruction, 7, 0);
 }
 
 function startWave() {
@@ -166,7 +164,7 @@ function tick() {
         play(2, 'M7V12O4N1gc');
       }
     }
-    shots = shots.filter((shot) => shot.y > -8);
+    shots = shots.filter((shot) => shot.y >= 16);
 
     for (const bullet of bullets) {
       bullet.x += bullet.dx;
@@ -179,7 +177,7 @@ function tick() {
         play(2, 'M35V10O2N1cM7');
       }
     }
-    bullets = bullets.filter((bullet) => bullet.y < 136 && bullet.x > -8 && bullet.x < 160);
+    bullets = bullets.filter((bullet) => bullet.y < 128 && bullet.x > -8 && bullet.x < 160);
 
     if (
       lives === 0 ||
@@ -208,4 +206,11 @@ function tick() {
   }
   sparks = sparks.filter((spark) => spark.time > 0);
   if (state !== 'OVER' && (invincible % 8 < 4 || state !== 'PLAY')) spr(x, 120, '🚀', 4);
+  if (state !== 'PLAY') {
+    const message = { CLEAR: 'WAVE CLEAR', WON: 'ALL WAVES CLEAR', OVER: 'GAME OVER' }[state];
+    const left = Math.floor((20 - message.length) / 2) * 8;
+    // A solid sprite strip keeps the message above aliens and hit particles.
+    spr(left, 64, '█'.repeat(message.length), 0);
+    spr(left, 64, message, state === 'OVER' ? 3 : 6);
+  }
 }

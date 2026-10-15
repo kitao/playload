@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 import { exampleLinks } from '../src/app/examples.js';
+import { formatPayloadSize } from '../src/payload.js';
 
 const viewport = { width: 1600, height: 900 };
 const directory = new URL('../assets/images/', import.meta.url);
@@ -96,7 +97,7 @@ try {
     await page.clock.runFor(300);
     await page.waitForFunction(
       (size) => globalThis.document.querySelector('#size-current').textContent === size,
-      (entry.bytes / 1024).toFixed(2) + ' KB',
+      formatPayloadSize(entry.bytes),
       { polling: 50 },
     );
     await page.locator('#run').click({ force: true });

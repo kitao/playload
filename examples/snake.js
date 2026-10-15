@@ -51,16 +51,17 @@ function drawBoard() {
     put(1 + body[i].x, 2 + body[i].y, '●', i === 0 ? 6 : 5);
   }
 
-  if (state === 'READY') {
-    put(6, 8, 'A START', 7, 0);
-  } else if (state === 'PAUSED') {
+  if (state === 'PAUSED') {
     put(7, 8, 'PAUSED', 7, 0);
   } else if (state === 'OVER') {
     put(5, 8, 'GAME OVER', 3, 0);
   } else if (state === 'WON') {
     put(5, 8, 'ALL CLEAR!', 6, 0);
   }
-  put(2, 17, state === 'PLAY' ? 'A PAUSE  B RESET' : 'A PLAY   B RESET');
+  const action = { READY: 'START', PLAY: 'PAUSE', PAUSED: 'RESUME', OVER: 'RETRY', WON: 'AGAIN' }[
+    state
+  ];
+  put(2, 17, `A ${action.padEnd(6)} B RESET`);
 }
 
 function reset() {

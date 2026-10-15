@@ -1,5 +1,5 @@
 // @title Music Box
-// Left/Right selects a step; Up/Down changes its note. A plays; B resets.
+// Left/right selects a step; up/down changes its note. A plays or stops; B resets.
 
 const pitches = ['&', 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C'];
 const initialNotes = [1, 3, 5, 8, 6, 5, 1, 0];
@@ -30,19 +30,21 @@ function drawNotes() {
       const col1 = playing && step === current ? 6 : 4;
       const col2 = step === selected ? 1 : 0;
       const chr = notes[step] === note ? (note === 0 ? '–' : '♪') : '·';
-      put(8 + step, 12 - note, chr, col1, col2);
+      put(3 + step * 2, 12 - note, chr, col1, col2);
     }
   }
   put(2, 16, playing ? 'A STOP  B RESET' : 'A PLAY  B RESET');
 }
 
 put(5, 1, 'MUSIC BOX', 6);
-put(6, 3, '8 STEPS');
+put(3, 3, '8 STEPS');
+put(12, 3, '– REST', 2);
 for (let note = 0; note < pitches.length; note++) {
-  const label = note === 0 ? 'REST' : pitches[note];
-  put(note === 0 ? 3 : 5, 12 - note, label, 2);
+  put(1, 12 - note, note === 0 ? '–' : pitches[note], 2);
 }
-put(8, 13, '12345678', 2);
+for (let step = 0; step < notes.length; step++) {
+  put(3 + step * 2, 13, String(step + 1), 2);
+}
 put(2, 15, 'STEP ←→ NOTE ↑↓');
 drawNotes();
 

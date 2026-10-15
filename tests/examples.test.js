@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createEngine } from '../src/engine/engine.js';
 import { glyphs } from '../src/engine/glyphs.js';
 import { compileScore, AY } from '../src/engine/sound.js';
-import { encode, gameURL } from '../src/payload.js';
+import { encode } from '../src/payload.js';
 
 async function loadExample(name, hooks, math = Math) {
   const source = await readFile(new URL(`../examples/${name}.js`, import.meta.url), 'utf8');
@@ -23,6 +23,24 @@ async function loadExample(name, hooks, math = Math) {
     step();
   };
   return { source, engine, game, step, press };
+}
+
+function pictureRegion(engine, x, y, width, height) {
+  const pixels = engine.pixels;
+  return Array.from({ length: height }, (_, row) =>
+    Array.from(pixels.subarray((y + row) * 160 + x, (y + row) * 160 + x + width)),
+  );
+}
+
+function expectShooterMessage(engine, text, color) {
+  const expected = createEngine(glyphs, compileScore);
+  const column = Math.floor((20 - text.length) / 2);
+  expected.api.put(column, 8, text, color, 0);
+  assert.deepEqual(
+    pictureRegion(engine, column * 8, 64, text.length * 8, 8),
+    pictureRegion(expected, column * 8, 64, text.length * 8, 8),
+    'The complete result message must remain visible above the game scene.',
+  );
 }
 
 test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async () => {
@@ -47,6 +65,13 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
 
   step();
   assert.equal(game.state().state, 'READY');
+  assert.equal(engine.api.scr[8][9].chr, '●', 'The start prompt must leave the snake visible.');
+  assert(
+    engine.api.scr[17]
+      .map((cell) => cell.chr)
+      .join('')
+      .includes('A START'),
+  );
   game.feed();
   step(1 << 4, 8);
   assert.equal(game.state().score, 1);
@@ -67,6 +92,12 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
   assert.deepEqual(game.state().body[0], { x: 9, y: 5 });
   press(4);
   assert.equal(game.state().state, 'PAUSED');
+  assert(
+    engine.api.scr[17]
+      .map((cell) => cell.chr)
+      .join('')
+      .includes('A RESUME'),
+  );
   const paused = structuredClone(game.state());
   step(0, 30);
   assert.deepEqual(game.state(), paused);
@@ -300,7 +331,7 @@ test('Music Box edits notes and rests, plays eight steps, stops and restores the
   const silence = new AY();
   silence.play(restPreview.ch, restPreview.score);
   assert(silence.render(4800).every((value) => value === 0));
-  assert.equal(engine.api.scr[12][15].chr, '–');
+  assert.equal(engine.api.scr[12][17].chr, '–');
   for (let i = 0; i < 7; i++) press(2);
   press(0);
   for (let i = 0; i < 7; i++) press(3);
@@ -316,7 +347,7 @@ test('Music Box edits notes and rests, plays eight steps, stops and restores the
   assert.equal(ay.mixer, 7);
   engine.input(0);
   for (let i = 0; i < 30; i++) engine.step(game.tick);
-  assert.equal(engine.api.scr[12][9].col[0], 6);
+  assert.equal(engine.api.scr[12][5].col[0], 6);
   press(0);
   assert.equal(game.state().frame, 1);
   assert.equal(
@@ -366,6 +397,51 @@ test('Gems collects when both coordinate differences are less than six', async (
 
 const gemsHooks = `return {tick,rounds,state:()=>({round,state,x,y,gx,gy,score,collected,time,dash,cooldown})};`;
 
+test('Gems uses every field cell while keeping collectibles and movement out of the HUD', async () => {
+  const math = Object.create(Math);
+  let column = 0;
+  let row = 0;
+  let draws = 0;
+  math.random = () => (draws++ % 2 ? (row + 0.5) / 14 : (column + 0.5) / 20);
+  const { engine, game, step } = await loadExample(
+    'gems',
+    'return {tick,placeGem,state:()=>({x,y,gx,gy})};',
+    math,
+  );
+  const cells = new Set();
+  for (const [mask, x, y] of [
+    [5, 0, 16],
+    [10, 152, 120],
+  ]) {
+    column = 0;
+    row = 0;
+    step(mask, 200);
+    assert.deepEqual([game.state().x, game.state().y], [x, y]);
+    for (row = 0; row < 14; row++) {
+      for (column = 0; column < 20; column++) {
+        game.placeGem();
+        const { gx, gy } = game.state();
+        assert(gy >= 2 && gy <= 15, 'Collectibles stay between the information rows.');
+        assert.equal(engine.api.scr[gy][gx].chr, '💎');
+        cells.add(`${gx},${gy}`);
+      }
+    }
+  }
+  assert.equal(cells.size, 280, 'A distant pickup can occupy any of the twenty by fourteen cells.');
+  assert(
+    engine.api.scr[0]
+      .map((cell) => cell.chr)
+      .join('')
+      .includes('ROUND'),
+  );
+  assert(
+    engine.api.scr[16]
+      .map((cell) => cell.chr)
+      .join('')
+      .includes('A DASH'),
+  );
+});
+
 test('Gems clears three timed rounds, rewards faster play and starts again without background music', async () => {
   for (const random of [0, 0.5, 0.999]) {
     const math = Object.create(Math);
@@ -384,7 +460,7 @@ test('Gems clears three timed rounds, rewards faster play and starts again witho
           (Math.abs(dy) > 2 ? 1 << (dy > 0 ? 1 : 0) : 0);
         step(movement | (cooldown === 0 ? 1 << 4 : 0));
         const after = game.state();
-        assert(after.x >= 8 && after.x <= 144 && after.y >= 24 && after.y <= 112);
+        assert(after.x >= 0 && after.x <= 152 && after.y >= 16 && after.y <= 120);
         for (const { score } of engine.sounds()) {
           assert(
             !score.code.some((event) => event.op === 'repeat'),
@@ -438,9 +514,9 @@ test('Gems limits held dash, expires its timer, keeps distant pickups and restar
   press(5);
   engine.sounds();
   step((1 << 0) | (1 << 2), 100);
-  assert.deepEqual([game.state().x, game.state().y], [8, 24]);
+  assert.deepEqual([game.state().x, game.state().y], [0, 16]);
   step((1 << 1) | (1 << 3), 200);
-  assert.deepEqual([game.state().x, game.state().y], [144, 112]);
+  assert.deepEqual([game.state().x, game.state().y], [152, 120]);
   step(0, game.state().time - 1);
   assert.equal(game.state().state, 'PLAY');
   step();
@@ -481,14 +557,9 @@ test('Gems limits held dash, expires its timer, keeps distant pickups and restar
 test('Lights Out solves five distinct boards at their verified minimum, advances and restarts', async () => {
   const { engine, game, step, press } = await loadExample(
     'lights-out',
-    'return {tick,puzzles,state:()=>({level,x,y,moves,cleared})};',
+    'return {tick,puzzles,state:()=>({level,x,y,moves,cleared}),board:()=>board.map(row=>row.map(Number))};',
   );
-  const board = () =>
-    Array.from({ length: 5 }, (_, y) =>
-      Array.from({ length: 5 }, (_, x) =>
-        engine.api.scr[4 + y * 2][6 + x * 2].chr === '●' ? 1 : 0,
-      ),
-    );
+  const board = game.board;
   const text = (row) =>
     engine.api.scr[row]
       .map((cell) => cell.chr)
@@ -535,13 +606,20 @@ test('Lights Out solves five distinct boards at their verified minimum, advances
     }
     assert.equal(minimumMoves(original), level + 2);
     assert.equal(game.puzzles[level].length, level + 2);
-    assert(text(14).includes(`PAR ${level + 2}`));
-    assert.deepEqual(engine.api.scr[8][10].col, [null, 1]);
+    assert(text(1).includes(`PAR ${level + 2}`));
+    const pixel = (x, y) => engine.pixels[y * 160 + x];
+    for (let cy = 0; cy < 5; cy++) {
+      for (let cx = 0; cx < 5; cx++) {
+        assert.equal(pixel(40 + cx * 20, 32 + cy * 20), original[cy][cx] ? 6 : 0);
+        assert.equal(pixel(40 + cx * 20, 24 + cy * 20), original[cy][cx] ? 6 : 4);
+      }
+    }
+    assert.equal(pixel(70, 62), 7, 'The selection corners enclose the selected lamp.');
     press(3);
-    assert.deepEqual(engine.api.scr[8][10].col, [null, null]);
-    assert.deepEqual(engine.api.scr[8][12].col, [null, 1]);
+    assert.equal(pixel(70, 62), 0, 'Moving the selection removes the old corners.');
+    assert.equal(pixel(90, 62), 7);
     step(0, 60);
-    assert.deepEqual(board(), original, 'Idle ticks must not redraw or mutate the puzzle.');
+    assert.deepEqual(board(), original, 'Idle ticks must not mutate the puzzle.');
 
     for (const [tx, ty] of game.puzzles[level]) {
       for (let i = 0; i < 4 && game.state().x !== tx; i++) press(game.state().x < tx ? 3 : 2);
@@ -564,7 +642,7 @@ test('Lights Out solves five distinct boards at their verified minimum, advances
         .flat()
         .every((cell) => cell === 0),
     );
-    if (level === game.puzzles.length - 1) assert.equal(text(2), 'ALL BOARDS CLEAR!');
+    if (level === game.puzzles.length - 1) assert.equal(text(16), 'ALL BOARDS CLEAR!');
     press(4);
     assert.equal(game.state().moves, 0, 'Next-board input must not also flip a light.');
   }
@@ -695,6 +773,66 @@ test('Chiptune synchronizes four sections, finishes without looping, stops and r
   assert(engine.pixels.every((col) => col <= 7));
 });
 
+test('Glyph Quest has connected twenty by fourteen dungeons and valid patrol routes', async () => {
+  const { engine, game } = await loadExample(
+    'glyph-quest',
+    'return {levels,start:(level)=>{stage=level;startLevel();}};',
+  );
+  for (const [stage, level] of game.levels.entries()) {
+    game.start(stage);
+    const map = level.map.map((row) => [...row]);
+    assert.equal(map.length, 14);
+    for (const [y, row] of map.entries()) {
+      assert.equal(row.length, 20);
+      assert.equal(row[0], '#');
+      assert.equal(row[19], '#');
+      assert.deepEqual(
+        engine.api.scr[y + 2].map((cell) => cell.chr),
+        row,
+        'The visible map must agree with collision coordinates across all twenty columns.',
+      );
+    }
+    const reachable = new Set(['1,1']);
+    const queue = [[1, 1]];
+    for (const [x, y] of queue) {
+      for (const [dx, dy] of [
+        [0, -1],
+        [0, 1],
+        [-1, 0],
+        [1, 0],
+      ]) {
+        const nx = x + dx;
+        const ny = y + dy;
+        const key = `${nx},${ny}`;
+        if (!map[ny]?.[nx] || map[ny][nx] === '#' || reachable.has(key)) continue;
+        reachable.add(key);
+        queue.push([nx, ny]);
+      }
+    }
+    for (const [y, row] of map.entries()) {
+      for (const [x, tile] of row.entries()) {
+        if (tile !== '#')
+          assert(reachable.has(`${x},${y}`), `${level.name}: every floor cell must be reachable.`);
+      }
+    }
+    assert(queue.some(([x]) => x === 1));
+    assert(queue.some(([x]) => x === 18));
+    assert(queue.some(([, y]) => y === 12));
+    for (const route of level.patrols) {
+      for (const [i, [x, y]] of route.entries()) {
+        const [tx, ty] = route[(i + 1) % route.length];
+        assert(x === tx || y === ty, 'Patrol segments follow a row or column.');
+        const distance = Math.abs(tx - x) + Math.abs(ty - y);
+        for (let step = 0; step <= distance; step++) {
+          const cx = x + Math.sign(tx - x) * step;
+          const cy = y + Math.sign(ty - y) * step;
+          assert(reachable.has(`${cx},${cy}`), 'Patrols stay on reachable floor.');
+        }
+      }
+    }
+  }
+});
+
 test('Glyph Quest clears three guarded dungeons through recorded real inputs', async () => {
   const { source, engine, game, step } = await loadExample(
     'glyph-quest',
@@ -702,16 +840,12 @@ test('Glyph Quest clears three guarded dungeons through recorded real inputs', a
   );
   // Recorded real controller inputs, encoded as mask:ticks. No state is injected.
   const routes = [
-    '0:1200 8:14 2:21 18:1 2:6 8:28 1:14 4:7 1:14 8:21 4:21 2:14 8:7 2:14 4:28 ' +
-      '1:14 4:7 2:14 24:1 8:34 1:14 4:7 1:14 8:28 24:1 8:6 2:21 8:7 1:14 4:14 1:7 ' +
-      '4:35 2:14 8:7 2:14 4:28 2:21 4:7 2:7 8:7 2:7 8:14 1:7 8:21 2:7 8:21 1:7 ' +
-      '8:14 2:7 4:28 1:7 4:21 2:7 4:28 8:21 1:7 8:21 2:7 8:56 15:30 0:1 16:1 0:1',
-    '0:1200 8:63 24:1 8:41 2:14 4:7 8:7 1:14 4:70 2:42 4:7 20:1 4:27 1:14 2:35 ' +
-      '8:49 24:1 8:6 1:21 4:7 1:14 8:7 4:7 2:14 8:14 4:7 2:14 18:1 2:6 4:14 1:7 ' +
-      '4:28 2:7 8:42 1:7 8:28 24:1 8:6 2:7 8:14 15:30 0:1 16:1 0:1',
-    '0:1200 8:98 4:21 20:1 4:48 2:14 4:7 8:28 24:1 8:6 4:42 2:14 4:14 8:14 1:14 ' +
-      '8:14 24:1 8:62 2:14 8:14 4:14 1:14 4:28 2:28 4:21 2:21 8:63 15:30 0:1 16:1 ' +
-      '0:1',
+    '0:1200 8:7 2:14 8:7 2:42 4:7 2:21 8:35 1:7 8:21 2:7 8:28 1:7 8:7 1:35 ' +
+      '4:14 1:7 4:7 1:28 4:14 8:21 24:7 8:28 2:77 0:1 16:1 0:1',
+    '0:1200 8:77 2:7 18:7 2:21 4:21 2:14 8:14 4:7 2:28 4:49 1:7 4:14 1:35 ' +
+      '2:14 8:21 24:7 8:14 1:28 8:35 1:21 8:42 2:14 4:7 8:7 2:21 4:7 2:14 8:7 2:28 0:1 16:1 0:1',
+    '0:1200 2:35 8:21 1:14 8:7 1:7 8:42 2:35 4:21 2:14 8:14 2:14 8:7 1:56 8:14 ' +
+      '1:21 8:35 2:35 4:35 2:14 8:14 24:7 8:14 2:28 0:1 16:1 0:1',
   ];
 
   for (let stage = 0; stage < routes.length; stage++) {
@@ -742,7 +876,7 @@ test('Glyph Quest clears three guarded dungeons through recorded real inputs', a
           assert.equal(after.ring, true);
           assert(!engine.pixels.includes(3), 'Clearing removes the red enemy sprites.');
           assert(
-            !engine.api.scr[16]
+            !engine.api.scr[17]
               .map((cell) => cell.chr)
               .join('')
               .includes('READY'),
@@ -757,7 +891,7 @@ test('Glyph Quest clears three guarded dungeons through recorded real inputs', a
     assert(cleared, 'The recorded controller route must clear this dungeon.');
   }
   assert.deepEqual([game.state().stage, game.state().gems, game.state().ring], [0, 0, false]);
-  assert((await encode(source)).bytes <= 3072);
+  assert((await encode(source)).bytes <= 3000);
 });
 
 test('Glyph Quest catches crossing paths, permits stunned passage and restores items on retry', async () => {
@@ -765,9 +899,10 @@ test('Glyph Quest catches crossing paths, permits stunned passage and restores i
   for (const stun of [false, true]) {
     const { engine, game, step, press } = await loadExample('glyph-quest', hooks);
     step(0, 22);
-    step(1 << 1, 20);
-    step(0, 111);
-    step((1 << 1) | (stun ? 1 << 4 : 0));
+    step(1 << 1, 34);
+    step(1 << 3, 14);
+    step(0, 83);
+    step((1 << 3) | (stun ? 1 << 4 : 0));
     assert.equal(game.state().state, stun ? 'PLAY' : 'CAUGHT');
     if (stun) {
       assert(game.state().enemies.some((enemy) => enemy.stun > 0));
@@ -779,7 +914,7 @@ test('Glyph Quest catches crossing paths, permits stunned passage and restores i
       assert(game.state().enemies.every((enemy) => enemy.stun === 0));
     } else {
       assert(
-        !engine.api.scr[16]
+        !engine.api.scr[17]
           .map((cell) => cell.chr)
           .join('')
           .includes('READY'),
@@ -801,7 +936,7 @@ test('Glyph Quest catches crossing paths, permits stunned passage and restores i
       ],
       [0, 1, 1, 0, false, 0, 'PLAY'],
     );
-    assert.equal(engine.api.scr[6][3].chr, '💎');
+    assert.equal(engine.api.scr[5][2].chr, '💎');
   }
 });
 
@@ -886,14 +1021,7 @@ test('Shooter wins four waves through movement and fire, including a multi-hit b
     assert.equal(game.state().state, 'WON');
     assert(game.state().lives > 0);
     assert.equal(game.state().targets[0].health, 0);
-    assert.equal(
-      engine.api.scr[8]
-        .slice(2, 18)
-        .map((cell) => cell.chr)
-        .join('')
-        .trim(),
-      'ALL WAVES CLEAR',
-    );
+    expectShooterMessage(engine, 'ALL WAVES CLEAR', 6);
     const won = structuredClone(game.state());
     step(1 << 2, 60);
     assert.deepEqual(game.state(), won);
@@ -904,8 +1032,7 @@ test('Shooter wins four waves through movement and fire, including a multi-hit b
     assert.equal(game.state().lives, 3);
     assert.equal(game.state().state, 'PLAY');
     const payload = await encode(source);
-    assert(payload.bytes <= 3072);
-    assert(gameURL('https://kitao.dev/playload/', payload.hash).length <= 4096);
+    assert(payload.bytes <= 3000);
   }
 });
 
@@ -963,6 +1090,40 @@ test('Shooter removes hits immediately, grants damage recovery, loses and restar
   assert.equal(game.state().state, 'OVER', 'An alien reaching the ship row ends the game.');
   press(4);
   assert.equal(game.state().state, 'PLAY');
+});
+
+test('Shooter keeps shots out of the information rows and result messages above the scene', async () => {
+  const { engine, game, step, press } = await loadExample(
+    'shooter',
+    `return {tick,finish,state:()=>({state,shots,bullets}),
+      crossHUD:()=>{shots=[{x:24,y:17}];bullets=[{x:24,y:133,dx:0}];},
+      die:()=>{targets=[{x:40,y:64,row:0,column:0,health:1,alive:true}];
+        lives=1;invincible=0;bullets=[{x,y:114,dx:0}];},
+      overlap:()=>{targets[0].x=40;targets[0].y=64;sparks=[{x:40,y:64,time:12}];}};`,
+  );
+  step();
+  const top = pictureRegion(engine, 0, 0, 160, 16);
+  const bottom = pictureRegion(engine, 0, 136, 160, 8);
+  game.crossHUD();
+  step();
+  assert.equal(game.state().shots.length, 0);
+  assert.equal(game.state().bullets.length, 0);
+  assert.deepEqual(pictureRegion(engine, 0, 0, 160, 16), top);
+  assert.deepEqual(pictureRegion(engine, 0, 136, 160, 8), bottom);
+  game.die();
+  step();
+  assert.equal(game.state().state, 'OVER');
+  expectShooterMessage(engine, 'GAME OVER', 3);
+  for (const [state, text] of [
+    ['CLEAR', 'WAVE CLEAR'],
+    ['WON', 'ALL WAVES CLEAR'],
+  ]) {
+    press(5);
+    game.overlap();
+    game.finish(state);
+    step();
+    expectShooterMessage(engine, text, 6);
+  }
 });
 
 test('Shooter fires immediately on a tap, repeats at a fixed rate and respects the shot cap', async () => {
@@ -1059,7 +1220,7 @@ test('Shooter clears shrinking boss HP and measures invasion using its full heig
   step();
   assert.equal(game.state().targets[0].health, 9);
   assert.equal(
-    engine.api.scr[2]
+    engine.api.scr[1]
       .map((cell) => cell.chr)
       .join('')
       .trim(),

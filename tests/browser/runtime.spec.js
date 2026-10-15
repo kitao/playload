@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { join, relative, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
-import { encode } from '../../src/payload.js';
+import { encode, formatPayloadSize } from '../../src/payload.js';
+import { sharedGameSource } from '../fixtures/shared-game.js';
 import { WebMBuffer } from '../../src/app/webm.js';
 import { request } from 'node:http';
 
@@ -579,41 +580,31 @@ test('workspace tabs do not change the URL or select the opening screen', async 
   await expect(page.locator('#info')).toBeHidden();
 });
 
-for (const limit of ['compressed source', 'full URL']) {
-  test(`bookmark sharing recovers after exceeding the ${limit} limit`, async ({
+for (const width of [1400, 375]) {
+  test(`bookmark sharing recovers after exceeding 3 KB at ${width}px`, async ({
     page,
   }, testInfo) => {
     let seed = 1;
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-      noise = Array.from({ length: limit === 'compressed source' ? 6000 : 1200 }, () => {
+      noise = Array.from({ length: 6000 }, () => {
         seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
         return alphabet[seed % alphabet.length];
       }).join(''),
       large = `// @title Large\n// ${noise}\nfunction tick() { cls(4); }`,
-      small = '// @title Small\nfunction tick() { cls(5); }',
-      path = limit === 'full URL' ? '/playload/app/?padding=' + 'x'.repeat(3500) : '/playload/app/';
-    if (limit === 'full URL') await page.setViewportSize({ width: 375, height: 812 });
-    await page.goto(path);
-    if (limit === 'full URL') await page.locator('#code-toggle').click();
+      small = '// @title Small\nfunction tick() { cls(5); }';
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/playload/app/');
+    if (width < 720) await page.locator('#code-toggle').click();
     const encoded = await page.evaluate(
       async (source) => (await import('/src/payload.js')).encode(source),
       large,
     );
-    if (limit === 'compressed source') expect(encoded.bytes).toBeGreaterThan(3072);
-    else {
-      expect(encoded.bytes).toBeLessThanOrEqual(3072);
-      expect(new URL(path + encoded.hash, baseURL).href.length).toBeGreaterThan(4096);
-    }
+    expect(encoded.bytes).toBeGreaterThan(3000);
 
     const editor = page.locator('#editor');
     await editor.fill(large);
-    await expect(page.locator('#size-current')).toHaveText(
-      (encoded.bytes / 1024).toFixed(2) + ' KB',
-    );
-    const message =
-      limit === 'compressed source'
-        ? 'Code exceeds 3 KB compressed.'
-        : 'Bookmark URL exceeds 4,096 characters.';
+    await expect(page.locator('#size-current')).toHaveText(formatPayloadSize(encoded.bytes));
+    const message = 'Code exceeds 3 KB compressed.';
     await expect(page.locator('#error')).toHaveText(message);
     await expect(page.locator('#error-notice')).toBeVisible();
     await expect(page.locator('#error-line')).toBeHidden();
@@ -642,7 +633,7 @@ for (const limit of ['compressed source', 'full URL']) {
     await expect(page.locator('#error-notice')).toBeHidden();
     await expect(page).toHaveTitle('Small — Playload');
     await page.screenshot({ path: testInfo.outputPath('bookmark-recovered.png') });
-    if (limit === 'compressed source') {
+    {
       const failing = large.replace('cls(4);', 'cls(4); throw new Error("Game failure");');
       await editor.fill(failing);
       await page.locator('#run').click();
@@ -673,6 +664,62 @@ for (const limit of ['compressed source', 'full URL']) {
     await expect(page.locator('#pause')).toBeEnabled();
   });
 }
+
+for (const width of [1400, 375]) {
+  test(`a full 3 KB game fits X and restores after sharing at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    const source = sharedGameSource(3906),
+      path = width < 720 ? '/playload/app/?padding=' + 'x'.repeat(3500) : '/playload/app/';
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(path);
+    if (width < 720) await page.locator('#code-toggle').click();
+    const editor = page.locator('#editor');
+    await editor.fill(source);
+    await expect(page.locator('#size-current')).toHaveText('3.00 KB');
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          if (!location.hash) return null;
+          return (await import('/src/payload.js')).decode(location.hash);
+        }),
+      )
+      .toBe(source);
+    expect(await page.locator('#size').getAttribute('title')).toMatch(/^3000 bytes · /);
+    expect(page.url().length).toBeLessThanOrEqual(4088);
+    expect(new URL(page.url()).search).toBe('');
+    await expect(page.locator('#error-notice')).toBeHidden();
+    await expect(page).toHaveTitle('Share test — Playload');
+    await editor.fill(sharedGameSource(3908));
+    await expect(page.locator('#size-current')).toHaveText('3.01 KB');
+    await expect(page.locator('#error')).toHaveText('Code exceeds 3 KB compressed.');
+    expect(new URL(page.url()).hash).toBe('');
+    await editor.fill(source);
+    await expect.poll(() => new URL(page.url()).hash).not.toBe('');
+    await expect(page.locator('#error-notice')).toBeHidden();
+    const sharedURL = page.url();
+    await page.reload();
+    await expect(editor).toHaveValue(source);
+    await expect(page).toHaveURL(sharedURL);
+    await page.locator('#start-game').click();
+    await expect(page.locator('#pause')).toBeEnabled();
+    await expect(page.locator('#error-notice')).toBeHidden();
+    await page.screenshot({ path: testInfo.outputPath('full-payload-shared.png') });
+  });
+}
+
+test('an older 3 KiB URL keeps its source and remains playable', async ({ page }) => {
+  const source = sharedGameSource(4003),
+    payload = await encode(source);
+  await page.goto('/playload/app/' + payload.hash);
+  await expect(page.locator('#editor')).toHaveValue(source);
+  await expect(page.locator('#size-current')).toHaveText('3.08 KB');
+  await expect(page.locator('#error')).toHaveText('Code exceeds 3 KB compressed.');
+  expect(new URL(page.url()).hash).toBe(payload.hash);
+  await page.locator('#start-game').click();
+  await expect(page.locator('#pause')).toBeEnabled();
+  expect(new URL(page.url()).hash).toBe(payload.hash);
+});
 
 test('Starter opens a plain URL in a new tab and preserves the current code and URL', async ({
   browser,
@@ -5542,7 +5589,7 @@ test('Examples starts with Starter and other game links contain their actual sou
           }, url);
     expect(payload.source).toBe(source);
     await expect(rows.nth(index).locator('.example-size')).toHaveText(
-      (payload.bytes / 1024).toFixed(2) + ' KB',
+      formatPayloadSize(payload.bytes),
     );
     const opened = page.waitForEvent('popup');
     await link.click();
