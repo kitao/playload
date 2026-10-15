@@ -28,9 +28,37 @@ a {
 a:hover {
   color: #fff2b7;
 }
-a:focus-visible {
+a:focus-visible,
+.language-switch button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
+}
+.language-switch {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.language-switch button {
+  padding: 4px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.language-switch button:hover {
+  color: var(--ink);
+}
+.language-switch button[aria-pressed='true'] {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 h1 {
   font-size: 2.25rem;
@@ -150,7 +178,7 @@ html:has(#image-preview[open]) {
     font-size: 1.8rem;
   }
   .readme {
-    margin: 32px auto 48px;
+    margin: 48px auto 48px;
     padding: 0 20px;
   }
 }

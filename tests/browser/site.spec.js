@@ -73,6 +73,55 @@ test('the introduction follows README without local setup and opens the app with
 });
 
 for (const touch of [false, true]) {
+  test(`the language switch remembers a manual choice on ${touch ? 'phone' : 'desktop'}`, async ({
+    browser,
+  }, testInfo) => {
+    const viewport = touch ? { width: 390, height: 844 } : { width: 1400, height: 1000 };
+    const page = await browser.newPage({
+      locale: 'ja-JP',
+      viewport,
+      hasTouch: touch,
+      isMobile: touch,
+    });
+    try {
+      await page.goto(baseURL + '/playload/?ref=language');
+      const url = page.url();
+      const controls = page.getByRole('navigation');
+      const japanese = controls.getByRole('button', { name: '日本語', exact: true });
+      const english = controls.getByRole('button', { name: 'English', exact: true });
+      await expect(japanese).toHaveAttribute('aria-pressed', 'true');
+      if (touch) await english.tap();
+      else await english.click();
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      await expect(english).toHaveAttribute('aria-pressed', 'true');
+      await expect(japanese).toHaveAttribute('aria-pressed', 'false');
+      await expect(english).toBeFocused();
+      await expect(page).toHaveURL(url);
+      await page.reload();
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      await page.evaluate(() => window.dispatchEvent(new Event('languagechange')));
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      await japanese.focus();
+      await japanese.press('Enter');
+      await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
+      await page.reload();
+      await expect(japanese).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator('.readme:visible')).toHaveAttribute('lang', 'ja');
+      await page.evaluate(() => document.fonts.ready);
+      const controlsBox = await controls.boundingBox();
+      const logoBox = await page.locator('.readme:visible > p:first-child img').boundingBox();
+      expect(controlsBox.x).toBeGreaterThan(viewport.width / 2);
+      expect(controlsBox.x + controlsBox.width).toBeLessThanOrEqual(viewport.width - 16);
+      expect(controlsBox.y + controlsBox.height + 8).toBeLessThanOrEqual(logoBox.y);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+      await page.screenshot({ path: testInfo.outputPath('language-switch.png') });
+    } finally {
+      await page.close();
+    }
+  });
+
   test(`introduction images enlarge and close in place on ${touch ? 'phone' : 'desktop'}`, async ({
     browser,
   }, testInfo) => {
@@ -129,6 +178,27 @@ for (const touch of [false, true]) {
     }
   });
 }
+
+test('language selection still works when browser storage is unavailable', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        throw new DOMException('Storage unavailable', 'SecurityError');
+      },
+    });
+  });
+  await page.goto('/playload/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await page.getByRole('button', { name: '日本語', exact: true }).click();
+  await expect(page.locator('.readme:visible')).toHaveAttribute('lang', 'ja');
+  await expect(page.getByRole('button', { name: '日本語', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(errors).toEqual([]);
+});
 
 for (const [languages, language] of [
   [['ja-JP', 'en-US'], 'ja'],

@@ -1,9 +1,21 @@
+let preferredLanguage;
+try {
+  const saved = localStorage.getItem('playload-language');
+  if (['ja', 'en'].includes(saved)) preferredLanguage = saved;
+} catch {
+  // Browser language still works when storage is unavailable.
+}
+
 function setLanguage() {
   const languages = navigator.languages?.length ? navigator.languages : [navigator.language];
   document.documentElement.lang =
+    preferredLanguage ||
     languages
       .map((language) => language.toLowerCase().split('-')[0])
-      .find((language) => ['ja', 'en'].includes(language)) || 'en';
+      .find((language) => ['ja', 'en'].includes(language)) ||
+    'en';
+  for (const button of document.querySelectorAll('.language-switch button'))
+    button.setAttribute('aria-pressed', button.dataset.language === document.documentElement.lang);
 }
 setLanguage();
 window.addEventListener('languagechange', setLanguage);
@@ -19,6 +31,18 @@ openSharedGame();
 window.addEventListener('hashchange', openSharedGame);
 
 document.addEventListener('DOMContentLoaded', () => {
+  setLanguage();
+  for (const button of document.querySelectorAll('.language-switch button')) {
+    button.addEventListener('click', () => {
+      preferredLanguage = button.dataset.language;
+      try {
+        localStorage.setItem('playload-language', preferredLanguage);
+      } catch {
+        // Keep the current choice even if the browser cannot save it.
+      }
+      setLanguage();
+    });
+  }
   const preview = document.querySelector('#image-preview');
   const enlarged = preview.querySelector('img');
   const close = preview.querySelector('button');
