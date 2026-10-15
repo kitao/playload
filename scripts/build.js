@@ -98,7 +98,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       VERSION: escapeHTML(project.version),
       DESCRIPTION: escapeHTML(project.description),
       REPOSITORY: escapeHTML(repository),
-      SOURCE_LINK: `<a href="${escapeHTML(repository)}" target="_blank" rel="noopener">Source code ↗</a>`,
+      SOURCE_LINK: `<a href="${escapeHTML(repository)}" target="_blank" rel="noopener">Source code</a>`,
       SITE_STYLE: asset('src/site/style.css'),
     };
     async function page(source, destination, values) {

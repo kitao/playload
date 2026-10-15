@@ -496,7 +496,7 @@ test('README and About use the same introduction, section order, specifications,
   await page.goto('/playload/app/');
   const content = await page.evaluate((html) => {
     const document = new DOMParser().parseFromString(html, 'text/html');
-    const normalize = (text) => text.replace(/\s*↗/g, '').replace(/\s+/g, ' ').trim();
+    const normalize = (text) => text.replace(/\s+/g, ' ').trim();
     const paragraphs = Array.from(document.querySelectorAll('body > p'));
     const lists = Array.from(document.querySelectorAll('body > ul'));
     const about = window.document.querySelector('#about');
@@ -590,14 +590,14 @@ for (const touch of [false, true]) {
       await expect(page.locator('#about')).toBeVisible();
       await expect(page.locator('#about img')).toHaveCount(0);
       await expect(page.locator('#about .about-features li')).toHaveCount(7);
-      await expect(page.getByRole('link', { name: 'buy me a coffee on Ko-fi ↗' })).toHaveAttribute(
+      await expect(page.getByRole('link', { name: 'buy me a coffee on Ko-fi' })).toHaveAttribute(
         'href',
         'https://ko-fi.com/H2H27VDKD',
       );
       await expect(
-        page.locator('#about .about-features + p').getByRole('link', { name: 'Source code ↗' }),
+        page.locator('#about .about-features + p').getByRole('link', { name: 'Source code' }),
       ).toHaveAttribute('href', 'https://github.com/kitao/playload');
-      await expect(page.getByRole('link', { name: 'sponsor me on GitHub ↗' })).toHaveAttribute(
+      await expect(page.getByRole('link', { name: 'sponsor me on GitHub' })).toHaveAttribute(
         'href',
         'https://github.com/sponsors/kitao',
       );
@@ -626,7 +626,7 @@ for (const touch of [false, true]) {
       ).toHaveAttribute('href', '/playload/LICENSE');
       await expect(page.locator('#about')).not.toContainText('Resource notices');
       await expect(
-        page.getByRole('link', { name: 'starring the project on GitHub ↗' }),
+        page.getByRole('link', { name: 'starring the project on GitHub' }),
       ).toHaveAttribute('href', 'https://github.com/kitao/playload');
       const licenses = page.locator('.about-license');
       await expect(page.locator('#about details, #about summary')).toHaveCount(0);
