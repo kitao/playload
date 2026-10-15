@@ -7,10 +7,10 @@ import { encode } from '../../src/payload.js';
 const legacy = '#1.09dXcCjJLMlJVfBJTU9MruRKK81LLsnMz1MoyUzO1tBUqFZIzinWMNG0VqgFAA';
 const source = '// @title Legacy\nfunction tick() { cls(4); }';
 
-test('the introduction follows README without local setup and opens the app without loading app code first', async ({
+test('the introduction follows its site source and opens the app without loading app code first', async ({
   page,
 }, testInfo) => {
-  const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
+  const introduction = await readFile(new URL('../../src/site/index.md', import.meta.url), 'utf8');
   const appRequests = [];
   page.on('request', (request) => {
     if (/\/(?:app|formatter)-[A-Z0-9]+\.js$/.test(new URL(request.url()).pathname))
@@ -19,21 +19,12 @@ test('the introduction follows README without local setup and opens the app with
   await page.goto('/playload/');
   const content = await page.evaluate((html) => {
     const expected = new DOMParser().parseFromString(html, 'text/html');
-    const localHeading = Array.from(expected.querySelectorAll('h2')).find(
-      (node) => node.textContent === 'Run locally',
-    );
-    for (let node = localHeading?.nextElementSibling; node && node.tagName !== 'H2';) {
-      const next = node.nextElementSibling;
-      node.remove();
-      node = next;
-    }
-    localHeading?.remove();
     const normalize = (value) => value.replace(/\s+/g, ' ').trim();
     return {
       actual: normalize(document.querySelector('.readme[lang="en"]').textContent),
       expected: normalize(expected.body.textContent),
     };
-  }, marked.parse(readme));
+  }, marked.parse(introduction));
   expect(content.actual).toBe(content.expected);
   expect(appRequests).toEqual([]);
   await expect(page.locator('#editor')).toHaveCount(0);
@@ -489,10 +480,10 @@ test('the project license declares UTF-8 and renders its original text', async (
   expect(await page.locator('body').textContent()).toBe(original);
 });
 
-test('README and About use the same introduction, section order, specifications, instructions, support and license wording', async ({
+test('the site and About use the same introduction, section order, specifications, instructions, support and license wording', async ({
   page,
 }) => {
-  const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
+  const introduction = await readFile(new URL('../../src/site/index.md', import.meta.url), 'utf8');
   await page.goto('/playload/app/');
   const content = await page.evaluate((html) => {
     const document = new DOMParser().parseFromString(html, 'text/html');
@@ -521,7 +512,7 @@ test('README and About use the same introduction, section order, specifications,
     )
       aboutSupport.push(node.textContent);
     return {
-      readme: {
+      introduction: {
         tagline: normalize(paragraphs.find((node) => !node.querySelector('img')).textContent),
         features: Array.from(document.querySelector('ul').children, (node) =>
           normalize(node.textContent),
@@ -562,8 +553,8 @@ test('README and About use the same introduction, section order, specifications,
         ),
       },
     };
-  }, marked.parse(readme));
-  expect(content.about).toEqual(content.readme);
+  }, marked.parse(introduction));
+  expect(content.about).toEqual(content.introduction);
 });
 
 for (const touch of [false, true]) {

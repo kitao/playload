@@ -201,7 +201,6 @@ if (!production && !process.argv.includes('--no-watch')) {
   for (const path of [
     'src',
     'assets',
-    'README.md',
     'package.json',
     'data/reference.json',
     'data/fonts/unicode-LICENSE.txt',

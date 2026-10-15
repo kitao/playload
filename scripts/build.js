@@ -115,14 +115,13 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       REFERENCE: reference.html,
     });
     const images = new Set();
-    const readme = marked
-      .parse(await readFile(new URL('../README.md', import.meta.url), 'utf8'))
+    const introduction = marked
+      .parse(await readFile(new URL('../src/site/index.md', import.meta.url), 'utf8'))
       .replace(
         /<p align="center">(\s*<img\b[^>]*\balt="Playload"[^>]*>\s*)<\/p>/,
         '<h1 align="center">$1</h1>',
       )
       .replace(/<h3 align="center">([\s\S]*?)<\/h3>/, '<p class="app-link" align="center">$1</p>')
-      .replace(/<h2>Run locally<\/h2>[\s\S]*?(?=<h2>|$)/, '')
       .replace(/\b(href|src)="([^"]+)"/g, (attribute, name, href) => {
         if (href === new URL(app, homepage).href) return `${name}="${app}"`;
         if (/^(?:[a-z][a-z\d+.-]*:|\/|#)/i.test(href)) return attribute;
@@ -142,7 +141,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       await cp(new URL('../' + image, import.meta.url), target);
     }
     await page('src/site/index.html', 'index.html', {
-      README: readme,
+      INTRODUCTION: introduction,
       SITE_SCRIPT: asset('src/site/main.js'),
     });
     await page('src/site/404.html', '404.html', {});

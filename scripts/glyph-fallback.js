@@ -56,7 +56,10 @@ function names() {
     [4, 'Playload Symbol Fallback'],
     [5, 'Version 1.0'],
     [6, 'PlayloadSymbolFallback'],
-    [0, 'Derived from Unscii-8 and Public Pixel. Public domain / CC0. See README.md#license.'],
+    [
+      0,
+      'Derived from Unscii-8 and Public Pixel. Public domain / CC0. See src/site/index.md#license.',
+    ],
   ];
   const header = Buffer.alloc(6 + entries.length * 12),
     strings = [];

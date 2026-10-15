@@ -101,7 +101,7 @@ is a readability choice, not a WCAG compliance claim. The result is **51 chromat
 54 white** cells on black paper. Games can override colors. [The coverage report](glyph-coverage.json)
 records each representative color and final ink; the tool shows the resulting artwork.
 
-The catalog's **6,216-byte WOFF fallback** covers 290 supplementary-plane symbols missing
+The catalog's **6,220-byte WOFF fallback** covers 290 supplementary-plane symbols missing
 from OS fonts. It traces the same CC0 Unscii rows into rectangles and is used only for catalog
 labels. Browser tests compare every fallback glyph with its source rows.
 

@@ -12,14 +12,14 @@
     "misaki": 177
   },
   "sizes": {
-    "moduleBytes": 364150,
-    "gzipBytes": 35792,
+    "moduleBytes": 364157,
+    "gzipBytes": 35793,
     "bitmapBytes": 19464,
-    "catalogFontBytes": 6216
+    "catalogFontBytes": 6220
   },
   "catalogFont": {
     "glyphCount": 290,
-    "SHA256": "9c1cec1bd6dbb9482960fd394189ce3f248d462369ad880d494328849da55cc3"
+    "SHA256": "ba4e78f3fcdd8a7707c2d3ca1ece7d178857b15e3cefacd75e85529de4741ebd"
   },
   "symbolRepertoire": {
     "unicodeVersion": "17.0",
@@ -611,5 +611,5 @@
     "alphabetFont": "Public Pixel 1.24",
     "alphabetCodePoints": 945
   },
-  "outputSHA256": "28b48c76bad66a2b29aceb6051d2667f8059d8df755f8a2588491ac8858948b9"
+  "outputSHA256": "1b74ae33fce5428820feb722efc70ff2ec671fe683873f715cf6f667f0608dfe"
 }
