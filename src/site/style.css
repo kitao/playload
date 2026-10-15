@@ -47,18 +47,20 @@ a:focus-visible,
 .language-switch button {
   padding: 4px;
   border: 0;
-  color: inherit;
+  color: var(--accent);
   background: transparent;
   font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
   cursor: pointer;
 }
 .language-switch button:hover {
-  color: var(--ink);
+  color: #fff2b7;
 }
 .language-switch button[aria-pressed='true'] {
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: default;
 }
 h1 {
   font-size: 2.25rem;
