@@ -157,7 +157,8 @@ html:lang(ja) .readme[lang='en'] {
 .readme :not(pre) > code {
   padding: 0.1em 0.35em;
   border-radius: 3px;
-  background: var(--panel);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--panel), var(--border) 40%);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.875em;
   white-space: nowrap;

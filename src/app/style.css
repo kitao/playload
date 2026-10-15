@@ -1499,5 +1499,10 @@ body[data-compact='true'] #picture {
   margin: 3px 0;
 }
 .about-content code {
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
   color: var(--active);
+  background: var(--soft);
+  font: inherit;
+  white-space: nowrap;
 }
