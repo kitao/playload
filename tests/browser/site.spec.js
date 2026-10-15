@@ -45,10 +45,10 @@ test('the introduction follows README without local setup and opens the app with
   expect(
     await images.evaluateAll((items) => items.map((image) => image.getAttribute('src'))),
   ).toEqual([
-    '/playload/assets/images/example-glyph-quest.jpg',
-    '/playload/assets/images/info-api.jpg',
-    '/playload/assets/images/info-emoji.jpg',
-    '/playload/assets/images/info-examples.jpg',
+    '/playload/assets/images/example-glyph-quest.png',
+    '/playload/assets/images/info-api.png',
+    '/playload/assets/images/info-emoji.png',
+    '/playload/assets/images/info-examples.png',
   ]);
   await expect
     .poll(() =>
@@ -57,6 +57,11 @@ test('the introduction follows README without local setup and opens the app with
       ),
     )
     .toBe(true);
+  expect(
+    await images.evaluateAll((items) =>
+      items.map((image) => [image.naturalWidth, image.naturalHeight]),
+    ),
+  ).toEqual(Array(4).fill([1600, 900]));
   for (const width of [1400, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -122,7 +127,7 @@ for (const touch of [false, true]) {
     }
   });
 
-  test(`introduction images enlarge and close in place on ${touch ? 'phone' : 'desktop'}`, async ({
+  test(`introduction images ${touch ? 'stay inactive on phone' : 'enlarge and close in place on desktop'}`, async ({
     browser,
   }, testInfo) => {
     const viewport = touch ? { width: 390, height: 844 } : { width: 1400, height: 1000 };
@@ -131,16 +136,52 @@ for (const touch of [false, true]) {
       viewport,
       hasTouch: touch,
       isMobile: touch,
+      deviceScaleFactor: touch ? 3 : 2,
     });
     try {
+      const enlargedRequests = [];
+      page.on('request', (request) => {
+        const path = new URL(request.url()).pathname;
+        if (path.endsWith('@2x.png')) enlargedRequests.push(path);
+      });
       await page.goto(baseURL + '/playload/');
       const links = page.locator('.readme:visible a:has(> img)');
       const preview = page.getByRole('dialog');
+      const thumbnails = links.locator('img');
+      await thumbnails.evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+      expect(enlargedRequests).toEqual([]);
+      if (touch) {
+        for (const size of [viewport, { width: 844, height: 390 }]) {
+          await page.setViewportSize(size);
+          for (const language of ['日本語', 'English']) {
+            await page.getByRole('button', { name: language, exact: true }).tap();
+            for (const link of await links.all()) {
+              await link.scrollIntoViewIfNeeded();
+              const before = await page.evaluate(() => ({ url: location.href, scroll: scrollY }));
+              expect(await link.getAttribute('href')).toBeNull();
+              expect(await link.getAttribute('aria-haspopup')).toBeNull();
+              expect(await link.evaluate((link) => getComputedStyle(link).cursor)).not.toBe(
+                'zoom-in',
+              );
+              await link.locator('img').tap();
+              await expect(preview).not.toBeVisible();
+              expect(await page.evaluate(() => ({ url: location.href, scroll: scrollY }))).toEqual(
+                before,
+              );
+              expect(enlargedRequests).toEqual([]);
+            }
+          }
+        }
+        return;
+      }
       for (let index = 0; index < 4; index++) {
         const link = links.nth(index);
         await link.scrollIntoViewIfNeeded();
         const before = await page.evaluate(() => ({ url: location.href, scroll: scrollY }));
         const href = await link.getAttribute('href');
+        expect(href).toBe(
+          (await link.locator('img').getAttribute('src')).replace('.png', '@2x.png'),
+        );
         if (touch) await link.tap();
         else await link.click();
         await expect(preview).toBeVisible();
@@ -148,6 +189,14 @@ for (const touch of [false, true]) {
         await expect(image).toHaveJSProperty('src', new URL(href, baseURL).href);
         await expect(image).toHaveAttribute('alt', await link.locator('img').getAttribute('alt'));
         await image.evaluate((image) => image.decode());
+        await expect(image).toHaveJSProperty('naturalWidth', 3200);
+        await expect(image).toHaveJSProperty('naturalHeight', 1800);
+        expect(enlargedRequests).toEqual(
+          await links.evaluateAll(
+            (items, count) => items.slice(0, count).map((link) => new URL(link.href).pathname),
+            index + 1,
+          ),
+        );
         const bounds = await image.boundingBox();
         expect(bounds.width).toBeGreaterThan(0);
         expect(bounds.height).toBeGreaterThan(0);

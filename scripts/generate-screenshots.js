@@ -31,15 +31,16 @@ try {
     ignoreDefaultArgs: ['--hide-scrollbars'],
   });
   const images = [];
+  async function capture(page, name) {
+    images.push([`${name}.png`, await page.screenshot({ type: 'png', scale: 'css' })]);
+    images.push([`${name}@2x.png`, await page.screenshot({ type: 'png', scale: 'device' })]);
+  }
   for (const [name, tab] of [
     ['info-api', 'API'],
     ['info-emoji', 'Emoji'],
-    ['info-symbols', 'Symbols'],
-    ['info-alphabet', 'Alphabet'],
-    ['info-kana', 'Kana'],
     ['info-examples', 'Examples'],
   ]) {
-    const page = await browser.newPage({ viewport });
+    const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(url);
@@ -67,11 +68,11 @@ try {
       if (clipped) throw new Error(`${tab} does not fit the README screenshot`);
     }
     await page.mouse.move(viewport.width - 1, viewport.height - 1);
-    images.push([`${name}.jpg`, await page.screenshot({ type: 'jpeg', quality: 90 })]);
+    await capture(page, name);
     await page.close();
   }
-  for (const entry of exampleLinks) {
-    const page = await browser.newPage({ viewport });
+  for (const entry of exampleLinks.filter((entry) => entry.id === 'glyph-quest')) {
+    const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.clock.install();
@@ -114,12 +115,12 @@ try {
         throw new Error('The initial game screen is empty.');
     });
     await page.mouse.move(viewport.width - 1, viewport.height - 1);
-    images.push([`example-${entry.id}.jpg`, await page.screenshot({ type: 'jpeg', quality: 90 })]);
+    await capture(page, `example-${entry.id}`);
     await page.close();
   }
   for (const [name, image] of images) await writeFile(new URL(name, directory), image);
   console.log(
-    `Updated ${images.length} tool screenshots at ${viewport.width} × ${viewport.height}.`,
+    `Updated ${images.length / 2} tool screenshots at ${viewport.width} × ${viewport.height} and 2× density.`,
   );
 } finally {
   server.kill();

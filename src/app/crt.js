@@ -1,7 +1,8 @@
 // Adapted from Timothy Lottes' public-domain CRT shader (2014).
 // https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl
 // Lottes' Gaussian reconstruction, linear-light scanlines, bloom and RGB mask
-// are retained. Playload adds a small inset, rounded glass and edge shading.
+// are retained. The picture fills the same maximum width and height as flat
+// mode; the glass mask is framed separately to retain edge pixels and glow.
 const vertexSource = `
 attribute vec2 position;
 varying vec2 uv;
@@ -111,10 +112,10 @@ vec3 mask(vec2 p) {
 }
 void main() {
   vec2 position = uv * 2.0 - 1.0;
-  // CRT-Lottes' default curvature; the inset retains the complete game image.
-  vec2 warped = position * vec2(1.0 + 0.031 * position.y * position.y, 1.0 + 0.041 * position.x * position.x) / 0.98;
+  // Retain CRT-Lottes' default curvature without shrinking the picture.
+  vec2 warped = position * vec2(1.0 + 0.031 * position.y * position.y, 1.0 + 0.041 * position.x * position.x);
   vec2 p = warped * 0.5 + 0.5;
-  // The glass outline stays outside the inset image and its phosphor glow.
+  // Frame the glass independently; this factor only affects its opacity mask.
   vec2 corner = max(abs(warped * 0.98) - vec2(0.97), 0.0);
   float glass = 1.0 - smoothstep(0.028, 0.032, length(corner));
   float vignette = 1.0 - 0.13 * dot(position, position) * 0.5;

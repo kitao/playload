@@ -1,8 +1,9 @@
 # Retro output design
 
 Sound models the three-channel AY-3-8910 family at the ZX Spectrum 128's **1.7734 MHz** clock.
-Display targets an RGB CRT monitor with readable low-resolution graphics, scanlines, phosphor
-structure, glow and curved glass. These are separate references, not one complete computer emulation.
+Display evokes a television-rate 1980s RGB CRT with low-resolution graphics,
+scanlines, phosphor structure, glow and curved glass. These are separate references, not one
+complete computer or television emulation.
 
 ## Sound
 
@@ -28,16 +29,42 @@ amplifier or speaker. Register-level programming and complete ROM behavior are o
 The WebGL renderer adapts Timothy Lottes' public-domain
 [CRT-Lottes shader](https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl),
 whose reference is an RGB-input CGA arcade monitor. It retains Gaussian reconstruction,
-scanline beam weighting, bloom, an RGB phosphor mask, curvature and sRGB/linear-light conversion.
-The renderer uses the upstream curvature coefficients, **warpX = 0.031** and
-**warpY = 0.041**. Playload adds an aperture-grille mask, an inset to retain edge content,
-rounded glass and edge shading.
+scanline beam weighting, bloom, an RGB phosphor mask and sRGB/linear-light conversion.
+
+The renderer retains the upstream curvature coefficients, **warpX = 0.031** and
+**warpY = 0.041**. They belong to Lottes' deliberately CRT-styled pixel-art display option;
+they are not measurements of a particular historical tube. The visible curve is a presentation
+choice consistent with that reference.
+
+Period service limits do not calibrate this effect. For example, the
+[Atari SC1224 CA-3 service manual, Side PCC adjustment, page 6](https://www.manualslib.com/manual/4175650/Atari-Sc1224.html?page=6)
+specifies pincushion or barrel distortion within 1.5% after adjustment. That electrical raster
+adjustment limit does not define the optical projection or coefficients of this shader, so it
+is not used to claim that a weaker curve is a more faithful CRT reproduction.
+
+Picture size and curvature are controlled separately. For normalized display position
+`p`, the source sampling position is
+`q = p × (1 + vec2(warpX, warpY) × p_other²)`. There is no overall image inset:
+at the horizontal middle, `q.x = p.x`, and at the vertical middle, `q.y = p.y`.
+The widest and tallest sections therefore fill the same **640×576** frame as flat mode,
+while the corners bend inward. No game-author margins are required in the **160×144** image.
+A white-field test measures both center sections at half their peak brightness and requires
+exact agreement with flat mode; the faint halo is excluded from this size measurement.
+
+The rounded glass mask uses its own `0.98` framing factor. This affects opacity outside
+the curved picture, not its sampling scale. All 604 perimeter pixels are compared with an
+unmasked renderer to retain their peak brightness and at least 99% of their in-frame glow.
+Glow beyond the canvas boundary is clipped by that boundary. Glass shading, phosphor structure,
+scanlines and bloom remain intact. No measured tube radius, viewing distance, specific
+household-TV model, RF/composite decoder or phosphor persistence is claimed by this model.
 
 Display, PNG export and WebM capture use the same **640×576 canvas**. The area outside the
 curved glass takes the play window's background color, so exports retain its contour.
 Flat mode preserves palette colors and uses nearest-neighbor screen scaling. CRT mode allows
 interpolation of reconstructed phosphors at fractional sizes. If WebGL is unavailable or its
 context is lost, CRT is disabled and the CPU renderer supplies the flat picture.
+The canvas dimensions, player layout and recording path do not change when toggling CRT;
+both modes fill the same maximum picture width and height.
 
 The [Libretro CRT guide](https://docs.libretro.com/shader/crt/) explains the reconstruction
 techniques. At small sizes, masks and scanlines are approximations of physical tube optics.

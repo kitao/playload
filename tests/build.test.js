@@ -42,7 +42,7 @@ test('the complete publication stays under Playload and every local document lin
     );
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|404\.html|LICENSE|assets\/(?:logo\.svg|favicon\.svg|images\/(?:example-glyph-quest|info-api|info-emoji|info-examples)\.jpg|bundles\/[^/]+\.(?:js|css|woff))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|404\.html|LICENSE|assets\/(?:logo\.svg|favicon\.svg|images\/(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?\.png|bundles\/[^/]+\.(?:js|css|woff))))$/.test(
           path,
         ),
       ),

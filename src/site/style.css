@@ -3,7 +3,7 @@
   --background: #17141c;
   --panel: #201b28;
   --border: #55415f;
-  --ink: #dcf5ff;
+  --ink: #e6e6e6;
   --muted: #aaa3b5;
   --accent: #e6c86e;
   font-family: system-ui, sans-serif;
@@ -119,6 +119,8 @@ html:lang(ja) .readme[lang='en'] {
 }
 .readme a:has(> img) {
   display: block;
+}
+.readme a[href]:has(> img) {
   cursor: zoom-in;
 }
 .readme a > img {

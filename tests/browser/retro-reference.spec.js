@@ -71,6 +71,56 @@ test('CRT reconstruction agrees with the frozen Lottes shader at matched setting
   }
 });
 
+test('CRT and flat mode have the same maximum picture width and height', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/playload/app/');
+  const result = await page.evaluate(async () => {
+    const { createCRT } = await import('/src/app/crt.js'),
+      { createDisplay } = await import('/src/app/display.js'),
+      { palette } = await import('/src/engine/engine.js');
+    const pixels = new Uint8Array(160 * 144).fill(7),
+      renderer = createCRT(palette),
+      gl = renderer.canvas.getContext('webgl'),
+      crt = new Uint8Array(640 * 576 * 4);
+    renderer.render(pixels);
+    gl.readPixels(0, 0, 640, 576, gl.RGBA, gl.UNSIGNED_BYTE, crt);
+    const flat = createDisplay(palette).render(pixels);
+    // A filled picture measures the actual extent. An isolated edge dot's
+    // brightness centroid shifts inward when its halo meets the canvas edge.
+    const measure = (rgba) => {
+      const light = (x, y) => {
+        const i = (y * 640 + x) * 4;
+        return rgba[i] + rgba[i + 1] + rgba[i + 2];
+      };
+      const horizontal = Array.from({ length: 640 }, (_, x) =>
+        Math.max(...[286, 287, 288, 289].map((y) => light(x, y))),
+      );
+      const vertical = Array.from({ length: 576 }, (_, y) =>
+        Math.max(...[318, 319, 320, 321].map((x) => light(x, y))),
+      );
+      const span = (line) => {
+        // Half peak excludes the faint glow; the narrow center band avoids
+        // measuring a phosphor stripe or scanline trough as the picture edge.
+        const threshold = Math.max(...line) / 2;
+        return (
+          line.findLastIndex((value) => value >= threshold) -
+          line.findIndex((value) => value >= threshold) +
+          1
+        );
+      };
+      return { width: span(horizontal), height: span(vertical) };
+    };
+    return { crt: measure(crt), flat: measure(flat) };
+  });
+  await testInfo.attach('crt-picture-size', {
+    body: JSON.stringify(result),
+    contentType: 'application/json',
+  });
+  expect(result.flat).toEqual({ width: 640, height: 576 });
+  expect(result.crt).toEqual(result.flat);
+});
+
 test('CRT glass preserves every edge pixel and its phosphor glow', async ({ page }) => {
   const source = await readFile(new URL('../../src/app/crt.js', import.meta.url), 'utf8');
   expect(source).toContain('mix(background, srgb + surround, glass)');

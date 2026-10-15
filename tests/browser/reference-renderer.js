@@ -1,5 +1,5 @@
 // Runs the frozen CRT-Lottes shader, with parameter values matched to Playload.
-// Only presentation additions (inset, glass and vignette) are added below;
+// Only presentation additions (glass and vignette) are added below;
 // the upstream reconstruction, scanline and bloom functions stay unchanged.
 export function renderReference(source, pixels, palette) {
   const canvas = document.createElement('canvas');
@@ -15,15 +15,14 @@ export function renderReference(source, pixels, palette) {
     'attribute vec2 position; varying vec4 TEX0; void main(){gl_Position=vec4(position,0.0,1.0);TEX0=vec4(position.x*.5+.5,.5-position.y*.5,0.0,1.0);}';
   const marker = 'pos *= vec2(1.0 + (pos.y*pos.y)*warpX, 1.0 + (pos.x*pos.x)*warpY);';
   if (!source.includes(marker)) throw new Error('Unexpected upstream warp');
-  source = source.replace(marker, marker + '\n    pos /= 0.98;');
   const output = 'FragColor = vec4(ToSrgb(outColor.rgb), 1.0);';
   if (!source.includes(output)) throw new Error('Unexpected upstream output');
   source = source.replace(
     output,
     `
     vec2 position = TEX0.xy * 2.0 - 1.0;
-    vec2 warped = pos * 2.0 - 1.0;
-  vec2 corner = max(abs(warped * 0.98) - vec2(0.97), 0.0);
+    vec2 glassPosition = position * vec2(1.0 + warpX * position.y * position.y, 1.0 + warpY * position.x * position.x);
+    vec2 corner = max(abs(glassPosition * 0.98) - vec2(0.97), 0.0);
     float glass = 1.0 - smoothstep(0.028, 0.032, length(corner));
     outColor *= 1.0 - 0.13 * dot(position, position) * 0.5;
     FragColor = vec4(ToSrgb(outColor.rgb) * glass, 1.0);`,

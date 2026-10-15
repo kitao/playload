@@ -47,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const enlarged = preview.querySelector('img');
   const close = preview.querySelector('button');
   for (const link of document.querySelectorAll('.readme a:has(> img)')) {
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      link.removeAttribute('href');
+      continue;
+    }
     link.setAttribute('aria-haspopup', 'dialog');
     link.addEventListener('click', (event) => {
       if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

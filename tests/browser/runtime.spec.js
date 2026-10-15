@@ -2396,12 +2396,19 @@ test('a black CRT screen retains a visible curved contour without recoloring gam
   for (const [x, y] of [
     [0, 0],
     [639, 575],
-    [320, 0],
-    [320, 575],
-    [0, 288],
-    [639, 288],
+    [639, 0],
+    [0, 575],
   ])
     expect(await pixel(page, x, y)).toEqual([33, 28, 41, 255]);
+  // The widest sections now reach the canvas edges. Past the outer half-pixel
+  // transition, game black stays black even beside those four boundaries.
+  for (const [x, y] of [
+    [320, 4],
+    [320, 571],
+    [4, 288],
+    [635, 288],
+  ])
+    expect(await pixel(page, x, y)).toEqual([0, 0, 0, 255]);
   expect(await pixel(page, 320, 288)).toEqual([0, 0, 0, 255]);
   await page.locator('#crt').click();
   expect(await pixel(page)).toEqual([0, 0, 0, 255]);

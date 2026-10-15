@@ -37,6 +37,7 @@ const types = {
   '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.jpg': 'image/jpeg',
+  '.png': 'image/png',
   '.woff': 'font/woff',
   '.json': 'application/json; charset=utf-8',
 };
