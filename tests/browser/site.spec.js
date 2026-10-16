@@ -94,8 +94,8 @@ for (const touch of [false, true]) {
         await badges.locator('a').evaluateAll((links) => links.map((link) => link.href)),
       ).toEqual([
         'https://github.com/kitao/playload',
-        'https://github.com/kitao/playload',
         'https://github.com/sponsors/kitao',
+        'https://www.patreon.com/tkitao',
         'https://ko-fi.com/H2H27VDKD',
       ]);
       await expect(badges.locator('[aria-haspopup]')).toHaveCount(0);
@@ -115,11 +115,11 @@ for (const touch of [false, true]) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
-      await page.route('https://github.com/sponsors/kitao', (route) =>
-        route.fulfill({ contentType: 'text/html', body: '<title>Sponsor destination</title>' }),
+      await page.route('https://www.patreon.com/tkitao', (route) =>
+        route.fulfill({ contentType: 'text/html', body: '<title>Patreon destination</title>' }),
       );
-      await badges.getByRole('link', { name: 'GitHub Sponsors', exact: true }).click();
-      await expect(page).toHaveURL('https://github.com/sponsors/kitao');
+      await badges.getByRole('link', { name: 'Patreon', exact: true }).click();
+      await expect(page).toHaveURL('https://www.patreon.com/tkitao');
     } finally {
       await page.close();
     }
@@ -599,6 +599,10 @@ for (const touch of [false, true]) {
       await expect(
         page.locator('#about').getByRole('link', { name: 'GitHub Sponsors' }),
       ).toHaveAttribute('href', 'https://github.com/sponsors/kitao');
+      await expect(page.locator('#about').getByRole('link', { name: 'Patreon' })).toHaveAttribute(
+        'href',
+        'https://www.patreon.com/tkitao',
+      );
       await expect(page.locator('#about')).not.toContainText('Make it. Share it. Play it.');
       await expect(
         page.locator('#about').getByRole('heading', { name: 'Specifications' }),

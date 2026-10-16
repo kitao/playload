@@ -10,8 +10,8 @@
 
 <p class="badges" align="center">
   <a href="https://github.com/kitao/playload"><img src="https://img.shields.io/github/stars/kitao/playload?style=social" alt="GitHub stars" height="20" loading="lazy" decoding="async"></a>
-  <a href="https://github.com/kitao/playload"><img src="https://img.shields.io/github/forks/kitao/playload?style=social" alt="GitHub forks" height="20" loading="lazy" decoding="async"></a>
   <a href="https://github.com/sponsors/kitao"><img src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social" alt="GitHub Sponsors" height="20" loading="lazy" decoding="async"></a>
+  <a href="https://www.patreon.com/tkitao"><img src="https://img.shields.io/badge/Support%20me%20on%20Patreon-000000?style=social&amp;logo=patreon" alt="Patreon" height="20" loading="lazy" decoding="async"></a>
   <a href="https://ko-fi.com/H2H27VDKD"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="20" loading="lazy" decoding="async"></a>
 </p>
 
@@ -48,7 +48,7 @@ If you enjoy Playload, please consider [starring the project on GitHub](https://
 It helps more people discover the project.
 
 Playload is free to use. Donations are also welcome through
-[GitHub Sponsors](https://github.com/sponsors/kitao) or [Ko-fi](https://ko-fi.com/H2H27VDKD)
+[GitHub Sponsors](https://github.com/sponsors/kitao), [Patreon](https://www.patreon.com/tkitao) or [Ko-fi](https://ko-fi.com/H2H27VDKD)
 to help cover development costs and give me more time to improve Playload.
 
 ## License
