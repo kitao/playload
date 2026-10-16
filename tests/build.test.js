@@ -42,11 +42,11 @@ test('the complete publication stays under Playload and every local document lin
     );
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|404\.html|LICENSE|assets\/(?:logo\.svg|favicon\.svg|images\/(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?\.png|bundles\/[^/]+\.(?:js|css|woff))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|404\.html|LICENSE|assets\/(?:logo\.svg|favicon\.svg|images\/(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
           path,
         ),
       ),
-      'Only the introduction, app, required assets, fallback and project license are published.',
+      'Only the introduction, app, required assets, fonts and project license are published.',
     );
     const home = await readFile(join(directory, 'playload/index.html'), 'utf8');
     const app = await readFile(join(directory, 'playload/app/index.html'), 'utf8');
@@ -71,6 +71,13 @@ test('the complete publication stays under Playload and every local document lin
     assert.match(home, /src="\/playload\/assets\/bundles\/site-[A-Z0-9]+\.js"/);
     assert.equal((app.match(/<script /g) || []).length, 1);
     assert.match(app, /src="\/playload\/assets\/bundles\/app-[A-Z0-9]+\.js"/);
+    const font =
+      /rel="preload" href="([^"]+\.woff2)" as="font" type="font\/woff2" crossorigin/.exec(app)?.[1];
+    assert(font, 'The app preloads its bundled UI font.');
+    assert.deepEqual(
+      await readFile(join(directory, font)),
+      await readFile(new URL('../src/app/jetbrains-mono.woff2', import.meta.url)),
+    );
     assert.match(home, /https:\/\/ko-fi.com\/H2H27VDKD/);
     assert.match(home, /href="https:\/\/github.com\/kitao\/playload"/);
     assert.match(home, /href="https:\/\/github.com\/sponsors\/kitao"/);
@@ -95,6 +102,10 @@ test('the complete publication stays under Playload and every local document lin
     const styles = output.filter((path) => path.endsWith('.css'));
     for (const path of styles) {
       const css = await readFile(join(directory, path), 'utf8');
+      if (path.includes('/app-style-')) {
+        assert.match(css, /Copyright 2020 The JetBrains Mono Project Authors/);
+        assert.match(css, /SIL OPEN FONT LICENSE Version 1\.1 - 26 February 2007/);
+      }
       for (const [, url] of css.matchAll(/url\(([^)]+)\)/g)) {
         const target = new URL(url.replaceAll('"', ''), 'https://kitao.dev/' + path);
         assert((await stat(join(directory, target.pathname))).isFile(), target.href);

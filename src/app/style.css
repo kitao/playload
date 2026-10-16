@@ -1,3 +1,5 @@
+@import './fonts.css';
+
 @font-face {
   font-family: 'Playload Symbol Fallback';
   src: url('glyph-fallback.woff') format('woff');
@@ -6,6 +8,7 @@
 }
 :root {
   color-scheme: dark;
+  --font-mono: 'JetBrains Mono', monospace;
   --control-width: 80px;
   --workspace-tab-width: 80px;
   --reference-tab-width: 96px;
@@ -27,12 +30,9 @@ body {
   margin: 0;
   background: var(--body);
   color: var(--text);
-  font:
-    14px/1.4 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
+  font: 14px/1.4 var(--font-mono);
+  font-variant-ligatures: none;
+  font-synthesis: none;
 }
 #app {
   display: flex;
@@ -55,6 +55,10 @@ input,
 textarea {
   font: inherit;
   color: inherit;
+}
+code,
+pre {
+  font-family: inherit;
 }
 button {
   display: flex;
@@ -91,9 +95,9 @@ button[aria-pressed='true']:not(:has(.indicator)) {
   outline: none;
 }
 kbd {
-  font:
-    10px/11px ui-monospace,
-    monospace;
+  font: inherit;
+  font-size: 10px;
+  line-height: 11px;
   color: var(--muted);
   text-transform: none;
 }
@@ -253,12 +257,8 @@ header::after {
   grid-row: 1;
   min-width: 0;
   min-height: 0;
-  font:
-    14px/1.5 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 #editor {
   display: block;
@@ -784,9 +784,9 @@ dd {
 }
 .mml-group code {
   display: block;
-  font:
-    11px/14px ui-monospace,
-    monospace;
+  font: inherit;
+  font-size: 11px;
+  line-height: 14px;
   white-space: pre;
   color: var(--muted);
 }
@@ -976,12 +976,9 @@ body[data-touch='true'] #keyboard-controls {
   overflow: auto;
   margin: 0;
   color: var(--text);
-  font:
-    13px/20px ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }

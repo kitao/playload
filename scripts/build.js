@@ -61,7 +61,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       format: 'esm',
       target: 'es2022',
       charset: 'utf8',
-      loader: { '.woff': 'file' },
+      loader: { '.woff': 'file', '.woff2': 'file' },
       define: { module: 'undefined' },
       legalComments: 'inline',
       banner: {
@@ -79,7 +79,9 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
     });
     function asset(entry) {
       const match = Object.entries(metafile.outputs).find(
-        ([, details]) => details.entryPoint === entry,
+        ([, details]) =>
+          details.entryPoint === entry ||
+          (Object.keys(details.inputs).length === 1 && entry in details.inputs),
       );
       if (!match) throw new Error('Missing bundled entry: ' + entry);
       return base + 'assets/bundles/' + basename(match[0]);
@@ -96,6 +98,7 @@ export async function buildSite({ minify = true, directory = join(root, 'dist') 
       APP_URL: escapeHTML(new URL(app, homepage).href),
       APP_PATH: app,
       VERSION: escapeHTML(project.version),
+      APP_FONT: asset('src/app/jetbrains-mono.woff2'),
       DESCRIPTION: escapeHTML(project.description),
       REPOSITORY: escapeHTML(repository),
       SOURCE_LINK: `<a href="${escapeHTML(repository)}" target="_blank" rel="noopener">Source code</a>`,

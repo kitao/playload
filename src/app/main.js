@@ -36,6 +36,8 @@ const canvas = $('display'),
   context = canvas.getContext('2d');
 const screenBackground = getComputedStyle($('viewport')).getPropertyValue('--face').trim();
 if (!screenBackground) throw new Error('The stylesheet could not load.');
+// Measure the first workspace layout with the bundled face, including the editor gutter.
+await document.fonts.load('14px "JetBrains Mono"').catch(() => {});
 const display = createDisplay(palette, canvas.width, canvas.height);
 const image = new ImageData(display.render(new Uint8Array(160 * 144)), canvas.width, canvas.height);
 let screenPixels = new Uint8Array(160 * 144);
