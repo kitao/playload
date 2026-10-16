@@ -13,7 +13,7 @@
   <a href="https://ko-fi.com/H2H27VDKD"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi" height="20" loading="lazy" decoding="async"></a>
 </p>
 
-<h3 align="center"><a href="https://kitao.dev/playload/">Official website</a></h3>
+<h3 align="center"><a href="https://kitao.dev/playload/">Website</a></h3>
 
 <p class="screenshots" align="center">
   <a href="https://kitao.dev/playload/"><img src="assets/images/example-glyph-quest.png" alt="The code editor beside a running Glyph Quest game" width="400"></a>

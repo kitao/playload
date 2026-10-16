@@ -491,6 +491,16 @@ test('the site and About use the same introduction, section order, specification
     const paragraphs = Array.from(document.querySelectorAll('body > p'));
     const lists = Array.from(document.querySelectorAll('body > ul'));
     const about = window.document.querySelector('#about');
+    const instructions = [];
+    const instructionHeading = Array.from(document.querySelectorAll('h2')).find(
+      (node) => node.textContent === 'Create and share',
+    );
+    for (
+      let node = instructionHeading.nextElementSibling;
+      node?.tagName === 'P';
+      node = node.nextElementSibling
+    )
+      instructions.push(normalize(node.textContent));
     const support = [];
     const heading = Array.from(document.querySelectorAll('h2')).find(
       (node) => node.textContent === 'Support Playload',
@@ -517,9 +527,7 @@ test('the site and About use the same introduction, section order, specification
         features: Array.from(document.querySelector('ul').children, (node) =>
           normalize(node.textContent),
         ),
-        instructions: paragraphs
-          .filter((node) => node.textContent.startsWith('Edit your game'))
-          .map((node) => normalize(node.textContent)),
+        instructions,
         support: support.map(normalize),
         headings: Array.from(document.querySelectorAll('h2'))
           .map((node) => node.textContent)
@@ -581,17 +589,16 @@ for (const touch of [false, true]) {
       await expect(page.locator('#about')).toBeVisible();
       await expect(page.locator('#about img')).toHaveCount(0);
       await expect(page.locator('#about .about-features li')).toHaveCount(7);
-      await expect(page.getByRole('link', { name: 'buy me a coffee on Ko-fi' })).toHaveAttribute(
+      await expect(page.locator('#about').getByRole('link', { name: 'Ko-fi' })).toHaveAttribute(
         'href',
         'https://ko-fi.com/H2H27VDKD',
       );
       await expect(
         page.locator('#about .about-features + p').getByRole('link', { name: 'Source code' }),
       ).toHaveAttribute('href', 'https://github.com/kitao/playload');
-      await expect(page.getByRole('link', { name: 'sponsor me on GitHub' })).toHaveAttribute(
-        'href',
-        'https://github.com/sponsors/kitao',
-      );
+      await expect(
+        page.locator('#about').getByRole('link', { name: 'GitHub Sponsors' }),
+      ).toHaveAttribute('href', 'https://github.com/sponsors/kitao');
       await expect(page.locator('#about')).not.toContainText('Make it. Share it. Play it.');
       await expect(
         page.locator('#about').getByRole('heading', { name: 'Specifications' }),

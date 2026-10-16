@@ -36,20 +36,20 @@
 
 ## Create and share
 
-Edit your game in the **CODE** editor and press **Run**. The URL updates as you edit:
-share it to send the game and its code, or bookmark it to save that version.
-Start your code with `// @title My Game` to name the browser tab and bookmark.
+Write JavaScript code in the **CODE** editor and press **Run** to execute it.
+Your code is stored in the URL, so you can share it simply by sending the URL.
+To save your code, bookmark the URL.
+
+Start your code with `// @title My Title` to set the title shown in browser tabs and bookmarks.
 
 ## Support Playload
 
 If you enjoy Playload, please consider [starring the project on GitHub](https://github.com/kitao/playload).
 It helps more people discover the project.
 
-Playload is free to use. If you would like to support its development, you can
-[sponsor me on GitHub](https://github.com/sponsors/kitao) or
-[buy me a coffee on Ko-fi](https://ko-fi.com/H2H27VDKD).
-Your support helps cover development costs and gives me more time to improve Playload.
-Thank you for helping keep it going.
+Playload is free to use. Donations are also welcome through
+[GitHub Sponsors](https://github.com/sponsors/kitao) or [Ko-fi](https://ko-fi.com/H2H27VDKD)
+to help cover development costs and give me more time to improve Playload.
 
 ## License
 
