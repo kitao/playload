@@ -63,6 +63,8 @@ test('the complete publication stays under Playload and every local document lin
       );
     }
     assert.doesNotMatch(home, /id="editor"|\/bundles\/app-/);
+    assert.match(home, /rel="stylesheet" href="\/assets\/fonts\/noto-sans-jp\.css"/);
+    assert.doesNotMatch(app, /\/assets\/fonts\/noto-sans-jp\.css/);
     assert.match(home, /href="\/playload\/app\/">Open Playload/);
     assert.doesNotMatch(home, /Run locally|ローカルで実行する|git clone|npm run dev/);
     assert.match(home, /href="https:\/\/www.unicode.org\/license.txt"/);
@@ -119,6 +121,14 @@ test('the complete publication stays under Playload and every local document lin
       for (const [, href] of html.matchAll(/\b(?:href|src)="([^"]+)"/g)) {
         const target = new URL(href.replaceAll('&amp;', '&'), 'https://kitao.dev/' + path);
         if (target.origin !== 'https://kitao.dev') continue;
+        if (target.pathname === '/assets/fonts/noto-sans-jp.css') {
+          assert.equal(
+            path,
+            'playload/index.html',
+            'Only the introduction uses the shared site font.',
+          );
+          continue;
+        }
         assert(target.pathname.startsWith('/playload/'), target.href);
         const destination = target.pathname.endsWith('/')
           ? target.pathname + 'index.html'

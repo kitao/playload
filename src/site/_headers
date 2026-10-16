@@ -4,7 +4,7 @@
 
 /playload/
   Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
 
 /playload/app/
   Cache-Control: public, max-age=0, must-revalidate

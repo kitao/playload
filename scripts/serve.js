@@ -31,6 +31,7 @@ const root = production
     })
   : await realpath(await mkdtemp(resolve(tmpdir(), 'playload-dev-')));
 const compress = promisify(gzip);
+const sharedFonts = new Map();
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -89,6 +90,32 @@ async function serve(request, response) {
     const url = new URL(request.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
     if (pathname === '/playload') return redirect(response, url, '/playload/');
+    // Local previews share the production font URLs without copying another site's assets.
+    if (/^\/assets\/fonts\/(?:noto-sans-jp\.css|noto-sans-jp\/\d{3}\.woff2)$/.test(pathname)) {
+      if (!sharedFonts.has(pathname))
+        sharedFonts.set(
+          pathname,
+          fetch(new URL(pathname, 'https://kitao.dev'), {
+            redirect: 'error',
+            signal: AbortSignal.timeout(10000),
+          })
+            .then(async (asset) => {
+              if (!asset.ok) throw new Error('Shared font unavailable.');
+              return Buffer.from(await asset.arrayBuffer());
+            })
+            .catch((error) => {
+              sharedFonts.delete(pathname);
+              throw error;
+            }),
+        );
+      const data = await sharedFonts.get(pathname);
+      response.writeHead(200, {
+        'Content-Type': types[extname(pathname)],
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+      });
+      return response.end(request.method === 'HEAD' ? undefined : data);
+    }
     const source = !production && pathname.startsWith('/src/');
     if (!source && !pathname.startsWith('/playload/')) throw new Error('Outside Playload');
     const directory = source ? sourceRoot : root;

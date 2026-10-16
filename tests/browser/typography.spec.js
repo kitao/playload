@@ -1,4 +1,57 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+
+test('the introduction loads the shared same-origin font without a content-policy violation', async ({
+  page,
+}) => {
+  // A bundled webfont tests the shared-font transport without depending on the live site.
+  const fixture = await readFile(new URL('../../src/app/jetbrains-mono.woff2', import.meta.url));
+  const requests = [];
+  await page.addInitScript(() => {
+    window.fontPolicyViolations = [];
+    document.addEventListener('securitypolicyviolation', (event) => {
+      if (event.violatedDirective.startsWith('font-src'))
+        window.fontPolicyViolations.push(event.blockedURI);
+    });
+  });
+  await page.route('**/assets/fonts/noto-sans-jp.css', (route) => {
+    requests.push(new URL(route.request().url()).pathname);
+    return route.fulfill({
+      contentType: 'text/css',
+      body: `@font-face {
+        font-family: 'Noto Sans JP';
+        font-weight: 300 700;
+        src: url('./noto-sans-jp/123.woff2') format('woff2');
+      }`,
+    });
+  });
+  await page.route('**/assets/fonts/noto-sans-jp/123.woff2', (route) => {
+    requests.push(new URL(route.request().url()).pathname);
+    return route.fulfill({ contentType: 'font/woff2', body: fixture });
+  });
+  await page.goto('/playload/');
+  await page.evaluate(() => document.fonts.ready);
+  expect(requests).toEqual([
+    '/assets/fonts/noto-sans-jp.css',
+    '/assets/fonts/noto-sans-jp/123.woff2',
+  ]);
+  await expect(page.locator('.readme:visible')).toHaveCSS(
+    'font-family',
+    '"Noto Sans JP", sans-serif',
+  );
+  expect(
+    await page.evaluate(() =>
+      [...document.fonts].some(
+        (face) => face.family === 'Noto Sans JP' && face.status === 'loaded',
+      ),
+    ),
+  ).toBe(true);
+  expect(await page.evaluate(() => window.fontPolicyViolations)).toEqual([]);
+  const code = page.locator('.readme:visible code').first();
+  await code.scrollIntoViewIfNeeded();
+  await expect(code).toHaveCSS('font-family', '"JetBrains Mono", monospace');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
 
 for (const touch of [false, true]) {
   test(`the workspace uses one bundled face for controls, code and reference text on ${touch ? 'phone' : 'desktop'}`, async ({

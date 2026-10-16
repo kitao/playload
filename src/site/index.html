@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'"
     />
     <meta name="description" content="{{DESCRIPTION}}" />
     <title>Playload</title>
     <link rel="canonical" href="{{HOME_URL}}" />
     <link rel="icon" href="/playload/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/fonts/noto-sans-jp.css" />
     <link rel="stylesheet" href="{{SITE_STYLE}}" />
     <script src="{{SITE_SCRIPT}}"></script>
   </head>
@@ -26,7 +27,9 @@
         <h1 align="center">
           <img src="/playload/assets/logo.svg" alt="Playload" width="384" />
         </h1>
-        <p align="center">URLでゲームを共有できる、小さなゲームエンジン</p>
+        <p align="center">
+          <span>URLでゲームを共有できる、</span><span>小さなゲームエンジン</span>
+        </p>
         <p class="app-link" align="center"><a href="{{APP_PATH}}">Playloadを開く</a></p>
         <p class="badges" align="center">
           <a href="https://github.com/kitao/playload"

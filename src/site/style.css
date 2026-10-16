@@ -1,3 +1,5 @@
+@import '../app/fonts.css';
+
 :root {
   color-scheme: dark;
   --background: #17141c;
@@ -6,7 +8,8 @@
   --ink: #e6e6e6;
   --muted: #aaa3b5;
   --accent: #e6c86e;
-  font-family: system-ui, sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-synthesis: none;
   color: var(--ink);
   background: var(--background);
   line-height: 1.75;
@@ -96,6 +99,10 @@ html:lang(ja) .readme[lang='en'] {
   margin: 0;
   text-wrap: balance;
 }
+.readme > h1 + p > span {
+  display: inline-block;
+  max-width: 100%;
+}
 .readme > .app-link {
   /* Balance the visible gaps above the letters and below the underline. */
   margin: 22px 0 34px;
@@ -161,13 +168,14 @@ html:lang(ja) .readme[lang='en'] {
   background: var(--panel);
   font-size: 0.875rem;
   line-height: 1.6;
+  font-family: 'JetBrains Mono', monospace;
 }
 .readme :not(pre) > code {
   padding: 0.1em 0.35em;
   border-radius: 3px;
   color: var(--accent);
   background: color-mix(in srgb, var(--panel), var(--border) 40%);
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.875em;
   white-space: nowrap;
 }
