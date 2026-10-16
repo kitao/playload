@@ -1110,7 +1110,7 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     return;
   }
-  if (event.key === 'Tab' && view === 'play') {
+  if (event.key === 'Tab') {
     event.preventDefault();
     return;
   }

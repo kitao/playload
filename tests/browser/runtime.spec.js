@@ -4814,24 +4814,40 @@ test('Escape pauses once, releases held input and moves focus only to a visible 
   await expect(pause).toHaveText(/^Pause/);
 });
 
-test('Tab keeps input focus in Play and normal navigation remains available in Info', async ({
+test('Tab keeps focus in place throughout the workspace and still indents code', async ({
   page,
 }) => {
   await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     source = await editor.inputValue();
+  const staysFocused = async (target) => {
+    await target.focus();
+    for (const key of ['Tab', 'Shift+Tab']) {
+      await page.keyboard.press(key);
+      await expect(target).toBeFocused();
+    }
+  };
   await expect(page.locator('#screen')).toBeFocused();
+  await staysFocused(page.locator('#screen'));
+  await expect(page.locator('#start-game')).toBeVisible();
   await editor.click();
   await page.keyboard.press('Shift+Tab');
   await expect(editor).toBeFocused();
   await expect(editor).toHaveValue(source);
+  await editor.evaluate((element) => element.setSelectionRange(0, 0));
+  await page.keyboard.press('Tab');
+  await expect(editor).toBeFocused();
+  await expect(editor).toHaveValue('  ' + source);
   await page.locator('#info-tab').click();
-  await page.locator('#info-tab').focus();
-  await page.keyboard.press('Shift+Tab');
-  await expect(editor).not.toBeFocused();
-  await expect(page.locator('#screen')).not.toBeFocused();
+  for (const selector of ['#home-link', '#info-tab', '#about-tab', '#about a[href]'])
+    await staysFocused(page.locator(selector).first());
+  await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
+  await staysFocused(page.locator('#catalog'));
+  await staysFocused(page.locator('#catalog button').first());
+  await page.getByRole('tab', { name: 'Examples', exact: true }).click();
+  await staysFocused(page.locator('.example-links a').first());
   await expect(page.locator('#info')).toBeVisible();
-  await expect(editor).toHaveValue(source);
+  await expect(editor).toHaveValue('  ' + source);
 });
 
 test('Run applies editor changes and Control+Enter restarts without rereading a file', async ({
