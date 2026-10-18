@@ -2,8 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
-import { Runtime, Sound, MAX_FRAME_STEPS } from '../src/app/runtime.js';
+import {
+  Runtime,
+  Sound,
+  MAX_FRAME_STEPS,
+  START_TIMEOUT,
+  FRAME_TIMEOUT,
+} from '../src/app/runtime.js';
 import { compileScore } from '../src/engine/sound.js';
+import { latinLetter } from '../src/app/keys.js';
+import { EditorHistory } from '../src/app/editor-history.js';
 
 function mockWorker(t) {
   const originalWorker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
@@ -164,7 +172,7 @@ test('invalid sound frames stop the worker and valid playback recovers after loa
   for (const [name, command] of malformed) {
     runtime.load('function tick() {}');
     const worker = runtime.worker;
-    worker.onmessage({ data: { type: 'frame', pixels, sounds: [command] } });
+    worker.onmessage({ data: { type: 'ready', pixels, sounds: [command] } });
     assert.equal(frames.mock.callCount(), 0, name);
     assert.equal(worker.terminated, true, name);
     assert.equal(runtime.worker, null, name);
@@ -191,9 +199,57 @@ test('invalid sound frames stop the worker and valid playback recovers after loa
   worker.onmessage({ data: { type: 'frame', pixels, sounds } });
   assert.deepEqual(frames.mock.calls[1].arguments, [pixels, sounds, false]);
   assert.equal(runtime.pending, false);
-  t.mock.timers.tick(1500);
+  t.mock.timers.tick(FRAME_TIMEOUT);
   assert.equal(errors.mock.callCount(), malformed.length);
   assert.equal(worker.terminated, undefined);
+});
+
+test('the runtime accepts only the reply it is waiting for, as game code can post messages', (t) => {
+  mockWorker(t);
+  const frames = t.mock.fn();
+  const errors = t.mock.fn();
+  const runtime = new Runtime(frames, errors);
+  t.after(() => runtime.stop());
+  const pixels = new Uint8Array(160 * 144);
+  const reply = (type) => runtime.worker.onmessage({ data: { type, pixels, sounds: [] } });
+  for (const unsolicited of [
+    () => reply('frame'),
+    () => (reply('ready'), reply('ready')),
+    () => (reply('ready'), reply('frame')),
+    () => (reply('ready'), runtime.frame(), reply('ready')),
+  ]) {
+    runtime.load('function tick() {}');
+    unsolicited();
+    assert.equal(runtime.worker, null);
+  }
+  assert.equal(errors.mock.callCount(), 4);
+  assert(
+    errors.mock.calls.every(({ arguments: [error] }) => error.message === 'Invalid game frame.'),
+  );
+  // Each game's own ready reply still arrived.
+  assert.equal(frames.mock.callCount(), 3);
+});
+
+test('a starting game gets the longer start budget, then each frame the short one', (t) => {
+  mockWorker(t);
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const errors = t.mock.fn();
+  const runtime = new Runtime(() => {}, errors);
+  t.after(() => runtime.stop());
+  const pixels = new Uint8Array(160 * 144);
+  assert(START_TIMEOUT > FRAME_TIMEOUT);
+  runtime.load('function tick() {}');
+  t.mock.timers.tick(START_TIMEOUT - 1);
+  assert.equal(errors.mock.callCount(), 0);
+  runtime.worker.onmessage({ data: { type: 'ready', pixels, sounds: [] } });
+  runtime.frame();
+  t.mock.timers.tick(FRAME_TIMEOUT - 1);
+  assert.equal(errors.mock.callCount(), 0);
+  t.mock.timers.tick(1);
+  assert.deepEqual(errors.mock.calls[0].arguments, [{ message: 'The game stopped responding.' }]);
+  runtime.load('while (true) {}');
+  t.mock.timers.tick(START_TIMEOUT);
+  assert.equal(errors.mock.callCount(), 2);
 });
 
 test('the serialized worklet freezes synthesis during pause and fades pause, resume and reset', async () => {
@@ -399,7 +455,7 @@ test('the scheduler keeps time when a worker is busy and bounds recovery after r
     document: { hidden: false },
     paused: false,
     view: 'play',
-    compact: false,
+    touch: false,
     toolsOpen: false,
     lastFrame: null,
     MAX_FRAME_STEPS,
@@ -506,7 +562,7 @@ test('paused video refreshes cached pixels at 30 Hz without running CRT or advan
     document: { hidden: false },
     paused: true,
     view: 'play',
-    compact: false,
+    touch: false,
     toolsOpen: false,
     lastFrame: null,
     MAX_FRAME_STEPS,
@@ -540,7 +596,7 @@ test('paused video refreshes cached pixels at 30 Hz without running CRT or advan
 test('cached pages retain execution and media, then restore the watchdog and prior pause state', async (t) => {
   const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
   const lifecycle = source.slice(
-    source.indexOf("window.addEventListener('beforeunload'"),
+    source.indexOf("window.addEventListener('pagehide'"),
     source.indexOf("window.addEventListener('hashchange'"),
   );
   const playback = source.slice(
@@ -563,8 +619,8 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     { running: true, paused: true, view: 'play' },
     { running: false, paused: false, view: 'play' },
     { running: true, paused: false, view: 'info' },
-    { running: true, paused: true, view: 'play', awaitingStart: true, compact: true },
-    { running: true, paused: false, view: 'play', compact: true, toolsOpen: true },
+    { running: true, paused: true, view: 'play', awaitingStart: true, touch: true },
+    { running: true, paused: false, view: 'play', touch: true, toolsOpen: true },
   ]) {
     const handlers = new Map();
     const runtime = new Runtime(() => {}, assert.fail);
@@ -601,7 +657,7 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       'running',
       'paused',
       'view',
-      'compact',
+      'touch',
       'toolsOpen',
       'awaitingStart',
       'startKeys',
@@ -619,16 +675,20 @@ test('cached pages retain execution and media, then restore the watchdog and pri
       state.running,
       state.paused,
       state.view,
-      !!state.compact,
+      !!state.touch,
       !!state.toolsOpen,
       !!state.awaitingStart,
       startKeys,
     );
 
     assert.equal(timers.size, 1);
-    handlers.get('beforeunload')();
-    assert.equal(capture.leaving, true);
+    // A cancelled navigation fires beforeunload but nothing afterwards, so
+    // capture pauses for page history only on pagehide, and no part of the app listens
+    // for beforeunload.
+    assert.equal(handlers.has('beforeunload'), false);
+    assert.doesNotMatch(source, /beforeunload/);
     handlers.get('pagehide')({ persisted: true });
+    assert.equal(capture.leaving, true);
     assert.equal(startKeys.size, 0);
     assert.equal(runtime.worker, worker);
     assert.equal(worker.terminated, undefined);
@@ -646,7 +706,8 @@ test('cached pages retain execution and media, then restore the watchdog and pri
     assert.deepEqual(clock(), { lastFrame: null, revision: 0 });
     assert.equal(runtime.suspended, false);
     assert.equal(timers.size, 1);
-    assert.equal([...timers.values()][0].delay, 1500);
+    // The worker had not finished starting, so the start budget applies again.
+    assert.equal([...timers.values()][0].delay, START_TIMEOUT);
     assert.equal(
       audio.paused,
       !state.running || state.paused || state.view === 'info' || !!state.toolsOpen,
@@ -679,7 +740,7 @@ test('pending audio initialization cannot start video capture after navigation',
     source.indexOf('function run('),
   );
   const lifecycle = source.slice(
-    source.indexOf("window.addEventListener('beforeunload'"),
+    source.indexOf("window.addEventListener('pagehide'"),
     source.indexOf('function animate('),
   );
 
@@ -766,14 +827,17 @@ test('game input follows keyboard labels and releases the original physical keys
     },
   };
   const keys = new Map();
+  const loads = [];
+  const load = { disabled: false, click: () => loads.push(true) };
   const release = new Function(
     'document',
     '$',
     'runtime',
     'audio',
     'keys',
+    'latinLetter',
     'let view = "play", running = true, paused = false, gamepadMask = 0; ' +
-      'let compact = false, toolsOpen = false, awaitingStart = false; ' +
+      'let touch = false, toolsOpen = false, awaitingStart = false; ' +
       'const pointers = new Map(), directions = new Set(), startKeys = new Set(); ' +
       'const readGamepads = () => 0;\n' +
       releaseSource +
@@ -786,10 +850,11 @@ test('game input follows keyboard labels and releases the original physical keys
       addEventListener: (type, handler) => handlers.set(type, handler),
       querySelectorAll: () => [],
     },
-    (id) => (id === 'screen' ? screen : { disabled: true }),
+    (id) => (id === 'screen' ? screen : id === 'load' ? load : { disabled: true }),
     runtime,
     { unlock() {} },
     keys,
+    latinLetter,
   );
   function input(type, code, key, extras = {}) {
     handlers.get(type)({
@@ -870,4 +935,92 @@ test('game input follows keyboard labels and releases the original physical keys
       assert.equal(runtime.mask, 0);
     }
   }
+  // Ctrl/Cmd shortcuts follow the printed letter, like the browser's own: Dvorak
+  // prints O on the KeyS position and R on KeyO; Cyrillic keeps the KeyO position.
+  for (const [code, key, opens] of [
+    ['KeyS', 'o', true],
+    ['KeyO', 'r', false],
+    ['KeyO', 'щ', true],
+  ]) {
+    loads.length = 0;
+    input('keydown', code, key, { ctrlKey: true });
+    assert.equal(loads.length, opens ? 1 : 0, `${code} ${key}`);
+  }
+});
+
+test('shortcut letters follow the printed Latin letter and use the position only for other scripts', () => {
+  const letter = (code, key) => latinLetter({ code, key });
+  // QWERTZ prints Z on the KeyY position; Shift only changes the case.
+  assert.equal(letter('KeyY', 'z'), 'z');
+  assert.equal(letter('KeyZ', 'Y'), 'y');
+  // Cyrillic and Greek labels fall back to the key's position.
+  assert.equal(letter('KeyZ', 'я'), 'z');
+  assert.equal(letter('KeyZ', 'Ζ'), 'z');
+  // Dvorak punctuation, accented Latin letters, digits and named keys are not letters a–z.
+  for (const [code, key] of [
+    ['KeyZ', ';'],
+    ['KeyW', ','],
+    ['KeyZ', 'à'],
+    ['KeyE', 'é'],
+    ['Digit1', '1'],
+    ['KeyA', 'Dead'],
+    ['KeyA', 'Unidentified'],
+  ])
+    assert.equal(letter(code, key), null, `${code} ${key}`);
+});
+
+// Just enough of a textarea for the history to observe edits and shortcuts.
+class Editor {
+  value = '';
+  selectionStart = 0;
+  selectionEnd = 0;
+  selectionDirection = 'none';
+  scrollTop = 0;
+  scrollLeft = 0;
+  listeners = new Map();
+  addEventListener(type, listener) {
+    this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]);
+  }
+  dispatchEvent(event) {
+    for (const listener of this.listeners.get(event.type) ?? []) listener(event);
+  }
+  setSelectionRange(start, end, direction = 'none') {
+    Object.assign(this, {
+      selectionStart: start,
+      selectionEnd: end,
+      selectionDirection: direction,
+    });
+  }
+  type(text) {
+    this.dispatchEvent({ type: 'beforeinput', inputType: 'insertText' });
+    this.value += text;
+    this.setSelectionRange(this.value.length, this.value.length);
+    this.dispatchEvent({ type: 'input', inputType: 'insertText' });
+  }
+  press(code, key, modifiers = { ctrlKey: true }) {
+    const event = { type: 'keydown', code, key, ...modifiers, prevented: false };
+    event.preventDefault = () => (event.prevented = true);
+    event.stopPropagation = () => {};
+    this.dispatchEvent(event);
+    return event.prevented;
+  }
+}
+
+test('undo and redo follow the printed letters on QWERTZ, Dvorak and Cyrillic layouts', () => {
+  const editor = new Editor();
+  new EditorHistory(editor);
+  editor.type('abc');
+  // QWERTZ prints Z on the KeyY position and Y on KeyZ.
+  assert.equal(editor.press('KeyY', 'z'), true);
+  assert.equal(editor.value, '');
+  assert.equal(editor.press('KeyZ', 'y'), true);
+  assert.equal(editor.value, 'abc');
+  // Dvorak prints F on KeyY: the browser's find shortcut must stay untouched.
+  assert.equal(editor.press('KeyY', 'f'), false);
+  assert.equal(editor.value, 'abc');
+  // Without a Latin label, the key's position decides.
+  assert.equal(editor.press('KeyZ', 'я'), true);
+  assert.equal(editor.value, '');
+  assert.equal(editor.press('KeyZ', 'Я', { metaKey: true, shiftKey: true }), true);
+  assert.equal(editor.value, 'abc');
 });

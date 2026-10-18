@@ -3,6 +3,10 @@ import { compileScore, AY } from '../engine/sound.js';
 import { glyphs } from '../engine/glyphs.js';
 
 export const MAX_FRAME_STEPS = 5;
+// Starting a game also starts its worker, parses the engine and presets and runs
+// the game's top-level code, so slow or busy devices get longer than for a frame.
+export const START_TIMEOUT = 5000;
+export const FRAME_TIMEOUT = 1500;
 
 function gameWorker(presets, engineFactory, compiler, maxSteps) {
   let engine, tick;
@@ -80,6 +84,7 @@ export class Runtime {
       return;
     }
     this.pending = true;
+    this.starting = true;
     this.worker.onmessage = ({ data }) => {
       if (data?.type === 'error') {
         this.fail({
@@ -89,8 +94,10 @@ export class Runtime {
         return;
       }
       const steps = data?.type === 'ready' ? 1 : (data?.steps ?? 1);
+      // Game code can post messages too, so accept only the reply being awaited.
       if (
-        !['ready', 'frame'].includes(data?.type) ||
+        !this.pending ||
+        data?.type !== (this.starting ? 'ready' : 'frame') ||
         !Number.isInteger(steps) ||
         steps < 1 ||
         steps > MAX_FRAME_STEPS ||
@@ -99,6 +106,7 @@ export class Runtime {
         data.pixels.length !== 160 * 144 ||
         data.pixels.some((c) => c > 7) ||
         !Array.isArray(data.sounds) ||
+        // The engine's play() allows 256 sounds per tick.
         data.sounds.length > 256 * steps ||
         !data.sounds.every(
           (command) =>
@@ -118,6 +126,7 @@ export class Runtime {
       }
       clearTimeout(this.watchdog);
       this.pending = false;
+      this.starting = false;
       this.onFrame(data.pixels, data.sounds, data.type === 'ready');
     };
     this.worker.onerror = (event) => {
@@ -129,7 +138,10 @@ export class Runtime {
   }
   watch() {
     if (this.suspended) return;
-    this.watchdog = setTimeout(() => this.fail({ message: 'The game stopped responding.' }), 1500);
+    this.watchdog = setTimeout(
+      () => this.fail({ message: 'The game stopped responding.' }),
+      this.starting ? START_TIMEOUT : FRAME_TIMEOUT,
+    );
   }
   suspend(value) {
     this.suspended = value;
@@ -166,6 +178,7 @@ export class Runtime {
     if (this.workerURL) URL.revokeObjectURL(this.workerURL);
     this.workerURL = null;
     this.pending = false;
+    this.starting = false;
     this.pendingSteps = 1;
     this.suspended = false;
   }

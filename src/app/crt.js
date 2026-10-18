@@ -1,3 +1,5 @@
+import { rgb } from '../engine/engine.js';
+
 // Adapted from Timothy Lottes' public-domain CRT shader (2014).
 // https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl
 // Lottes' Gaussian reconstruction, linear-light scanlines, bloom and RGB mask
@@ -181,13 +183,13 @@ export function createCRT(palette, width = 640, height = 576, background = '#000
   gl.uniform1i(gl.getUniformLocation(program, 'image'), 0);
   gl.uniform3fv(
     gl.getUniformLocation(program, 'background'),
-    [1, 3, 5].map((offset) => parseInt(background.slice(offset, offset + 2), 16) / 255),
+    rgb(background).map((value) => value / 255),
   );
   gl.uniform3fv(
     gl.getUniformLocation(program, 'colors[0]'),
     palette.flatMap((hex) =>
-      [1, 3, 5].map((offset) => {
-        const c = parseInt(hex.slice(offset, offset + 2), 16) / 255;
+      rgb(hex).map((value) => {
+        const c = value / 255;
         return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
       }),
     ),

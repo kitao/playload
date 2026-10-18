@@ -68,4 +68,5 @@ Bundled third-party materials retain their own licenses:
 - [Prism](https://prismjs.com/): [MIT](https://github.com/PrismJS/prism/blob/v1.30.0/LICENSE)
 - [Prettier](https://prettier.io/): [MIT](https://github.com/prettier/prettier/blob/3.9.9/LICENSE)
 - [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) (logo and favicon): [SIL OFL 1.1](https://openfontlicense.org/open-font-license-official-text/)
+- [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) (UI and editor font): [SIL OFL 1.1](https://openfontlicense.org/open-font-license-official-text/)
 - [emu2149](https://github.com/digital-sound-antiques/emu2149) (test reference): [MIT](https://github.com/digital-sound-antiques/emu2149/blob/441f3dc295a9b82db16921461f0678b483db8304/LICENSE)

@@ -4,7 +4,9 @@ import { readFileSync } from 'node:fs';
 import { AY, compileScore } from '../src/engine/sound.js';
 
 test('all sixteen AY volume levels preserve the pinned Westcott measurements', () => {
-  const { volts } = JSON.parse(readFileSync('data/ay-volume-source.json', 'utf8'));
+  const { volts } = JSON.parse(
+    readFileSync(new URL('../data/ay-volume-source.json', import.meta.url), 'utf8'),
+  );
   assert.equal(volts.length, 16);
 
   const baseline = volts[0],
@@ -79,6 +81,15 @@ test('all note lengths, dotted lengths and triplets have the documented beat val
     compileScore('1_3_5c&').code.map((note) => note.beats),
     [1.75, 1],
   );
+});
+
+test('a triplet lasts three notes, returns to the earlier length and yields to explicit lengths', () => {
+  const beats = (score) => compileScore(score).code.map((note) => note.beats);
+  // A second triplet length within a triplet still returns to the length before both.
+  assert.deepEqual(beats('10N11abcdef'), [1 / 3, 1 / 3, 1 / 3, 1, 1, 1]);
+  assert.deepEqual(beats('11ab11cdefg'), [1 / 3, 1 / 3, 1 / 3, 1 / 3, 1 / 3, 1, 1]);
+  // An ordinary length ends the triplet instead of being replaced by the earlier one.
+  assert.deepEqual(beats('3c10aN5bcd'), [0.5, 1 / 6, 1, 1, 1]);
 });
 
 test('rests, accidentals and comments preserve the next note and reset local modifiers', () => {

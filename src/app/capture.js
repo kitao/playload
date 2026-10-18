@@ -1,4 +1,4 @@
-import { WebMBuffer, exportWebM } from './webm.js';
+import { WebMBuffer, exportWebM, MAX_RECORDING_BYTES, recordingTooLarge } from './webm.js';
 
 export class Capture {
   constructor(canvas, audioStream, onChange) {
@@ -156,9 +156,9 @@ export class Capture {
             this.split &&
             session.buffer.bytes +
               this.sessions().reduce((sum, active) => sum + active.parser.bytes, 0) >
-              64 * 1024 * 1024
+              MAX_RECORDING_BYTES
           )
-            throw new Error('Video recording exceeded 64 MiB');
+            throw recordingTooLarge();
           if (request.done) request.done();
           else if (request.resolve) {
             try {
@@ -178,13 +178,8 @@ export class Capture {
     };
     recorder.onstop = async () => {
       await session.pending;
+      // fail() clears restarting, so an errored capture never restarts here.
       if (session !== this.session || this.closed || !this.restarting) return;
-      if (this.error) {
-        this.restarting = false;
-        this.restartResolve?.();
-        this.restartResolve = null;
-        return;
-      }
       try {
         for (const track of this.nextAudio?.getAudioTracks() ?? []) this.stream.addTrack(track);
         this.nextAudio = null;

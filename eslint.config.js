@@ -1,29 +1,19 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import { defineConfig } from 'eslint/config';
+import { fileURLToPath } from 'node:url';
+import { defineConfig, globalIgnores, includeIgnoreFile } from 'eslint/config';
 
 export default defineConfig([
+  includeIgnoreFile(fileURLToPath(new URL('.gitignore', import.meta.url))),
+  // Generated modules, checked by their generators.
+  globalIgnores(['src/engine/glyphs.js', 'src/app/examples.js']),
+  js.configs.recommended,
   {
-    ignores: [
-      'node_modules/**',
-      'test-results/**',
-      'playwright-report/**',
-      'coverage/**',
-      'dist/**',
-      '.wrangler/**',
-      '.playload-build-*/**',
-      'tests/reference/**',
-      'tests/browser/reference/**',
-      'src/engine/glyphs.js',
-      'src/app/editor-highlighter.js',
-      'src/app/examples.js',
-    ],
-  },
-  {
-    files: ['**/*.js'],
-    extends: [js.configs.recommended],
-    languageOptions: { ecmaVersion: 'latest', sourceType: 'module' },
     rules: {
+      // `== null` deliberately matches both null and undefined.
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-var': 'error',
+      'prefer-const': 'error',
       'no-unused-vars': ['error', { args: 'none', caughtErrors: 'none' }],
     },
   },
@@ -32,7 +22,7 @@ export default defineConfig([
     languageOptions: { globals: { ...globals.browser, ...globals.worker } },
   },
   {
-    files: ['*.js', 'scripts/**/*.js', 'tests/**/*.js'],
+    files: ['*.js', 'scripts/**/*.{js,mjs}', 'tests/**/*.{js,mjs}'],
     languageOptions: { globals: globals.node },
   },
   {

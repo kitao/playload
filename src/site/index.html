@@ -3,17 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'"
-    />
     <meta name="description" content="{{DESCRIPTION}}" />
     <title>Playload</title>
+    <meta property="og:title" content="Playload" />
+    <meta property="og:description" content="{{DESCRIPTION}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{HOME_URL}}" />
+    <meta property="og:image" content="{{PREVIEW_IMAGE}}" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="900" />
+    <meta property="og:image:alt" content="The code editor beside a running Glyph Quest game" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="{{HOME_URL}}" />
     <link rel="icon" href="/playload/assets/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/assets/fonts/noto-sans-jp.css" />
-    <link rel="stylesheet" href="{{SITE_STYLE}}" />
-    <script src="{{SITE_SCRIPT}}"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300..700&amp;display=swap"
+    />
+    <link rel="stylesheet" href="/playload/assets/bundles/site-style.css" />
+    <script src="/playload/assets/bundles/site.js"></script>
   </head>
   <body>
     <nav class="language-switch" aria-label="Language / 言語">
@@ -22,16 +32,14 @@
       <button type="button" lang="ja" data-language="ja" aria-pressed="false">日本語</button>
     </nav>
     <main aria-label="Playload">
-      <article class="readme" lang="en">{{INTRODUCTION}}</article>
-      <article class="readme" lang="ja">
-        <h1 align="center">
+      <article class="introduction" lang="en">{{INTRODUCTION}}</article>
+      <article class="introduction" lang="ja">
+        <h1>
           <img src="/playload/assets/logo.svg" alt="Playload" width="384" />
         </h1>
-        <p align="center">
-          <span>URLでゲームを共有できる、</span><span>小さなゲームエンジン</span>
-        </p>
-        <p class="app-link" align="center"><a href="{{APP_PATH}}">Playloadを開く</a></p>
-        <p class="badges" align="center">
+        <p><span>URLでゲームを共有できる、</span><span>小さなゲームエンジン</span></p>
+        <p class="app-link"><a href="/playload/app/">Playloadを開く</a></p>
+        <p class="badges">
           <a href="https://github.com/kitao/playload"
             ><img
               src="https://img.shields.io/github/stars/kitao/playload?style=social"
@@ -65,7 +73,7 @@
               decoding="async"
           /></a>
         </p>
-        <p class="screenshots" align="center">
+        <p class="screenshots">
           <a href="/playload/assets/images/example-glyph-quest@2x.png">
             <img
               loading="lazy"
@@ -113,7 +121,7 @@
           <li>4方向・2ボタン入力</li>
           <li>ゲーム全体がURLに収まる — <strong>Playable&nbsp;Payload</strong></li>
         </ul>
-        <p><a href="{{REPOSITORY}}">ソースコード</a></p>
+        <p><a href="https://github.com/kitao/playload">ソースコード</a></p>
         <h2>作って共有する</h2>
         <p>
           <strong>CODE</strong
@@ -127,7 +135,7 @@
         </p>
         <h2>開発を支援する</h2>
         <p>
-          もしPlayloadを気に入ったら、<a href="{{REPOSITORY}}">GitHubのスター</a
+          もしPlayloadを気に入ったら、<a href="https://github.com/kitao/playload">GitHubのスター</a
           >で応援していただけるとうれしいです。Playloadをより多くの人に知ってもらうきっかけになります。
         </p>
         <p>
@@ -141,7 +149,7 @@
         </p>
         <h2>ライセンス</h2>
         <p>
-          Playloadのコードとドキュメントは<a href="/playload/LICENSE">MITライセンス</a
+          Playloadのコードとドキュメントは<a href="/playload/LICENSE.txt">MITライセンス</a
           >で公開しています。
         </p>
         <p>同梱する外部の素材には、それぞれのライセンスが適用されます。</p>
@@ -193,6 +201,11 @@
           <li>
             <a href="https://fonts.google.com/specimen/Press+Start+2P">Press Start 2P</a
             >（ロゴとファビコン）:
+            <a href="https://openfontlicense.org/open-font-license-official-text/">SIL OFL 1.1</a>
+          </li>
+          <li>
+            <a href="https://github.com/JetBrains/JetBrainsMono">JetBrains Mono</a
+            >（UIとエディタのフォント）:
             <a href="https://openfontlicense.org/open-font-license-official-text/">SIL OFL 1.1</a>
           </li>
           <li>

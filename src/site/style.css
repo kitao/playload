@@ -26,10 +26,11 @@ img {
 }
 a {
   color: var(--accent);
-  text-underline-offset: 0.2em;
+  text-decoration: none;
 }
 a:hover {
   color: #fff2b7;
+  text-decoration: underline;
 }
 a:focus-visible,
 .language-switch button:focus-visible,
@@ -54,8 +55,6 @@ a:focus-visible,
   color: var(--accent);
   background: transparent;
   font: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
   cursor: pointer;
 }
 .language-switch button:hover {
@@ -63,68 +62,60 @@ a:focus-visible,
 }
 .language-switch button[aria-pressed='true'] {
   color: var(--ink);
-  text-decoration: none;
   cursor: default;
 }
 h1 {
   font-size: 2.25rem;
   line-height: 1.35;
 }
-.not-found > img {
-  image-rendering: pixelated;
-}
-.not-found {
-  max-width: 800px;
-  margin: 10vh auto;
-  padding: 32px;
-}
-.readme {
+.introduction {
   max-width: 880px;
   margin: 48px auto 80px;
   padding: 0 32px;
 }
-html:lang(en) .readme[lang='ja'],
-html:lang(ja) .readme[lang='en'] {
+html:lang(en) .introduction[lang='ja'],
+html:lang(ja) .introduction[lang='en'] {
   display: none;
 }
-.readme > h1 {
+.introduction > h1 {
   margin: 0 0 20px;
 }
-.readme > h1 img {
+.introduction > h1 img {
   display: block;
   margin-inline: auto;
   image-rendering: pixelated;
 }
-.readme > h1 + p {
+.introduction > h1 + p {
   margin: 0;
+  text-align: center;
   text-wrap: balance;
 }
-.readme > h1 + p > span {
+.introduction > h1 + p > span {
   display: inline-block;
   max-width: 100%;
 }
-.readme > .app-link {
-  /* Balance the visible gaps above the letters and below the underline. */
+.introduction > .app-link {
   margin: 22px 0 34px;
+  text-align: center;
   font-size: 1.25rem;
   font-weight: 700;
 }
-.readme[lang='en'] > .app-link {
+.introduction[lang='en'] > .app-link {
   margin: 23px 0 33px;
 }
-.readme h2 {
+.introduction h2 {
   margin: 40px 0 16px;
   font-size: 1.4rem;
   line-height: 1.4;
 }
-.readme p,
-.readme ul {
+.introduction p,
+.introduction ul {
   margin: 16px 0;
 }
-.readme ul {
+.introduction ul {
   padding-left: 24px;
 }
-.readme .badges {
+.introduction .badges {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -142,14 +133,11 @@ html:lang(ja) .readme[lang='en'] {
   height: 20px;
   object-fit: contain;
 }
-.readme .screenshots {
+.introduction .screenshots {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin: 0 0 40px;
-}
-.screenshots br {
-  display: none;
 }
 .screenshots a {
   display: block;
@@ -162,15 +150,7 @@ html:lang(ja) .readme[lang='en'] {
   width: 100%;
   aspect-ratio: 16 / 9;
 }
-.readme pre {
-  overflow: auto;
-  padding: 16px 20px;
-  background: var(--panel);
-  font-size: 0.875rem;
-  line-height: 1.6;
-  font-family: 'JetBrains Mono', monospace;
-}
-.readme :not(pre) > code {
+.introduction code {
   padding: 0.1em 0.35em;
   border-radius: 3px;
   color: var(--accent);
@@ -218,13 +198,13 @@ html:has(#image-preview[open]) {
   h1 {
     font-size: 1.8rem;
   }
-  .readme {
+  .introduction {
     margin: 48px auto 48px;
     padding: 0 20px;
   }
 }
 @media (max-width: 880px) {
-  .readme .badges {
+  .introduction .badges {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: center;
@@ -233,7 +213,7 @@ html:has(#image-preview[open]) {
   }
 }
 @media (max-width: 540px) {
-  .readme .screenshots {
+  .introduction .screenshots {
     grid-template-columns: 1fr;
   }
 }

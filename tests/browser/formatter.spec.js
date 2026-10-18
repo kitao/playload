@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 import { decode, encode } from '../../src/payload.js';
 
 const source = '// @title Format Check\n\n\n\nfunction tick(){cls(0)}\n\n';
@@ -14,8 +14,7 @@ test('Format removes excess blank lines, updates the shared source and remains o
 }) => {
   const requests = [];
   page.on('request', (request) => {
-    if (/\/formatter-[A-Z0-9]+\.js$/.test(new URL(request.url()).pathname))
-      requests.push(request.url());
+    if (/\/formatter\.js$/.test(new URL(request.url()).pathname)) requests.push(request.url());
   });
   const editor = page.locator('#editor');
   await editor.fill(source);
@@ -88,7 +87,7 @@ test('moving focus during formatting keeps the source and the new focus', async 
   const blocked = new Promise((resolve) => (release = resolve));
   let arrived;
   const requested = new Promise((resolve) => (arrived = resolve));
-  await page.route('**/formatter-*.js', async (route) => {
+  await page.route('**/formatter.js', async (route) => {
     arrived();
     await blocked;
     await route.continue();
@@ -131,9 +130,21 @@ test('Shift+Alt+F formats only inside the editor and leaves find, repeats and IM
 }) => {
   const editor = page.locator('#editor');
   await editor.fill(source);
+  // A format starts its module worker synchronously, so this count shows whether a key started one.
+  await page.evaluate(() => {
+    window.formatterStarts = 0;
+    const Native = Worker;
+    window.Worker = class extends Native {
+      constructor(url, options) {
+        super(url, options);
+        if (options?.type === 'module') window.formatterStarts++;
+      }
+    };
+  });
+  const starts = () => page.evaluate(() => window.formatterStarts);
   await page.locator('#screen').focus();
   await page.keyboard.press('Alt+Shift+f');
-  await expect(editor).toHaveValue(source);
+  expect(await starts()).toBe(0);
   await editor.focus();
   for (const modifiers of [{ metaKey: true }, { ctrlKey: true }, { isComposing: true }]) {
     expect(
@@ -158,9 +169,11 @@ test('Shift+Alt+F formats only inside the editor and leaves find, repeats and IM
     shiftKey: true,
     repeat: true,
   });
+  expect(await starts()).toBe(0);
   await expect(editor).toHaveValue(source);
   await editor.press('Alt+Shift+f');
   await expect(editor).toHaveValue(formatted);
+  expect(await starts()).toBe(1);
   await expect(page.locator('#format')).toHaveAttribute('aria-keyshortcuts', 'Alt+Shift+F');
   await expect(page.locator('#format')).toHaveText('Format');
 });
@@ -194,7 +207,7 @@ test('edits made while the formatter is loading take precedence over its result'
   const blocked = new Promise((resolve) => (release = resolve));
   let arrived;
   const requested = new Promise((resolve) => (arrived = resolve));
-  await page.route('**/formatter-*.js', async (route) => {
+  await page.route('**/formatter.js', async (route) => {
     arrived();
     await blocked;
     await route.continue();
@@ -215,13 +228,13 @@ test('edits made while the formatter is loading take precedence over its result'
 });
 
 test('a formatter load failure keeps the source and enables retry', async ({ page }) => {
-  await page.route('**/formatter-*.js', (route) => route.abort());
+  await page.route('**/formatter.js', (route) => route.abort());
   await page.locator('#editor').fill(source);
   await page.locator('#format').click();
   await expect(page.locator('#status')).toHaveText('Format: The formatter could not load.');
   await expect(page.locator('#editor')).toHaveValue(source);
   await expect(page.locator('#format')).toBeEnabled();
-  await page.unroute('**/formatter-*.js');
+  await page.unroute('**/formatter.js');
   await page.locator('#format').click();
   await expect(page.locator('#editor')).toHaveValue(formatted);
 });

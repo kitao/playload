@@ -1,5 +1,5 @@
 import { baseURL } from '../../playwright.config.js';
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 
 const messages = {
   short: 'Player position is outside the map',
@@ -64,13 +64,11 @@ for (const scenario of [
       isMobile: !!scenario.touch,
     });
     const page = await context.newPage();
-    const errors = [];
-    page.on('pageerror', (error) => errors.push(error.message));
     try {
       await page.goto(baseURL + '/playload/app/');
-      const compact = await page.locator('#tools-toggle').isVisible();
+      const touch = await page.locator('#tools-toggle').isVisible();
       if ((await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'false') {
-        if (compact) await page.locator('#tools-toggle').click();
+        if (touch) await page.locator('#tools-toggle').click();
         await page.locator('#code-toggle').click();
       }
       const source = [
@@ -84,17 +82,17 @@ for (const scenario of [
         '}',
       ].join('\n');
       await page.locator('#editor').fill(source);
-      if (compact) await page.locator('#tools-toggle').click();
+      if (touch) await page.locator('#tools-toggle').click();
       await page.locator('#run').click();
       await expect(page.locator('#pause')).toBeEnabled();
-      if (compact) await page.locator('#tools-toggle').click();
+      if (touch) await page.locator('#tools-toggle').click();
       await page.locator('#crt').click();
       if (
         scenario.touch &&
         (await page.locator('#code-toggle').getAttribute('aria-pressed')) === 'true'
       )
         await page.locator('#code-toggle').click();
-      if (compact && (await page.locator('#workspace-toolbar').isVisible()))
+      if (touch && (await page.locator('#workspace-toolbar').isVisible()))
         await page.locator('#tools-toggle').click();
       await page.locator('#screen').click();
       await page.waitForFunction(() => document.getElementById('display').dataset.crt === 'false');
@@ -163,11 +161,10 @@ for (const scenario of [
       ).toContain('throw new Error');
       await page.locator('#editor').fill('function tick() { cls(3) }');
       await expect(page.locator('#error-line')).toBeDisabled();
-      if (compact) await page.locator('#tools-toggle').click();
+      if (touch) await page.locator('#tools-toggle').click();
       await page.locator('#run').click();
       await expect(page.locator('#pause')).toBeEnabled();
       await expect(page.getByRole('alert')).toBeHidden();
-      expect(errors).toEqual([]);
     } finally {
       await context.close();
     }
@@ -190,6 +187,8 @@ test('syntax and title-less URL errors preserve the image and have no invented s
   expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(image);
   expect(await page.locator('#screen').boundingBox()).toEqual(bounds);
   await page.screenshot({ path: testInfo.outputPath('syntax.png') });
+  // A new document, as changing only the hash makes the app reload itself after goto.
+  await page.goto('about:blank');
   await page.goto('/playload/app/#invalid-payload');
   await expect(page.getByRole('alert')).toContainText('Invalid game URL');
   await expect(page.locator('#error-line')).toBeHidden();

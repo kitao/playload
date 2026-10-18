@@ -1,5 +1,5 @@
 import { baseURL } from '../../playwright.config.js';
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 import { readFile } from 'node:fs/promises';
 
 test('alphabet previews and clipboard preserve the original letter case', async ({ page }) => {
@@ -160,7 +160,6 @@ for (const touch of [false, true]) {
     await page.goto(baseURL + '/playload/app/');
     await page.getByRole('tab', { name: 'Info', exact: true }).click();
     const notice = page.locator('#status');
-    let noticeBox;
     await page.getByRole('tab', { name: 'Emoji', exact: true }).click();
     const glyph = page.locator('#catalog button').first(),
       glyphBox = await glyph.boundingBox(),
@@ -180,7 +179,7 @@ for (const touch of [false, true]) {
     expect(await glyph.locator('canvas').evaluate((canvas) => canvas.toDataURL())).toBe(artwork);
     expect(await glyph.boundingBox()).toEqual(glyphBox);
     expect(await page.locator('#catalog').boundingBox()).toEqual(catalogBox);
-    noticeBox = await notice.boundingBox();
+    const noticeBox = await notice.boundingBox();
     expect(noticeBox.y).toBeCloseTo(glyphBox.y + glyphBox.height - 5, 1);
     const artworkBox = await glyph.locator('canvas').boundingBox();
     expect(noticeBox.y).toBeGreaterThan(artworkBox.y + artworkBox.height);
@@ -398,7 +397,10 @@ test('HTTP glyph taps copy real text without leaving a field', async ({ browser,
     await glyph.tap();
 
     await expect(phone.locator('#status')).toHaveText('Copied');
+    // Reading the clipboard needs a focused document.
+    await secure.bringToFront();
     expect(await secure.evaluate(() => navigator.clipboard.readText())).toBe(character);
+    await phone.bringToFront();
     await expect(phone.locator('.clipboard-field, #status textarea')).toHaveCount(0);
     await expect(glyph).toBeFocused();
     expect(await phone.evaluate(() => scrollY)).toBe(0);
@@ -411,8 +413,6 @@ test('HTTP glyph taps copy real text without leaving a field', async ({ browser,
 test('the curated game catalog scrolls continuously without search or pagination', async ({
   page,
 }, testInfo) => {
-  const errors = [];
-  page.on('pageerror', (e) => errors.push(e.message));
   await page.setViewportSize({ width: 1710, height: 895 });
   await page.goto('/playload/app/');
   await page.getByRole('tab', { name: 'Info', exact: true }).click();
@@ -426,7 +426,7 @@ test('the curated game catalog scrolls continuously without search or pagination
   await page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
-  await page.screenshot({ path: testInfo.outputPath('emoji-readme.jpg'), quality: 90 });
+  await page.screenshot({ path: testInfo.outputPath('emoji.jpg'), quality: 90 });
   await page.getByRole('tab', { name: 'API', exact: true }).click();
   await page.keyboard.press('ArrowRight');
   await expect(page.getByRole('tab', { name: 'Emoji', exact: true })).toHaveAttribute(
@@ -436,7 +436,7 @@ test('the curated game catalog scrolls continuously without search or pagination
   await expect(page.getByRole('searchbox')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Next page' })).toHaveCount(0);
   for (const category of ['letters', 'symbols', 'emoji', 'kana']) {
-    await page.locator('[data-category="' + category + '"]').click();
+    await page.locator('[data-ref="' + category + '"]').click();
     await expect(page.locator('#catalog button').first()).toBeVisible();
     const first = await page.locator('#catalog button').first().getAttribute('data-glyph');
     const scrollable = await page
@@ -457,7 +457,6 @@ test('the curated game catalog scrolls continuously without search or pagination
       .poll(() => page.locator('#catalog button').first().getAttribute('data-glyph'))
       .toBe(first);
   }
-  expect(errors).toEqual([]);
 });
 
 test('keyboard catalog navigation visibly marks the focused glyph without adding an outline', async ({
@@ -536,7 +535,10 @@ test('supplementary catalog symbols have a source-faithful font fallback', async
     return { loaded: loaded.map((face) => face.status), wrong, count: selected.length };
   });
   expect(result.loaded).toEqual(['loaded']);
-  expect(result.count).toBe(290);
+  const report = JSON.parse(
+    await readFile(new URL('../../docs/glyph-coverage.json', import.meta.url), 'utf8'),
+  );
+  expect(result.count).toBe(report.catalogFont.glyphCount);
   expect(result.wrong).toEqual([]);
   expect(errors).toEqual([]);
 });
@@ -623,7 +625,7 @@ test('CRT reconstruction scales smoothly at fractional sizes while flat pixels r
   }
 });
 
-test('all 108 algorithm-colored emoji retain their default ink in a real game worker', async ({
+test('every algorithm-colored emoji retains its default ink in a real game worker', async ({
   page,
 }) => {
   await page.goto('/playload/app/');
@@ -631,7 +633,7 @@ test('all 108 algorithm-colored emoji retain their default ink in a real game wo
     const { glyphs } = await import('/src/engine/glyphs.js');
     const { palette } = await import('/src/engine/engine.js');
     const emoji = glyphs.filter((g) => g.group === 'emoji');
-    const rows = Array.from({ length: 6 }, (_, y) =>
+    const rows = Array.from({ length: Math.ceil(emoji.length / 18) }, (_, y) =>
       emoji
         .slice(y * 18, y * 18 + 18)
         .map((g) => g.ch)
@@ -652,9 +654,9 @@ test('all 108 algorithm-colored emoji retain their default ink in a real game wo
   await page.getByRole('button', { name: 'CRT', exact: true }).click();
   await expect
     .poll(() =>
-      page.locator('#display').evaluate((canvas) => {
+      page.locator('#display').evaluate((canvas, count) => {
         const ctx = canvas.getContext('2d');
-        return Array.from({ length: 108 }, (_, g) =>
+        return Array.from({ length: count }, (_, g) =>
           Array.from({ length: 64 }, (_, i) => [
             ...ctx.getImageData(
               ((g % 18) * 8 + (i % 8)) * 4,
@@ -664,7 +666,7 @@ test('all 108 algorithm-colored emoji retain their default ink in a real game wo
             ).data,
           ]).flat(),
         );
-      }),
+      }, expected.length),
     )
     .toEqual(expected);
 });
@@ -678,6 +680,8 @@ test('a shared pictogram dungeon starts with CRT and sound', async ({ page }, te
     return (await encode(source)).hash;
   }, source);
   expect(hash.length).toBeLessThan(4096);
+  // A hash-only change reloads the app after goto resolves; open a new document instead.
+  await page.goto('about:blank');
   await page.goto('/playload/app/' + hash);
   await page.getByRole('button', { name: 'Click to play', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
@@ -690,5 +694,5 @@ test('a shared pictogram dungeon starts with CRT and sound', async ({ page }, te
     'true',
   );
   await expect(page.getByRole('alert')).toBeHidden();
-  await page.screenshot({ path: testInfo.outputPath('play-readme.jpg'), quality: 90 });
+  await page.screenshot({ path: testInfo.outputPath('play.jpg'), quality: 90 });
 });

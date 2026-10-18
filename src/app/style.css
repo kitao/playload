@@ -40,6 +40,15 @@ body {
   height: 100dvh;
   padding: 0 16px 16px;
 }
+/* Read by assistive technology only; it takes no space in the layout. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 body:not([data-view]) #app {
   visibility: hidden;
 }
@@ -78,7 +87,12 @@ button {
   touch-action: manipulation;
   flex-shrink: 0;
 }
-button:not(:disabled):hover,
+/* Touch screens keep :hover after a tap, so only hover-capable pointers highlight. */
+@media (hover: hover) {
+  button:not(:disabled):hover {
+    background: var(--soft);
+  }
+}
 #catalog .glyph:focus-visible {
   background: var(--soft);
 }
@@ -86,10 +100,6 @@ button:disabled {
   color: #786c83;
   border-color: #3c3245;
   cursor: default;
-}
-button[aria-pressed='true']:not(:has(.indicator)) {
-  color: var(--active);
-  border-color: var(--active);
 }
 :focus-visible {
   outline: none;
@@ -226,8 +236,10 @@ header::after {
   color: var(--active);
   border-bottom-color: var(--active);
 }
-#views button:not([aria-selected='true']):hover {
-  background: var(--soft);
+@media (hover: hover) {
+  #views button:not([aria-selected='true']):hover {
+    background: var(--soft);
+  }
 }
 #filename {
   min-width: 0;
@@ -306,10 +318,13 @@ header::after {
   background: #8f8598;
   color: #1c1822;
 }
-#format:hover,
 #format:focus-visible {
-  background: #8f8598;
   filter: brightness(1.1);
+}
+@media (hover: hover) {
+  #format:hover {
+    filter: brightness(1.1);
+  }
 }
 #format:disabled {
   opacity: 0.6;
@@ -371,15 +386,15 @@ header::after {
   background: #504359;
   color: #eeeae2;
 }
-#workspace-toolbar button,
-.game-tools button {
+#workspace-toolbar button {
   border-color: transparent;
   background: transparent;
   white-space: nowrap;
 }
-#workspace-toolbar button:not(:disabled):hover,
-.game-tools button:not(:disabled):hover {
-  background: var(--soft);
+@media (hover: hover) {
+  #workspace-toolbar button:not(:disabled):hover {
+    background: var(--soft);
+  }
 }
 .editor-status {
   grid-column: 1;
@@ -390,14 +405,6 @@ header::after {
 }
 .editor-status:has(#filename:empty) {
   display: none;
-}
-.editor-measure {
-  position: fixed;
-  visibility: hidden;
-  pointer-events: none;
-  left: -99999px;
-  white-space: pre;
-  overflow-wrap: normal;
 }
 #divider {
   position: relative;
@@ -507,14 +514,10 @@ body.resizing {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: auto;
   min-width: 0;
   height: 68px;
-  align-items: stretch;
   gap: 2px;
-  padding: 0;
   border: 1px solid var(--line);
-  background: transparent;
 }
 .swatch {
   height: 32px;
@@ -751,20 +754,19 @@ dd {
   border-top: 1px solid var(--line);
 }
 .mml-group,
-.mml-group > div {
-  display: contents;
-}
+.mml-group > div,
 .mml-group dd {
   display: contents;
 }
-.mml-group .reference-description {
-  margin: 0;
-}
 .mml-group dt {
   grid-column: 1;
+  font-weight: 600;
+  color: var(--active);
+  white-space: nowrap;
 }
 .mml-group .reference-description {
   grid-column: 2;
+  margin: 0;
 }
 .mml-group dd > code {
   grid-column: 3;
@@ -776,11 +778,6 @@ dd {
 }
 .mml-group .envelope-shapes {
   grid-column: 2 / -1;
-}
-.mml-group dt {
-  font-weight: 600;
-  color: var(--active);
-  white-space: nowrap;
 }
 .mml-group code {
   display: block;
@@ -924,9 +921,6 @@ dd {
   font: inherit;
   color: var(--text);
 }
-body[data-touch='true'] #keyboard-controls {
-  display: none;
-}
 .stage {
   position: relative;
   max-width: 100%;
@@ -948,9 +942,6 @@ body[data-touch='true'] #keyboard-controls {
   background: transparent;
   color: transparent;
   font-size: 0;
-}
-#start-game:not(:disabled):hover {
-  background: transparent;
 }
 #display {
   display: block;
@@ -1050,7 +1041,6 @@ body[data-editor-closed='true'] #game {
 #app,
 button,
 button * {
-  -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
@@ -1060,7 +1050,6 @@ button * {
 #characters,
 #examples,
 #error-notice {
-  -webkit-user-select: text;
   user-select: text;
   -webkit-touch-callout: default;
 }
@@ -1069,7 +1058,6 @@ button * {
   height: 52px;
   font-size: 16px;
   touch-action: none;
-  user-select: none;
 }
 [data-input='0'] {
   grid-column: 2;
@@ -1096,23 +1084,20 @@ button * {
   display: flex;
   gap: 8px;
 }
-body[data-touch='true'] .touch {
-  display: flex;
-}
 body[data-touch='true'] kbd {
   display: none;
 }
 body[data-touch='true'] #screen:focus {
   outline: none;
 }
-/* Match the tagline length; compact Play also reserves the Tools button and gap. */
+/* Match the tagline length; touch Play also reserves the Tools button and gap. */
 @container (width < 52ch) {
   header p {
     display: none;
   }
 }
 @container (width < calc(52ch + 56px)) {
-  body[data-compact='true'][data-view='play'] header p {
+  body[data-touch='true'][data-view='play'] header p {
     display: none;
   }
 }
@@ -1128,6 +1113,10 @@ body[data-touch='true'] #screen:focus {
   }
 }
 @media (max-width: 599px) {
+  :root {
+    --workspace-tab-width: 64px;
+    --reference-tab-width: 64px;
+  }
   .api-columns {
     min-width: max-content;
   }
@@ -1149,8 +1138,13 @@ body[data-touch='true'] #screen:focus {
     gap: 4px 8px;
     font-size: 11px;
   }
-}
-@media (max-width: 599px) {
+  .example-links li {
+    grid-template-columns: 14ch minmax(0, 1fr);
+    gap: 4px 12px;
+  }
+  .example-description {
+    grid-column: 1 / -1;
+  }
   #app {
     padding: 0 8px 8px;
   }
@@ -1186,6 +1180,7 @@ body[data-touch='true'] #screen:focus {
 }
 body[data-touch='true'] .touch {
   position: relative;
+  display: flex;
   align-items: center;
   align-self: center;
   height: 144px;
@@ -1255,45 +1250,42 @@ body[data-touch='true'] button[data-held='true'] {
 body[data-touch='true'] [data-input='5'] {
   align-self: flex-end;
 }
-body[data-compact='true'] #workspace-toolbar kbd {
-  display: none;
-}
-body[data-compact='true'] #app {
+body[data-touch='true'] #app {
   position: relative;
   padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-right))
     max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
 }
-body[data-compact='true'] header {
+body[data-touch='true'] header {
   height: 56px;
   padding: 12px 0 0;
   align-items: flex-end;
   gap: 8px;
 }
-body[data-compact='true'] #views {
+body[data-touch='true'] #views {
   align-self: stretch;
   height: 44px;
 }
-body[data-compact='true'] #views button {
+body[data-touch='true'] #views button {
   display: flex;
   flex-direction: row;
   height: 44px;
   padding: 16px 0 6px;
 }
-body[data-compact='true'] .brand,
-body[data-compact='true'] .intro {
+body[data-touch='true'] .brand,
+body[data-touch='true'] .intro {
   top: 0;
 }
-body[data-compact='true'] .brand {
+body[data-touch='true'] .brand {
   margin-bottom: 11px;
 }
-body[data-compact='true'] .intro {
+body[data-touch='true'] .intro {
   margin-bottom: 1px;
 }
-body[data-compact='true'] header p {
+body[data-touch='true'] header p {
   align-self: flex-end;
   margin-bottom: 10px;
 }
-body[data-compact='true'] #tools-toggle {
+body[data-touch='true'] #tools-toggle {
   margin-left: auto;
   width: 44px;
   height: 44px;
@@ -1302,10 +1294,10 @@ body[data-compact='true'] #tools-toggle {
   background: transparent;
   font-size: 24px;
 }
-body[data-compact='true'] #tools-toggle[aria-expanded='true'] {
+body[data-touch='true'] #tools-toggle[aria-expanded='true'] {
   color: var(--active);
 }
-body[data-compact='true'] #workspace-toolbar {
+body[data-touch='true'] #workspace-toolbar {
   position: absolute;
   top: calc(56px + env(safe-area-inset-top));
   left: max(8px, env(safe-area-inset-left));
@@ -1321,19 +1313,19 @@ body[data-compact='true'] #workspace-toolbar {
   overflow-y: auto;
   overscroll-behavior: contain;
 }
-body[data-compact='true'] .toolbar-group {
+body[data-touch='true'] .toolbar-group {
   display: contents;
 }
-body[data-compact='true'] .toolbar-group::before,
-body[data-compact='true'] #size::before {
+body[data-touch='true'] .toolbar-group::before,
+body[data-touch='true'] #size::before {
   display: none;
 }
-body[data-compact='true'] #workspace-toolbar button {
+body[data-touch='true'] #workspace-toolbar button {
   width: 100%;
   height: 44px;
   font-size: 11px;
 }
-body[data-compact='true'] #size {
+body[data-touch='true'] #size {
   grid-column: 1 / -1;
   justify-content: center;
   height: 28px;
@@ -1341,13 +1333,13 @@ body[data-compact='true'] #size {
   border: 0;
   font-size: 16px;
 }
-body[data-compact='true'][data-editor-closed='true'] #play {
+body[data-touch='true'][data-editor-closed='true'] #play {
   grid-template-rows: minmax(0, 1fr);
 }
-body[data-compact='true'] main {
+body[data-touch='true'] main {
   padding-top: 12px;
 }
-body[data-compact='true'] #game {
+body[data-touch='true'] #game {
   position: relative;
   justify-content: center;
   gap: 32px;
@@ -1357,7 +1349,7 @@ body[data-touch='true'][data-editor-closed='true'] #viewport {
   aspect-ratio: 10 / 9;
   max-height: calc(100% - 176px);
 }
-body[data-compact='true'] #picture {
+body[data-touch='true'] #picture {
   padding: 8px;
 }
 @media (orientation: portrait) {
@@ -1438,12 +1430,6 @@ body[data-compact='true'] #picture {
   }
 }
 
-@media (max-width: 599px) {
-  :root {
-    --workspace-tab-width: 64px;
-    --reference-tab-width: 64px;
-  }
-}
 @media (max-width: 359px) {
   header {
     padding-top: 10px;
@@ -1454,16 +1440,6 @@ body[data-compact='true'] #picture {
   #logo {
     width: 96px;
     height: 12px;
-  }
-}
-
-@media (max-width: 599px) {
-  .example-links li {
-    grid-template-columns: 14ch minmax(0, 1fr);
-    gap: 4px 12px;
-  }
-  .example-description {
-    grid-column: 1 / -1;
   }
 }
 

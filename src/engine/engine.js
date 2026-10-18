@@ -9,6 +9,9 @@ export const palette = [
   '#dcf5ff',
 ];
 
+// The red, green and blue values, 0–255, of a #rrggbb color.
+export const rgb = (hex) => [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16));
+
 // This factory is also serialized into the game worker. Keep dependencies inside it.
 export function createEngine(presets = [], compileScore = (s) => s) {
   const width = 160,
@@ -181,6 +184,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     cy = coordinate(cy);
     if (typeof str !== 'string') throw new TypeError('Text must be a string');
     const pair = [col1 == null ? null : color(col1), col2 == null ? null : color(col2)];
+    // Check every character before writing, so an invalid one leaves the screen intact.
+    const writes = [];
     for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
       if (segment === '\n') {
         cx = origin;
@@ -188,12 +193,12 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         continue;
       }
       const chr = characterKey(segment);
-      if (cx >= 0 && cx < columns && cy >= 0 && cy < lines) {
-        const element = scr[cy][cx];
-        element.chr = chr;
-        element.col = pair;
-      }
+      if (cx >= 0 && cx < columns && cy >= 0 && cy < lines) writes.push(scr[cy][cx], chr);
       cx++;
+    }
+    for (let i = 0; i < writes.length; i += 2) {
+      writes[i].chr = writes[i + 1];
+      writes[i].col = pair;
     }
   }
   function spr(x, y, str, col) {
@@ -231,6 +236,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     if (!Number.isInteger(ch) || ch < 0 || ch > 2)
       throw new RangeError('Sound channel must be 0–2');
     if (typeof str !== 'string') throw new TypeError('Sound must be a string');
+    // The player accepts 256 sounds per tick; top-level code counts with the first tick.
+    if (sounds.length >= 256) throw new RangeError('A tick can play at most 256 sounds');
     if (!cache.has(str)) {
       const compiled = compileScore(str);
       if (cache.size >= 256) cache.delete(cache.keys().next().value);

@@ -9,8 +9,6 @@ import { fileURLToPath } from 'node:url';
 import { AY, compileScore } from '../src/engine/sound.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const temporary = mkdtempSync(join(tmpdir(), 'playload-psg-'));
-const executable = join(temporary, 'trace');
 const revision = readFileSync(join(root, 'tests/reference/emu2149/REVISION'), 'utf8').trim();
 assert.equal(revision, '441f3dc295a9b82db16921461f0678b483db8304');
 for (const [name, expected] of Object.entries({
@@ -43,6 +41,9 @@ const report = {
   envelopeCases: 0,
   noisePeriodCases: 0,
 };
+// Created only after the pinned sources are verified, and always removed below.
+const temporary = mkdtempSync(join(tmpdir(), 'playload-psg-'));
+const executable = join(temporary, 'trace');
 try {
   execFileSync(
     process.env.CC || 'cc',

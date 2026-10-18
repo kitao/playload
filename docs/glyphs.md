@@ -1,13 +1,13 @@
 # Font coverage
 
-The built-in bank contains **2,433 canonical 8×8 cells**. Public Pixel supplies text;
+The built-in bank contains **2,460 canonical 8×8 cells**. Public Pixel supplies text;
 Unscii and Public Pixel supply symbols and emoji; Misaki Gothic supplies kana.
 Original fonts, licenses and conversion records are in `data/fonts/`;
-[README](../README.md#license) lists the source projects and licenses.
+[Playload's website](https://kitao.dev/playload/) lists the source projects and licenses.
 
 ## Letters and kana
 
-**Every letter in Public Pixel 1.24 is included**: 945 encoded letters in Unicode 17.0
+**Every letter in Public Pixel 1.24 is included**: 946 encoded letters in Unicode 17.0
 General_Category L. They cover Latin, Greek, Cyrillic, Hebrew, Coptic and modifier letters,
 plus the source's two ideographs `元` and `円`. Printable ASCII, numbers and text punctuation
 also use Public Pixel. `put` writes graphemes in the supplied order; it does not provide
@@ -21,12 +21,12 @@ are outside this subset.
 ## Symbols and emoji
 
 Symbols include every native 8×8 glyph in Unscii-8 and Public Pixel 1.24 whose Unicode 17.0
-General_Category is S: mathematics, currency, modifiers or other symbols. The **1,237 encoded
+General_Category is S: mathematics, currency, modifiers or other symbols. The **1,263 encoded
 source symbols** include arrows, box drawing, blocks, shapes, braille and legacy-computer
 graphics. Braille Pattern Blank (U+2800) retains its empty bitmap.
 
 Emoji includes every fully-qualified Unicode 17.0 emoji that becomes one code point after
-removing FE0E/FE0F and has native artwork in those two fonts: **108 characters**.
+removing FE0E/FE0F and has native artwork in those two fonts: **132 characters**.
 ZWJ sequences, flags, keycaps, skin-tone sequences and missing source glyphs are outside
 this preset scope. The complete official `emoji-test.txt` is frozen for coverage checks.
 
@@ -35,8 +35,8 @@ Printable ASCII and [WGL4](https://learn.microsoft.com/en-us/typography/develop/
 spaces and symbols. Letters come entirely from Public Pixel, so the bank does not claim
 complete WGL4 coverage. The frozen list and source-page hashes are in `data/fonts/wgl4.json`.
 
-Emoji takes catalog precedence: 105 of the 108 emoji also belong to the source-symbol set.
-The final catalogs contain **952 alphabet/number cells, 1,196 symbols, 108 emoji and 177 kana**.
+Emoji takes catalog precedence: 129 of the 132 emoji also belong to the source-symbol set.
+The final catalogs contain **953 alphabet/number cells, 1,198 symbols, 132 emoji and 177 kana**.
 Encoded code-point counts differ from cell counts because canonically equivalent forms share
 one NFC key, and emoji variation selectors do not add cells.
 
@@ -45,7 +45,7 @@ one NFC key, and emoji variation selectors do not add cells.
 The first available source supplies the whole bitmap:
 
 1. ASCII, alphabet/number cells and source-supported text punctuation: Public Pixel alone.
-2. Other symbols and pictograms: Unscii, then Public Pixel.
+2. Emoji, other symbols and pictograms: Unscii, then Public Pixel.
 3. Kana: Misaki Gothic.
 
 Pixels from different fonts are not mixed within a character. All 95 printable ASCII cells
@@ -55,20 +55,20 @@ Other artwork can be defined through `pcg[chr].pat`.
 
 | Source            | Cells | Breakdown                                        |
 | ----------------- | ----: | ------------------------------------------------ |
-| Public Pixel 1.24 | 1,126 | 952 alphabet/number cells, 162 symbols, 12 emoji |
+| Public Pixel 1.24 | 1,153 | 953 alphabet/number cells, 164 symbols, 36 emoji |
 | Unscii-8          | 1,130 | 1,034 symbols, 96 emoji                          |
 | Misaki Gothic     |   177 | Kana                                             |
 
 ## Conversion and size
 
-Public Pixel is extracted at 8px without antialiasing or scaling. All **1,293 encoded source
-cells** fit; 15 low-descender cells move upward as whole bitmaps. Misaki's BDF offsets and ascent
+Public Pixel is extracted at 8px without antialiasing or scaling. All **1,324 encoded source
+cells** fit. Misaki's BDF offsets and ascent
 are restored within its native 8×8 cell; the kana-only BDF retains the original glyph records.
 Unscii's row bytes are used directly. These conversions do not blur, scale or crop artwork;
-`data/fonts/*conversion.json` records affected cells and positions.
+`data/fonts/misaki-conversion.json` records affected cells and positions.
 
-The module is **364,150 bytes**, including names and source metadata; local default gzip gives
-**35,792 bytes**. Bitmap rows occupy **19,464 bytes**. A **48 KiB gzip budget** checks module size
+The module is **367,804 bytes**, including names and source metadata; local default gzip gives
+**36,425 bytes**. Bitmap rows occupy **19,680 bytes**. A **48 KiB gzip budget** checks module size
 without cutting the declared repertoire to a character quota. Built-in patterns add no bytes
 to a game's shared source URL; actual transfer compression depends on the host.
 
@@ -76,7 +76,7 @@ to a game's shared source URL; actual transfer compression depends on the host.
 
 All default emoji colors use one rule applied to fixed
 [Twemoji 72px PNGs](https://github.com/jdecked/twemoji/tree/b6b55fef1e8636b540a6d016a4729ca8cdf2e60b/assets/72x72).
-The PNGs provide color statistics; the 8×8 artwork remains Unscii/Public Pixel. The 26,853-byte
+The PNGs provide color statistics; the 8×8 artwork remains Unscii/Public Pixel. The 33,219-byte
 statistics file is a generation input, not a web asset. Original PNG and extractor hashes are
 retained in `data/fonts/twemoji-colors.json`.
 
@@ -97,13 +97,13 @@ retained in `data/fonts/twemoji-colors.json`.
    Colored artwork and shaded neutral objects retain ordinary matching.
 
 These are Playload's common color rules, with no per-character overrides. The contrast floor
-is a readability choice, not a WCAG compliance claim. The result is **51 chromatic, 3 gray and
-54 white** cells on black paper. Games can override colors. [The coverage report](glyph-coverage.json)
+is a readability choice, not a WCAG compliance claim. The result is **66 chromatic, 4 gray and
+62 white** cells on black paper. Games can override colors. [The coverage report](glyph-coverage.json)
 records each representative color and final ink; the tool shows the resulting artwork.
 
-The catalog's **6,220-byte WOFF fallback** covers 290 supplementary-plane symbols missing
-from OS fonts. It traces the same CC0 Unscii rows into rectangles and is used only for catalog
-labels. Browser tests compare every fallback glyph with its source rows.
+The catalog's **6,308-byte WOFF fallback** covers 292 supplementary-plane symbols missing
+from OS fonts. It traces the same CC0 Unscii and Public Pixel rows into rectangles and is used
+only for catalog labels. Browser tests compare every fallback glyph with its source rows.
 
 ## Regeneration
 
@@ -111,7 +111,7 @@ labels. Browser tests compare every fallback glyph with its source rows.
 npm run fonts
 npm run fonts:check
 npm test
-PLAYLOAD_BROWSER_CHANNEL=chrome npm run test:browser
+npm run test:browser
 ```
 
 Ordinary regeneration uses Node and frozen inputs, offline. Tests compare every shipped bitmap
@@ -130,7 +130,7 @@ npm run fonts:colors
 
 The importer caches images in the system temporary directory and verifies their hashes against
 frozen inputs. The images are not bundled. Python and Pillow are unnecessary for ordinary checks.
-`scripts/import-public-pixel.py` also uses Pillow 12.3.0 for TTF extraction;
+`scripts/import-public-pixel.js` extracts the TTF with Node;
 `scripts/import-misaki.py` uses Python's standard library and the hash-checked author archive.
 
 `data/fonts/unicode-source.json` records original hashes and URLs for Unicode names and emoji

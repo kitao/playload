@@ -8,9 +8,6 @@ tests/browser/reference/
 # Generated artifacts: checked by their own generators.
 src/engine/glyphs.js
 src/app/glyph-fallback.woff
-src/app/editor-highlighter.js
 src/app/examples.js
 docs/glyph-coverage.json
 package-lock.json
-
-docs/reference.md

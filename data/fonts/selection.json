@@ -16,11 +16,7 @@
     "alphabetCategory": "L"
   },
   "kana": {
-    "font": "misaki-kana.hex",
-    "blocks": [
-      "Hiragana",
-      "Katakana"
-    ]
+    "font": "misaki-kana.hex"
   },
   "maximumGzipBytes": 49152
 }

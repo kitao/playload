@@ -13,8 +13,6 @@ test('the public surface has six functions, two variables, and a fixed 20 by 18 
   assert.equal(api.spr.length, 4);
   assert.equal(api.scr.length, 18);
   assert(api.scr.every((row) => row.length === 20 && row.every((cell) => cell.chr === ' ')));
-  assert.equal(api.scr[0][0].constructor.name, 'ScrElem');
-  assert.equal(api.pcg.X.constructor.name, 'PcgElem');
   assert.equal(engine.pixels.length, 160 * 144);
   assert.equal(palette.length, 8);
   assert.throws(() => {
@@ -416,8 +414,10 @@ test('invalid commands leave existing screen and sprite state intact', () => {
       if (typeof chr !== 'string') assert.throws(() => api.spr(0, 0, chr, 6), TypeError);
       if (typeof chr === 'string') assert.throws(() => api.pcg[chr], TypeError);
     }
-    for (const str of ['\r', 'X\r', 'X\n\ufe0f'])
+    for (const str of ['\r', 'X\r', 'X\n\ufe0f']) {
       assert.throws(() => api.spr(0, 0, str, 6), TypeError);
+      assert.throws(() => api.put(2, 2, str, 6, 1), TypeError);
+    }
     assert.throws(() => api.spr(0, 1), TypeError);
     assert.throws(() => api.spr(0), TypeError);
     assert.throws(() => api.spr(0, 0, 'X'), RangeError);
@@ -627,6 +627,22 @@ test('sound commands preserve channel, compiled score and order, including stop'
   assert.deepEqual(engine.sounds(), []);
 });
 
+test('a tick can play 256 sounds, and more fail clearly instead of breaking the frame', () => {
+  const engine = createEngine([], (score) => score);
+  engine.step(() => {
+    for (let i = 0; i < 256; i++) engine.api.play(i % 3, 'c');
+  });
+  assert.equal(engine.sounds().length, 256);
+  assert.throws(
+    () =>
+      engine.step(() => {
+        for (let i = 0; i < 257; i++) engine.api.play(0, 'c');
+      }),
+    { name: 'RangeError', message: 'A tick can play at most 256 sounds' },
+  );
+  assert.equal(engine.sounds().length, 256);
+});
+
 test('a failed score compile emits nothing and can be retried', () => {
   let calls = 0;
   const engine = createEngine([], (score) => {
@@ -647,6 +663,7 @@ test('the score cache remains bounded and re-compiles evicted scores', () => {
     return score;
   });
   for (let i = 0; i < 256; i++) engine.api.play(0, String(i));
+  engine.sounds();
   engine.api.play(0, '0');
   assert.equal(calls, 256);
   engine.api.play(0, '256');

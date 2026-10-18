@@ -3,21 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src 'self' blob:; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'"
-    />
     <meta name="description" content="{{DESCRIPTION}}" />
     <title>Playload</title>
+    <meta property="og:title" content="Playload" />
+    <meta property="og:description" content="{{DESCRIPTION}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{APP_URL}}" />
+    <meta property="og:image" content="{{PREVIEW_IMAGE}}" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="900" />
+    <meta property="og:image:alt" content="The code editor beside a running Glyph Quest game" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="{{APP_URL}}" />
     <link rel="icon" href="/playload/assets/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="{{APP_FONT}}" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="{{APP_STYLE}}" />
-    <script type="module" src="{{APP_SCRIPT}}"></script>
+    <link
+      rel="preload"
+      href="/playload/assets/bundles/jetbrains-mono.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/playload/assets/bundles/app-style.css" />
+    <script type="module" src="/playload/assets/bundles/app.js"></script>
   </head>
   <body data-editor-closed="true" data-loading>
     <div id="app" hidden>
       <header>
+        <h1 class="visually-hidden">Playload</h1>
         <div class="brand">
           <a id="home-link" href="/playload/" aria-label="Playload home">
             <img id="logo" src="/playload/assets/logo.svg" width="64" height="8" alt="Playload" />
@@ -41,7 +53,7 @@
           </button>
         </div>
       </header>
-      <div id="workspace-toolbar" hidden>
+      <div id="workspace-toolbar" role="region" aria-label="Tools" hidden>
         <div class="game-tools">
           <div class="play-tools toolbar-group" role="group" aria-label="Play">
             <button id="load" aria-keyshortcuts="Control+O Meta+O">
@@ -98,7 +110,7 @@
               type="button"
               title="Format code"
               aria-keyshortcuts="Alt+Shift+F"
-              data-formatter="{{FORMAT_SCRIPT}}"
+              data-formatter="/playload/assets/bundles/formatter.js"
             >
               Format
             </button>
@@ -174,40 +186,16 @@
                 About
               </button>
               <button id="api-tab" data-ref="api" role="tab" aria-controls="api">API</button>
-              <button
-                id="emoji-tab"
-                data-ref="emoji"
-                data-category="emoji"
-                role="tab"
-                aria-controls="characters"
-              >
+              <button id="emoji-tab" data-ref="emoji" role="tab" aria-controls="characters">
                 Emoji
               </button>
-              <button
-                id="symbols-tab"
-                data-ref="symbols"
-                data-category="symbols"
-                role="tab"
-                aria-controls="characters"
-              >
+              <button id="symbols-tab" data-ref="symbols" role="tab" aria-controls="characters">
                 Symbols
               </button>
-              <button
-                id="letters-tab"
-                data-ref="letters"
-                data-category="letters"
-                role="tab"
-                aria-controls="characters"
-              >
+              <button id="letters-tab" data-ref="letters" role="tab" aria-controls="characters">
                 Alphabet
               </button>
-              <button
-                id="kana-tab"
-                data-ref="kana"
-                data-category="kana"
-                role="tab"
-                aria-controls="characters"
-              >
+              <button id="kana-tab" data-ref="kana" role="tab" aria-controls="characters">
                 Kana
               </button>
               <button id="examples-tab" data-ref="examples" role="tab" aria-controls="examples">
@@ -229,7 +217,11 @@
                 <li>4-direction and 2-button input</li>
                 <li>A complete game in one URL — a <strong>playable payload</strong></li>
               </ul>
-              <p class="about-links">{{SOURCE_LINK}}</p>
+              <p>
+                <a href="https://github.com/kitao/playload" target="_blank" rel="noopener"
+                  >Source code</a
+                >
+              </p>
               <h3>Create and share</h3>
               <div class="about-instructions">
                 <p>
@@ -245,7 +237,7 @@
               <h3>Support Playload</h3>
               <p>
                 If you enjoy Playload, please consider
-                <a href="{{REPOSITORY}}" target="_blank" rel="noopener"
+                <a href="https://github.com/kitao/playload" target="_blank" rel="noopener"
                   >starring the project on GitHub</a
                 >. It helps more people discover the project.
               </p>
@@ -263,7 +255,7 @@
                 <h3>License</h3>
                 <p>
                   Playload's code and documentation are licensed under
-                  <a href="/playload/LICENSE" target="_blank" rel="noopener">MIT</a>.
+                  <a href="/playload/LICENSE.txt" target="_blank" rel="noopener">MIT</a>.
                 </p>
                 <p>Bundled third-party materials retain their own licenses:</p>
                 <ul>
@@ -367,6 +359,21 @@
                       >Press Start 2P</a
                     >
                     (logo and favicon):
+                    <a
+                      href="https://openfontlicense.org/open-font-license-official-text/"
+                      target="_blank"
+                      rel="noopener"
+                      >SIL OFL 1.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/JetBrains/JetBrainsMono"
+                      target="_blank"
+                      rel="noopener"
+                      >JetBrains Mono</a
+                    >
+                    (UI and editor font):
                     <a
                       href="https://openfontlicense.org/open-font-license-official-text/"
                       target="_blank"

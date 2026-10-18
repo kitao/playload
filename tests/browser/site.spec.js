@@ -1,5 +1,12 @@
 import { baseURL } from '../../playwright.config.js';
-import { test, expect } from '@playwright/test';
+import {
+  test,
+  expect,
+  trackDecodes,
+  decodesSettled,
+  watchPolicyViolations,
+  policyViolations,
+} from './fixtures.js';
 import { readFile } from 'node:fs/promises';
 import { marked } from 'marked';
 import { encode } from '../../src/payload.js';
@@ -13,7 +20,7 @@ test('the introduction follows its site source and opens the app without loading
   const introduction = await readFile(new URL('../../src/site/index.md', import.meta.url), 'utf8');
   const appRequests = [];
   page.on('request', (request) => {
-    if (/\/(?:app|formatter)-[A-Z0-9]+\.js$/.test(new URL(request.url()).pathname))
+    if (/\/(?:app|formatter)\.js$/.test(new URL(request.url()).pathname))
       appRequests.push(request.url());
   });
   await page.goto('/playload/');
@@ -21,7 +28,7 @@ test('the introduction follows its site source and opens the app without loading
     const expected = new DOMParser().parseFromString(html, 'text/html');
     const normalize = (value) => value.replace(/\s+/g, ' ').trim();
     return {
-      actual: normalize(document.querySelector('.readme[lang="en"]').textContent),
+      actual: normalize(document.querySelector('.introduction[lang="en"]').textContent),
       expected: normalize(expected.body.textContent),
     };
   }, marked.parse(introduction));
@@ -32,7 +39,7 @@ test('the introduction follows its site source and opens the app without loading
     'href',
     '/playload/app/',
   );
-  const images = page.locator('.readme:visible .screenshots img');
+  const images = page.locator('.introduction:visible .screenshots img');
   expect(
     await images.evaluateAll((items) => items.map((image) => image.getAttribute('src'))),
   ).toEqual([
@@ -85,7 +92,7 @@ for (const touch of [false, true]) {
         }),
       );
       await page.goto(baseURL + '/playload/');
-      const badges = page.locator('.readme:visible .badges');
+      const badges = page.locator('.introduction:visible .badges');
       await expect(badges.locator('a')).toHaveCount(4);
       await badges
         .locator('img')
@@ -158,10 +165,10 @@ for (const touch of [false, true]) {
       await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
       await page.reload();
       await expect(japanese).toHaveAttribute('aria-pressed', 'true');
-      await expect(page.locator('.readme:visible')).toHaveAttribute('lang', 'ja');
+      await expect(page.locator('.introduction:visible')).toHaveAttribute('lang', 'ja');
       await page.evaluate(() => document.fonts.ready);
       const controlsBox = await controls.boundingBox();
-      const logoBox = await page.locator('.readme:visible > h1 img').boundingBox();
+      const logoBox = await page.locator('.introduction:visible > h1 img').boundingBox();
       expect(controlsBox.x).toBeGreaterThan(viewport.width / 2);
       expect(controlsBox.x + controlsBox.width).toBeLessThanOrEqual(viewport.width - 16);
       expect(controlsBox.y + controlsBox.height + 8).toBeLessThanOrEqual(logoBox.y);
@@ -192,7 +199,7 @@ for (const touch of [false, true]) {
         if (path.endsWith('@2x.png')) enlargedRequests.push(path);
       });
       await page.goto(baseURL + '/playload/');
-      const links = page.locator('.readme:visible .screenshots a');
+      const links = page.locator('.introduction:visible .screenshots a');
       const preview = page.getByRole('dialog');
       const thumbnails = links.locator('img');
       await thumbnails.evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
@@ -278,16 +285,15 @@ for (const touch of [false, true]) {
 test('image previews wait for the new image and remain closed if loading fails', async ({
   page,
 }) => {
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
   let release;
   const gate = new Promise((resolve) => (release = resolve));
+  await trackDecodes(page);
   await page.route('**/info-api@2x.png', async (route) => {
     await gate;
     await route.continue();
   });
   await page.goto('/playload/');
-  const links = page.locator('.readme:visible .screenshots a');
+  const links = page.locator('.introduction:visible .screenshots a');
   const preview = page.getByRole('dialog');
   await links.nth(0).click();
   await expect(preview).toBeVisible();
@@ -308,22 +314,20 @@ test('image previews wait for the new image and remain closed if loading fails',
   );
   await links.nth(2).click();
   await failed;
-  await page.evaluate(
-    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-  );
+  await decodesSettled(page);
   await expect(preview).not.toBeVisible();
-  expect(errors).toEqual([]);
 });
 
 test('late image loads cannot replace a newer choice or reopen after Escape', async ({ page }) => {
   let release;
   const gate = new Promise((resolve) => (release = resolve));
+  await trackDecodes(page);
   await page.route('**/info-api@2x.png', async (route) => {
     await gate;
     await route.continue();
   });
   await page.goto('/playload/');
-  const links = page.locator('.readme:visible .screenshots a');
+  const links = page.locator('.introduction:visible .screenshots a');
   const preview = page.getByRole('dialog');
   const requested = page.waitForRequest('**/info-api@2x.png');
   await links.nth(1).click();
@@ -335,9 +339,7 @@ test('late image loads cannot replace a newer choice or reopen after Escape', as
   );
   release();
   await finished;
-  await page.evaluate(
-    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-  );
+  await decodesSettled(page);
   await expect(preview.locator('img')).toHaveAttribute('src', /info-emoji@2x\.png$/);
   await preview.locator('img').click();
   let cancelRelease;
@@ -355,15 +357,11 @@ test('late image loads cannot replace a newer choice or reopen after Escape', as
   );
   cancelRelease();
   await cancelFinished;
-  await page.evaluate(
-    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-  );
+  await decodesSettled(page);
   await expect(preview).not.toBeVisible();
 });
 
 test('language selection still works when browser storage is unavailable', async ({ page }) => {
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', {
       get() {
@@ -374,12 +372,11 @@ test('language selection still works when browser storage is unavailable', async
   await page.goto('/playload/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.getByRole('button', { name: '日本語', exact: true }).click();
-  await expect(page.locator('.readme:visible')).toHaveAttribute('lang', 'ja');
+  await expect(page.locator('.introduction:visible')).toHaveAttribute('lang', 'ja');
   await expect(page.getByRole('button', { name: '日本語', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
-  expect(errors).toEqual([]);
 });
 
 for (const [languages, language] of [
@@ -396,8 +393,8 @@ for (const [languages, language] of [
     }, languages);
     await page.goto('/playload/');
     await expect(page.locator('html')).toHaveAttribute('lang', language);
-    await expect(page.locator('.readme:visible')).toHaveCount(1);
-    await expect(page.locator('.readme:visible')).toHaveAttribute('lang', language);
+    await expect(page.locator('.introduction:visible')).toHaveCount(1);
+    await expect(page.locator('.introduction:visible')).toHaveAttribute('lang', language);
     await expect(page).toHaveURL(baseURL + '/playload/');
     if (language === 'ja') {
       await expect(page.getByRole('heading', { name: '仕様', exact: true })).toBeVisible();
@@ -421,8 +418,8 @@ test('the Japanese introduction uses the same images and licenses and changes la
     for (const selector of ['a > img', 'ul:last-child a']) {
       const links = (items) =>
         items.map((item) => item.getAttribute(item.tagName === 'IMG' ? 'src' : 'href'));
-      expect(await page.locator('.readme[lang="ja"] ' + selector).evaluateAll(links)).toEqual(
-        await page.locator('.readme[lang="en"] ' + selector).evaluateAll(links),
+      expect(await page.locator('.introduction[lang="ja"] ' + selector).evaluateAll(links)).toEqual(
+        await page.locator('.introduction[lang="en"] ' + selector).evaluateAll(links),
       );
     }
     for (const width of [1400, 390]) {
@@ -459,7 +456,7 @@ test('existing shared root URLs restore their code and drop tracking parameters'
     await expect(page).toHaveURL(baseURL + '/playload/app/' + hash);
   }
   await page.goto('/playload/#specifications');
-  await expect(page.locator('.readme:visible')).toBeVisible();
+  await expect(page.locator('.introduction:visible')).toBeVisible();
   await expect(page).toHaveURL(baseURL + '/playload/#specifications');
   await page.evaluate((hash) => (location.hash = hash), legacy);
   await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
@@ -471,11 +468,11 @@ test('the project license declares UTF-8 and renders its original text', async (
   request,
 }) => {
   const original = await readFile(new URL('../../LICENSE', import.meta.url), 'utf8');
-  const response = await request.get('/playload/LICENSE');
+  const response = await request.get('/playload/LICENSE.txt');
   expect(response.ok()).toBe(true);
   expect(response.headers()['content-type']).toBe('text/plain; charset=utf-8');
   expect(await response.text()).toBe(original);
-  await page.goto('/playload/LICENSE');
+  await page.goto('/playload/LICENSE.txt');
   expect(await page.evaluate(() => document.characterSet)).toBe('UTF-8');
   expect(await page.locator('body').textContent()).toBe(original);
 });
@@ -625,14 +622,14 @@ for (const touch of [false, true]) {
       );
       await expect(
         page.locator('.about-license p').getByRole('link', { name: 'MIT', exact: true }),
-      ).toHaveAttribute('href', '/playload/LICENSE');
+      ).toHaveAttribute('href', '/playload/LICENSE.txt');
       await expect(page.locator('#about')).not.toContainText('Resource notices');
       await expect(
         page.getByRole('link', { name: 'starring the project on GitHub' }),
       ).toHaveAttribute('href', 'https://github.com/kitao/playload');
       const licenses = page.locator('.about-license');
       await expect(page.locator('#about details, #about summary')).toHaveCount(0);
-      await expect(licenses.locator('li')).toHaveCount(12);
+      await expect(licenses.locator('li')).toHaveCount(13);
       const listStyle = (element) => {
         const style = getComputedStyle(element);
         return [
@@ -687,9 +684,28 @@ for (const touch of [false, true]) {
   });
 }
 
-test('slash normalization retains a legacy fragment and unavailable paths return 404', async ({
+test('the language choice uses the shared kitao.dev key and reads the earlier one without it', async ({
   page,
 }) => {
+  await page.goto('/playload/');
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem('playload-language', 'ja');
+  });
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
+  await page.locator('.language-switch button[data-language="en"]').click();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  expect(
+    await page.evaluate(() => [
+      localStorage.getItem('kitao.dev.language'),
+      localStorage.getItem('playload-language'),
+    ]),
+  ).toEqual(['en', 'ja']);
+});
+
+test('trailing slashes follow Workers defaults and keep a legacy fragment', async ({ page }) => {
   await page.goto('/playload?ref=legacy' + legacy);
   await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
   await expect(page.locator('#editor')).toHaveValue(source);
@@ -697,23 +713,80 @@ test('slash normalization retains a legacy fragment and unavailable paths return
   await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
   await page.goto('/playload/app?ref=legacy' + legacy);
   await expect(page).toHaveURL(baseURL + '/playload/app/' + legacy);
-  for (const path of [
-    '/playload/user-guide/',
-    '/playload/missing/',
-    '/playload/NOTICE.txt',
-    '/playload/notices/misaki.txt',
-    '/playload/README.md',
-    '/playload/CHANGELOG.md',
-    '/playload/docs/',
-    '/playload/data/',
-    '/playload/examples/starter.js',
-    '/playload/assets/images/example-starter.jpg',
-    '/another-project/',
+  // Static assets' default auto-trailing-slash handling, as wrangler dev serves it.
+  for (const [path, status, location] of [
+    ['/playload?ref=alias', 307, '/playload/?ref=alias'],
+    ['/playload.html?ref=alias', 307, '/playload/?ref=alias'],
+    ['/playload/app.html', 307, '/playload/app/'],
+    ['/playload/app/index', 307, '/playload/app/'],
+    ['/playload/LICENSE.txt', 200],
+    ['/playload/app/index.html/', 404],
   ]) {
-    const response = await page.goto(path);
-    expect(response.status()).toBe(404);
-    await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible();
+    const response = await page.request.get(path, { maxRedirects: 0 });
+    expect(response.status(), path).toBe(status);
+    expect(response.headers().location, path).toBe(location);
+    expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
+    expect(response.headers()['referrer-policy'], path).toBe('strict-origin-when-cross-origin');
   }
+  // Browsers style an image or text opened on its own inline, so PNGs and text carry no content
+  // policy; SVG documents keep it.
+  for (const [path, policy] of [
+    ['/playload/assets/images/info-api@2x.png', false],
+    ['/playload/LICENSE.txt', false],
+    ['/playload/assets/logo.svg', true],
+  ]) {
+    const headers = (await page.request.get(path)).headers();
+    expect(headers['x-content-type-options'], path).toBe('nosniff');
+    expect('content-security-policy' in headers, path).toBe(policy);
+  }
+});
+
+// Local runs neither inject the analytics script nor frame a page, so these policy values are
+// checked directly; the violation checks cover the rest.
+function expectSharedPolicy(header) {
+  const policy = Object.fromEntries(
+    header.split(';').map((directive) => {
+      const [name, ...values] = directive.trim().split(/\s+/);
+      return [name, values];
+    }),
+  );
+  expect(policy['default-src']).toEqual(["'none'"]);
+  expect(policy['script-src']).toContain('https://static.cloudflareinsights.com');
+  expect(policy['connect-src']).toContain('https://cloudflareinsights.com');
+  for (const name of ['base-uri', 'form-action', 'frame-ancestors'])
+    expect(policy[name], name).toEqual(["'none'"]);
+  return policy;
+}
+
+test('the introduction and the app run under their own content policies without violations', async ({
+  page,
+}) => {
+  await watchPolicyViolations(page);
+  const site = expectSharedPolicy(
+    (await page.goto('/playload/')).headers()['content-security-policy'],
+  );
+  expect(site['style-src']).toContain('https://fonts.googleapis.com');
+  expect(site['script-src']).not.toContain("'unsafe-eval'");
+  await page.locator('.language-switch button[data-language="ja"]').click();
+  await page.locator('.introduction:visible .badges').scrollIntoViewIfNeeded();
+  await page.evaluate(() => document.fonts.ready);
+  expect(await policyViolations(page)).toEqual([]);
+  // Games run from blob workers with eval, so only the app's own policy admits them.
+  const app = expectSharedPolicy(
+    (await page.goto('/playload/app/' + legacy)).headers()['content-security-policy'],
+  );
+  expect(app['script-src']).toEqual(expect.arrayContaining(["'unsafe-eval'", 'blob:']));
+  expect(app['worker-src']).toEqual(["'self'", 'blob:']);
+  expect(app['style-src']).toEqual(["'self'"]);
+  await page.locator('#start-game').click();
+  await expect(page.locator('#pause')).toBeEnabled();
+  // The formatter worker runs under the policy of its own script response.
+  await page.getByRole('button', { name: 'Format', exact: false }).click();
+  await expect(page.locator('#format')).toBeEnabled();
+  await expect(page.locator('#status')).not.toHaveText(/^Format:/);
+  await page.getByRole('tab', { name: 'Info', exact: true }).click();
+  await page.evaluate(() => document.fonts.ready);
+  expect(await policyViolations(page)).toEqual([]);
 });
 
 test('palette swatches display their codes without copying or changing the draft', async ({

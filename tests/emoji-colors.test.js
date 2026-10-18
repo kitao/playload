@@ -14,7 +14,12 @@ import {
 } from '../scripts/emoji-colors.js';
 
 test('CIEDE2000 matches all 34 published Sharma/Wu/Dalal test pairs', () => {
-  const lines = readFileSync('tests/reference/color/ciede2000.tsv', 'utf8').trim().split('\n');
+  const lines = readFileSync(
+    new URL('../tests/reference/color/ciede2000.tsv', import.meta.url),
+    'utf8',
+  )
+    .trim()
+    .split('\n');
   assert.equal(lines.length, 34);
   for (const line of lines) {
     const values = line.trim().split(/\s+/).map(Number);
@@ -118,7 +123,9 @@ test('every generated default emoji meets the black-paper contrast floor', () =>
 });
 
 test('every emoji uses the common frozen input and algorithm with no overrides', () => {
-  const source = JSON.parse(readFileSync('data/fonts/twemoji-colors.json', 'utf8'));
+  const source = JSON.parse(
+    readFileSync(new URL('../data/fonts/twemoji-colors.json', import.meta.url), 'utf8'),
+  );
   assert.equal(source.source, 'Twemoji, PNG at 72px');
   const entries = glyphs.filter((g) => g.group === 'emoji');
   assert.equal(Object.keys(source.glyphs).length, entries.length);
@@ -136,7 +143,9 @@ test('every emoji uses the common frozen input and algorithm with no overrides',
 });
 
 test('colored button backplates leave their foreground symbols neutral', () => {
-  const source = JSON.parse(readFileSync('data/fonts/twemoji-colors.json', 'utf8'));
+  const source = JSON.parse(
+    readFileSync(new URL('../data/fonts/twemoji-colors.json', import.meta.url), 'utf8'),
+  );
   for (const cp of ['2194', '23E9', '262E', '262F', '2640', '2642']) {
     assert(source.glyphs[cp].plateRemoved, cp);
     const color = dominantColor(source.glyphs[cp].samples);

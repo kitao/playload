@@ -1,5 +1,6 @@
 // Test-only driver for the pinned, unmodified emu2149 source.
-// A frame is one master-clock / 8 tick. Output: three tone bits, noise bit,
+// A frame is one emu2149 sample at the given rate; the default 275 kHz is one tick of
+// the default 2.2 MHz master clock / 8. Output per frame: three tone bits, noise bit,
 // AY envelope level, followed by the little-endian noise state (four bytes).
 #include "emu2149/emu2149.h"
 #include <stdio.h>

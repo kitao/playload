@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { renderReference } from './reference-renderer.js';
+import { renderLottes } from './reference-renderer.js';
 
 test('CRT reconstruction agrees with the frozen Lottes shader at matched settings', async ({
   page,
@@ -58,7 +58,7 @@ test('CRT reconstruction agrees with the frozen Lottes shader at matched setting
       }
       return reports;
     },
-    { source, reference: renderReference.toString() },
+    { source, reference: renderLottes.toString() },
   );
   console.log('CRT reference differences (8-bit RGB):', JSON.stringify(result));
   await testInfo.attach('crt-reference-metrics', {
@@ -124,51 +124,77 @@ test('CRT and flat mode have the same maximum picture width and height', async (
 test('CRT glass preserves every edge pixel and its phosphor glow', async ({ page }) => {
   const source = await readFile(new URL('../../src/app/crt.js', import.meta.url), 'utf8');
   expect(source).toContain('mix(background, srgb + surround, glass)');
+  expect(source).toContain("from '../engine/engine.js'");
   await page.goto('/playload/app/');
   const result = await page.evaluate(async (source) => {
     const { createCRT } = await import('/src/app/crt.js'),
       { palette } = await import('/src/engine/engine.js');
-    const unmaskedSource = source.replace(
-      'mix(background, srgb + surround, glass)',
-      'srgb + surround',
+    // Load the same module without its glass mask, importing from the served sources.
+    const unmaskedSource = source
+      .replace('mix(background, srgb + surround, glass)', 'srgb + surround')
+      .replace("'../engine/engine.js'", JSON.stringify(location.origin + '/src/engine/engine.js'));
+    const { createCRT: unmasked } = await import(
+      URL.createObjectURL(new Blob([unmaskedSource], { type: 'text/javascript' }))
     );
-    const unmasked = new Function(
-      unmaskedSource.replace('export function createCRT', 'function createCRT') +
-        '\nreturn createCRT;',
-    )();
     const renderers = [createCRT(palette), unmasked(palette)],
-      pixels = new Uint8Array(160 * 144),
-      rgba = new Uint8Array(640 * 576 * 4);
+      pixels = new Uint8Array(160 * 144);
     const edges = [
       ...Array.from({ length: 160 }, (_, x) => [x, 0]),
       ...Array.from({ length: 160 }, (_, x) => [x, 143]),
       ...Array.from({ length: 142 }, (_, y) => [0, y + 1]),
       ...Array.from({ length: 142 }, (_, y) => [159, y + 1]),
     ];
+    // Each picture lies within 19 output pixels of its 4×4 cell. Shading and
+    // reading only a 64×64 window keeps 1,208 renders fast in software WebGL.
+    const radius = 32,
+      rgba = new Uint8Array(radius * 2 * radius * 2 * 4);
     let minimumPeak = 1,
-      minimumGlow = 1;
+      minimumGlow = 1,
+      windowEdgeLight = 0;
     for (const [x, y] of edges) {
       pixels.fill(0);
       pixels[y * 160 + x] = 7;
+      const left = Math.max(0, x * 4 + 2 - radius),
+        right = Math.min(640, x * 4 + 2 + radius),
+        top = Math.max(0, y * 4 + 2 - radius),
+        bottom = Math.min(576, y * 4 + 2 + radius),
+        width = right - left,
+        height = bottom - top;
       const samples = renderers.map((renderer) => {
-        renderer.render(pixels);
         const gl = renderer.canvas.getContext('webgl');
-        gl.readPixels(0, 0, 640, 576, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+        // WebGL window coordinates start at the bottom row.
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(left, 576 - bottom, width, height);
+        renderer.render(pixels);
+        gl.readPixels(left, 576 - bottom, width, height, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
         let peak = 0,
-          glow = 0;
-        for (let offset = 0; offset < rgba.length; offset += 4) {
-          const light = rgba[offset] + rgba[offset + 1] + rgba[offset + 2];
-          peak = Math.max(peak, light);
-          glow += light;
-        }
-        return { peak, glow };
+          glow = 0,
+          edge = 0;
+        for (let row = 0; row < height; row++)
+          for (let column = 0; column < width; column++) {
+            const offset = (row * width + column) * 4,
+              light = rgba[offset] + rgba[offset + 1] + rgba[offset + 2];
+            peak = Math.max(peak, light);
+            glow += light;
+            // Light on a window side inside the canvas would mean glow was cut off.
+            if (
+              (column === 0 && left > 0) ||
+              (column === width - 1 && right < 640) ||
+              (row === 0 && bottom < 576) ||
+              (row === height - 1 && top > 0)
+            )
+              edge += light;
+          }
+        return { peak, glow, edge };
       });
+      windowEdgeLight += samples[1].edge;
       minimumPeak = Math.min(minimumPeak, samples[0].peak / samples[1].peak);
       minimumGlow = Math.min(minimumGlow, samples[0].glow / samples[1].glow);
     }
-    return { count: edges.length, minimumPeak, minimumGlow };
+    return { count: edges.length, minimumPeak, minimumGlow, windowEdgeLight };
   }, source);
   expect(result.count).toBe(604);
+  expect(result.windowEdgeLight).toBe(0);
   expect(result.minimumPeak).toBe(1);
   expect(result.minimumGlow).toBeGreaterThanOrEqual(0.99);
 });

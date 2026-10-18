@@ -1,3 +1,5 @@
+import { latinLetter } from './keys.js';
+
 // Textarea multiline edits can lose their first line on native Redo in Chrome.
 // Keep formatting and adjacent typing as complete, bounded undo transactions.
 export class EditorHistory {
@@ -17,12 +19,13 @@ export class EditorHistory {
     });
     editor.addEventListener('keydown', (event) => {
       if (event.isComposing || event.altKey || (!event.ctrlKey && !event.metaKey)) return;
+      const letter = latinLetter(event);
       const step =
-        event.code === 'KeyZ'
+        letter === 'z'
           ? event.shiftKey
             ? 1
             : -1
-          : event.code === 'KeyY' && event.ctrlKey && !event.metaKey && !event.shiftKey
+          : letter === 'y' && event.ctrlKey && !event.metaKey && !event.shiftKey
             ? 1
             : 0;
       if (!step) return;

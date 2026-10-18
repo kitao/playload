@@ -1,6 +1,8 @@
 let preferredLanguage;
 try {
-  const saved = localStorage.getItem('playload-language');
+  // Every kitao.dev page shares this key; the earlier Playload key counts only without it.
+  const saved =
+    localStorage.getItem('kitao.dev.language') ?? localStorage.getItem('playload-language');
   if (['ja', 'en'].includes(saved)) preferredLanguage = saved;
 } catch {
   // Browser language still works when storage is unavailable.
@@ -36,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       preferredLanguage = button.dataset.language;
       try {
-        localStorage.setItem('playload-language', preferredLanguage);
+        localStorage.setItem('kitao.dev.language', preferredLanguage);
       } catch {
         // Keep the current choice even if the browser cannot save it.
       }

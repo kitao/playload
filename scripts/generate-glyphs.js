@@ -25,7 +25,7 @@ const hex = (text) =>
       }),
   );
 const unscii = hex(read('unscii-8.hex')),
-  publicPixel = hex(read('public-pixel-8.hex'));
+  publicPixel = hex(read(selection.text.alphabetFont));
 const misaki = hex(read(selection.kana.font));
 const unicode = new Map(
   read('UnicodeData.txt')
@@ -116,7 +116,7 @@ function add(cp, group) {
 }
 for (let cp = selection.ascii.from; cp <= selection.ascii.to; cp++)
   add(cp, /[A-Za-z0-9]/.test(String.fromCodePoint(cp)) ? 'letters' : 'symbols');
-// Emoji takes precedence for catalog classification and default color.
+// Emoji take precedence for catalog classification, default color and artwork source.
 for (const cp of emoji) if (!bank.has(key(String.fromCodePoint(cp)))) add(cp, 'emoji');
 for (const cp of symbols) {
   if (!bank.has(key(String.fromCodePoint(cp)))) add(cp, 'symbols');
@@ -171,7 +171,7 @@ assert(
 );
 const inputs = [
   'selection.json',
-  'wgl4.json',
+  selection.text.punctuationBaseline,
   'unicode-source.json',
   'unicode-LICENSE.txt',
   'unscii-8.hex',
@@ -180,13 +180,12 @@ const inputs = [
   'unscii-sources.txt',
   'PublicPixel.ttf',
   'public-pixel-LICENSE.txt',
-  'public-pixel-8.hex',
-  'public-pixel-conversion.json',
+  selection.text.alphabetFont,
   'UnicodeData.txt',
-  'emoji-test.txt',
+  selection.emoji.reference,
   selection.emoji.colors,
   'twemoji-color-LICENSE.txt',
-  'misaki-kana.hex',
+  selection.kana.font,
   'misaki-kana.bdf',
   'misaki-conversion.json',
   'misaki.txt',

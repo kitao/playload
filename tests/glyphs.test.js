@@ -1,19 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { gzipSync } from 'node:zlib';
+import { gzipSync, inflateSync } from 'node:zlib';
 import { glyphs } from '../src/engine/glyphs.js';
 import { createEngine } from '../src/engine/engine.js';
+import { publicPixelCells } from '../scripts/import-public-pixel.js';
+
 const key = (ch) => ch.normalize('NFC').replace(/[\uFE0E\uFE0F]/g, '');
 const bank = new Map(glyphs.map((g) => [key(g.ch), g]));
 
 test('the bank follows the declared source repertoires within its transfer budget', () => {
-  const selection = JSON.parse(readFileSync('data/fonts/selection.json', 'utf8'));
-  const standard = JSON.parse(readFileSync('data/fonts/wgl4.json', 'utf8'));
+  const selection = JSON.parse(
+    readFileSync(new URL('../data/fonts/selection.json', import.meta.url), 'utf8'),
+  );
+  const standard = JSON.parse(
+    readFileSync(new URL('../data/fonts/wgl4.json', import.meta.url), 'utf8'),
+  );
   const names = new Map(
-    readFileSync('data/fonts/UnicodeData.txt', 'utf8')
+    readFileSync(new URL('../data/fonts/UnicodeData.txt', import.meta.url), 'utf8')
       .trim()
       .split('\n')
       .map((line) => {
@@ -21,7 +26,10 @@ test('the bank follows the declared source repertoires within its transfer budge
         return [parseInt(cp, 16), { name, category }];
       }),
   );
-  const fontLetters = readFileSync('data/fonts/public-pixel-8.hex', 'utf8')
+  const fontLetters = readFileSync(
+    new URL('../data/fonts/public-pixel-8.hex', import.meta.url),
+    'utf8',
+  )
     .trim()
     .split('\n')
     .filter((line) => line.split(':')[1].length === 16)
@@ -31,14 +39,14 @@ test('the bank follows the declared source repertoires within its transfer budge
     });
   const fonts = new Set(
     ['unscii-8.hex', 'public-pixel-8.hex'].flatMap((file) =>
-      readFileSync('data/fonts/' + file, 'utf8')
+      readFileSync(new URL('../data/fonts/' + file, import.meta.url), 'utf8')
         .trim()
         .split('\n')
         .filter((line) => line.split(':')[1].length === 16)
         .map((line) => parseInt(line, 16)),
     ),
   );
-  const emojis = readFileSync('data/fonts/emoji-test.txt', 'utf8')
+  const emojis = readFileSync(new URL('../data/fonts/emoji-test.txt', import.meta.url), 'utf8')
     .split('\n')
     .flatMap((line) => {
       const fields = line.split(';');
@@ -61,14 +69,17 @@ test('the bank follows the declared source repertoires within its transfer budge
       .filter((cp) => !/\p{Letter}/u.test(String.fromCodePoint(cp)))
       .map((cp) => key(String.fromCodePoint(cp))),
     ...fontLetters.map((cp) => key(String.fromCodePoint(cp))),
-    ...readFileSync('data/fonts/' + selection.kana.font, 'utf8')
+    ...readFileSync(new URL('../data/fonts/' + selection.kana.font, import.meta.url), 'utf8')
       .trim()
       .split('\n')
       .map((line) => String.fromCodePoint(parseInt(line, 16))),
   ]);
   assert.equal(bank.size, glyphs.length);
   assert.equal(bank.size, allowed.size);
-  assert(gzipSync(readFileSync('src/engine/glyphs.js')).length <= selection.maximumGzipBytes);
+  assert(
+    gzipSync(readFileSync(new URL('../src/engine/glyphs.js', import.meta.url))).length <=
+      selection.maximumGzipBytes,
+  );
   for (const g of glyphs) {
     assert(allowed.has(key(g.ch)), g.ch);
     assert.equal(g.rows.length, 8, g.ch);
@@ -83,18 +94,22 @@ test('the bank follows the declared source repertoires within its transfer budge
 });
 
 test('every source-supported symbol and single emoji has a preset', () => {
-  const selection = JSON.parse(readFileSync('data/fonts/selection.json', 'utf8'));
+  const selection = JSON.parse(
+    readFileSync(new URL('../data/fonts/selection.json', import.meta.url), 'utf8'),
+  );
   assert.deepEqual(selection.symbols, { category: 'S' });
   for (let cp = 0x2500; cp <= 0x25ff; cp++)
     assert(
       bank.get(String.fromCodePoint(cp))?.rows.some(Boolean),
       'Structural U+' + cp.toString(16),
     );
-  const report = JSON.parse(readFileSync('docs/glyph-coverage.json', 'utf8'));
-  assert.equal(report.emojiRepertoire.sourceAvailableSingleCodePoints, 108);
-  assert.equal(glyphs.filter((g) => g.group === 'emoji').length, 108);
+  const report = JSON.parse(
+    readFileSync(new URL('../docs/glyph-coverage.json', import.meta.url), 'utf8'),
+  );
+  assert.equal(report.emojiRepertoire.sourceAvailableSingleCodePoints, 132);
+  assert.equal(glyphs.filter((g) => g.group === 'emoji').length, 132);
   assert.equal(report.symbolRepertoire.category, 'S');
-  assert.equal(report.symbolRepertoire.sourceAvailableCodePoints, 1237);
+  assert.equal(report.symbolRepertoire.sourceAvailableCodePoints, 1263);
   // Blank braille is an authored, intentionally empty symbol, not a missing cell.
   assert.deepEqual(bank.get('\u2800').rows, Array(8).fill(0));
   for (const ch of '⡀⣿⌘★☆☒✓') assert(bank.get(ch)?.rows.some(Boolean), ch);
@@ -106,20 +121,16 @@ test('every source-supported symbol and single emoji has a preset', () => {
   assert.deepEqual(engine.api.pcg['♦'].col, [3, 0]);
 });
 
-test('complete Unicode reference files retain their official original hashes', () => {
-  const sources = JSON.parse(readFileSync('data/fonts/unicode-source.json', 'utf8'));
-  for (const file of ['emoji-test.txt'])
-    assert.equal(
-      createHash('sha256')
-        .update(readFileSync('data/fonts/' + file))
-        .digest('hex'),
-      sources[file].originalSHA256,
-      file,
-    );
-});
-
-test('the frozen author files reproduce the shipped bank and coverage report offline', () => {
-  execFileSync(process.execPath, ['scripts/generate-glyphs.js', '--check']);
+test('the complete emoji-test.txt retains its official original hash', () => {
+  const sources = JSON.parse(
+    readFileSync(new URL('../data/fonts/unicode-source.json', import.meta.url), 'utf8'),
+  );
+  assert.equal(
+    createHash('sha256')
+      .update(readFileSync(new URL('../data/fonts/emoji-test.txt', import.meta.url)))
+      .digest('hex'),
+    sources['emoji-test.txt'].originalSHA256,
+  );
 });
 
 test('borrowed artwork keeps every original pixel from its credited native font', () => {
@@ -129,7 +140,7 @@ test('borrowed artwork keeps every original pixel from its credited native font'
     ['misaki', 'misaki-kana.hex'],
   ]) {
     const originals = new Map(
-      readFileSync('data/fonts/' + file, 'utf8')
+      readFileSync(new URL('../data/fonts/' + file, import.meta.url), 'utf8')
         .trim()
         .split('\n')
         .map((line) => {
@@ -202,7 +213,9 @@ test('lazy editable glyphs retain all keys and copy inputs before the first look
 });
 
 test('the retained punctuation baseline remains covered without letter fallback', () => {
-  const reference = JSON.parse(readFileSync('data/fonts/wgl4.json', 'utf8'));
+  const reference = JSON.parse(
+    readFileSync(new URL('../data/fonts/wgl4.json', import.meta.url), 'utf8'),
+  );
   assert.equal(reference.sources.length, 4);
   assert.equal(reference.codepoints.length, 653);
   for (const cp of reference.codepoints) {
@@ -222,23 +235,43 @@ test('the retained punctuation baseline remains covered without letter fallback'
     assert.notDeepEqual(bank.get(plain).rows, bank.get(accent).rows);
 });
 
+test('the Public Pixel cells are the hinting-free pixels of its outlines, all planes included', () => {
+  const cells = publicPixelCells(
+    readFileSync(new URL('../data/fonts/PublicPixel.ttf', import.meta.url)),
+  );
+  const frozen = readFileSync(new URL('../data/fonts/public-pixel-8.hex', import.meta.url), 'utf8')
+    .trim()
+    .split('\n')
+    .map((line) => line.split(':'))
+    .map(([cp, bits]) => [parseInt(cp, 16), bits.match(/../g).map((byte) => parseInt(byte, 16))]);
+  assert.deepEqual(new Map(frozen), cells);
+  // Ê keeps its circumflex directly above the letter, as drawn.
+  assert.deepEqual(cells.get(0xca).slice(0, 4), [0x00, 0x10, 0x28, 0xfe]);
+  // 𝕏 and 🏆 are only in the font's supplementary-plane character map.
+  assert(cells.has(0x1d54f) && cells.has(0x1f3c6));
+});
+
 test('the complete Public Pixel alphabet uses one typeface with no letter fallback', () => {
-  const report = JSON.parse(readFileSync('docs/glyph-coverage.json', 'utf8'));
+  const report = JSON.parse(
+    readFileSync(new URL('../docs/glyph-coverage.json', import.meta.url), 'utf8'),
+  );
   assert.equal(report.textRepertoire.alphabetFont, 'Public Pixel 1.24');
-  assert.equal(report.textRepertoire.alphabetCodePoints, 945);
-  for (const file of ['public-pixel-8.hex']) {
-    for (const line of readFileSync('data/fonts/' + file, 'utf8')
-      .trim()
-      .split('\n')) {
-      const [cp, bits] = line.split(':');
-      const ch = String.fromCodePoint(parseInt(cp, 16));
-      if (bits.length === 16 && /\p{Letter}/u.test(ch)) assert(bank.has(key(ch)), file + ' ' + cp);
-    }
+  assert.equal(report.textRepertoire.alphabetCodePoints, 946);
+  for (const line of readFileSync(
+    new URL('../data/fonts/public-pixel-8.hex', import.meta.url),
+    'utf8',
+  )
+    .trim()
+    .split('\n')) {
+    const [cp, bits] = line.split(':');
+    const ch = String.fromCodePoint(parseInt(cp, 16));
+    if (bits.length === 16 && /\p{Letter}/u.test(ch)) assert(bank.has(key(ch)), cp);
   }
+  // put() rewrites the whole cell, so two engines serve every comparison.
+  const first = createEngine(glyphs),
+    second = createEngine(glyphs);
   for (const g of glyphs.filter((g) => g.group === 'letters')) {
     assert.equal(g.source, 'public-pixel', g.ch);
-    const first = createEngine(glyphs),
-      second = createEngine(glyphs);
     first.api.put(0, 0, g.ch);
     second.api.put(0, 0, g.ch.normalize('NFD'));
     assert.deepEqual(first.pixels, second.pixels, g.ch);
@@ -250,11 +283,15 @@ test('the complete Public Pixel alphabet uses one typeface with no letter fallba
 });
 
 test('kana matches the author BDF coordinates, including voiced kana and iteration marks', () => {
-  const source = readFileSync('data/fonts/misaki-kana.bdf', 'utf8');
-  const report = JSON.parse(readFileSync('data/fonts/misaki-conversion.json', 'utf8'));
+  const source = readFileSync(new URL('../data/fonts/misaki-kana.bdf', import.meta.url), 'utf8');
+  const report = JSON.parse(
+    readFileSync(new URL('../data/fonts/misaki-conversion.json', import.meta.url), 'utf8'),
+  );
   assert.equal(createHash('sha256').update(source).digest('hex'), report.subsetBDFSHA256);
   const ascent = Number(source.match(/^FONT_ASCENT (\d+)$/m)[1]);
   const blocks = [...source.matchAll(/STARTCHAR .*?ENDCHAR/gms)];
+  const a = createEngine(glyphs),
+    b = createEngine(glyphs);
   assert.equal(blocks.length, 177);
   assert.equal(glyphs.filter((g) => g.source === 'misaki').length, 177);
   for (const [block] of blocks) {
@@ -279,8 +316,6 @@ test('kana matches the author BDF coordinates, including voiced kana and iterati
       glyph = bank.get(ch);
     assert.equal(glyph.source, 'misaki');
     assert.deepEqual(glyph.rows, rows, ch);
-    const a = createEngine(glyphs),
-      b = createEngine(glyphs);
     a.api.put(0, 0, ch);
     b.api.put(0, 0, ch.normalize('NFD'));
     assert.deepEqual(a.pixels, b.pixels, ch);
@@ -289,4 +324,90 @@ test('kana matches the author BDF coordinates, including voiced kana and iterati
   assert.deepEqual(bank.get('ア').rows, [126, 2, 20, 24, 16, 16, 32, 0]);
   for (const ch of 'がぎぐげごぱぴぷぺぽガギグゲゴパピプペポヴゝゞヽヾー・')
     assert(bank.get(ch)?.rows.some(Boolean), ch);
+});
+
+test('the font coverage document states the generated counts and sizes', () => {
+  const report = JSON.parse(
+    readFileSync(new URL('../docs/glyph-coverage.json', import.meta.url), 'utf8'),
+  );
+  const selection = JSON.parse(
+    readFileSync(new URL('../data/fonts/selection.json', import.meta.url), 'utf8'),
+  );
+  const publicPixelCount = readFileSync(
+    new URL('../data/fonts/public-pixel-8.hex', import.meta.url),
+    'utf8',
+  )
+    .trim()
+    .split('\n').length;
+  const categories = new Map(
+    readFileSync(new URL('../data/fonts/UnicodeData.txt', import.meta.url), 'utf8')
+      .trim()
+      .split('\n')
+      .map((line) => line.split(';'))
+      .map(([cp, , category]) => [parseInt(cp, 16), category]),
+  );
+  const n = (value) => value.toLocaleString('en-US');
+  const count = (filter) => glyphs.filter(filter).length;
+  const cells = (source, group) => count((g) => g.source === source && g.group === group);
+  const kana = (from, to) =>
+    count((g) => g.group === 'kana' && g.ch.codePointAt(0) >= from && g.ch.codePointAt(0) <= to);
+  const inks = (filter) => report.emojiColors.selections.filter(({ ink }) => filter(ink)).length;
+  const { groups, sources, sizes } = report;
+  const phrases = [
+    `**${n(report.total)} canonical 8×8 cells**`,
+    `${n(report.textRepertoire.alphabetCodePoints)} encoded letters`,
+    `**U+3040–U+309F** (${kana(0x3040, 0x309f)} cells)`,
+    `**U+30A0–U+30FF** (${kana(0x30a0, 0x30ff)} cells)`,
+    `**${n(report.symbolRepertoire.sourceAvailableCodePoints)} encoded source symbols**`,
+    `**${n(report.emojiRepertoire.sourceAvailableSingleCodePoints)} characters**`,
+    `**${n(report.textRepertoire.punctuationCodePoints)} non-letter code points**`,
+    `${count((g) => g.group === 'emoji' && categories.get(g.ch.codePointAt(0))?.startsWith('S'))} of the ${groups.emoji} emoji also belong to the source-symbol set`,
+    `**${n(groups.letters)} alphabet/number cells, ${n(groups.symbols)} symbols, ${groups.emoji} emoji and ${groups.kana} kana**`,
+    `| Public Pixel 1.24 | ${n(sources['public-pixel'])} | ${n(cells('public-pixel', 'letters'))} alphabet/number cells, ${cells('public-pixel', 'symbols')} symbols, ${cells('public-pixel', 'emoji')} emoji |`,
+    `| Unscii-8 | ${n(sources.unscii)} | ${n(cells('unscii', 'symbols'))} symbols, ${cells('unscii', 'emoji')} emoji |`,
+    `| Misaki Gothic | ${sources.misaki} | Kana |`,
+    `All **${n(publicPixelCount)} encoded source cells** fit`,
+    `The module is **${n(sizes.moduleBytes)} bytes**`,
+    `gzip gives **${n(sizes.gzipBytes)} bytes**`,
+    `Bitmap rows occupy **${n(sizes.bitmapBytes)} bytes**`,
+    `A **${selection.maximumGzipBytes / 1024} KiB gzip budget**`,
+    `The ${n(readFileSync(new URL('../data/fonts/twemoji-colors.json', import.meta.url)).length)}-byte statistics file`,
+    `**${inks((ink) => ink >= 3 && ink <= 6)} chromatic, ${inks((ink) => ink === 2)} gray and ${inks((ink) => ink === 7)} white** cells`,
+    `**${n(sizes.catalogFontBytes)}-byte WOFF fallback** covers ${report.catalogFont.glyphCount} supplementary-plane symbols`,
+  ];
+  const document = readFileSync(new URL('../docs/glyphs.md', import.meta.url), 'utf8').replace(
+    /\s+/g,
+    ' ',
+  );
+  for (const phrase of phrases) assert(document.includes(phrase), phrase);
+});
+
+test('the catalog fallback font orders its name records and credits the fonts it draws from', () => {
+  const woff = readFileSync(new URL('../src/app/glyph-fallback.woff', import.meta.url));
+  // WOFF 1.0: a 44-byte header, then 20-byte entries of tag, offset, compressed and original length.
+  const entry = Array.from({ length: woff.readUInt16BE(12) }, (_, i) => 44 + i * 20).find(
+    (p) => woff.toString('latin1', p, p + 4) === 'name',
+  );
+  const [offset, compressed, length] = [4, 8, 12].map((n) => woff.readUInt32BE(entry + n));
+  const stored = woff.subarray(offset, offset + compressed),
+    name = compressed < length ? inflateSync(stored) : stored;
+  const records = Array.from({ length: name.readUInt16BE(2) }, (_, i) =>
+    [0, 2, 4, 6, 8, 10].map((n) => name.readUInt16BE(6 + i * 12 + n)),
+  );
+  const keys = records.map((record) => record.slice(0, 4));
+  assert.deepEqual(
+    keys,
+    [...keys].sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]),
+  );
+  const [, , , , size, at] = records.find((record) => record[3] === 0);
+  const copyright = Buffer.from(name.subarray(name.readUInt16BE(4) + at).subarray(0, size))
+    .swap16()
+    .toString('utf16le');
+  const sources = new Set(
+    glyphs
+      .filter((g) => g.group === 'symbols' && g.ch.codePointAt(0) > 0xffff)
+      .map((g) => g.source),
+  );
+  assert.deepEqual([...sources], ['unscii', 'public-pixel']);
+  assert.match(copyright, /^Derived from Unscii-8 and Public Pixel\. Public domain \/ CC0\./);
 });

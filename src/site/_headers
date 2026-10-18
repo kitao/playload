@@ -1,17 +1,16 @@
-/playload/*
+/playload*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-
-/playload/
-  Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' https://img.shields.io https://ko-fi.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://img.shields.io https://ko-fi.com; connect-src 'self' https://cloudflareinsights.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
 
 /playload/app/
-  Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src 'self' blob:; style-src 'self'; font-src 'self'; connect-src https://kitao.dev/cdn-cgi/rum; img-src 'self' blob:; media-src blob:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src 'self' blob:; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
 
-/playload/assets/bundles/*
-  Cache-Control: public, max-age=31536000, immutable
+# Browsers style an image or text opened on its own with inline styles, which the policy above
+# blocks.
+/playload/assets/images/*.png
+  ! Content-Security-Policy
 
-/playload/LICENSE
-  Content-Type: text/plain; charset=utf-8
+/playload/LICENSE.txt
+  ! Content-Security-Policy

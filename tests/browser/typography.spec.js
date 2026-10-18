@@ -1,41 +1,39 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, watchPolicyViolations, policyViolations } from './fixtures.js';
 import { readFile } from 'node:fs/promises';
 
-test('the introduction loads the shared same-origin font without a content-policy violation', async ({
+test('the introduction loads Noto Sans JP from Google Fonts within its content policy', async ({
   page,
 }) => {
-  // A bundled webfont tests the shared-font transport without depending on the live site.
+  // A bundled webfont stands in for Google's file, so the face loads without the network.
   const fixture = await readFile(new URL('../../src/app/jetbrains-mono.woff2', import.meta.url));
   const requests = [];
-  await page.addInitScript(() => {
-    window.fontPolicyViolations = [];
-    document.addEventListener('securitypolicyviolation', (event) => {
-      if (event.violatedDirective.startsWith('font-src'))
-        window.fontPolicyViolations.push(event.blockedURI);
-    });
-  });
-  await page.route('**/assets/fonts/noto-sans-jp.css', (route) => {
-    requests.push(new URL(route.request().url()).pathname);
+  await watchPolicyViolations(page);
+  await page.route(/^https:\/\/fonts\.googleapis\.com\//, (route) => {
+    requests.push(route.request().url());
     return route.fulfill({
       contentType: 'text/css',
       body: `@font-face {
         font-family: 'Noto Sans JP';
         font-weight: 300 700;
-        src: url('./noto-sans-jp/123.woff2') format('woff2');
+        src: url(https://fonts.gstatic.com/s/notosansjp/stand-in.woff2) format('woff2');
       }`,
     });
   });
-  await page.route('**/assets/fonts/noto-sans-jp/123.woff2', (route) => {
-    requests.push(new URL(route.request().url()).pathname);
-    return route.fulfill({ contentType: 'font/woff2', body: fixture });
+  await page.route(/^https:\/\/fonts\.gstatic\.com\//, (route) => {
+    requests.push(route.request().url());
+    return route.fulfill({
+      contentType: 'font/woff2',
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: fixture,
+    });
   });
   await page.goto('/playload/');
   await page.evaluate(() => document.fonts.ready);
   expect(requests).toEqual([
-    '/assets/fonts/noto-sans-jp.css',
-    '/assets/fonts/noto-sans-jp/123.woff2',
+    'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300..700&display=swap',
+    'https://fonts.gstatic.com/s/notosansjp/stand-in.woff2',
   ]);
-  await expect(page.locator('.readme:visible')).toHaveCSS(
+  await expect(page.locator('.introduction:visible')).toHaveCSS(
     'font-family',
     '"Noto Sans JP", sans-serif',
   );
@@ -46,8 +44,8 @@ test('the introduction loads the shared same-origin font without a content-polic
       ),
     ),
   ).toBe(true);
-  expect(await page.evaluate(() => window.fontPolicyViolations)).toEqual([]);
-  const code = page.locator('.readme:visible code').first();
+  expect(await policyViolations(page)).toEqual([]);
+  const code = page.locator('.introduction:visible code').first();
   await code.scrollIntoViewIfNeeded();
   await expect(code).toHaveCSS('font-family', '"JetBrains Mono", monospace');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -160,7 +158,7 @@ test('a slow UI font keeps the first workspace layout hidden until its real metr
   const gate = new Promise((resolve) => (release = resolve));
   let arrived;
   const requested = new Promise((resolve) => (arrived = resolve));
-  await page.route('**/jetbrains-mono-*.woff2', async (route) => {
+  await page.route('**/jetbrains-mono.woff2', async (route) => {
     arrived();
     await gate;
     await route.continue();
@@ -182,14 +180,11 @@ test('a slow UI font keeps the first workspace layout hidden until its real metr
 });
 
 test('a failed UI font request still leaves the editor and Run usable', async ({ page }) => {
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
-  await page.route('**/jetbrains-mono-*.woff2', (route) => route.abort());
+  await page.route('**/jetbrains-mono.woff2', (route) => route.abort());
   await page.goto('/playload/app/');
   await expect(page.locator('#app')).toBeVisible();
   await page.locator('#editor').fill('function tick() { cls(4); }');
   await page.locator('#run').click();
   await expect(page.locator('#pause')).toBeEnabled();
   await expect(page.locator('#error-notice')).toBeHidden();
-  expect(errors).toEqual([]);
 });

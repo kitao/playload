@@ -1,4 +1,9 @@
 // Keep encoded WebM blocks; exporting changes only timing fields and track IDs.
+// A clip is the latest ten seconds from a keyframe, within one memory limit.
+const CLIP_MILLISECONDS = 10000;
+export const MAX_RECORDING_BYTES = 64 * 1024 * 1024;
+export const recordingTooLarge = () => new Error('Video recording exceeded 64 MiB');
+
 export class WebMBuffer {
   constructor() {
     this.frames = [];
@@ -51,15 +56,9 @@ export class WebMBuffer {
       }
       if (id.value === 0x1654ae6b) {
         this.tracks = data.slice(position, end);
-        for (const track of elements(data, body, end).filter((field) => field.id === 0xae)) {
-          const fields = elements(data, track.body, track.end),
-            number = fields.find((field) => field.id === 0xd7),
-            type = fields.find((field) => field.id === 0x83);
-          if (!number || !type) throw new Error('Missing WebM track');
-          this.trackTypes.set(
-            uint(data.subarray(number.body, number.end)),
-            uint(data.subarray(type.body, type.end)),
-          );
+        for (const { number, type } of trackEntries(data, body, end)) {
+          if (number === undefined || type === undefined) throw new Error('Missing WebM track');
+          this.trackTypes.set(number, type);
         }
       }
       if (id.value === 0xe7) this.clusterTime = uint(data.subarray(body, end));
@@ -90,23 +89,19 @@ export class WebMBuffer {
       position = end;
     }
     this.pending = data.slice(position);
-    if (this.pending.length > 64 * 1024 * 1024) throw new Error('Video recording exceeded 64 MiB');
+    if (this.pending.length > MAX_RECORDING_BYTES) throw recordingTooLarge();
   }
   merge(parser) {
     this.header ??= parser.header;
     this.info ??= parser.info;
     this.timeScale ??= parser.timeScale;
     if (parser.tracks) {
-      this.trackEntries ??= new Map();
+      // One rebuilt TrackEntry per track type, numbered by type, from every merged parser.
+      this.mergedTracks ??= new Map();
       const header = elements(parser.tracks)[0];
-      for (const track of elements(parser.tracks, header.body, header.end).filter(
-        (field) => field.id === 0xae,
-      )) {
-        const fields = elements(parser.tracks, track.body, track.end),
-          type = fields.find((field) => field.id === 0x83),
-          kind = type && uint(parser.tracks.subarray(type.body, type.end));
+      for (const { fields, type: kind } of trackEntries(parser.tracks, header.body, header.end)) {
         if (kind !== 1 && kind !== 2) throw new Error('Unsupported WebM track');
-        this.trackEntries.set(
+        this.mergedTracks.set(
           kind,
           element(
             0xae,
@@ -122,49 +117,57 @@ export class WebMBuffer {
       }
       this.tracks = element(
         0x1654ae6b,
-        join([...this.trackEntries].sort(([a], [b]) => a - b).map(([, entry]) => entry)),
+        join([...this.mergedTracks].sort(([a], [b]) => a - b).map(([, entry]) => entry)),
       );
     }
     this.frames.push(...parser.frames);
     parser.frames = [];
   }
   trim(end) {
-    const cutoff = end - 10000,
-      first = this.frames.find((frame) => frame.keyframe && frame.time >= cutoff),
-      start = first?.time ?? cutoff;
+    const start = clipStart(this.frames, end)?.time ?? end - CLIP_MILLISECONDS;
     this.frames = this.frames.filter((frame) => frame.time >= start);
-    while (this.bytes > 64 * 1024 * 1024 && this.frames.length) {
+    while (this.bytes > MAX_RECORDING_BYTES && this.frames.length) {
       const next = this.frames.find((frame) => frame.keyframe && frame.time > this.frames[0].time);
       this.frames = next ? this.frames.filter((frame) => frame.time >= next.time) : [];
     }
-    if (this.bytes > 64 * 1024 * 1024) throw new Error('Video recording exceeded 64 MiB');
+    if (this.bytes > MAX_RECORDING_BYTES) throw recordingTooLarge();
   }
   seconds(end) {
-    const first = this.frames.find((frame) => frame.keyframe && frame.time >= end - 10000);
+    const first = clipStart(this.frames, end);
     return first ? Math.max(0, (end - first.time) / 1000) : 0;
   }
 }
 
+// The first keyframe from which a clip ending at `end` can start.
+function clipStart(frames, end) {
+  return frames.find((frame) => frame.keyframe && frame.time >= end - CLIP_MILLISECONDS);
+}
+
+// The fields, track number and track type of each TrackEntry in a Tracks element.
+function trackEntries(bytes, start, end) {
+  return elements(bytes, start, end)
+    .filter((field) => field.id === 0xae)
+    .map((track) => {
+      const fields = elements(bytes, track.body, track.end),
+        value = (id) => {
+          const field = fields.find((child) => child.id === id);
+          return field && uint(bytes.subarray(field.body, field.end));
+        };
+      return { fields, number: value(0xd7), type: value(0x83) };
+    });
+}
+
 export function exportWebM(buffer, mime, end) {
-  const first = buffer.frames.find((frame) => frame.keyframe && frame.time >= end - 10000);
-  if (!first || first.time > end || !buffer.header || !buffer.info || !buffer.tracks)
+  const first = clipStart(buffer.frames, end);
+  if (!first || !buffer.header || !buffer.info || !buffer.tracks)
     throw new Error('No video frames were received');
   const frames = buffer.frames
       .filter((frame) => frame.time >= first.time && frame.time + frame.duration <= end)
       .sort((a, b) => a.time - b.time),
     tracks = new Map(),
     header = elements(buffer.tracks)[0];
-  for (const track of elements(buffer.tracks, header.body, header.end).filter(
-    (field) => field.id === 0xae,
-  )) {
-    const fields = elements(buffer.tracks, track.body, track.end),
-      number = fields.find((field) => field.id === 0xd7),
-      type = fields.find((field) => field.id === 0x83);
-    tracks.set(
-      uint(buffer.tracks.subarray(type.body, type.end)),
-      uint(buffer.tracks.subarray(number.body, number.end)),
-    );
-  }
+  for (const { number, type } of trackEntries(buffer.tracks, header.body, header.end))
+    tracks.set(type, number);
   const clusters = [];
   const timeScale = buffer.timeScale ?? 1000000,
     clusterSpan = Math.min(1000000000 / timeScale, 32767);

@@ -11,7 +11,8 @@ export function compileScore(source) {
     previous = 5,
     octave = 5,
     accidental = 0;
-  let unmatched = -1,
+  let lastNote = -1,
+    unmatched = -1,
     unmatchedClosing = 0;
   const number = (minimum, maximum) => {
     const start = i;
@@ -22,7 +23,7 @@ export function compileScore(source) {
     return n;
   };
   const repeat = (start, count) => {
-    if (!code.slice(start).some((event) => event.op === 'note')) {
+    if (lastNote < start) {
       if (count === 0) throw new SyntaxError('A loop needs a note or rest');
       return -1;
     }
@@ -40,10 +41,12 @@ export function compileScore(source) {
     if (/\d/.test(c)) {
       i--;
       const n = number(1, 12);
+      // A triplet length lasts three notes, then the length before it returns.
+      // Another triplet keeps that length; an ordinary length ends the triplet.
       if (n >= 10) {
-        previous = duration;
+        if (!triplet) previous = duration;
         triplet = 3;
-      }
+      } else triplet = 0;
       duration = n;
       continue;
     }
@@ -88,11 +91,12 @@ export function compileScore(source) {
       const semitone = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[c.toLowerCase()];
       // Spectrum O5 puts lower-case c at middle C (MIDI 60).
       const midi = octave * 12 + semitone + (c !== c.toLowerCase() ? 12 : 0) + accidental;
-      code.push({
-        op: 'note',
-        frequency: c === '&' ? 0 : 440 * 2 ** ((midi - 69) / 12),
-        beats: beats[duration] + tie,
-      });
+      lastNote =
+        code.push({
+          op: 'note',
+          frequency: c === '&' ? 0 : 440 * 2 ** ((midi - 69) / 12),
+          beats: beats[duration] + tie,
+        }) - 1;
       accidental = tie = 0;
       if (triplet && --triplet === 0) duration = previous;
       continue;

@@ -18,6 +18,8 @@ export function fitsURLLimit(href) {
 
 // Versioned, unpadded base64url. Only the compressed UTF-8 source is in the URL.
 export async function encode(source) {
+  // UTF-8 cannot represent a lone surrogate; TextEncoder would replace it with U+FFFD.
+  if (!source.isWellFormed()) throw new Error('Source contains an unpaired surrogate');
   const bytes = new TextEncoder().encode(source);
   if (bytes.length > MAX_SOURCE_BYTES) throw new Error('Expanded source exceeds 1 MiB');
   const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));

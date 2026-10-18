@@ -5,6 +5,7 @@ Ordinary bank regeneration uses the checked-in subset, without this archive.
 """
 
 import hashlib
+import io
 import json
 from pathlib import Path
 import re
@@ -13,10 +14,21 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1] / "data/fonts"
 ARCHIVE_SHA = "a275f173cf5935890f84d3e65d05b1bf73028e4d4bf41cb3de0ef3b5ebe8e217"
-archive = Path(sys.argv[1]).read_bytes()
-assert hashlib.sha256(archive).hexdigest() == ARCHIVE_SHA, "Unexpected author archive"
+if len(sys.argv) != 2:
+    sys.exit(__doc__)
 
-with zipfile.ZipFile(sys.argv[1]) as source:
+
+def require(condition, message):
+    # Unlike assert, these checks also run under python -O.
+    if not condition:
+        sys.exit(message)
+
+
+archive = Path(sys.argv[1]).read_bytes()
+require(hashlib.sha256(archive).hexdigest() == ARCHIVE_SHA, "Unexpected author archive")
+
+# Parse the bytes that were hashed, not the file again.
+with zipfile.ZipFile(io.BytesIO(archive)) as source:
     raw = source.read("misaki_gothic.bdf")
     text = raw.decode("utf-8")
     ascent = int(re.search(r"^FONT_ASCENT (\d+)$", text, re.M)[1])
@@ -30,13 +42,14 @@ with zipfile.ZipFile(sys.argv[1]) as source:
 
         width, height, x, y = map(int, re.search(r"^BBX (.+)$", block, re.M)[1].split())
         top = ascent - y - height
-        assert 0 <= x and x + width <= 8 and 0 <= top and top + height <= 8
+        inside = 0 <= x and x + width <= 8 and 0 <= top and top + height <= 8
+        require(inside, f"Outside the 8x8 cell: U+{cp:04X}")
         bitmap = block.split("BITMAP\n", 1)[1].split("ENDCHAR", 1)[0].splitlines()
-        assert len(bitmap) == height
+        require(len(bitmap) == height, f"Bitmap height mismatch: U+{cp:04X}")
         rows = [0] * 8
         for offset, byte in enumerate(bitmap):
             rows[top + offset] = int(byte, 16) >> x
-        assert any(rows)
+        require(any(rows), f"Empty glyph: U+{cp:04X}")
         cells.append(f"{cp:04X}:" + "".join(f"{byte:02X}" for byte in rows))
         blocks.append(block)
 

@@ -1,7 +1,7 @@
 // Runs the frozen CRT-Lottes shader, with parameter values matched to Playload.
 // Only presentation additions (glass and vignette) are added below;
 // the upstream reconstruction, scanline and bloom functions stay unchanged.
-export function renderReference(source, pixels, palette) {
+export function renderLottes(source, pixels, palette) {
   const canvas = document.createElement('canvas');
   canvas.width = 640;
   canvas.height = 576;

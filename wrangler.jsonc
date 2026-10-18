@@ -4,10 +4,19 @@
   "compatibility_date": "2026-10-13",
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [{ "pattern": "kitao.dev/playload/*", "zone_name": "kitao.dev" }],
-  "assets": {
-    "directory": "./dist",
-    "html_handling": "force-trailing-slash",
-    "not_found_handling": "404-page",
+  "routes": [{ "pattern": "kitao.dev/playload*", "zone_name": "kitao.dev" }],
+  "assets": { "directory": "./dist" },
+  "build": {
+    "command": "node scripts/build.js",
+    "watch_dir": [
+      "src",
+      "assets",
+      "data/reference.json",
+      "data/fonts/unicode-LICENSE.txt",
+      "LICENSE",
+      "package.json",
+      "scripts/build.js",
+      "scripts/reference.js",
+    ],
   },
 }

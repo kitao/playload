@@ -14,6 +14,7 @@ import { createDisplay } from './display.js';
 import { createCRT } from './crt.js';
 import { highlightJavaScript } from './editor-highlighter.js';
 import { EditorHistory } from './editor-history.js';
+import { latinLetter } from './keys.js';
 import { starter, exampleLinks } from './examples.js';
 
 const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -30,7 +31,6 @@ if (!stylesheet.sheet)
   });
 
 const $ = (id) => document.getElementById(id);
-let editorHistory;
 const initialHash = location.hash;
 const canvas = $('display'),
   context = canvas.getContext('2d');
@@ -64,7 +64,9 @@ let category = 'emoji',
 let editRevision = 0,
   focusRevision = 0,
   fileRequest,
-  fileHandle;
+  fileHandle,
+  fileStamp,
+  fileText;
 let checkingFile = false,
   fileError = '';
 let formatting = false;
@@ -72,12 +74,11 @@ let editorErrorLine = null,
   gameError = '',
   urlError = '';
 let touch = touchLayout();
-let compact = touch;
 let editorOpen = !touch && innerWidth >= 600;
 let toolsOpen = false,
   awaitingStart = false;
 let focusedPane = 'screen';
-let pointers = new Map(),
+const pointers = new Map(),
   directions = new Set(),
   keys = new Map(),
   startKeys = new Set();
@@ -104,19 +105,10 @@ const runtime = new Runtime(frame, (error) => {
     setEditorOpen(true);
     editor.setSelectionRange(start, start + (lines[error.line - 1]?.length ?? 0));
     focusEditor();
+    // The editor never wraps, so every line has the same height as its gutter number.
     const style = getComputedStyle(editor),
-      measure = document.createElement('div');
-    measure.className = 'editor-measure';
-    measure.style.width = editor.clientWidth + 'px';
-    measure.style.font = style.font;
-    measure.style.padding = style.padding;
-    measure.style.tabSize = style.tabSize;
-    measure.textContent = editor.value.slice(0, start) + '\u200b';
-    document.body.append(measure);
-    const lineHeight = parseFloat(style.lineHeight);
-    const lineY =
-      measure.getBoundingClientRect().height - parseFloat(style.paddingBottom) - lineHeight;
-    measure.remove();
+      lineHeight = parseFloat(style.lineHeight),
+      lineY = parseFloat(style.paddingTop) + (error.line - 1) * lineHeight;
     editor.scrollTop = Math.max(0, lineY - (editor.clientHeight - lineHeight) / 2);
     editor.scrollLeft = 0;
     syncEditorScroll();
@@ -170,8 +162,8 @@ function dismissCopy() {
 }
 document.addEventListener('scroll', dismissCopy, true);
 function controls() {
-  $('workspace-toolbar').hidden = view === 'info' || (compact && !toolsOpen);
-  $('tools-toggle').hidden = !compact || view === 'info';
+  $('workspace-toolbar').hidden = view === 'info' || (touch && !toolsOpen);
+  $('tools-toggle').hidden = !touch || view === 'info';
   $('tools-toggle').setAttribute('aria-expanded', String(toolsOpen));
   $('start-game').hidden = !awaitingStart;
   $('size').hidden = !payload;
@@ -193,11 +185,11 @@ function controls() {
     button.disabled = !running && !awaitingStart;
 }
 function syncPlayback() {
-  if (!running || paused || document.hidden || view === 'info' || (compact && toolsOpen))
+  if (!running || paused || document.hidden || view === 'info' || (touch && toolsOpen))
     lastFrame = null;
-  audio.pause(!running || paused || view === 'info' || (compact && toolsOpen));
+  audio.pause(!running || paused || view === 'info' || (touch && toolsOpen));
   capture?.suspend(
-    document.hidden || !running || view === 'info' || awaitingStart || (compact && toolsOpen),
+    document.hidden || !running || view === 'info' || awaitingStart || (touch && toolsOpen),
   );
 }
 function setView(next) {
@@ -206,7 +198,7 @@ function setView(next) {
   view = next;
   document.body.dataset.view = next;
   for (const id of ['play', 'info']) $(id).hidden = id !== view;
-  for (const button of document.querySelectorAll('[data-view]')) {
+  for (const button of $('views').querySelectorAll('[data-view]')) {
     button.setAttribute('aria-selected', String(button.dataset.view === view));
     button.tabIndex = button.dataset.view === view ? 0 : -1;
   }
@@ -257,7 +249,6 @@ async function frame(pixels, sounds, ready) {
   audio.play(sounds);
   if (!ready) return;
   running = true;
-  paused = awaitingStart;
   syncPlayback();
   gameError = '';
   updateError();
@@ -310,7 +301,7 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForSt
   updateError();
   editorErrorLine = null;
   updateEditorLines();
-  if (compact && takeFocus && focusGeneration === focusRevision) {
+  if (touch && takeFocus && focusGeneration === focusRevision) {
     toolsOpen = false;
     $('screen').focus({ preventScroll: true });
     focusGeneration = focusRevision;
@@ -375,7 +366,7 @@ function release() {
 }
 function focusEditor() {
   $('editor').focus({ preventScroll: true });
-  if (compact || innerWidth < 600) window.scrollTo({ top: 0, behavior: 'instant' });
+  if (touch || innerWidth < 600) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function focusGame(reveal = true) {
   if (view !== 'play') setView('play');
@@ -396,7 +387,7 @@ function focusAfterRun() {
     pendingFocus.revision === focusRevision
   ) {
     focusGame();
-    if (compact && !$('error-notice').hidden)
+    if (touch && !$('error-notice').hidden)
       $('error-notice').scrollIntoView({ block: 'nearest', behavior: 'instant' });
   }
   pendingFocus = null;
@@ -417,7 +408,7 @@ function readGamepads() {
     running &&
     !paused &&
     view === 'play' &&
-    !(compact && toolsOpen) &&
+    !(touch && toolsOpen) &&
     document.hasFocus() &&
     document.activeElement === $('screen')
   ) {
@@ -439,7 +430,7 @@ function readGamepads() {
   return mask;
 }
 
-for (const button of document.querySelectorAll('[data-view]'))
+for (const button of $('views').querySelectorAll('[data-view]'))
   button.onclick = () => {
     setView(button.dataset.view);
     focusPane();
@@ -461,7 +452,7 @@ tabs.onkeydown = (event) => {
 };
 $('viewport').onpointerdown = (event) => {
   if (event.button !== 0 || event.target.closest('button, #error-notice')) return;
-  if (compact && toolsOpen) $('tools-toggle').click();
+  if (touch && toolsOpen) $('tools-toggle').click();
   if (event.pointerType === 'mouse') event.preventDefault();
   focusGame(false);
 };
@@ -481,7 +472,7 @@ $('start-game').onclick = () => startGame();
 $('game').addEventListener('pointerdown', () => audio.unlock());
 $('pause').onclick = () => {
   paused = !paused;
-  toolsOpen = compact && paused && !editorOpen;
+  toolsOpen = touch && paused && !editorOpen;
   release();
   audio.unlock();
   syncPlayback();
@@ -543,7 +534,7 @@ $('video').onclick = async () => {
       focused &&
       revision === focusRevision &&
       document.activeElement === document.body &&
-      compact &&
+      touch &&
       toolsOpen &&
       view === 'play' &&
       !$('video').disabled
@@ -763,6 +754,8 @@ async function readFile(file, request, handle = null) {
     return false;
   }
   fileHandle = handle;
+  fileStamp = `${file.lastModified}:${file.size}`;
+  fileText = text;
   fileError = '';
   declinedFileSource = null;
   loadedSource = text;
@@ -780,7 +773,12 @@ async function chooseFile(request) {
   controls();
   if (!window.showOpenFilePicker) {
     fileRequest = request;
-    $('file').click();
+    try {
+      // Unlike click(), showPicker() reports a lapsed user activation, as after a slow confirm.
+      $('file').showPicker();
+    } catch {
+      $('file').oncancel();
+    }
     return;
   }
   try {
@@ -809,10 +807,14 @@ async function refreshFile() {
   checkingFile = true;
   try {
     const file = await handle.getFile(),
-      text = await file.text();
+      stamp = `${file.lastModified}:${file.size}`,
+      // Read the text again only when the file's timestamp or size has changed.
+      text = stamp === fileStamp ? fileText : await file.text();
     if (reading || handle !== fileHandle || edit !== editRevision || document.hidden) return;
     if (fileError && $('status').textContent === fileError) status();
     fileError = '';
+    fileStamp = stamp;
+    fileText = text;
     if (text === loadedSource) {
       declinedFileSource = null;
       return;
@@ -895,7 +897,7 @@ $('editor').onkeydown = (event) => {
   }
 };
 $('editor').value = starter;
-editorHistory = new EditorHistory($('editor'));
+const editorHistory = new EditorHistory($('editor'));
 
 function setReference(next) {
   dismissCopy();
@@ -1099,10 +1101,9 @@ const keyCodes = {
   KeyK: 5,
 };
 function gameButton(event) {
-  const key = event.key.toLowerCase();
   // Follow Latin key labels; other scripts retain the same physical positions.
-  if (/^[a-z]$/.test(key)) return keyCodes['Key' + key.toUpperCase()];
-  return keyCodes[event.code];
+  const letter = latinLetter(event);
+  return keyCodes[letter ? 'Key' + letter.toUpperCase() : event.code];
 }
 const editable = (target) => target.closest('input,textarea,select,[contenteditable]');
 document.addEventListener('keydown', (event) => {
@@ -1129,7 +1130,9 @@ document.addEventListener('keydown', (event) => {
   }
   if (event.isComposing) return;
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey) {
-    const id = { Enter: 'run', NumpadEnter: 'run', KeyO: 'load' }[event.code];
+    const id =
+      { Enter: 'run', NumpadEnter: 'run' }[event.code] ??
+      (latinLetter(event) === 'o' ? 'load' : undefined);
     if (id && view === 'play' && !$(id).disabled) {
       event.preventDefault();
       if (!event.repeat) {
@@ -1161,7 +1164,7 @@ document.addEventListener('keydown', (event) => {
     document.activeElement === $('screen') &&
     (running || runtime.pending) &&
     !paused &&
-    !(compact && toolsOpen) &&
+    !(touch && toolsOpen) &&
     !event.altKey &&
     !event.ctrlKey &&
     !event.metaKey &&
@@ -1212,7 +1215,7 @@ function padMask(event, previous = 0) {
 }
 for (const control of [dpad, ...document.querySelectorAll('.ab [data-input]')]) {
   control.onpointerdown = (event) => {
-    if (!(running || runtime.pending) || view !== 'play' || (compact && toolsOpen)) return;
+    if (!(running || runtime.pending) || view !== 'play' || (touch && toolsOpen)) return;
     if (paused) return;
     event.preventDefault();
     focusGame(false);
@@ -1349,12 +1352,10 @@ function touchLayout() {
   return matchMedia('(pointer:coarse)').matches;
 }
 function layout() {
-  touch = touchLayout();
+  const next = touchLayout();
+  if (next !== touch) toolsOpen = false;
+  touch = next;
   document.body.dataset.touch = String(touch);
-  const nextCompact = touch;
-  if (compact !== nextCompact) toolsOpen = false;
-  compact = nextCompact;
-  document.body.dataset.compact = String(compact);
   $('keyboard-controls').hidden = touch;
   $('start-game').textContent = touch ? 'Tap to play' : 'Click to play';
   controls();
@@ -1422,7 +1423,6 @@ document.addEventListener('visibilitychange', () => {
     refreshFile();
   }
 });
-window.addEventListener('beforeunload', () => capture?.leave(true));
 window.addEventListener('pagehide', (event) => {
   startKeys.clear();
   release();
@@ -1454,7 +1454,7 @@ window.addEventListener('hashchange', () => {
 function animate(time) {
   const padMask = readGamepads();
   if (padMask !== gamepadMask) syncInput(padMask);
-  if (running && !document.hidden && !paused && view === 'play' && !(compact && toolsOpen)) {
+  if (running && !document.hidden && !paused && view === 'play' && !(touch && toolsOpen)) {
     const interval = 1000 / 60;
     if (lastFrame === null) lastFrame = time;
     const elapsed = time - lastFrame;

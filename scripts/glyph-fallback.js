@@ -48,18 +48,21 @@ function outline(rows) {
   }
   return data;
 }
-function names() {
+function names(sources) {
+  const credit = { unscii: 'Unscii-8', 'public-pixel': 'Public Pixel' };
+  // Records sorted by platform, encoding, language and name ID, as OpenType requires.
   const entries = [
+    [
+      0,
+      `Derived from ${sources.map((source) => credit[source]).join(' and ')}. ` +
+        'Public domain / CC0. See src/site/index.md#license.',
+    ],
     [1, 'Playload Symbol Fallback'],
     [2, 'Regular'],
     [3, 'Playload-Symbol-Fallback-1'],
     [4, 'Playload Symbol Fallback'],
     [5, 'Version 1.0'],
     [6, 'PlayloadSymbolFallback'],
-    [
-      0,
-      'Derived from Unscii-8 and Public Pixel. Public domain / CC0. See src/site/index.md#license.',
-    ],
   ];
   const header = Buffer.alloc(6 + entries.length * 12),
     strings = [];
@@ -142,7 +145,10 @@ export function glyphFallback(glyphs) {
   post.writeUInt32BE(0x30000);
   post.writeUInt32BE(1, 12);
   tables.set('post', post);
-  tables.set('name', names());
+  const sources = ['unscii', 'public-pixel'].filter((source) =>
+    selected.some((g) => g.source === source),
+  );
+  tables.set('name', names(sources));
   const cmap = Buffer.alloc(28 + selected.length * 12);
   cmap.writeUInt16BE(1, 2);
   cmap.writeUInt16BE(3, 4);

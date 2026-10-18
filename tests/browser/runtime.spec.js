@@ -1,110 +1,48 @@
 import { baseURL } from '../../playwright.config.js';
-import { test as base, expect } from '@playwright/test';
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
-import { execFile, spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { join, relative, sep } from 'node:path';
-import { tmpdir } from 'node:os';
-import { promisify } from 'node:util';
+import { test as base } from '@playwright/test';
+import { test, expect } from './fixtures.js';
+import { readFile } from 'node:fs/promises';
 import { encode, formatPayloadSize } from '../../src/payload.js';
-import { sharedGameSource } from '../fixtures/shared-game.js';
+import { sharedGamesAround } from '../fixtures/shared-game.js';
 import { WebMBuffer } from '../../src/app/webm.js';
-import { request } from 'node:http';
 
-const test = base.extend({
-  runtimeErrors: [
-    async ({ browser, context }, use) => {
-      const errors = [],
-        contexts = new Set(),
-        report = (error) => errors.push(error.error().message),
-        watch = (created) => {
-          contexts.add(created);
-          created.on('weberror', report);
-        };
-      watch(context);
-      browser.on('context', watch);
-      try {
-        await use(errors);
-        expect(errors).toEqual([]);
-      } finally {
-        browser.off('context', watch);
-        for (const created of contexts) created.off('weberror', report);
-      }
-    },
-    { auto: true },
-  ],
-});
-const execute = promisify(execFile);
-const root = fileURLToPath(new URL('../..', import.meta.url));
-
-async function exposeCapture(page) {
-  await page.route('**/playload/assets/bundles/app-*.js', async (route) => {
-    const response = await route.fetch();
-    await route.fulfill({
-      response,
-      body: (await response.text()) + '\nglobalThis.testCapture = Capture;',
-    });
-  });
+// Changing only the hash makes the app reload itself after goto resolves.
+// Opening a new document avoids racing that reload.
+async function openGame(page, url) {
+  await page.goto('about:blank');
+  await page.goto(url);
 }
 
-async function startServer(...args) {
-  const server = spawn(process.execPath, ['scripts/serve.js', '--no-open', ...args], {
-    cwd: root,
-    env: { ...process.env, PORT: '0' },
-    stdio: ['ignore', 'pipe', 'inherit'],
-  });
-  const url = await new Promise((resolve, reject) => {
-    let output = '';
-    server.stdout.on('data', (data) => {
-      output += data;
-      const address = output.match(/https?:\/\/127\.0\.0\.1:\d+\/playload\/app\//);
-      if (address) resolve(address[0]);
-    });
-    server.once('error', reject);
-    server.once('exit', () => reject(new Error('Local server stopped')));
-  });
-  return { server, url };
-}
+// Compresses with the page's own CompressionStream, which decides the shared size.
+const pageEncoder = (page) => (source) =>
+  page.evaluate(async (code) => (await import('/src/payload.js')).encode(code), source);
 
-test('an occupied development port exits promptly and removes its temporary build', async () => {
-  const temporary = await mkdtemp(join(tmpdir(), 'playload-server-failure-'));
-  try {
-    await expect(
-      execute(process.execPath, ['scripts/serve.js', '--no-open'], {
-        cwd: root,
-        env: { ...process.env, PORT: new URL(baseURL).port, TMPDIR: temporary },
-        timeout: 10000,
-      }),
-    ).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('Port is already in use') });
-    expect(await readdir(temporary)).toEqual([]);
-  } finally {
-    await rm(temporary, { recursive: true, force: true });
+// Waits until the picture stays unchanged for 100 ms, so a frame that was
+// already in flight cannot change it after it has been captured.
+async function settledPicture(page) {
+  const picture = () => page.locator('#display').evaluate((canvas) => canvas.toDataURL());
+  for (let previous = await picture(); ;) {
+    await page.waitForTimeout(100);
+    const current = await picture();
+    if (current === previous) return current;
+    previous = current;
   }
-});
+}
 
-test('a malformed request returns an error without stopping the development server', async ({
-  page,
-}) => {
-  const status = await new Promise((resolve, reject) => {
-    const outgoing = request(baseURL, { path: 'http://[' }, (response) => {
-      response.resume();
-      resolve(response.statusCode);
-    });
-    outgoing.on('error', reject);
-    outgoing.end();
-  });
-  expect(status).toBe(404);
-  await page.goto('/playload/app/');
-  await expect(page.locator('#display')).toBeVisible();
-});
+// Decodes exported clips beside the app, whose content policy admits no blob media.
+async function inBlankPage(page, evaluate, argument) {
+  const viewer = await page.context().newPage();
+  try {
+    return await viewer.evaluate(evaluate, argument);
+  } finally {
+    await viewer.close();
+  }
+}
 
-test('the production build plays games and audio with one compressed, cached script', async ({
+test('the production build plays games and audio with one script', async ({
   browser,
 }, testInfo) => {
-  await execute(process.execPath, ['scripts/build.js'], { cwd: root });
-  const { server, url } = await startServer('--dist');
-  try {
-    const source = `// @title Built Game
+  const source = `// @title Built Game
 cls(1);
 pcg['①'].pat = [24, 60, 126, 24, 24, 24, 24, 0];
 pcg['①'].col = [6, 1];
@@ -120,153 +58,71 @@ function tick() {
   spr(x, 68, '👾', 4);
   spr(8, 32, 'AB\\nCD', 6);
 }`;
-    const { hash } = await encode(source);
-    for (const touch of [false, true]) {
-      const page = await browser.newPage({
-        viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 800 },
-        hasTouch: touch,
-        isMobile: touch,
-      });
-      try {
-        await page.addInitScript(() => {
-          const Context = window.AudioContext;
-          window.AudioContext = class extends Context {
-            createMediaStreamDestination() {
-              const destination = super.createMediaStreamDestination();
-              window.buildAnalyser = this.createAnalyser();
-              this.createMediaStreamSource(destination.stream).connect(window.buildAnalyser);
-              return destination;
-            }
-          };
-        });
-        const scripts = [];
-        page.on('response', (response) => {
-          if (new URL(response.url()).pathname.endsWith('.js')) scripts.push(response);
-        });
-        const navigation = await page.goto(url + hash);
-        expect(navigation.headers()['cache-control']).toBe('public, max-age=0, must-revalidate');
-        await expect(page.locator('#start-game')).toBeVisible();
-        await expectCenteredWelcome(page);
-        expect(scripts).toHaveLength(1);
-        expect(scripts[0].headers()['content-encoding']).toBe('gzip');
-        expect(scripts[0].headers()['cache-control']).toContain('immutable');
-        expect(await scripts[0].text()).toContain('Copyright (c) 2012 Lea Verou');
-        const uncompressed = await page.request.get(scripts[0].url(), {
-          headers: { 'Accept-Encoding': 'gzip;q=0, identity' },
-        });
-        expect(uncompressed.headers()['content-encoding']).toBeUndefined();
-        expect(uncompressed.headers().vary).toBe('Accept-Encoding');
-        await page.locator('#start-game').click();
-        await expect(page.locator('#pause')).toBeEnabled();
-        await expect(page.locator('#error-notice')).toBeHidden();
-        await expect
-          .poll(() =>
-            page.evaluate(() => {
-              if (!window.buildAnalyser) return 0;
-              const samples = new Float32Array(window.buildAnalyser.fftSize);
-              window.buildAnalyser.getFloatTimeDomainData(samples);
-              return Math.max(...samples.map(Math.abs));
-            }),
-          )
-          .toBeGreaterThan(0.02);
-        const before = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
-        await page.keyboard.press('z');
-        await expect
-          .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
-          .not.toBe(before);
-        if (touch) {
-          await page.locator('#tools-toggle').click();
-          await page.locator('#code-toggle').click();
-        }
-        await expect(page.locator('#editor-highlight .token.comment').first()).toHaveText(
-          '// @title Built Game',
-        );
-        await page.screenshot({
-          path: testInfo.outputPath(`built-${touch ? 'phone' : 'desktop'}.png`),
-        });
-        await page.locator('#editor').fill('function tick() { throw new Error("Built error") }');
-        if (touch) await page.locator('#tools-toggle').click();
-        await page.locator('#run').click();
-        await expect(page.locator('#error')).toHaveText('Built error');
-        await expect(page.locator('#error-line')).toBeVisible();
-      } finally {
-        await page.close();
-      }
-    }
-  } finally {
-    server.kill();
-  }
-});
-
-test('the HTTPS server opens a stable secure player and never serves its private key', async ({
-  browser,
-}, testInfo) => {
-  await expect(
-    execute(process.execPath, ['scripts/serve.js', '--cert', 'cert.pem', '--key', 'key.pem'], {
-      cwd: root,
-    }),
-  ).rejects.toThrow('Use --https with --cert and --key.');
-  try {
-    await execute('openssl', ['version']);
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error;
-    test.skip(true, 'OpenSSL is required to generate the temporary test certificate.');
-  }
-  await mkdir(testInfo.outputDir, { recursive: true });
-  const config = testInfo.outputPath('certificate.cnf');
-  const cert = testInfo.outputPath('certificate.pem');
-  const key = testInfo.outputPath('key.pem');
-  await writeFile(
-    config,
-    '[req]\nprompt=no\ndistinguished_name=subject\nx509_extensions=extensions\n' +
-      '[subject]\nCN=localhost\n[extensions]\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n',
-  );
-  let server;
-  try {
-    await execute('openssl', [
-      'req',
-      '-x509',
-      '-newkey',
-      'rsa:2048',
-      '-nodes',
-      '-days',
-      '1',
-      '-config',
-      config,
-      '-keyout',
-      key,
-      '-out',
-      cert,
-    ]);
-    const started = await startServer('--https', '--cert', cert, '--key', key);
-    server = started.server;
+  const { hash } = await encode(source);
+  for (const touch of [false, true]) {
     const page = await browser.newPage({
-      viewport: { width: 390, height: 844 },
-      isMobile: true,
-      hasTouch: true,
-      ignoreHTTPSErrors: true,
+      viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 800 },
+      hasTouch: touch,
+      isMobile: touch,
     });
     try {
-      await page.goto(started.url);
-      expect(await page.evaluate(() => isSecureContext)).toBe(true);
+      await page.addInitScript(() => {
+        const Context = window.AudioContext;
+        window.AudioContext = class extends Context {
+          createMediaStreamDestination() {
+            const destination = super.createMediaStreamDestination();
+            window.buildAnalyser = this.createAnalyser();
+            this.createMediaStreamSource(destination.stream).connect(window.buildAnalyser);
+            return destination;
+          }
+        };
+      });
+      const scripts = [];
+      page.on('response', (response) => {
+        if (new URL(response.url()).pathname.endsWith('.js')) scripts.push(response);
+      });
+      const navigation = await page.goto(baseURL + '/playload/app/' + hash);
+      expect(navigation.headers()['cache-control']).toBe('public, max-age=0, must-revalidate');
+      await expect(page.locator('#start-game')).toBeVisible();
       await expectCenteredWelcome(page);
-      await expect(page.locator('#editor')).toBeHidden();
-      await page.screenshot({ path: testInfo.outputPath('https-phone-ready.png') });
-      const response = await page.request.get(
-        started.url + relative(root, key).split(sep).join('/'),
-      );
-      expect(response.status()).toBe(404);
+      expect(scripts).toHaveLength(1);
+      expect(await scripts[0].text()).toContain('Copyright (c) 2012 Lea Verou');
       await page.locator('#start-game').click();
       await expect(page.locator('#pause')).toBeEnabled();
-      await expect(page.locator('#sound')).toBeEnabled();
       await expect(page.locator('#error-notice')).toBeHidden();
-      await expect(page.locator('#status')).not.toHaveText(/^Sound:/);
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            if (!window.buildAnalyser) return 0;
+            const samples = new Float32Array(window.buildAnalyser.fftSize);
+            window.buildAnalyser.getFloatTimeDomainData(samples);
+            return Math.max(...samples.map(Math.abs));
+          }),
+        )
+        .toBeGreaterThan(0.02);
+      const before = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
+      await page.keyboard.press('z');
+      await expect
+        .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
+        .not.toBe(before);
+      if (touch) {
+        await page.locator('#tools-toggle').click();
+        await page.locator('#code-toggle').click();
+      }
+      await expect(page.locator('#editor-highlight .token.comment').first()).toHaveText(
+        '// @title Built Game',
+      );
+      await page.screenshot({
+        path: testInfo.outputPath(`built-${touch ? 'phone' : 'desktop'}.png`),
+      });
+      await page.locator('#editor').fill('function tick() { throw new Error("Built error") }');
+      if (touch) await page.locator('#tools-toggle').click();
+      await page.locator('#run').click();
+      await expect(page.locator('#error')).toHaveText('Built error');
+      await expect(page.locator('#error-line')).toBeVisible();
     } finally {
       await page.close();
     }
-  } finally {
-    server?.kill();
-    for (const path of [config, cert, key]) await rm(path, { force: true });
   }
 });
 
@@ -326,13 +182,24 @@ async function touchStartCanceled(page, selector) {
 
 async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
   await page.addInitScript((source) => {
-    window.testFileSource = source;
+    // Like a real file, its modification time changes only when its contents are written.
+    let modified = 1;
+    Object.defineProperty(window, 'testFileSource', {
+      get: () => source,
+      set: (value) => {
+        source = value;
+        modified++;
+      },
+    });
     window.fileReads = 0;
     window.pickerOpens = 0;
     window.testFileHandle = {
       getFile: async () => {
         window.fileReads++;
-        return new File([window.testFileSource], 'native-game.js', { type: 'text/javascript' });
+        return new File([source], 'native-game.js', {
+          type: 'text/javascript',
+          lastModified: modified,
+        });
       },
     };
     window.showOpenFilePicker = async () => {
@@ -345,17 +212,23 @@ async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
   await expect(page.locator('#pause')).toBeEnabled();
 }
 
-test('startup shows a finished layout and welcome screen even when styles and scripts load slowly', async ({
-  browser,
-}, testInfo) => {
-  const { hash } = await encode('// @title Shared\nfunction tick() { spr(76, 68, "👾", 6) }');
-  for (const [name, width, height, touch, fragment] of [
-    ['phone', 390, 844, true, ''],
-    ['shared-phone', 390, 844, true, hash],
-    ['invalid-phone', 390, 844, true, '#invalid'],
-    ['tablet-landscape', 1024, 768, true, hash],
-    ['desktop', 1280, 800, false, ''],
-  ]) {
+const { hash: welcomeGame } = await encode(
+  'let frames = 0; play(0, "T240O5N3c))"); function tick() { cls(0); put(1, 1, String(frames++)); }',
+);
+const { hash: sharedStartup } = await encode(
+  '// @title Shared\nfunction tick() { spr(76, 68, "👾", 6) }',
+);
+// Each player shape loads the app three times with deliberately held resources.
+for (const [name, width, height, touch, fragment] of [
+  ['phone', 390, 844, true, ''],
+  ['shared-phone', 390, 844, true, sharedStartup],
+  ['invalid-phone', 390, 844, true, '#invalid'],
+  ['tablet-landscape', 1024, 768, true, sharedStartup],
+  ['desktop', 1280, 800, false, ''],
+]) {
+  test(`startup shows a finished layout and welcome screen when styles or scripts load slowly (${name})`, async ({
+    browser,
+  }, testInfo) => {
     for (const delayed of ['styles', 'scripts', 'both']) {
       const page = await browser.newPage({
         viewport: { width, height },
@@ -365,17 +238,17 @@ test('startup shows a finished layout and welcome screen even when styles and sc
       const criticalRequests = [];
       page.on('request', (request) => {
         const file = new URL(request.url()).pathname.split('/').pop();
-        if (/^app-[A-Z0-9]+\.js$/.test(file)) criticalRequests.push(file);
+        if (/^app\.js$/.test(file)) criticalRequests.push(file);
       });
       let release;
       const gate = new Promise((resolve) => (release = resolve));
       if (delayed !== 'scripts')
-        await page.route('**/playload/assets/bundles/app-style-*.css', async (route) => {
+        await page.route('**/playload/assets/bundles/app-style.css', async (route) => {
           await gate;
           await route.continue();
         });
       if (delayed !== 'styles')
-        await page.route('**/playload/assets/bundles/app-*.js', async (route) => {
+        await page.route('**/playload/assets/bundles/app.js', async (route) => {
           await gate;
           await route.continue();
         });
@@ -437,22 +310,22 @@ test('startup shows a finished layout and welcome screen even when styles and sc
         await page.close();
       }
     }
-  }
-});
+  });
+}
 
 base('a missing or empty stylesheet keeps the uninitialized workspace hidden', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   for (const status of [404, 200]) {
     errors.length = 0;
-    await page.route('**/playload/assets/bundles/app-style-*.css', (route) =>
+    await page.route('**/playload/assets/bundles/app-style.css', (route) =>
       route.fulfill({ status, contentType: 'text/css', body: '' }),
     );
     await page.goto('/playload/app/');
     await expect(page.locator('#app')).toBeHidden();
     expect(await page.locator('#display').getAttribute('data-crt')).toBeNull();
     expect(errors.every((message) => message === 'The stylesheet could not load.')).toBe(true);
-    await page.unroute('**/playload/assets/bundles/app-style-*.css');
+    await page.unroute('**/playload/assets/bundles/app-style.css');
   }
   await page.goto('/playload/app/');
   await expect(page.locator('#app')).toBeVisible();
@@ -669,10 +542,12 @@ for (const width of [1400, 375]) {
   test(`a full 3 KB game fits X and restores after sharing at ${width}px`, async ({
     page,
   }, testInfo) => {
-    const source = sharedGameSource(3906),
-      path = width < 720 ? '/playload/app/?padding=' + 'x'.repeat(3500) : '/playload/app/';
+    const path = width < 720 ? '/playload/app/?padding=' + 'x'.repeat(3500) : '/playload/app/';
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(path);
+    const encodeHere = pageEncoder(page),
+      [source, over] = await sharedGamesAround(3000, encodeHere),
+      { bytes } = await encodeHere(source);
     if (width < 720) await page.locator('#code-toggle').click();
     const editor = page.locator('#editor');
     await editor.fill(source);
@@ -685,12 +560,14 @@ for (const width of [1400, 375]) {
         }),
       )
       .toBe(source);
-    expect(await page.locator('#size').getAttribute('title')).toMatch(/^3000 bytes · /);
+    expect(await page.locator('#size').getAttribute('title')).toMatch(
+      new RegExp(`^${bytes} bytes · `),
+    );
     expect(page.url().length).toBeLessThanOrEqual(4088);
     expect(new URL(page.url()).search).toBe('');
     await expect(page.locator('#error-notice')).toBeHidden();
     await expect(page).toHaveTitle('Share test — Playload');
-    await editor.fill(sharedGameSource(3908));
+    await editor.fill(over);
     await expect(page.locator('#size-current')).toHaveText('3.01 KB');
     await expect(page.locator('#error')).toHaveText('Code exceeds 3 KB compressed.');
     expect(new URL(page.url()).hash).toBe('');
@@ -709,11 +586,14 @@ for (const width of [1400, 375]) {
 }
 
 test('an older 3 KiB URL keeps its source and remains playable', async ({ page }) => {
-  const source = sharedGameSource(4003),
-    payload = await encode(source);
-  await page.goto('/playload/app/' + payload.hash);
+  await page.goto('/playload/app/');
+  const encodeHere = pageEncoder(page),
+    [source] = await sharedGamesAround(3072, encodeHere),
+    payload = await encodeHere(source);
+  expect(payload.bytes).toBeGreaterThan(3068);
+  await openGame(page, '/playload/app/' + payload.hash);
   await expect(page.locator('#editor')).toHaveValue(source);
-  await expect(page.locator('#size-current')).toHaveText('3.08 KB');
+  await expect(page.locator('#size-current')).toHaveText(formatPayloadSize(payload.bytes));
   await expect(page.locator('#error')).toHaveText('Code exceeds 3 KB compressed.');
   expect(new URL(page.url()).hash).toBe(payload.hash);
   await page.locator('#start-game').click();
@@ -740,7 +620,7 @@ test('Starter opens a plain URL in a new tab and preserves the current code and 
         const { encode } = await import('/src/payload.js');
         return (await encode(code)).hash;
       }, source);
-      await page.goto(baseURL + path + hash);
+      await openGame(page, baseURL + path + hash);
       await expect(editor).toHaveValue(source);
       await expect(page).toHaveTitle('Starter link test — Playload');
       const draft = touch ? source : source + '\n// Unrun draft';
@@ -795,7 +675,7 @@ test('a shared URL containing the starter remains a playable bookmark', async ({
     const { encode } = await import('/src/payload.js');
     return (await encode(code)).hash;
   }, starter);
-  await page.goto('/playload/app/' + hash);
+  await openGame(page, '/playload/app/' + hash);
   await expect(editor).toHaveValue(starter);
   await expect(page).toHaveTitle('My Game — Playload');
   await page.locator('#start-game').click();
@@ -878,8 +758,7 @@ test('Load and Run shortcuts work; the address follows edits and restores a book
   await expect(page.locator('#pause')).toBeEnabled();
   await page.locator('#crt').click();
   await expect.poll(() => pixel(page)).toEqual([100, 185, 100, 255]);
-  await page.goto('about:blank');
-  await page.goto(bookmark);
+  await openGame(page, bookmark);
   await expect(editor).toHaveValue(source);
   await expect(editor).toBeVisible();
   await page.locator('#start-game').click();
@@ -921,8 +800,7 @@ test('title comments update before Run and survive bookmarks, edits and a fresh 
     )
     .toBe(source);
   const bookmark = page.url();
-  await page.goto('about:blank');
-  await page.goto(bookmark);
+  await openGame(page, bookmark);
   await expect(page).toHaveTitle('Star Catcher — Playload');
   await expect(editor).toHaveValue(source);
   await expect(page.locator('#start-game')).toBeVisible();
@@ -1255,13 +1133,22 @@ for (const hz of [12, 15, 20, 30, 60, 90, 120, 144, 165]) {
     page,
   }) => {
     await page.addInitScript(() => {
+      // The game loop is the frame callback that schedules itself from its own frame; hold it
+      // so the test supplies each frame's time.
       const raf = window.requestAnimationFrame.bind(window);
-      window.requestAnimationFrame = (callback) => {
-        if (callback.name === 'animate') {
-          window.nextAnimate = callback;
-          return 1;
+      let current;
+      const call = (callback, time) => {
+        current = callback;
+        try {
+          callback(time);
+        } finally {
+          current = undefined;
         }
-        return raf(callback);
+      };
+      window.requestAnimationFrame = (callback) => {
+        if (callback !== current) return raf((time) => call(callback, time));
+        window.nextAnimate = (time) => call(callback, time);
+        return 1;
       };
       const NativeWorker = window.Worker;
       window.completedFrames = 0;
@@ -1302,14 +1189,15 @@ for (const hz of [12, 15, 20, 30, 60, 90, 120, 144, 165]) {
     await page.locator('#crt').click();
     expect(await pixel(page, 320, 288)).toEqual([100, 185, 100, 255]);
     await page.locator('#crt').click();
-    const afterPause = await page.evaluate(async () => {
-      for (const time of [10000, 10000 + 1000 / 60]) {
-        window.nextAnimate(time);
+    // The long gap gives one update, then the display's frames give 60 per second again.
+    const afterPause = await page.evaluate(async (hz) => {
+      for (let i = 0; i <= hz; i++) {
+        window.nextAnimate(10000 + (i * 1000) / hz);
         await window.frameFinished;
       }
       return window.completedFrames;
-    });
-    expect(afterPause).toBe(62);
+    }, hz);
+    expect(afterPause).toBe(121);
   });
 }
 
@@ -1385,7 +1273,7 @@ test('paused keyboard and touch presses do not become game actions on resume', a
     const { encode } = await import('/src/payload.js');
     return (await encode(source)).hash;
   }, source);
-  await phone.goto(baseURL + '/playload/app/' + hash);
+  await openGame(phone, baseURL + '/playload/app/' + hash);
   await phone.locator('#start-game').tap();
   await expect(phone.locator('#pause')).toBeEnabled();
   await phone.locator('#tools-toggle').tap();
@@ -1410,7 +1298,12 @@ for (const [name, source, message] of [
   ['number exception', 'function tick() { throw 42 }', '42'],
   ['null exception', 'function tick() { throw null }', 'null'],
   ['syntax error', 'function tick( {', 'SyntaxError'],
-  ['nonresponsive game', 'function tick() { while(true) {} }', 'The game stopped responding.'],
+  // The first tick runs while starting; hang on the next one to test the frame budget.
+  [
+    'nonresponsive game',
+    'let ticks = 0; function tick() { if (ticks++) while (true) {} }',
+    'The game stopped responding.',
+  ],
 ]) {
   test(`${name} is reported and the editor can run a replacement game`, async ({ page }) => {
     await run(page, source, true);
@@ -1455,7 +1348,7 @@ test('a shared URL starts the player with the same game', async ({ page }) => {
     return (await encode('let color = 6; function tick() { if (btnp(4)) color = 5; cls(color) }'))
       .hash;
   });
-  await page.goto('/playload/app/' + hash);
+  await openGame(page, '/playload/app/' + hash);
   await expect(page.locator('#start-game')).toHaveText('Click to play');
   await expect(page.getByRole('button', { name: 'Pause' })).toBeDisabled();
   await expect(page.getByRole('tab', { name: 'Play' })).toBeVisible();
@@ -1609,8 +1502,7 @@ function tick() {
     ['ArrowRight', [80, 140, 215, 255]],
     ['z', [100, 185, 100, 255]],
   ]) {
-    await page.goto('about:blank');
-    await page.goto('/playload/app/' + hash);
+    await openGame(page, '/playload/app/' + hash);
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#crt').evaluate((button) => button.click());
     await page.keyboard.down(key);
@@ -1632,8 +1524,7 @@ function tick() {
     await page.keyboard.up(key);
   }
 
-  await page.goto('about:blank');
-  await page.goto('/playload/app/' + hash);
+  await openGame(page, '/playload/app/' + hash);
   await expect(page.locator('#start-game')).toBeVisible();
   await page.locator('#crt').evaluate((button) => button.click());
   await page.mouse.click(2, 2);
@@ -1647,8 +1538,7 @@ function tick() {
   await page.keyboard.up('ArrowRight');
 
   for (const key of ['Space', 'Enter']) {
-    await page.goto('about:blank');
-    await page.goto('/playload/app/' + hash);
+    await openGame(page, '/playload/app/' + hash);
     await expect(page.locator('#start-game')).toBeVisible();
     await page.locator('#crt').evaluate((button) => button.click());
     await page.locator('#start-game').focus();
@@ -1682,8 +1572,7 @@ function tick() {
       ['.dpad [data-input="3"]', [80, 140, 215, 255]],
       ['.ab [data-input="4"]', [100, 185, 100, 255]],
     ]) {
-      await page.goto('about:blank');
-      await page.goto('/playload/app/' + hash);
+      await openGame(page, '/playload/app/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
       await page.locator('#crt').evaluate((button) => button.click());
       const pad = page.locator(selector);
@@ -1699,8 +1588,7 @@ function tick() {
       await page.mouse.down();
       await expect.poll(() => pixel(page)).toEqual(color);
       await page.mouse.up();
-      await page.goto('about:blank');
-      await page.goto('/playload/app/' + hash);
+      await openGame(page, '/playload/app/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
       await page.locator('#crt').evaluate((button) => button.click());
       await pad.tap();
@@ -1732,14 +1620,14 @@ test('malformed worker frames are rejected before display or playback', async ({
 
 test('the game worker keeps running after the content policy rejects fetch', async ({ page }) => {
   let requests = 0;
-  await page.route('**/LICENSE', (route) => {
+  await page.route('https://example.com/**', (route) => {
     requests++;
     return route.fulfill({ body: 'Network access should be blocked' });
   });
   await run(
     page,
     `let color = 0;
-fetch('${baseURL}/playload/LICENSE').then(
+fetch('https://example.com/data').then(
   () => { color = 5; },
   () => { color = 3; },
 );
@@ -2182,7 +2070,6 @@ test('touch tools enable Save only after frames arrive and preserve keyboard foc
     hasTouch: true,
   });
   try {
-    await exposeCapture(page);
     await page.addInitScript(() => {
       const Worker = window.Worker;
       window.Worker = class extends Worker {
@@ -2211,21 +2098,20 @@ test('touch tools enable Save only after frames arrive and preserve keyboard foc
     await expect(page.locator('#workspace-toolbar')).toBeVisible();
     await expect(page.locator('#status')).toBeEmpty();
 
-    await page.evaluate(async () => {
-      const Capture = window.testCapture,
-        save = Capture.prototype.save;
-      Capture.prototype.save = function () {
-        Capture.prototype.save = save;
-        return save.call(this).then(
-          (blob) =>
-            new Promise((resolve) => {
-              window.finishVideoSave = () => resolve(blob);
-            }),
-        );
+    // Recorders deliver data only on request, so holding requests keeps the next save pending.
+    await page.evaluate(() => {
+      const requestData = MediaRecorder.prototype.requestData,
+        held = [];
+      MediaRecorder.prototype.requestData = function () {
+        held.push(this);
+      };
+      window.finishVideoSave = () => {
+        MediaRecorder.prototype.requestData = requestData;
+        for (const recorder of held) requestData.call(recorder);
       };
     });
     await page.keyboard.press('Enter');
-    await expect.poll(() => page.evaluate(() => !!window.finishVideoSave)).toBe(true);
+    await expect(page.locator('#record')).toBeDisabled();
     await page.locator('#crt').focus();
     const next = page.waitForEvent('download');
     await page.evaluate(() => window.finishVideoSave());
@@ -2273,21 +2159,21 @@ test('a failed New clip reports the video error without stopping the game and Ru
 test('successful video retries clear the previous capture error without restarting the game', async ({
   page,
 }) => {
-  await exposeCapture(page);
   await run(page, 'function tick() { cls(4) }');
   await expect(page.locator('#video')).toBeEnabled();
   await page.waitForTimeout(400);
   for (const newClip of [true, false]) {
-    await page.evaluate(async () => {
-      const Capture = window.testCapture,
-        save = Capture.prototype.save;
-      Capture.prototype.save = function () {
-        Capture.prototype.save = save;
+    // A recorder that cannot deliver its data fails the save.
+    await page.evaluate(() => {
+      const requestData = MediaRecorder.prototype.requestData;
+      window.restoreRecorder = () => (MediaRecorder.prototype.requestData = requestData);
+      MediaRecorder.prototype.requestData = () => {
         throw new Error('Video export failed');
       };
     });
     await page.locator('#video').click();
     await expect(page.locator('#status')).toHaveText('Video export failed');
+    await page.evaluate(() => window.restoreRecorder());
     await expect(page.locator('#pause')).toBeEnabled();
     if (newClip) {
       await page.locator('#record').click();
@@ -2336,7 +2222,8 @@ test('CRT video exports the curved frame with the same surround as the player', 
       [624, 560],
     ].map(([x, y]) => [...ctx.getImageData(x, y, 16, 16).data]);
   });
-  const result = await page.evaluate(
+  const result = await inBlankPage(
+    page,
     async ({ bytes, expectedPatches }) => {
       const video = document.createElement('video'),
         url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'video/webm' }));
@@ -2350,8 +2237,12 @@ test('CRT video exports the curved frame with the same surround as the player', 
           video.src = url;
           video.load();
         });
-        await video.play();
-        await new Promise((resolve) => video.requestVideoFrameCallback(resolve));
+        // The encoder starts coarse (RMS error near 8 in the first keyframe) and settles near 5,
+        // so the last frame shows the recorded surround rather than its rate control.
+        await new Promise((resolve) => {
+          video.onseeked = resolve;
+          video.currentTime = video.duration;
+        });
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -2470,7 +2361,7 @@ test('the shared chiptune demo exports audible music while speaker monitoring is
     async (source) => (await (await import('/src/payload.js')).encode(source)).hash,
     source,
   );
-  await page.goto('/playload/app/' + hash);
+  await openGame(page, '/playload/app/' + hash);
   await page.locator('#start-game').click();
   await expect(page.getByRole('button', { name: 'Pause' })).toBeEnabled();
   await page.locator('#screen').click();
@@ -2527,7 +2418,8 @@ test('video keeps the latest ten seconds with continuous sound and advances afte
     await download.saveAs(testInfo.outputPath(name));
     const chunks = [];
     for await (const chunk of await download.createReadStream()) chunks.push(chunk);
-    const result = await page.evaluate(
+    const result = await inBlankPage(
+      page,
       async (bytes) => {
         const context = new AudioContext(),
           video = document.createElement('video'),
@@ -2776,7 +2668,7 @@ test.describe('touch player', () => {
         await blocked;
         await route.continue();
       };
-      await page.route('**/playload/assets/bundles/app-*.js', holdGlyphs);
+      await page.route('**/playload/assets/bundles/app.js', holdGlyphs);
       try {
         await page.goto('/playload/app/', { waitUntil: 'commit' });
         await page.locator('#logo').waitFor({ state: 'attached' });
@@ -2792,7 +2684,7 @@ test.describe('touch player', () => {
         await page.screenshot({ path: testInfo.outputPath(`after-initialization-${width}.png`) });
       } finally {
         release();
-        await page.unroute('**/playload/assets/bundles/app-*.js', holdGlyphs);
+        await page.unroute('**/playload/assets/bundles/app.js', holdGlyphs);
       }
     }
   });
@@ -2996,10 +2888,17 @@ test.describe('touch player', () => {
     }
   });
 
-  test('editing, running and returning to play retain the source and visible controls', async ({
-    page,
-  }) => {
-    const source = `// @title Tap test
+  for (const [width, height] of [
+    [375, 568],
+    [568, 320],
+    [844, 390],
+    [768, 1024],
+    [1024, 768],
+  ]) {
+    test(`editing, running and returning to play retain the source and visible controls at ${width}×${height}`, async ({
+      page,
+    }) => {
+      const source = `// @title Tap test
 let color = 4;
 
 function tick() {
@@ -3007,13 +2906,6 @@ function tick() {
   cls(color);
 }
 `;
-    for (const [width, height] of [
-      [375, 568],
-      [568, 320],
-      [844, 390],
-      [768, 1024],
-      [1024, 768],
-    ]) {
       await page.setViewportSize({ width, height });
       await page.goto('/playload/app/');
       await page.locator('#tools-toggle').tap();
@@ -3131,8 +3023,8 @@ function tick() {
         }
       }
       await expect.poll(() => pixel(page)).toEqual([230, 200, 110, 255]);
-    }
-  });
+    });
+  }
   test('an error on the first tick is revealed and its line returns to visible editing', async ({
     page,
     browserName,
@@ -3208,57 +3100,51 @@ function tick() {
       await expect(page.locator('#editor')).toBeFocused();
     }
   });
-  test('shared games execute no code or sound before their first play action', async ({
-    page: phone,
-    browser,
-  }) => {
-    const monitorResources = () => {
-      const Worker = window.Worker,
-        Context = window.AudioContext;
-      window.gameWorkers = 0;
-      window.audioContexts = 0;
-      window.Worker = class extends Worker {
-        constructor(...args) {
-          super(...args);
-          window.gameWorkers++;
-        }
-      };
-      window.AudioContext = class extends Context {
-        constructor(...args) {
-          super(...args);
-          window.audioContexts++;
-        }
-      };
-      const Node = window.AudioWorkletNode;
-      window.AudioWorkletNode = class extends Node {
-        constructor(context, ...args) {
-          super(context, ...args);
-          window.gameAnalyser = context.createAnalyser();
-          this.connect(window.gameAnalyser);
-        }
-      };
+  // Counts game resources, so the welcome screen can prove it started none.
+  const monitorResources = () => {
+    const Worker = window.Worker,
+      Context = window.AudioContext;
+    window.gameWorkers = 0;
+    window.audioContexts = 0;
+    window.Worker = class extends Worker {
+      constructor(...args) {
+        super(...args);
+        window.gameWorkers++;
+      }
     };
-    await phone.addInitScript(monitorResources);
-    const desktop = await browser.newPage({
-      viewport: { width: 1280, height: 800 },
-      hasTouch: false,
-      isMobile: false,
-    });
-    try {
-      await desktop.addInitScript(monitorResources);
-      const { hash } = await encode(
-        'let frames = 0; play(0, "T240O5N3c))"); function tick() { cls(0); put(1, 1, String(frames++)); }',
-      );
-      for (const [width, height, selector, touch = true] of [
-        [375, 812, '#start-game'],
-        [375, 812, '[data-input="4"]'],
-        [375, 812, '#tools-toggle'],
-        [768, 1024, '#start-game'],
-        [1024, 768, '[data-input="4"]'],
-        [1280, 800, '#start-game', false],
-        [1280, 800, 'keyboard', false],
-      ]) {
-        const page = touch ? phone : desktop;
+    window.AudioContext = class extends Context {
+      constructor(...args) {
+        super(...args);
+        window.audioContexts++;
+      }
+    };
+    const Node = window.AudioWorkletNode;
+    window.AudioWorkletNode = class extends Node {
+      constructor(context, ...args) {
+        super(context, ...args);
+        window.gameAnalyser = context.createAnalyser();
+        this.connect(window.gameAnalyser);
+      }
+    };
+  };
+  for (const [width, height, selector, touch = true] of [
+    [375, 812, '#start-game'],
+    [375, 812, '[data-input="4"]'],
+    [375, 812, '#tools-toggle'],
+    [768, 1024, '#start-game'],
+    [1024, 768, '[data-input="4"]'],
+    [1280, 800, '#start-game', false],
+    [1280, 800, 'keyboard', false],
+  ]) {
+    test(`shared games execute no code or sound before their first play action (${width}×${height}, ${selector})`, async ({
+      page: phone,
+      browser,
+    }) => {
+      const page = touch
+        ? phone
+        : await browser.newPage({ viewport: { width, height }, hasTouch: false, isMobile: false });
+      try {
+        await page.addInitScript(monitorResources);
         const sound = () =>
           page.evaluate(() => {
             if (!window.gameAnalyser) return -1;
@@ -3267,8 +3153,7 @@ function tick() {
             return Math.max(...samples.map(Math.abs));
           });
         await page.setViewportSize({ width, height });
-        await page.goto('/playload/app/');
-        await page.goto('/playload/app/' + hash);
+        await openGame(page, '/playload/app/' + welcomeGame);
         await expect(page.locator('#start-game')).toHaveText(
           touch ? 'Tap to play' : 'Click to play',
         );
@@ -3307,11 +3192,11 @@ function tick() {
         await expect
           .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
           .not.toBe(preview);
+      } finally {
+        if (!touch) await page.close();
       }
-    } finally {
-      await desktop.close();
-    }
-  });
+    });
+  }
   test('the first touch unlocks sound when activation is allowed only on release', async ({
     page,
   }) => {
@@ -3362,8 +3247,7 @@ function tick() {
     });
     const { hash } = await encode('play(0, "T240O5N3c))"); function tick() { cls(0); }');
     for (const event of ['pointerup', 'touchend']) {
-      await page.goto('/playload/app/');
-      await page.goto('/playload/app/' + hash);
+      await openGame(page, '/playload/app/' + hash);
       await expect(page.locator('#start-game')).toBeVisible();
       expect(await page.evaluate(() => window.gameAudioContexts.length)).toBe(0);
       await page.evaluate((event) => {
@@ -3505,15 +3389,14 @@ function tick() {
         await encode('let frames = 0; function tick() { cls(0); put(1, 1, String(frames++)); }')
       ).hash;
     });
-    await page.goto('/playload/app/' + hash);
+    await openGame(page, '/playload/app/' + hash);
     await page.locator('#start-game').tap();
     await page.locator('#tools-toggle').tap();
     await page.locator('#pause').tap();
     await expect(page.locator('#workspace-toolbar')).toBeVisible();
     await expect(page.locator('#pause')).toContainText('Resume');
-    // Let the worker's already requested frame finish before comparing frozen pictures.
-    await page.waitForTimeout(100);
-    const frozen = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
+    // A frame requested before Pause can still arrive; compare only a settled picture.
+    const frozen = await settledPicture(page);
     await page.locator('#tools-toggle').tap();
     await page.locator('#tools-toggle').tap();
     await page.getByRole('tab', { name: 'Info', exact: true }).tap();
@@ -3529,8 +3412,7 @@ function tick() {
       .poll(() => page.locator('#display').evaluate((canvas) => canvas.toDataURL()))
       .not.toBe(frozen);
     await page.locator('#tools-toggle').tap();
-    await page.waitForTimeout(100);
-    const inTools = await page.locator('#display').evaluate((canvas) => canvas.toDataURL());
+    const inTools = await settledPicture(page);
     await page.waitForTimeout(200);
     expect(await page.locator('#display').evaluate((canvas) => canvas.toDataURL())).toBe(inTools);
     await page.locator('#tools-toggle').tap();
@@ -3705,8 +3587,10 @@ function tick() {
     await expect(page.locator('.dpad [data-held="true"]')).toHaveCount(0);
     await expect.poll(inputMask).toBe(48);
     await dispatch('touchMove', right, a, b);
-    await page.waitForTimeout(800);
     await expect.poll(inputMask).toBe(56);
+    // A resting finger keeps its direction held.
+    await page.waitForTimeout(800);
+    expect(await inputMask()).toBe(56);
     expect(await page.evaluate(() => window.getSelection().toString())).toBe('');
     expect(await page.evaluate(() => window.touchCancellations)).toBe(0);
     await dispatch('touchEnd');
@@ -3863,7 +3747,7 @@ function tick() {
       return (await encode('let color = 7; function tick() { if(btnp(4)) color = 6; cls(color) }'))
         .hash;
     });
-    await page.goto('/playload/app/' + hash);
+    await openGame(page, '/playload/app/' + hash);
     await expect(page.locator('#editor')).toBeHidden();
     await expect(page.locator('#code-toggle')).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('#start-game')).toBeVisible();
@@ -4246,7 +4130,7 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
         await original.keyboard.press('Enter');
       }
       await expect(original).toHaveURL(baseURL + '/playload/');
-      await expect(original.locator('.readme:visible')).toBeVisible();
+      await expect(original.locator('.introduction:visible')).toBeVisible();
       expect(original.context().pages()).toHaveLength(pages);
     }
   } finally {
@@ -4303,7 +4187,7 @@ test('the reference documents six functions and two variables; every example run
   await page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
-  await page.screenshot({ path: testInfo.outputPath('cheat-sheet-readme.jpg'), quality: 90 });
+  await page.screenshot({ path: testInfo.outputPath('cheat-sheet.jpg'), quality: 90 });
   const examples = page.locator('#api .api-example');
   for (let i = 0; i < (await examples.count()); i++) {
     const example = examples.nth(i),
@@ -4385,7 +4269,9 @@ test('the reference documents six functions and two variables; every example run
           .filter((element) => element.getClientRects().length)
           .map((element) => {
             range.selectNodeContents(element);
-            context.font = getComputedStyle(element).font;
+            // The font shorthand serializes as '' while font-variant-ligatures is none.
+            const style = getComputedStyle(element);
+            context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
             return (
               range.getBoundingClientRect().bottom -
               context.measureText(element.textContent).fontBoundingBoxDescent
@@ -5040,6 +4926,24 @@ test('unchanged files leave the editor selection, URL and focus intact', async (
   expect(page.url()).toBe(url);
 });
 
+test('file checks read the text only after the file changes', async ({ page }) => {
+  await loadFileHandle(page);
+  await page.evaluate(() => {
+    window.textReads = 0;
+    const text = File.prototype.text;
+    File.prototype.text = function () {
+      window.textReads++;
+      return text.call(this);
+    };
+  });
+  const reads = await page.evaluate(() => window.fileReads);
+  await expect.poll(() => page.evaluate(() => window.fileReads)).toBeGreaterThan(reads + 2);
+  expect(await page.evaluate(() => window.textReads)).toBe(0);
+  await page.evaluate(() => (window.testFileSource = 'function tick() { cls(5) }'));
+  await expect(page.locator('#editor')).toHaveValue('function tick() { cls(5) }');
+  expect(await page.evaluate(() => window.textReads)).toBe(1);
+});
+
 test('automatic file reads preserve edits made while the read is pending', async ({ page }) => {
   await loadFileHandle(page);
   await page.evaluate(() => {
@@ -5278,6 +5182,23 @@ test('canceling a fallback Load restores controls and preserves the source and U
   await expect(page.locator('#load')).toBeEnabled();
   await expect(page.locator('#editor')).toHaveValue(source);
   expect(page.url()).toBe(url);
+});
+
+test('a fallback Load whose user activation lapsed restores controls instead of waiting', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.showOpenFilePicker = undefined;
+    // A file input opens no picker once the click's activation has lapsed, e.g. during a slow confirm.
+    HTMLInputElement.prototype.showPicker = () => {
+      throw new DOMException('User activation is required', 'NotAllowedError');
+    };
+  });
+  await page.goto('/playload/app/');
+  await page.locator('#load').click();
+  await expect(page.locator('#run')).toBeEnabled();
+  await expect(page.locator('#load')).toBeEnabled();
+  await expect(page.locator('#format')).toBeEnabled();
 });
 
 test('JavaScript coloring preserves source, literal markup, typing and scrolling', async ({
@@ -5680,7 +5601,7 @@ test('examples respond to touch controls and fit a narrow player', async ({
       const { encode } = await import('/src/payload.js');
       return (await encode(source)).hash;
     }, source);
-    await phone.goto(baseURL + '/playload/app/' + hash);
+    await openGame(phone, baseURL + '/playload/app/' + hash);
     await phone.locator('#start-game').tap();
     await expect(phone.locator('#pause')).toBeEnabled();
     await expect(phone.locator('#editor')).toBeHidden();
@@ -5756,8 +5677,7 @@ test('Info interactions stay in Info when a shared URL finishes decoding', async
     });
     try {
       for (const action of ['pointer', 'key']) {
-        await page.goto('about:blank');
-        await page.goto('/playload/app/' + hash);
+        await openGame(page, '/playload/app/' + hash);
         await page.waitForFunction(() => typeof window.releaseDecode === 'function');
         await page.locator('#info-tab').click();
         await page.getByRole('tab', { name: 'API', exact: true }).click();
@@ -5824,7 +5744,9 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
               toolsWidth = tools.getBoundingClientRect().width,
               gap = toolsWidth ? parseFloat(getComputedStyle(intro).columnGap) : 0,
               measure = document.createElement('canvas').getContext('2d');
-            measure.font = getComputedStyle(tagline).font;
+            // The font shorthand serializes as '' while font-variant-ligatures is none.
+            const style = getComputedStyle(tagline);
+            measure.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
             return {
               fits:
                 measure.measureText(tagline.textContent).width <=
@@ -5855,6 +5777,51 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
     } finally {
       await context.close();
     }
+  }
+});
+
+test('a hovering pointer highlights only the unselected workspace tab', async ({ page }) => {
+  await page.goto('/playload/app/');
+  const background = (selector) =>
+    page.locator(selector).evaluate((element) => getComputedStyle(element).backgroundColor);
+  await page.locator('#info-tab').hover();
+  await expect.poll(() => background('#info-tab')).toBe('rgb(56, 45, 64)');
+  await page.locator('#play-tab').hover();
+  await expect.poll(() => background('#play-tab')).toBe('rgba(0, 0, 0, 0)');
+  await expect.poll(() => background('#info-tab')).toBe('rgba(0, 0, 0, 0)');
+});
+
+test('assistive technology finds a page heading and the Tools region, with no visible change', async ({
+  page,
+}) => {
+  await page.goto('/playload/app/');
+  const heading = page.getByRole('heading', { level: 1, name: 'Playload' });
+  await expect(heading).toHaveCount(1);
+  expect(await heading.boundingBox()).toMatchObject({ width: 1, height: 1 });
+  await expect(page.getByRole('region', { name: 'Tools' })).toHaveAttribute(
+    'id',
+    'workspace-toolbar',
+  );
+});
+
+test('tab selection state stays on the tabs, never on the page body', async ({ page }) => {
+  await page.goto('/playload/app/');
+  for (const name of ['Info', 'Play']) {
+    await page.getByRole('tab', { name, exact: true }).click();
+    expect(
+      await page.evaluate(() => ({
+        roles: [
+          ...new Set(
+            [...document.querySelectorAll('[aria-selected]')].map((element) =>
+              element.getAttribute('role'),
+            ),
+          ),
+        ],
+        body: [...document.body.attributes]
+          .map(({ name }) => name)
+          .filter((name) => name === 'tabindex' || name.startsWith('aria-')),
+      })),
+    ).toEqual({ roles: ['tab'], body: [] });
   }
 });
 
