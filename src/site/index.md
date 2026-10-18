@@ -17,7 +17,7 @@
 
 <p class="screenshots" align="center">
   <a href="assets/images/example-glyph-quest@2x.png"><img src="assets/images/example-glyph-quest.png" alt="The code editor beside a running Glyph Quest game" width="400"></a>
-  <a href="assets/images/info-api@2x.png"><img src="assets/images/info-api.png" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a><br>
+  <a href="assets/images/info-api@2x.png"><img src="assets/images/info-api.png" alt="The complete game API and ZX 128 PLAY sound cheat sheets" width="400"></a>
   <a href="assets/images/info-emoji@2x.png"><img src="assets/images/info-emoji.png" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
   <a href="assets/images/info-examples@2x.png"><img src="assets/images/info-examples.png" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
 </p>
