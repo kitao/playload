@@ -30,7 +30,7 @@
 - Built-in 8 × 8 Unicode letters, symbols and emoji
 - ZX 128 PLAY-compatible, 3 sound channels
 - 4-direction and 2-button input
-- A complete game in one URL — a **playable payload**
+- The URL’s payload is the whole game — **Playable Payload... Playload!**
 
 [Source code](https://github.com/kitao/playload)
 
