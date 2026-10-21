@@ -35,7 +35,7 @@
     "twitter-text": "3.1.0",
     "wrangler": "4.150.0"
   },
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A tiny game engine that lets you share games as URLs",
   "license": "MIT",
   "author": "Takashi Kitao",

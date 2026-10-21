@@ -157,6 +157,8 @@ header {
   container-type: inline-size;
 }
 header p {
+  display: flex;
+  gap: 1ch;
   flex: none;
   min-width: 0;
   margin: 0;
@@ -164,6 +166,15 @@ header p {
   line-height: 16px;
   color: var(--muted);
   white-space: nowrap;
+}
+#site-link {
+  color: #d77355;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+#site-link:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
 }
 #size {
   position: relative;
@@ -1090,14 +1101,14 @@ body[data-touch='true'] kbd {
 body[data-touch='true'] #screen:focus {
   outline: none;
 }
-/* Match the tagline length; touch Play also reserves the Tools button and gap. */
-@container (width < 52ch) {
-  header p {
+/* Keep the site link visible; touch Play also reserves the Tools button and gap. */
+@container (width < 59ch) {
+  header .tagline {
     display: none;
   }
 }
-@container (width < calc(52ch + 56px)) {
-  body[data-touch='true'][data-view='play'] header p {
+@container (width < calc(59ch + 56px)) {
+  body[data-touch='true'][data-view='play'] header .tagline {
     display: none;
   }
 }
@@ -1346,6 +1357,8 @@ body[data-touch='true'] #game {
 }
 body[data-touch='true'][data-editor-closed='true'] #viewport {
   flex: 0 1 auto;
+  align-self: center;
+  width: 100%;
   aspect-ratio: 10 / 9;
   max-height: calc(100% - 176px);
 }
@@ -1362,6 +1375,8 @@ body[data-touch='true'] #picture {
   #palette {
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
+}
+@media (orientation: landscape) and (min-width: 480px) {
   body[data-touch='true'][data-editor-closed='true'] #viewport {
     flex: 1;
     width: calc(100% - 312px);
@@ -1440,6 +1455,40 @@ body[data-touch='true'] #picture {
   #logo {
     width: 96px;
     height: 12px;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 479px) and (max-height: 419px) {
+  body[data-touch='true'][data-editor-closed='true'] #game {
+    gap: 4px;
+  }
+  body[data-touch='true'][data-editor-closed='true'] #viewport {
+    max-height: calc(100% - 148px);
+  }
+  body[data-touch='true'][data-editor-closed='true'] #picture {
+    padding: 4px;
+  }
+}
+
+@media (max-width: 419px) {
+  :root {
+    --workspace-tab-width: 56px;
+  }
+  body[data-touch='true'] #logo {
+    width: 96px;
+    height: 12px;
+  }
+}
+@media (max-width: 374px) {
+  :root {
+    --workspace-tab-width: 48px;
+  }
+  body[data-touch='true'] header {
+    gap: 4px;
+  }
+  body[data-touch='true'] #logo {
+    width: 64px;
+    height: 8px;
   }
 }
 

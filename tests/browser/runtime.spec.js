@@ -3280,6 +3280,12 @@ function tick() {
       [320, 568],
       [375, 560],
       [375, 350],
+      [393, 520],
+      [393, 600],
+      [479, 320],
+      [480, 320],
+      [559, 320],
+      [560, 320],
       [375, 667],
       [390, 844],
       [844, 390],
@@ -3328,8 +3334,9 @@ function tick() {
           expect(Math.min(r.width, r.height)).toBeGreaterThanOrEqual(48);
         }
       }
+      const player = await page.locator('#viewport').boundingBox();
+      expect(Math.abs(player.x + player.width / 2 - width / 2)).toBeLessThanOrEqual(1);
       if (height > width) {
-        const player = await page.locator('#viewport').boundingBox();
         const pad = await page.locator('.dpad').boundingBox();
         expect(
           Math.abs(player.y - headerBottom - (pad.y - player.y - player.height)),
@@ -3350,6 +3357,15 @@ function tick() {
       const menu = await page.locator('#workspace-toolbar').boundingBox();
       expect(menu.x + menu.width).toBeLessThanOrEqual(width);
       expect(menu.y + menu.height).toBeLessThanOrEqual(height);
+    }
+    for (const height of [844, 520, 350, 667]) {
+      await page.setViewportSize({ width: 393, height });
+      await expect
+        .poll(async () => {
+          const player = await page.locator('#viewport').boundingBox();
+          return Math.abs(player.x + player.width / 2 - 393 / 2);
+        })
+        .toBeLessThanOrEqual(1);
     }
     await page.setViewportSize({ width: 568, height: 220 });
     await page.goto('/playload/app/');
@@ -4055,7 +4071,9 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
   );
   await expect(page.locator('#home-link #logo')).toBeVisible();
   await expect(page.locator('#home-link')).not.toHaveAttribute('target');
-  await expect(page.locator('.intro a')).toHaveCount(0);
+  await expect(page.locator('#site-link')).toHaveAttribute('href', '/playload/');
+  await expect(page.locator('#site-link')).toHaveCSS('color', 'rgb(215, 115, 85)');
+  await expect(page.locator('#site-link')).toHaveCSS('text-decoration-line', 'underline');
   await expect
     .poll(() =>
       page.locator('#logo').evaluate((image) => image.complete && image.naturalWidth === 64),
@@ -5711,7 +5729,7 @@ test('an invalid shared URL focuses the visible player and keeps its error reada
   await expect(page.locator('#editor')).toBeVisible();
 });
 
-test('the tagline stays visible whenever its text fits, without crowding navigation or Tools', async ({
+test('the site link stays visible and the tagline fits without crowding navigation or Tools', async ({
   browser,
 }) => {
   for (const touch of [false, true]) {
@@ -5736,10 +5754,11 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
               new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
           );
           const layout = await page.evaluate(() => {
-            const tagline = document.querySelector('header p'),
+            const tagline = document.querySelector('.tagline'),
+              paragraph = document.querySelector('header p'),
               intro = document.querySelector('.intro'),
               tools = document.querySelector('#tools-toggle'),
-              bounds = tagline.getBoundingClientRect(),
+              bounds = paragraph.getBoundingClientRect(),
               available = intro.getBoundingClientRect(),
               toolsWidth = tools.getBoundingClientRect().width,
               gap = toolsWidth ? parseFloat(getComputedStyle(intro).columnGap) : 0,
@@ -5749,11 +5768,19 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
             measure.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
             return {
               fits:
-                measure.measureText(tagline.textContent).width <=
+                measure.measureText(
+                  tagline.textContent.trim() +
+                    ' ' +
+                    document.querySelector('#site-link').textContent,
+                ).width <=
                 available.width - toolsWidth - gap,
               visible: !!tagline.getClientRects().length,
               top: bounds.top,
               inside: bounds.right <= available.right - toolsWidth - gap + 0.02,
+              paragraphWidth: bounds.width,
+              availableWidth: available.width,
+              toolsWidth,
+              gap,
               aligned: !bounds.width || Math.abs(bounds.left - available.left) < 0.02,
               overflow: document.documentElement.scrollWidth > innerWidth,
             };
@@ -5761,7 +5788,7 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
           expect(layout.visible, `${touch ? 'touch' : 'desktop'} ${view} at ${width}px`).toBe(
             layout.fits,
           );
-          expect(layout.inside).toBe(true);
+          expect(layout.inside, JSON.stringify({ touch, view, width, ...layout })).toBe(true);
           expect(layout.aligned).toBe(true);
           expect(layout.overflow).toBe(false);
           if (layout.visible) {
@@ -5769,11 +5796,14 @@ test('the tagline stays visible whenever its text fits, without crowding navigat
             else if (playPositions.has(width))
               expect(layout.top).toBeCloseTo(playPositions.get(width), 1);
           }
-          for (const selector of ['#logo', '#play-tab', '#info-tab', '#home-link'])
+          for (const selector of ['#logo', '#play-tab', '#info-tab', '#home-link', '#site-link'])
             await expect(page.locator(selector)).toBeVisible();
           if (touch && view === 'Play') await expect(page.locator('#tools-toggle')).toBeVisible();
         }
       }
+      await page.locator('#site-link').click();
+      await expect(page).toHaveURL(/\/playload\/$/);
+      await expect(page.locator('.introduction:visible')).toBeVisible();
     } finally {
       await context.close();
     }
