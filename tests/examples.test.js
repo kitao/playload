@@ -6,9 +6,26 @@ import { glyphs } from '../src/engine/glyphs.js';
 import { compileScore, AY } from '../src/engine/sound.js';
 import { encode } from '../src/payload.js';
 
+function exampleEngine() {
+  const engine = createEngine(glyphs, compileScore),
+    { step, sounds } = engine;
+  let recorded = [];
+  // Drain each tick just like the worker; keep a separate log for assertions.
+  engine.step = (tick) => {
+    step(tick);
+    recorded.push(...sounds());
+  };
+  engine.sounds = () => {
+    const result = [...recorded, ...sounds()];
+    recorded = [];
+    return result;
+  };
+  return engine;
+}
+
 async function loadExample(name, hooks, math = Math) {
   const source = await readFile(new URL(`../examples/${name}.js`, import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
+  const engine = exampleEngine();
   const game = new Function(...Object.keys(engine.api), 'Math', source + '\n' + hooks)(
     ...Object.values(engine.api),
     math,
@@ -33,7 +50,7 @@ function pictureRegion(engine, x, y, width, height) {
 }
 
 function expectShooterMessage(engine, text, color) {
-  const expected = createEngine(glyphs, compileScore);
+  const expected = exampleEngine();
   const column = Math.floor((20 - text.length) / 2);
   expected.api.put(column, 8, text, color, 0);
   assert.deepEqual(
@@ -45,7 +62,7 @@ function expectShooterMessage(engine, text, color) {
 
 test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async () => {
   const source = await readFile(new URL('../examples/snake.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
+  const engine = exampleEngine();
   const math = Object.create(Math);
   math.random = () => 0;
   const game = new Function(
@@ -114,7 +131,7 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
 
 test('Snake permits a vacated tail cell and finishes a full board without searching forever', async () => {
   const source = await readFile(new URL('../examples/snake.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
+  const engine = exampleEngine();
   const game = new Function(
     ...Object.keys(engine.api),
     source +
@@ -293,7 +310,7 @@ test('Jump retries falls and accepts buffered and coyote jumps without bouncing 
 
 test('Music Box edits notes and rests, plays eight steps, stops and restores them', async () => {
   const source = await readFile(new URL('../examples/music-box.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
+  const engine = exampleEngine();
   const game = new Function(
     ...Object.keys(engine.api),
     source + '\nreturn {tick,state:()=>({notes,selected,playing,frame})};',
@@ -381,7 +398,7 @@ test('Gems collects when both coordinate differences are less than six', async (
     [5, 5, true],
     [-5, -5, true],
   ]) {
-    const engine = createEngine(glyphs, compileScore);
+    const engine = exampleEngine();
     const game = new Function(
       ...Object.keys(engine.api),
       'dx',
@@ -658,7 +675,7 @@ test('Lights Out solves five distinct boards at their verified minimum, advances
 
 test('Sound FX plays every preset audibly, once per press, and stops', async () => {
   const source = await readFile(new URL('../examples/sound-fx.js', import.meta.url), 'utf8');
-  const engine = createEngine(glyphs, compileScore);
+  const engine = exampleEngine();
   const game = new Function(...Object.keys(engine.api), source + '\nreturn {tick,effects};')(
     ...Object.values(engine.api),
   );
@@ -1232,4 +1249,11 @@ test('Shooter clears shrinking boss HP and measures invasion using its full heig
   game.descend(104);
   step();
   assert.equal(game.state().state, 'OVER', 'The 16-pixel boss reaches the ship row at y=104.');
+});
+
+test('long Music Box editing drains each tick while retaining the complete sound log', async () => {
+  const { engine, press } = await loadExample('music-box', 'return { tick };');
+  for (let i = 0; i < 300; i++) press(i % 2 ? 1 : 0);
+  assert.equal(engine.sounds().length, 300);
+  assert.deepEqual(engine.sounds(), []);
 });

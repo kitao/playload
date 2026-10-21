@@ -288,6 +288,9 @@ export class Sound {
     } catch (error) {
       this.failed = true;
       this.queue = [];
+      const context = this.context;
+      this.context = this.node = this.monitor = this.destination = undefined;
+      await context?.close().catch(() => {});
       this.onError(error.message);
       throw error;
     }

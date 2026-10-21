@@ -28,11 +28,13 @@ function openSharedGame() {
   app.search = location.search;
   app.hash = location.hash;
   location.replace(app.href);
+  return true;
 }
-openSharedGame();
+const redirecting = openSharedGame();
 window.addEventListener('hashchange', openSharedGame);
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (redirecting) return;
   setLanguage();
   for (const button of document.querySelectorAll('.language-switch button')) {
     button.addEventListener('click', () => {

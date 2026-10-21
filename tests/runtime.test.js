@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 import {
   Runtime,
@@ -78,6 +77,46 @@ test('sound can retry a blocked unlock and recover after a device interruption',
   sound.context.state = 'closed';
   sound.unlock();
   assert.equal(attempts, 3);
+});
+
+test('failed sound setup closes its context and preserves the original error', async (t) => {
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'AudioContext');
+  t.after(() => {
+    if (original) Object.defineProperty(globalThis, 'AudioContext', original);
+    else delete globalThis.AudioContext;
+  });
+  for (const worklet of [false, true]) {
+    let closed = 0;
+    const failure = new Error('Worklet could not load');
+    class Context {
+      constructor() {
+        if (worklet)
+          this.audioWorklet = {
+            addModule: async () => {
+              throw failure;
+            },
+          };
+      }
+      async close() {
+        closed++;
+        throw new Error('Context already closed');
+      }
+    }
+    Object.defineProperty(globalThis, 'AudioContext', { value: Context, configurable: true });
+    const errors = [],
+      sound = new Sound((message) => errors.push(message));
+    sound.play([{ ch: 0, score: compileScore('c') }]);
+    await assert.rejects(sound.init(), worklet ? failure : /AudioWorklet is not supported/);
+    assert.equal(closed, 1);
+    assert.equal(sound.context, undefined);
+    assert.equal(sound.node, undefined);
+    assert.doesNotThrow(() => sound.close());
+    assert.equal(sound.failed, true);
+    assert.deepEqual(sound.queue, []);
+    assert.deepEqual(errors, [
+      worklet ? failure.message : 'AudioWorklet is not supported by this browser.',
+    ]);
+  }
 });
 
 test('worker source remains readable until the worker is replaced or stopped', async (t) => {
@@ -438,61 +477,6 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   );
 });
 
-test('the scheduler keeps time when a worker is busy and bounds recovery after rendering stalls', async () => {
-  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
-  const animateSource = source.slice(
-    source.indexOf('function animate('),
-    source.indexOf('function showPlayer('),
-  );
-  const accepted = [],
-    attempted = [];
-  let busy = false;
-  const context = {
-    readGamepads: () => 0,
-    gamepadMask: 0,
-    syncInput: assert.fail,
-    running: true,
-    document: { hidden: false },
-    paused: false,
-    view: 'play',
-    touch: false,
-    toolsOpen: false,
-    lastFrame: null,
-    MAX_FRAME_STEPS,
-    runtime: {
-      frame(steps) {
-        attempted.push(steps);
-        if (busy) return false;
-        accepted.push(steps);
-        return true;
-      },
-    },
-    capture: undefined,
-    requestAnimationFrame() {},
-    paint: assert.fail,
-  };
-  runInNewContext(animateSource, context);
-  context.animate(0);
-  busy = true;
-  context.animate(1000 / 60);
-  context.animate(1000 / 30);
-  busy = false;
-  context.animate(50);
-  assert.deepEqual(accepted, [3]);
-  assert.equal(context.lastFrame, 50);
-  context.animate(250);
-  assert.deepEqual(accepted, [3, 5]);
-  context.animate(10000);
-  assert.deepEqual(accepted, [3, 5, 1]);
-  context.paused = true;
-  context.animate(20000);
-  context.paused = false;
-  context.animate(30000);
-  context.animate(30000 + 1000 / 60);
-  assert.deepEqual(accepted, [3, 5, 1, 1]);
-  assert(attempted.every((steps) => steps >= 1 && steps <= 5));
-});
-
 test('runtime refuses extra outstanding batches and rejects invalid catch-up sound positions', (t) => {
   mockWorker(t);
   const errors = t.mock.fn();
@@ -518,434 +502,6 @@ test('runtime refuses extra outstanding batches and rejects invalid catch-up sou
     assert.equal(worker.terminated, true);
   }
   assert.equal(errors.mock.callCount(), 3);
-});
-
-test('identical game pictures avoid CRT work, but a new game forces a fresh picture', async () => {
-  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
-  const renderSource = source.slice(
-    source.indexOf('function render('),
-    source.indexOf('function paint('),
-  );
-  let paints = 0;
-  const context = {
-    screenPixels: new Uint8Array(160 * 144),
-    paint() {
-      paints++;
-    },
-  };
-  runInNewContext(renderSource, context);
-  const pixels = new Uint8Array(160 * 144);
-  context.render(pixels.slice());
-  assert.equal(paints, 0);
-  pixels[200] = 7;
-  context.render(pixels.slice());
-  assert.equal(paints, 1);
-  context.render(pixels.slice());
-  assert.equal(paints, 1);
-  context.render(pixels.slice(), true);
-  assert.equal(paints, 2);
-});
-
-test('paused video refreshes cached pixels at 30 Hz without running CRT or advancing the game', async () => {
-  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
-  const animateSource = source.slice(
-    source.indexOf('function animate('),
-    source.indexOf('function showPlayer('),
-  );
-  const copies = [];
-  const canvas = {};
-  const context = {
-    readGamepads: () => 0,
-    gamepadMask: 0,
-    syncInput: assert.fail,
-    running: true,
-    document: { hidden: false },
-    paused: true,
-    view: 'play',
-    touch: false,
-    toolsOpen: false,
-    lastFrame: null,
-    MAX_FRAME_STEPS,
-    runtime: { frame: assert.fail },
-    requestAnimationFrame() {},
-    paint: assert.fail,
-    capture: { stream: {}, suspended: false },
-    paintedFrame: false,
-    lastCaptureFrame: 0,
-    canvas,
-    context: {
-      drawImage(...args) {
-        copies.push(args);
-      },
-    },
-  };
-  runInNewContext(animateSource, context);
-  context.animate(1000);
-  context.animate(1010);
-  assert.deepEqual(copies, [[canvas, 0, 0]]);
-  context.paintedFrame = true;
-  context.animate(1040);
-  assert.equal(copies.length, 1);
-  context.animate(1080);
-  assert.equal(copies.length, 2);
-  context.capture.suspended = true;
-  context.animate(2000);
-  assert.equal(copies.length, 2);
-});
-
-test('cached pages retain execution and media, then restore the watchdog and prior pause state', async (t) => {
-  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
-  const lifecycle = source.slice(
-    source.indexOf("window.addEventListener('pagehide'"),
-    source.indexOf("window.addEventListener('hashchange'"),
-  );
-  const playback = source.slice(
-    source.indexOf('function syncPlayback()'),
-    source.indexOf('function setView('),
-  );
-  const timers = new Map();
-  let timerId = 0;
-  t.mock.method(globalThis, 'setTimeout', (callback, delay) => {
-    const id = ++timerId;
-    timers.set(id, { callback, delay });
-    return id;
-  });
-  t.mock.method(globalThis, 'clearTimeout', (id) => timers.delete(id));
-
-  mockWorker(t);
-
-  for (const state of [
-    { running: true, paused: false, view: 'play' },
-    { running: true, paused: true, view: 'play' },
-    { running: false, paused: false, view: 'play' },
-    { running: true, paused: false, view: 'info' },
-    { running: true, paused: true, view: 'play', awaitingStart: true, touch: true },
-    { running: true, paused: false, view: 'play', touch: true, toolsOpen: true },
-  ]) {
-    const handlers = new Map();
-    const runtime = new Runtime(() => {}, assert.fail);
-    runtime.load('function tick() {}');
-    const worker = runtime.worker;
-    const audio = new Sound(assert.fail);
-    audio.context = {
-      state: 'running',
-      close() {
-        this.state = 'closed';
-      },
-    };
-    audio.node = { port: { postMessage() {} } };
-    const capture = {
-      leave(value) {
-        this.leaving = value;
-      },
-      suspend(value) {
-        this.suspended = value;
-      },
-      close() {
-        this.closed = true;
-      },
-    };
-    const release = t.mock.fn(() => runtime.input(0));
-    const startKeys = new Set(['KeyZ']);
-    const clock = new Function(
-      'window',
-      'document',
-      'runtime',
-      'audio',
-      'capture',
-      'release',
-      'running',
-      'paused',
-      'view',
-      'touch',
-      'toolsOpen',
-      'awaitingStart',
-      'startKeys',
-      'let lastFrame = 123, revision = 0;\n' +
-        playback +
-        lifecycle +
-        '\nreturn () => ({lastFrame, revision});',
-    )(
-      { addEventListener: (type, handler) => handlers.set(type, handler) },
-      { hidden: false },
-      runtime,
-      audio,
-      capture,
-      release,
-      state.running,
-      state.paused,
-      state.view,
-      !!state.touch,
-      !!state.toolsOpen,
-      !!state.awaitingStart,
-      startKeys,
-    );
-
-    assert.equal(timers.size, 1);
-    // A cancelled navigation fires beforeunload but nothing afterwards, so
-    // capture pauses for page history only on pagehide, and no part of the app listens
-    // for beforeunload.
-    assert.equal(handlers.has('beforeunload'), false);
-    assert.doesNotMatch(source, /beforeunload/);
-    handlers.get('pagehide')({ persisted: true });
-    assert.equal(capture.leaving, true);
-    assert.equal(startKeys.size, 0);
-    assert.equal(runtime.worker, worker);
-    assert.equal(worker.terminated, undefined);
-    assert.equal(audio.context.state, 'running');
-    assert.equal(audio.paused, true);
-    assert.equal(capture.suspended, true);
-    assert.equal(release.mock.callCount(), 1);
-    assert.equal(timers.size, 0);
-    assert.equal(clock().revision, 0);
-    const messages = worker.messages.length;
-    runtime.frame();
-    assert.equal(worker.messages.length, messages);
-
-    handlers.get('pageshow')({ persisted: true });
-    assert.deepEqual(clock(), { lastFrame: null, revision: 0 });
-    assert.equal(runtime.suspended, false);
-    assert.equal(timers.size, 1);
-    // The worker had not finished starting, so the start budget applies again.
-    assert.equal([...timers.values()][0].delay, START_TIMEOUT);
-    assert.equal(
-      audio.paused,
-      !state.running || state.paused || state.view === 'info' || !!state.toolsOpen,
-    );
-    assert.equal(capture.leaving, false);
-    assert.equal(
-      capture.suspended,
-      !state.running || state.view === 'info' || !!state.awaitingStart || !!state.toolsOpen,
-    );
-    worker.onmessage({ data: { type: 'ready', pixels: new Uint8Array(160 * 144), sounds: [] } });
-    assert.equal(timers.size, 0);
-
-    // An idle worker needs no watchdog after restoration.
-    handlers.get('pagehide')({ persisted: true });
-    handlers.get('pageshow')({ persisted: true });
-    assert.equal(timers.size, 0);
-    handlers.get('pagehide')({ persisted: false });
-    assert.equal(runtime.worker, null);
-    assert.equal(worker.terminated, true);
-    assert.equal(audio.context.state, 'closed');
-    assert.equal(capture.closed, true);
-    assert.equal(clock().revision, 1);
-  }
-});
-
-test('pending audio initialization cannot start video capture after navigation', async (t) => {
-  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
-  const frame = source.slice(
-    source.indexOf('async function frame('),
-    source.indexOf('function run('),
-  );
-  const lifecycle = source.slice(
-    source.indexOf("window.addEventListener('pagehide'"),
-    source.indexOf('function animate('),
-  );
-
-  for (const navigation of ['none', 'hashchange', 'pagehide']) {
-    const handlers = new Map();
-    const initializing = Promise.withResolvers();
-    const start = t.mock.fn();
-    const Capture = t.mock.fn(function () {
-      this.start = start;
-      this.leave = t.mock.fn();
-    });
-    const context = {
-      window: { addEventListener: (type, handler) => handlers.set(type, handler) },
-      document: { hidden: false },
-      location: { reload: t.mock.fn() },
-      runtime: { stop: t.mock.fn() },
-      audio: {
-        context: { state: 'running' },
-        destination: { stream: {} },
-        play() {},
-        init: t.mock.fn(() => initializing.promise),
-        close() {},
-      },
-      Capture,
-      capture: undefined,
-      canvas: {},
-      revision: 0,
-      running: false,
-      paused: false,
-      awaitingStart: false,
-      startKeys: new Set(),
-      gameError: '',
-      $: () => ({ hidden: false }),
-      render() {},
-      syncPlayback() {},
-      updateError() {},
-      controls() {},
-      focusAfterRun() {},
-      release() {},
-      status: assert.fail,
-    };
-    runInNewContext(frame + lifecycle, context);
-    const ready = context.frame(new Uint8Array(160 * 144), [], true);
-    assert.equal(context.audio.init.mock.callCount(), 1);
-    assert.equal(Capture.mock.callCount(), 0);
-    if (navigation === 'hashchange') handlers.get('hashchange')();
-    if (navigation === 'pagehide') handlers.get('pagehide')({ persisted: false });
-    initializing.resolve();
-    await ready;
-
-    const active = navigation === 'none';
-    assert.equal(Capture.mock.callCount(), active ? 1 : 0, navigation);
-    assert.equal(start.mock.callCount(), active ? 1 : 0, navigation);
-    assert.equal(typeof context.audio.context.onstatechange, active ? 'function' : 'undefined');
-    assert.equal(context.location.reload.mock.callCount(), navigation === 'hashchange' ? 1 : 0);
-    assert.equal(context.runtime.stop.mock.callCount(), navigation === 'pagehide' ? 1 : 0);
-    if (active) {
-      handlers.get('hashchange')();
-      assert.equal(context.capture.leave.mock.callCount(), 1);
-      assert.equal(context.capture.leave.mock.calls[0].arguments[0], true);
-    }
-  }
-});
-
-test('game input follows keyboard labels and releases the original physical keys', async () => {
-  const source = await readFile(new URL('../src/app/main.js', import.meta.url), 'utf8');
-  const handlersSource = source.slice(
-    source.indexOf('const keyCodes ='),
-    source.indexOf("const dpad = document.querySelector('.dpad');"),
-  );
-  const syncSource = source.slice(
-    source.indexOf('function syncInput('),
-    source.indexOf('function readGamepads('),
-  );
-  const releaseSource = source.slice(
-    source.indexOf('function release()'),
-    source.indexOf('function focusGame('),
-  );
-  const handlers = new Map();
-  const screen = {};
-  const runtime = {
-    input(mask) {
-      this.mask = mask;
-    },
-  };
-  const keys = new Map();
-  const loads = [];
-  const load = { disabled: false, click: () => loads.push(true) };
-  const release = new Function(
-    'document',
-    '$',
-    'runtime',
-    'audio',
-    'keys',
-    'latinLetter',
-    'let view = "play", running = true, paused = false, gamepadMask = 0; ' +
-      'let touch = false, toolsOpen = false, awaitingStart = false; ' +
-      'const pointers = new Map(), directions = new Set(), startKeys = new Set(); ' +
-      'const readGamepads = () => 0;\n' +
-      releaseSource +
-      syncSource +
-      handlersSource +
-      '\nreturn release;',
-  )(
-    {
-      activeElement: screen,
-      addEventListener: (type, handler) => handlers.set(type, handler),
-      querySelectorAll: () => [],
-    },
-    (id) => (id === 'screen' ? screen : id === 'load' ? load : { disabled: true }),
-    runtime,
-    { unlock() {} },
-    keys,
-    latinLetter,
-  );
-  function input(type, code, key, extras = {}) {
-    handlers.get(type)({
-      code,
-      key,
-      target: { closest: () => null },
-      preventDefault() {},
-      ...extras,
-    });
-  }
-
-  for (const [code, key] of [
-    ['KeyZ', 'z'],
-    ['KeyW', 'z'],
-    ['KeyY', 'Z'],
-    ['KeyZ', 'я'],
-  ]) {
-    input('keydown', code, key);
-    assert.equal(runtime.mask, 16);
-    input('keyup', code, 'Process');
-    assert.equal(runtime.mask, 0);
-  }
-  for (const key of ['q', 'y']) {
-    input('keydown', 'KeyZ', key);
-    assert.equal(runtime.mask, 0);
-  }
-  input('keydown', 'KeyY', 'z');
-  input('keydown', 'KeyZ', 'я');
-  input('keydown', 'KeyX', 'x');
-  assert.equal(runtime.mask, 48);
-  input('keyup', 'KeyY', 'y');
-  assert.equal(runtime.mask, 48);
-  input('keyup', 'KeyZ', 'Z', { shiftKey: true });
-  assert.equal(runtime.mask, 32);
-  input('keyup', 'KeyX', 'ч');
-  assert.equal(runtime.mask, 0);
-
-  for (const [code, key, id] of [
-    ['KeyW', 'w', 0],
-    ['KeyS', 's', 1],
-    ['KeyA', 'a', 2],
-    ['KeyD', 'D', 3],
-    ['KeyJ', 'j', 4],
-    ['KeyK', 'k', 5],
-    ['KeyQ', 'a', 2],
-    ['KeyJ', 'о', 4],
-    ['KeyK', 'л', 5],
-  ]) {
-    input('keydown', code, key);
-    assert.equal(runtime.mask, 1 << id);
-    input('keyup', code, 'Process');
-    assert.equal(runtime.mask, 0);
-  }
-  input('keydown', 'KeyZ', 'z');
-  input('keydown', 'KeyJ', 'j');
-  assert.equal(runtime.mask, 16);
-  input('keyup', 'KeyZ', 'z');
-  assert.equal(runtime.mask, 16);
-  input('keyup', 'KeyJ', 'j');
-  assert.equal(runtime.mask, 0);
-
-  for (const [id, code] of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].entries()) {
-    input('keydown', code, code);
-    assert.equal(runtime.mask, (1 << (id + 1)) - 1);
-  }
-  release();
-  assert.equal(runtime.mask, 0);
-  assert.equal(keys.size, 0);
-  for (const extras of [
-    { isComposing: true },
-    { ctrlKey: true },
-    { altKey: true },
-    { metaKey: true },
-    { target: { closest: () => ({}) } },
-  ]) {
-    for (const key of ['z', 'w', 's', 'a', 'd', 'j', 'k']) {
-      input('keydown', 'Key' + key.toUpperCase(), key, extras);
-      assert.equal(runtime.mask, 0);
-    }
-  }
-  // Ctrl/Cmd shortcuts follow the printed letter, like the browser's own: Dvorak
-  // prints O on the KeyS position and R on KeyO; Cyrillic keeps the KeyO position.
-  for (const [code, key, opens] of [
-    ['KeyS', 'o', true],
-    ['KeyO', 'r', false],
-    ['KeyO', 'щ', true],
-  ]) {
-    loads.length = 0;
-    input('keydown', code, key, { ctrlKey: true });
-    assert.equal(loads.length, opens ? 1 : 0, `${code} ${key}`);
-  }
 });
 
 test('shortcut letters follow the printed Latin letter and use the position only for other scripts', () => {

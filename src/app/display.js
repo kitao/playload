@@ -1,5 +1,20 @@
 import { rgb } from '../engine/engine.js';
 
+export function createFrameRenderer(paint) {
+  let previous = new Uint8Array(160 * 144);
+  return {
+    get pixels() {
+      return previous;
+    },
+    render(pixels, force = false) {
+      let changed = force;
+      for (let i = 0; !changed && i < pixels.length; i++) changed = pixels[i] !== previous[i];
+      previous = pixels;
+      if (changed) paint();
+    },
+  };
+}
+
 // Nearest-neighbor output for flat mode. CRT uses the WebGL renderer.
 export function createDisplay(palette, width = 640, height = 576) {
   const data = new Uint8ClampedArray(width * height * 4),

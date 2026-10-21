@@ -37,6 +37,29 @@ async function touchStartCanceled(page, selector) {
     );
 }
 
+async function openFallbackPicker(page, browserName, open) {
+  const input = page.locator('#file');
+  if (browserName === 'webkit') {
+    // Playwright 1.63 intercepts WebKit's input click path but misses showPicker().
+    // Observe the native call returning before supplying files or canceling.
+    // https://github.com/microsoft/playwright/blob/v1.63.0/browser_patches/webkit/patches/bootstrap.diff#L2427-L2437
+    await input.evaluate((input) => {
+      const showPicker = input.showPicker;
+      input.showPicker = function () {
+        showPicker.call(this);
+        this.dataset.pickerOpened = 'true';
+      };
+    });
+    await open();
+    await expect(input).toHaveAttribute('data-picker-opened', 'true');
+  } else {
+    const chooser = page.waitForEvent('filechooser');
+    await open();
+    await chooser;
+  }
+  return input;
+}
+
 async function loadFileHandle(page, source = 'function tick() { cls(4) }') {
   await page.addInitScript((source) => {
     // Filesystems can report the same timestamp for different source contents.
@@ -139,6 +162,7 @@ test('the untouched starter keeps a plain URL until one character changes, inclu
 
 test('Load and Run shortcuts work; the address follows edits and restores a bookmark', async ({
   page,
+  browserName,
 }) => {
   await page.goto('/playload/app/');
   await page.evaluate(() => {
@@ -146,11 +170,8 @@ test('Load and Run shortcuts work; the address follows edits and restores a book
   });
   const editor = page.getByRole('textbox', { name: 'JavaScript code' });
   await editor.focus();
-  const chooser = page.waitForEvent('filechooser');
-  await page.keyboard.press('Control+o');
-  await (
-    await chooser
-  ).setFiles({
+  const input = await openFallbackPicker(page, browserName, () => page.keyboard.press('Control+o'));
+  await input.setInputFiles({
     name: 'shortcut-game.js',
     mimeType: 'text/javascript',
     buffer: Buffer.from('function tick() { cls(4) }'),
@@ -265,6 +286,82 @@ test('standard gamepads map all six buttons and the left stick, ignoring drift a
     window.testPads = [];
   });
   await expect.poll(() => pixel(page, 128)).toEqual(released);
+});
+
+test('keyboard labels and physical key releases work through the built app', async ({ page }) => {
+  page.on('dialog', (dialog) => dialog.accept());
+  await page.addInitScript(() => {
+    window.inputMask = 0;
+    window.pickerOpens = 0;
+    const post = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (message, ...args) {
+      if (message.type === 'input') window.inputMask = message.mask;
+      return post.call(this, message, ...args);
+    };
+    window.showOpenFilePicker = async () => {
+      window.pickerOpens++;
+      throw new DOMException('Canceled', 'AbortError');
+    };
+  });
+  await run(page, 'function tick() { cls(0); }');
+  await expect(page.locator('#pause')).toBeEnabled();
+  const input = async (type, code, key, expected, extras = {}, target = '#screen') => {
+    await page.locator(target).dispatchEvent(type, { code, key, ...extras });
+    expect(await page.evaluate(() => window.inputMask), `${type} ${code} ${key}`).toBe(expected);
+  };
+  for (const [code, key, id] of [
+    ['KeyZ', 'z', 4],
+    ['KeyW', 'z', 4],
+    ['KeyY', 'Z', 4],
+    ['KeyZ', 'я', 4],
+    ['KeyW', 'w', 0],
+    ['KeyS', 's', 1],
+    ['KeyA', 'a', 2],
+    ['KeyD', 'D', 3],
+    ['KeyJ', 'j', 4],
+    ['KeyK', 'k', 5],
+    ['KeyQ', 'a', 2],
+    ['KeyJ', 'о', 4],
+    ['KeyK', 'л', 5],
+  ]) {
+    await input('keydown', code, key, 1 << id);
+    await input('keyup', code, 'Process', 0);
+  }
+  for (const key of ['q', 'y']) await input('keydown', 'KeyZ', key, 0);
+  await input('keydown', 'KeyY', 'z', 16);
+  await input('keydown', 'KeyZ', 'я', 16);
+  await input('keydown', 'KeyX', 'x', 48);
+  await input('keyup', 'KeyY', 'y', 48);
+  await input('keyup', 'KeyZ', 'Z', 32, { shiftKey: true });
+  await input('keyup', 'KeyX', 'ч', 0);
+  await input('keydown', 'KeyZ', 'z', 16);
+  await input('keydown', 'KeyJ', 'j', 16);
+  await input('keyup', 'KeyZ', 'z', 16);
+  await input('keyup', 'KeyJ', 'j', 0);
+  for (const [id, key] of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].entries())
+    await input('keydown', key, key, (1 << (id + 1)) - 1);
+  await page.locator('#editor').focus();
+  expect(await page.evaluate(() => window.inputMask)).toBe(0);
+  await page.locator('#screen').focus();
+  for (const extras of [
+    { isComposing: true },
+    { ctrlKey: true },
+    { altKey: true },
+    { metaKey: true },
+  ])
+    for (const key of ['z', 'w', 's', 'a', 'd', 'j', 'k'])
+      await input('keydown', 'Key' + key.toUpperCase(), key, 0, extras);
+  await input('keydown', 'KeyZ', 'z', 0, {}, '#editor');
+  for (const [code, key, opens] of [
+    ['KeyS', 'o', 1],
+    ['KeyO', 'r', 0],
+    ['KeyO', 'щ', 1],
+  ]) {
+    const before = await page.evaluate(() => window.pickerOpens);
+    await input('keydown', code, key, 0, { ctrlKey: true });
+    expect(await page.evaluate(() => window.pickerOpens)).toBe(before + opens);
+    await expect(page.locator('#load')).toBeEnabled();
+  }
 });
 
 test('the activation key is consumed until released, including repeats', async ({ page }) => {
@@ -578,17 +675,16 @@ test('a temporary file read failure preserves the game and automatic checks reco
 
 test('canceling a fallback Load restores controls and preserves the source and URL', async ({
   page,
+  browserName,
 }) => {
   await page.addInitScript(() => (window.showOpenFilePicker = undefined));
   await page.goto('/playload/app/');
   const source = await page.locator('#editor').inputValue(),
     url = page.url();
-  const chooser = page.waitForEvent('filechooser');
-  await page.locator('#load').click();
-  await chooser;
+  const input = await openFallbackPicker(page, browserName, () => page.locator('#load').click());
   await expect(page.locator('#run')).toBeDisabled();
   await expect(page.locator('#load')).toBeDisabled();
-  await page.locator('#file').dispatchEvent('cancel');
+  await input.dispatchEvent('cancel');
   await expect(page.locator('#run')).toBeEnabled();
   await expect(page.locator('#load')).toBeEnabled();
   await expect(page.locator('#editor')).toHaveValue(source);
@@ -909,12 +1005,61 @@ test('the built app connects shared source, game input, sound and downloads', as
   const video = await videoReady,
     videoParts = [];
   for await (const part of await video.createReadStream()) videoParts.push(part);
+  expect(video.suggestedFilename()).toBe('playload.webm');
   const buffer = new WebMBuffer();
   buffer.begin(0);
   buffer.append(Buffer.concat(videoParts));
-  expect(video.suggestedFilename()).toBe('playload.webm');
   expect(buffer.frames.some((frame) => frame.kind === 1)).toBe(true);
   expect(buffer.frames.some((frame) => frame.kind === 2)).toBe(true);
+  // Decode the exported file with the browser, independently of Playload's WebM parser.
+  // A fresh page keeps this test separate from the app's restrictive media policy.
+  const playback = await page.context().newPage();
+  try {
+    const decoded = await playback.evaluate(
+      async (bytes) => {
+        const video = document.createElement('video'),
+          url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'video/webm' }));
+        video.muted = true;
+        video.src = url;
+        let timer;
+        try {
+          await new Promise((resolve, reject) => {
+            video.onended = resolve;
+            video.onerror = () =>
+              reject(new Error(video.error?.message || 'Video decoding failed'));
+            timer = setTimeout(() => reject(new Error('Video playback did not finish')), 15000);
+            video.play().catch(reject);
+          });
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const context = canvas.getContext('2d');
+          context.drawImage(video, 0, 0);
+          return {
+            width: video.videoWidth,
+            height: video.videoHeight,
+            duration: video.duration,
+            color: [...context.getImageData(320, 288, 1, 1).data],
+          };
+        } finally {
+          clearTimeout(timer);
+          video.pause();
+          video.removeAttribute('src');
+          video.load();
+          URL.revokeObjectURL(url);
+        }
+      },
+      [...Buffer.concat(videoParts)],
+    );
+    expect([decoded.width, decoded.height]).toEqual([640, 576]);
+    expect(decoded.duration).toBeGreaterThan(0);
+    expect(decoded.duration).toBeLessThanOrEqual(10);
+    // Lossy encoders and YUV conversion vary by browser; the green game picture must survive.
+    expect(decoded.color[1]).toBeGreaterThan(decoded.color[0] + 40);
+    expect(decoded.color[1]).toBeGreaterThan(decoded.color[2] + 40);
+  } finally {
+    await playback.close();
+  }
   await page.keyboard.press('Escape');
   await expect(page.locator('#pause')).toContainText('Resume');
 });

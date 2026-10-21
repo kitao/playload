@@ -1,11 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createDisplay } from '../src/app/display.js';
+import { createDisplay, createFrameRenderer } from '../src/app/display.js';
 import { palette } from '../src/engine/engine.js';
 
 const rgb = palette.map((hex) =>
   [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16)),
 );
+
+test('identical pictures avoid repainting, but a new game forces a fresh picture', () => {
+  let paints = 0;
+  const renderer = createFrameRenderer(() => paints++),
+    pixels = new Uint8Array(160 * 144);
+  renderer.render(pixels.slice());
+  assert.equal(paints, 0);
+  pixels[200] = 7;
+  renderer.render(pixels.slice());
+  assert.equal(paints, 1);
+  renderer.render(pixels.slice());
+  assert.equal(paints, 1);
+  renderer.render(pixels.slice(), true);
+  assert.equal(paints, 2);
+  assert.deepEqual(renderer.pixels, pixels);
+});
 
 test('the flat display preserves every palette color and scales each pixel to four by four', () => {
   const display = createDisplay(palette);
