@@ -89,6 +89,9 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
       logLevel: 'silent',
     };
     const notice = async (path) => readFile(new URL('../' + path, import.meta.url), 'utf8');
+    const unicodeNotice = await notice('data/fonts/unicode-LICENSE.txt'),
+      prismNotice = await notice('node_modules/prismjs/LICENSE'),
+      prettierNotice = await notice('node_modules/prettier/LICENSE');
     // Each bundle carries the notices for the third-party material it contains.
     // Let every build settle before the stage can be removed, even after a failure.
     const builds = await Promise.allSettled([
@@ -104,9 +107,9 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
         banner: {
           js:
             '/*!\n' +
-            (await notice('data/fonts/unicode-LICENSE.txt')) +
+            unicodeNotice +
             '\nPrism: https://prismjs.com/\n' +
-            (await notice('node_modules/prismjs/LICENSE')) +
+            prismNotice +
             '\nTwemoji color reference: Twitter and contributors.\n' +
             'https://github.com/jdecked/twemoji\n' +
             'Used to derive emoji colors. Licensed under CC BY 4.0, provided as-is:\n' +
@@ -117,7 +120,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
         ...options,
         entryPoints: { formatter: 'src/app/formatter.js' },
         format: 'esm',
-        banner: { js: '/*!\n' + (await notice('node_modules/prettier/LICENSE')) + '\n*/' },
+        banner: { js: '/*!\n' + prettierNotice + '\n*/' },
       }),
       // The introduction runs this as a classic script before rendering; keep its names local.
       build({ ...options, entryPoints: { site: 'src/site/main.js' }, format: 'iife' }),

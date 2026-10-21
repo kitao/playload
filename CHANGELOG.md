@@ -5,6 +5,7 @@
 - Add a website link to the app header that remains visible on narrow screens.
 - Improve touch player centering and layouts in short and landscape viewports.
 - Refresh the website screenshots.
+- Fix error handling when building multiple bundles.
 
 ## 0.9.0
 
