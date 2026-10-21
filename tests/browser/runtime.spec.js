@@ -2236,12 +2236,14 @@ test('CRT video exports the curved frame with the same surround as the player', 
           video.src = url;
           video.load();
         });
-        // The encoder starts coarse (RMS error near 8 in the first keyframe) and settles near 5,
-        // so the last frame shows the recorded surround rather than its rate control.
+        // Inspect a presented frame after the encoder's coarse first keyframe.
         await new Promise((resolve) => {
           video.onseeked = resolve;
-          video.currentTime = video.duration;
+          video.currentTime = video.duration / 2;
         });
+        await video.play();
+        await new Promise((resolve) => video.requestVideoFrameCallback(resolve));
+        video.pause();
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;

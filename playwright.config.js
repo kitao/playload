@@ -35,7 +35,8 @@ export default defineConfig({
   fullyParallel: true,
   // The local pre-deployment run must also refuse a stray test.only.
   forbidOnly: true,
-  workers: 2,
+  // Concurrent software rendering can starve input, capture and audio clocks.
+  workers: 1,
   use: { baseURL, trace: 'retain-on-failure' },
   // wrangler dev builds dist/ and serves it as Cloudflare would, with _headers.
   webServer: {
