@@ -1381,7 +1381,6 @@ body[data-touch='true'] #picture {
     flex: 1;
     width: calc(100% - 312px);
     max-height: none;
-    align-self: center;
     aspect-ratio: auto;
   }
   body[data-touch='true'][data-editor-closed='true'] #game {
@@ -1448,9 +1447,6 @@ body[data-touch='true'] #picture {
 @media (max-width: 359px) {
   header {
     padding-top: 10px;
-  }
-  :root {
-    --workspace-tab-width: 56px;
   }
   #logo {
     width: 96px;

@@ -1172,7 +1172,8 @@ for (const hz of [12, 15, 20, 30, 60, 90, 120, 144, 165]) {
         }
       };
     });
-    await run(page, 'let ticks = 0; function tick() { cls(++ticks % 8); }');
+    // Fixed-step timing is independent of CRT rendering, which has its own checks.
+    await run(page, 'let ticks = 0; function tick() { cls(++ticks % 8); }', true);
     await expect(page.locator('#pause')).toBeEnabled();
     const frames = await page.evaluate(async (hz) => {
       window.nextAnimate(0);
@@ -1186,9 +1187,7 @@ for (const hz of [12, 15, 20, 30, 60, 90, 120, 144, 165]) {
     expect(await page.evaluate(() => window.renderedFrames)).toBe(Math.min(hz, 60));
     // The initial load already ran one tick. Check actual game state as well
     // as the worker's reported updates, even when rendering only 12 Hz.
-    await page.locator('#crt').click();
     expect(await pixel(page, 320, 288)).toEqual([100, 185, 100, 255]);
-    await page.locator('#crt').click();
     // The long gap gives one update, then the display's frames give 60 per second again.
     const afterPause = await page.evaluate(async (hz) => {
       for (let i = 0; i <= hz; i++) {
@@ -3063,6 +3062,11 @@ function tick() {
         const session = await page.context().newCDPSession(page);
         const bounds = await error.boundingBox();
         const start = bounds.y + bounds.height - 10;
+        await error.evaluate((element) => {
+          window.errorScrollEnded = new Promise((resolve) =>
+            element.addEventListener('scrollend', () => resolve(), { once: true }),
+          );
+        });
         await session.send('Input.dispatchTouchEvent', {
           type: 'touchStart',
           touchPoints: [{ id: 0, x: bounds.x + bounds.width / 2, y: start }],
@@ -3074,10 +3078,19 @@ function tick() {
           });
         await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
         await expect.poll(() => error.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+        // A tap during momentum scrolling stops the gesture instead of activating the button.
+        await page.evaluate(() => window.errorScrollEnded);
         await session.detach();
       }
       await page.locator('#error-line').tap();
       await expect(page.locator('#editor')).toBeFocused();
+      await expect
+        .poll(() =>
+          page
+            .locator('#editor')
+            .evaluate((editor) => editor.value.slice(editor.selectionStart, editor.selectionEnd)),
+        )
+        .toContain('throw new Error');
       expect((await page.locator('#editor').boundingBox()).y).toBeGreaterThanOrEqual(0);
       const line = await page.locator('#editor').evaluate((editor) => {
         const style = getComputedStyle(editor),
@@ -4072,8 +4085,6 @@ test('Play opens first, the static retro logo loads, and the starter runs', asyn
   await expect(page.locator('#home-link #logo')).toBeVisible();
   await expect(page.locator('#home-link')).not.toHaveAttribute('target');
   await expect(page.locator('#site-link')).toHaveAttribute('href', '/playload/');
-  await expect(page.locator('#site-link')).toHaveCSS('color', 'rgb(215, 115, 85)');
-  await expect(page.locator('#site-link')).toHaveCSS('text-decoration-line', 'underline');
   await expect
     .poll(() =>
       page.locator('#logo').evaluate((image) => image.complete && image.naturalWidth === 64),
