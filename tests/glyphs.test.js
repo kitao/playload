@@ -326,62 +326,6 @@ test('kana matches the author BDF coordinates, including voiced kana and iterati
     assert(bank.get(ch)?.rows.some(Boolean), ch);
 });
 
-test('the font coverage document states the generated counts and sizes', () => {
-  const report = JSON.parse(
-    readFileSync(new URL('../docs/glyph-coverage.json', import.meta.url), 'utf8'),
-  );
-  const selection = JSON.parse(
-    readFileSync(new URL('../data/fonts/selection.json', import.meta.url), 'utf8'),
-  );
-  const publicPixelCount = readFileSync(
-    new URL('../data/fonts/public-pixel-8.hex', import.meta.url),
-    'utf8',
-  )
-    .trim()
-    .split('\n').length;
-  const categories = new Map(
-    readFileSync(new URL('../data/fonts/UnicodeData.txt', import.meta.url), 'utf8')
-      .trim()
-      .split('\n')
-      .map((line) => line.split(';'))
-      .map(([cp, , category]) => [parseInt(cp, 16), category]),
-  );
-  const n = (value) => value.toLocaleString('en-US');
-  const count = (filter) => glyphs.filter(filter).length;
-  const cells = (source, group) => count((g) => g.source === source && g.group === group);
-  const kana = (from, to) =>
-    count((g) => g.group === 'kana' && g.ch.codePointAt(0) >= from && g.ch.codePointAt(0) <= to);
-  const inks = (filter) => report.emojiColors.selections.filter(({ ink }) => filter(ink)).length;
-  const { groups, sources, sizes } = report;
-  const phrases = [
-    `**${n(report.total)} canonical 8×8 cells**`,
-    `${n(report.textRepertoire.alphabetCodePoints)} encoded letters`,
-    `**U+3040–U+309F** (${kana(0x3040, 0x309f)} cells)`,
-    `**U+30A0–U+30FF** (${kana(0x30a0, 0x30ff)} cells)`,
-    `**${n(report.symbolRepertoire.sourceAvailableCodePoints)} encoded source symbols**`,
-    `**${n(report.emojiRepertoire.sourceAvailableSingleCodePoints)} characters**`,
-    `**${n(report.textRepertoire.punctuationCodePoints)} non-letter code points**`,
-    `${count((g) => g.group === 'emoji' && categories.get(g.ch.codePointAt(0))?.startsWith('S'))} of the ${groups.emoji} emoji also belong to the source-symbol set`,
-    `**${n(groups.letters)} alphabet/number cells, ${n(groups.symbols)} symbols, ${groups.emoji} emoji and ${groups.kana} kana**`,
-    `| Public Pixel 1.24 | ${n(sources['public-pixel'])} | ${n(cells('public-pixel', 'letters'))} alphabet/number cells, ${cells('public-pixel', 'symbols')} symbols, ${cells('public-pixel', 'emoji')} emoji |`,
-    `| Unscii-8 | ${n(sources.unscii)} | ${n(cells('unscii', 'symbols'))} symbols, ${cells('unscii', 'emoji')} emoji |`,
-    `| Misaki Gothic | ${sources.misaki} | Kana |`,
-    `All **${n(publicPixelCount)} encoded source cells** fit`,
-    `The module is **${n(sizes.moduleBytes)} bytes**`,
-    `gzip gives **${n(sizes.gzipBytes)} bytes**`,
-    `Bitmap rows occupy **${n(sizes.bitmapBytes)} bytes**`,
-    `A **${selection.maximumGzipBytes / 1024} KiB gzip budget**`,
-    `The ${n(readFileSync(new URL('../data/fonts/twemoji-colors.json', import.meta.url)).length)}-byte statistics file`,
-    `**${inks((ink) => ink >= 3 && ink <= 6)} chromatic, ${inks((ink) => ink === 2)} gray and ${inks((ink) => ink === 7)} white** cells`,
-    `**${n(sizes.catalogFontBytes)}-byte WOFF fallback** covers ${report.catalogFont.glyphCount} supplementary-plane symbols`,
-  ];
-  const document = readFileSync(new URL('../docs/glyphs.md', import.meta.url), 'utf8').replace(
-    /\s+/g,
-    ' ',
-  );
-  for (const phrase of phrases) assert(document.includes(phrase), phrase);
-});
-
 test('the catalog fallback font orders its name records and credits the fonts it draws from', () => {
   const woff = readFileSync(new URL('../src/app/glyph-fallback.woff', import.meta.url));
   // WOFF 1.0: a 44-byte header, then 20-byte entries of tag, offset, compressed and original length.

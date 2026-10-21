@@ -52,8 +52,8 @@ A white-field test measures both center sections at half their peak brightness a
 exact agreement with flat mode; the faint halo is excluded from this size measurement.
 
 The rounded glass mask uses its own `0.98` framing factor. This affects opacity outside
-the curved picture, not its sampling scale. All 604 perimeter pixels are compared with an
-unmasked renderer to retain their peak brightness and at least 99% of their in-frame glow.
+the curved picture, not its sampling scale. Tests compare corner and edge-center pixels with
+an unmasked renderer to retain their peak brightness and at least 99% of their in-frame glow.
 Glow beyond the canvas boundary is clipped by that boundary. Glass shading, phosphor structure,
 scanlines and bloom remain intact. No measured tube radius, viewing distance, specific
 household-TV model, RF/composite decoder or phosphor persistence is claimed by this model.
@@ -75,10 +75,16 @@ techniques. At small sizes, masks and scanlines are approximations of physical t
 [Chiptune](../examples/chiptune.js) provides melody, bass and noise drums. Inspect at desktop
 and phone sizes, and listen at normal playback levels.
 
-Run `npm run test:reference` for the independent sound comparison and `npm run test:browser`
-for the renderer, input and capture checks. The [sound reference](../tests/reference/README.md)
-and [CRT reference](../tests/browser/reference/README.md) describe their conditions.
-Set `PLAYLOAD_BROWSER=firefox` or `PLAYLOAD_BROWSER=webkit` to run the same browser checks
-with either engine. Install the matching test browser with `npx playwright install firefox`
-or `npx playwright install webkit` first.
-These checks do not establish physical-hardware fidelity or listening acceptance.
+Run `npm run check` for local verification: formatting, generated assets, Node tests, the
+independent sound comparison and browser integration. Node tests cover engine behavior, sample
+frames, scheduling and recording data; browser tests cover the built app's controls, file
+updates, downloads, font rendering and CRT output. The [sound reference](../tests/reference/README.md)
+and [CRT reference](../tests/browser/reference/README.md) describe their comparison conditions.
+Ordinary pushes do not run a separate CI suite.
+
+Use `npm run dev` to play the samples and inspect appearance, sound and interaction at desktop,
+phone and tablet sizes. Check longer recordings and their playback here rather than waiting
+through real-time recording scenarios in every automated run.
+`PLAYLOAD_BROWSER=webkit npm run test:browser` selects WebKit after installing it with
+`npx playwright install webkit`; Chromium is the default.
+Automated comparisons do not establish physical-device behavior or listening acceptance.

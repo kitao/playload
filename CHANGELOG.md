@@ -6,6 +6,7 @@
 - Improve touch player centering and layouts in short and landscape viewports.
 - Refresh the website screenshots.
 - Fix error handling when building multiple bundles.
+- Detect external source edits even when file size and timestamp are unchanged.
 
 ## 0.9.0
 

@@ -64,9 +64,7 @@ let category = 'emoji',
 let editRevision = 0,
   focusRevision = 0,
   fileRequest,
-  fileHandle,
-  fileStamp,
-  fileText;
+  fileHandle;
 let checkingFile = false,
   fileError = '';
 let formatting = false;
@@ -754,8 +752,6 @@ async function readFile(file, request, handle = null) {
     return false;
   }
   fileHandle = handle;
-  fileStamp = `${file.lastModified}:${file.size}`;
-  fileText = text;
   fileError = '';
   declinedFileSource = null;
   loadedSource = text;
@@ -806,15 +802,10 @@ async function refreshFile() {
     editor = $('editor');
   checkingFile = true;
   try {
-    const file = await handle.getFile(),
-      stamp = `${file.lastModified}:${file.size}`,
-      // Read the text again only when the file's timestamp or size has changed.
-      text = stamp === fileStamp ? fileText : await file.text();
+    const text = await (await handle.getFile()).text();
     if (reading || handle !== fileHandle || edit !== editRevision || document.hidden) return;
     if (fileError && $('status').textContent === fileError) status();
     fileError = '';
-    fileStamp = stamp;
-    fileText = text;
     if (text === loadedSource) {
       declinedFileSource = null;
       return;

@@ -116,8 +116,8 @@ npm run test:browser
 
 Ordinary regeneration uses Node and frozen inputs, offline. Tests compare every shipped bitmap
 with its source, check repertoire coverage, restore Misaki's BDF coordinates and verify NFC
-lookup. Browser tests check catalog previews and real worker output for accents, composed
-letters, kana, extended symbols and emoji selectors.
+lookup. Browser tests check catalog copying, keyboard navigation and the generated fallback
+font against the source bitmaps. Inspect game text and catalog appearance while playing.
 
 To repeat the color import from the pinned PNGs:
 
