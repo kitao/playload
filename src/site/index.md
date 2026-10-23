@@ -6,8 +6,6 @@
   A tiny game engine that lets you share games as URLs
 </p>
 
-<h3 align="center"><a href="https://kitao.dev/playload/app/">Open Playload</a></h3>
-
 <p class="badges" align="center">
   <a href="https://github.com/kitao/playload"><img src="https://img.shields.io/github/stars/kitao/playload?style=social" alt="GitHub stars" height="20" loading="lazy" decoding="async"></a>
   <a href="https://github.com/sponsors/kitao"><img src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&amp;logo=github%20sponsors&amp;style=social" alt="GitHub Sponsors" height="20" loading="lazy" decoding="async"></a>
@@ -21,6 +19,8 @@
   <a href="assets/images/info-emoji@2x.png"><img src="assets/images/info-emoji.png" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
   <a href="assets/images/info-examples@2x.png"><img src="assets/images/info-examples.png" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
 </p>
+
+<h3 align="center"><a href="https://kitao.dev/playload/app/">Open Playload</a></h3>
 
 ## Specifications
 

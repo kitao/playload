@@ -81,7 +81,7 @@ html:lang(ja) .introduction[lang='en'] {
   display: none;
 }
 .introduction > h1 {
-  margin: 0 0 20px;
+  margin: 0 0 28px;
 }
 .introduction > h1 img {
   display: block;
@@ -89,7 +89,7 @@ html:lang(ja) .introduction[lang='en'] {
   image-rendering: pixelated;
 }
 .introduction > h1 + p {
-  margin: 0;
+  margin: 0 0 28px;
   text-align: center;
   text-wrap: balance;
 }
@@ -98,13 +98,13 @@ html:lang(ja) .introduction[lang='en'] {
   max-width: 100%;
 }
 .introduction > .app-link {
-  margin: 22px 0 34px;
+  margin: 24px 0;
   text-align: center;
   font-size: 1.25rem;
   font-weight: 700;
 }
-.introduction[lang='en'] > .app-link {
-  margin: 23px 0 33px;
+.introduction > .app-link + h2 {
+  margin-top: 24px;
 }
 .introduction h2 {
   margin: 40px 0 16px;
@@ -124,7 +124,7 @@ html:lang(ja) .introduction[lang='en'] {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin: 0 0 32px;
+  margin: 0 0 12px;
 }
 .badges a {
   display: inline-flex;
@@ -140,7 +140,7 @@ html:lang(ja) .introduction[lang='en'] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin: 0 0 40px;
+  margin: 0 0 24px;
 }
 .screenshots a {
   display: block;
