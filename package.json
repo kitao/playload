@@ -1,7 +1,22 @@
 {
+  "author": "Takashi Kitao",
+  "bugs": {
+    "url": "https://github.com/kitao/playload/issues"
+  },
+  "description": "A tiny game engine that lets you share games as URLs",
+  "homepage": "https://kitao.dev/playload/",
+  "license": "MIT",
   "name": "playload",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kitao/playload.git"
+  },
   "type": "module",
+  "version": "0.9.2",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "node scripts/wrangler.mjs dev --port 8765",
     "build": "node scripts/build.js",
@@ -35,21 +50,11 @@
     "twitter-text": "3.1.0",
     "wrangler": "4.150.0"
   },
-  "version": "0.9.1",
-  "description": "A tiny game engine that lets you share games as URLs",
-  "license": "MIT",
-  "author": "Takashi Kitao",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kitao/playload.git"
+  "overrides": {
+    "miniflare": {
+      "undici": "7.30.1"
+    }
   },
-  "bugs": {
-    "url": "https://github.com/kitao/playload/issues"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "homepage": "https://kitao.dev/playload/",
   "prettier": {
     "singleQuote": true,
     "printWidth": 100

@@ -8,6 +8,7 @@ import { createEngine } from '../src/engine/engine.js';
 import { publicPixelCells } from '../scripts/import-public-pixel.js';
 
 const key = (ch) => ch.normalize('NFC').replace(/[\uFE0E\uFE0F]/g, '');
+
 const bank = new Map(glyphs.map((g) => [key(g.ch), g]));
 
 test('the bank follows the declared source repertoires within its transfer budget', () => {

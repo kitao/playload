@@ -6,6 +6,7 @@ export class EditorHistory {
   constructor(editor) {
     this.editor = editor;
     this.reset();
+
     editor.addEventListener('beforeinput', (event) => {
       if (event.inputType === 'historyUndo' || event.inputType === 'historyRedo') {
         event.preventDefault();
@@ -17,6 +18,7 @@ export class EditorHistory {
       this.record(this.before ?? this.states[this.index], this.snapshot(), event.inputType);
       this.before = null;
     });
+
     editor.addEventListener('keydown', (event) => {
       if (event.isComposing || event.altKey || (!event.ctrlKey && !event.metaKey)) return;
       const letter = latinLetter(event);
@@ -70,6 +72,7 @@ export class EditorHistory {
       previous.source === before.source &&
       previous.start === before.start &&
       previous.end === before.end;
+
     this.states.splice(this.index + 1);
     if (grouped) this.states[this.index] = after;
     else {
@@ -79,6 +82,7 @@ export class EditorHistory {
     }
     this.lastType = type;
     this.lastTime = now;
+
     let bytes = this.states.reduce((sum, state) => sum + state.source.length * 2, 0);
     while (this.states.length > 2 && (this.states.length > 100 || bytes > 8 * 1024 * 1024)) {
       bytes -= this.states.shift().source.length * 2;

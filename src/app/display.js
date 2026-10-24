@@ -26,6 +26,7 @@ export function createDisplay(palette, width = 640, height = 576) {
   for (let y = 0; y < height; y++)
     for (let x = 0; x < width; x++)
       map[y * width + x] = Math.floor((y * 144) / height) * 160 + Math.floor((x * 160) / width);
+
   return {
     render(pixels) {
       for (let i = 0; i < output.length; i++) output[i] = packed[pixels[map[i]]];

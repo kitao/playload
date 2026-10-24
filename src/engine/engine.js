@@ -34,6 +34,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     if (!Number.isFinite(value)) throw new TypeError('Coordinates must be finite numbers');
     return Math.trunc(value);
   };
+
   const characterKey = (chr) => {
     if (typeof chr !== 'string') throw new TypeError('Character must be a string');
     // cls() writes 360 spaces per tick. ASCII needs no Unicode normalization
@@ -49,11 +50,15 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     }
     return normalized;
   };
+
   const button = (id) => {
     if (!Number.isInteger(id) || id < 0 || id > 5)
       throw new RangeError('Button must be 0–5 (UDLRAB)');
     return 1 << id;
   };
+
+  // Character data
+
   function colorPair(initial, inherit = false) {
     const validate = (value) => (inherit && value == null ? null : color(value));
     const values = initial.map(validate);
@@ -82,6 +87,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       },
     };
   }
+
   class PcgElem {
     constructor(rows = new Uint8Array(8), col = [7, 0]) {
       const pattern = new Uint8Array(rows);
@@ -112,6 +118,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       Object.preventExtensions(this);
     }
   }
+
   class ScrElem {
     constructor() {
       let chr = ' ';
@@ -128,9 +135,11 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       Object.preventExtensions(this);
     }
   }
+
   function lookup(chr) {
     return (characters[chr] ??= new PcgElem());
   }
+
   for (const preset of presets) {
     // Copy source data; create editable patterns lazily for each game.
     const rows = Uint8Array.from(preset.rows),
@@ -170,6 +179,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     ),
   );
 
+  // Game API
+
   function cls(col) {
     col = color(col);
     for (const row of scr)
@@ -178,12 +189,14 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         element.col = [null, col];
       }
   }
+
   function put(cx, cy, str, col1, col2) {
     const origin = coordinate(cx);
     cx = origin;
     cy = coordinate(cy);
     if (typeof str !== 'string') throw new TypeError('Text must be a string');
     const pair = [col1 == null ? null : color(col1), col2 == null ? null : color(col2)];
+
     // Check every character before writing, so an invalid one leaves the screen intact.
     const writes = [];
     for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
@@ -196,17 +209,20 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       if (cx >= 0 && cx < columns && cy >= 0 && cy < lines) writes.push(scr[cy][cx], chr);
       cx++;
     }
+
     for (let i = 0; i < writes.length; i += 2) {
       writes[i].chr = writes[i + 1];
       writes[i].col = pair;
     }
   }
+
   function spr(x, y, str, col) {
     const origin = coordinate(x);
     x = origin;
     y = coordinate(y);
     if (typeof str !== 'string') throw new TypeError('Text must be a string');
     col = color(col);
+
     // Keep individual ASCII, kana and emoji sprites on the existing fast path.
     if (
       (str.length === 1 || (str.length === 2 && str.codePointAt(0) > 0xffff)) &&
@@ -216,6 +232,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       sprites.push({ x, y, chr: characterKey(str), col });
       return;
     }
+
     const start = sprites.length;
     try {
       for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
@@ -232,6 +249,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       throw error;
     }
   }
+
   function play(ch, str) {
     if (!Number.isInteger(ch) || ch < 0 || ch > 2)
       throw new RangeError('Sound channel must be 0–2');
@@ -245,6 +263,9 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     }
     sounds.push({ ch, score: cache.get(str) });
   }
+
+  // Rasterization
+
   function draw(chr, x, y, col1, col2) {
     const pattern = lookup(chr).pat;
     for (let row = 0; row < 8; row++) {
@@ -258,6 +279,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       }
     }
   }
+
   function render() {
     for (let cy = 0; cy < lines; cy++)
       for (let cx = 0; cx < columns; cx++) {
@@ -271,11 +293,13 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           element.col[1] ?? standard[1],
         );
       }
+
     for (const sprite of sprites) {
       draw(sprite.chr, sprite.x, sprite.y, sprite.col, null);
     }
     return pixels;
   }
+
   const api = {
     cls,
     put,

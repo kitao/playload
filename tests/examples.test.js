@@ -34,11 +34,13 @@ async function loadExample(name, hooks, math = Math) {
     engine.input(mask);
     for (let i = 0; i < frames; i++) engine.step(game.tick);
   };
+
   const press = (id) => {
     step();
     step(1 << id);
     step();
   };
+
   return { source, engine, game, step, press };
 }
 
@@ -179,6 +181,7 @@ const jumpHooks = `return {tick,stages,state:()=>({stage,state,x,y,dy,grounded,j
 
 test('Jump clears four distinct stages with real movement, including the ferry and patrol', async () => {
   const { engine, game, step, press } = await loadExample('jump', jumpHooks);
+
   const moveTo = (target) => {
     for (let i = 0; i < 100 && Math.abs(game.state().x - target) > 1; i++) {
       step(1 << (game.state().x < target ? 3 : 2));
@@ -186,6 +189,7 @@ test('Jump clears four distinct stages with real movement, including the ferry a
     }
     assert(Math.abs(game.state().x - target) <= 1);
   };
+
   const jumpTo = (target, top) => {
     step();
     step((1 << 4) | (1 << (game.state().x < target ? 3 : 2)));
@@ -203,6 +207,7 @@ test('Jump clears four distinct stages with real movement, including the ferry a
       assert(Math.abs(game.state().x - fx * 8) < 7 && Math.abs(game.state().y - fy * 8) < 7);
     }
   };
+
   const routes = [
     [
       [72, 80],
@@ -315,12 +320,14 @@ test('Music Box edits notes and rests, plays eight steps, stops and restores the
     ...Object.keys(engine.api),
     source + '\nreturn {tick,state:()=>({notes,selected,playing,frame})};',
   )(...Object.values(engine.api));
+
   const press = (id) => {
     engine.input(0);
     engine.step(game.tick);
     engine.input(1 << id);
     engine.step(game.tick);
   };
+
   engine.step(game.tick);
   const original = game.state().notes.slice();
   assert.equal(game.state().playing, false);
@@ -577,6 +584,7 @@ test('Lights Out solves five distinct boards at their verified minimum, advances
     'return {tick,puzzles,state:()=>({level,x,y,moves,cleared}),board:()=>board.map(row=>row.map(Number))};',
   );
   const board = game.board;
+
   const text = (row) =>
     engine.api.scr[row]
       .map((cell) => cell.chr)
@@ -589,6 +597,7 @@ test('Lights Out solves five distinct boards at their verified minimum, advances
     for (let firstRow = 0; firstRow < 32; firstRow++) {
       const cells = original.map((row) => row.slice());
       let moves = 0;
+
       function flip(x, y) {
         moves++;
         for (const [dx, dy] of [
@@ -601,6 +610,7 @@ test('Lights Out solves five distinct boards at their verified minimum, advances
           if (cells[y + dy]?.[x + dx] !== undefined) cells[y + dy][x + dx] ^= 1;
         }
       }
+
       for (let x = 0; x < 5; x++) if (firstRow & (1 << x)) flip(x, 0);
       for (let y = 1; y < 5; y++) {
         for (let x = 0; x < 5; x++) if (cells[y - 1][x]) flip(x, y);
@@ -1177,6 +1187,7 @@ test('Shooter restores tone and tempo after damage, interruptions and restarts',
     math,
   );
   const ay = new AY();
+
   const advance = (mask = 0, frames = 1) => {
     for (let i = 0; i < frames; i++) {
       step(mask);

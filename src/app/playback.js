@@ -53,6 +53,7 @@ export class Playback {
     this.running = true;
     this.sync();
     this.onReady();
+
     const version = this.revision;
     try {
       await this.audio.init();
@@ -65,6 +66,7 @@ export class Playback {
         if (this.audio.context.state === 'running')
           this.capture?.audio(this.audio.destination?.stream);
       };
+
     try {
       if (!this.capture) {
         this.capture = this.createCapture(
@@ -81,6 +83,7 @@ export class Playback {
       this.capture = null;
       this.onVideoError(error);
     }
+
     this.onChange();
   }
 
@@ -98,6 +101,7 @@ export class Playback {
             elapsed > interval * MAX_FRAME_STEPS ? time : this.lastFrame + steps * interval;
       }
     } else this.lastFrame = null;
+
     if (
       this.capture?.stream &&
       !this.capture.suspended &&

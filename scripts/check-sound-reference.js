@@ -24,12 +24,15 @@ for (const [name, expected] of Object.entries({
     name,
   );
 }
+
 const clock = 2200000;
+
 const create = () => {
   const ay = new AY(clock / 64);
   ay.clock = clock;
   return ay;
 };
+
 const report = {
   reference: 'emu2149',
   revision,
@@ -41,6 +44,7 @@ const report = {
   envelopeCases: 0,
   noisePeriodCases: 0,
 };
+
 // Created only after the pinned sources are verified, and always removed below.
 const temporary = mkdtempSync(join(tmpdir(), 'playload-psg-'));
 const executable = join(temporary, 'trace');
@@ -57,6 +61,7 @@ try {
     ],
     { cwd: root },
   );
+
   const trace = (count, tone, noise, envelope, shape) => {
     const bytes = execFileSync(executable, [count, tone, noise, envelope, shape].map(String), {
       maxBuffer: count * 9 + 1024,
@@ -64,6 +69,7 @@ try {
     assert.equal(bytes.length, count * 9);
     return bytes;
   };
+
   // Exercise period writes during both output polarities, rather than only
   // static oscillators. Independent register counters preserve their bit.
   {
@@ -87,6 +93,7 @@ try {
     }
     report.periodWriteTicks = count;
   }
+
   for (const period of [1, 2, 7, 31, 101, 251, 1000, 4095]) {
     const count = period * 8,
       reference = trace(count, period, 1, 1, 8),
@@ -105,6 +112,7 @@ try {
     }
     report.toneCases++;
   }
+
   for (const shape of [0, 4, 9, 13, 8, 12, 14, 10]) {
     for (const period of [1, 2, 7, 31, 257, 1000, 65535]) {
       const count = Math.min(1000000, period * 128),
@@ -124,6 +132,7 @@ try {
       report.envelopeCases++;
     }
   }
+
   // emu2149 uses a Galois LFSR and Playload a Fibonacci LFSR. Their reset
   // states differ. Compare the complete cyclic output after aligning its seed.
   const cycle = 131071,
@@ -141,6 +150,7 @@ try {
   assert.equal((theirs + theirs).slice(aligned, aligned + cycle), ours);
   report.noiseCycleBits = cycle;
   report.noiseSeedOffset = aligned;
+
   for (const period of [1, 3, 7, 31]) {
     const count = period * 100,
       reference = trace(count, 1, period, 1, 8),
@@ -165,6 +175,7 @@ try {
     assert(ourChanges.length >= 49);
     report.noisePeriodCases++;
   }
+
   // emu2149 uses its own empirical AY table. Differences from Westcott's
   // measurements are expected and are reported, rather than hidden by gain fitting.
   const referenceVolumes = [0, 3, 4, 6, 9, 13, 18, 29, 34, 55, 77, 98, 130, 166, 208, 255].map(
@@ -174,6 +185,7 @@ try {
     ...ay.levels.map((x, i) => Math.abs(x - referenceVolumes[i])),
   );
   assert(report.maximumVolumeDifference < 0.02);
+
   const amplitude = (samples, frequency, rate) => {
     let real = 0,
       imaginary = 0;
@@ -184,6 +196,7 @@ try {
     }
     return (2 * Math.hypot(real, imaginary)) / samples.length;
   };
+
   report.renderedTones = [];
   for (const rate of [44100, 48000])
     for (const note of ['O2c', 'O5c', 'O5a', 'O7a', 'O8A']) {
@@ -201,6 +214,7 @@ try {
         [count * ratio, period, 1, 1, 8, rate * ratio, ay.clock].map(String),
         { maxBuffer: count * ratio * 9 + 1024 },
       );
+
       // Same DAC gain, FIR and DC blocker, applied to emu2149's independent
       // chip output. This isolates synthesis from the two output-filter designs.
       const expected = new Float32Array(count),
@@ -222,6 +236,7 @@ try {
         lastInput = input;
         lastOutput = output;
       }
+
       const frequency = ay.clock / (16 * period),
         start = Math.round(rate * 0.1),
         measurements = [];
@@ -235,6 +250,7 @@ try {
       }
       report.renderedTones.push({ rate, note, period, frequency, measurements });
     }
+
   console.log(JSON.stringify(report, null, 2));
   if (process.argv[2]) writeFileSync(process.argv[2], JSON.stringify(report, null, 2) + '\n');
 } finally {

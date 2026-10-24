@@ -34,6 +34,7 @@ export function renderLottes(source, pixels, palette) {
     source
       .replace(/^#pragma parameter.*$/gm, '')
       .replace(/#define COMPAT_PRECISION mediump/g, '#define COMPAT_PRECISION highp');
+
   const compile = (type, text) => {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, text);
@@ -42,6 +43,7 @@ export function renderLottes(source, pixels, palette) {
       throw new Error(gl.getShaderInfoLog(shader));
     return shader;
   };
+
   const program = gl.createProgram();
   gl.attachShader(program, compile(gl.VERTEX_SHADER, vertex));
   gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragment));

@@ -14,33 +14,41 @@
   background: var(--background);
   line-height: 1.75;
 }
+
 * {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
 }
+
 img {
   max-width: 100%;
   height: auto;
 }
+
 a {
   color: var(--accent);
   text-decoration: none;
 }
+
 a:hover {
   color: #fff2b7;
   text-decoration: underline;
 }
+
 a:focus-visible,
 .language-switch button:focus-visible span,
 #image-preview button:focus-visible {
   outline: 1px solid var(--muted);
   outline-offset: 2px;
 }
+
 .language-switch button:focus-visible {
   outline: none;
 }
+
 .language-switch {
   position: absolute;
   top: 12px;
@@ -52,6 +60,7 @@ a:focus-visible,
   font-size: 0.75rem;
   line-height: 1.5;
 }
+
 .language-switch button {
   padding: 4px;
   border: 0;
@@ -60,64 +69,79 @@ a:focus-visible,
   font: inherit;
   cursor: pointer;
 }
+
 .language-switch button:hover {
   color: #fff2b7;
 }
+
 .language-switch button[aria-pressed='true'] {
   color: var(--ink);
   cursor: default;
 }
+
 h1 {
   font-size: 2.25rem;
   line-height: 1.35;
 }
+
 .introduction {
   max-width: 880px;
   margin: 48px auto 80px;
   padding: 0 32px;
 }
+
 html:lang(en) .introduction[lang='ja'],
 html:lang(ja) .introduction[lang='en'] {
   display: none;
 }
+
 .introduction > h1 {
   margin: 0 0 28px;
 }
+
 .introduction > h1 img {
   display: block;
   margin-inline: auto;
   image-rendering: pixelated;
 }
+
 .introduction > h1 + p {
   margin: 0 0 28px;
   text-align: center;
   text-wrap: balance;
 }
+
 .introduction > h1 + p > span {
   display: inline-block;
   max-width: 100%;
 }
+
 .introduction > .app-link {
   margin: 24px 0;
   text-align: center;
   font-size: 1.25rem;
   font-weight: 700;
 }
+
 .introduction > .app-link + h2 {
   margin-top: 24px;
 }
+
 .introduction h2 {
   margin: 40px 0 16px;
   font-size: 1.4rem;
   line-height: 1.4;
 }
+
 .introduction p,
 .introduction ul {
   margin: 16px 0;
 }
+
 .introduction ul {
   padding-left: 24px;
 }
+
 .introduction .badges {
   display: flex;
   flex-wrap: wrap;
@@ -126,33 +150,40 @@ html:lang(ja) .introduction[lang='en'] {
   gap: 8px;
   margin: 0 0 12px;
 }
+
 .badges a {
   display: inline-flex;
   max-width: 100%;
 }
+
 .badges img {
   display: block;
   width: auto;
   height: 20px;
   object-fit: contain;
 }
+
 .introduction .screenshots {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin: 0 0 24px;
 }
+
 .screenshots a {
   display: block;
 }
+
 .screenshots a[href] {
   cursor: zoom-in;
 }
+
 .screenshots img {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
 }
+
 .introduction code {
   padding: 0.1em 0.35em;
   border-radius: 3px;
@@ -162,10 +193,12 @@ html:lang(ja) .introduction[lang='en'] {
   font-size: 0.875em;
   white-space: nowrap;
 }
+
 html:has(#image-preview[open]) {
   overflow: hidden;
   scrollbar-gutter: stable;
 }
+
 #image-preview {
   width: 100%;
   height: 100dvh;
@@ -177,13 +210,16 @@ html:has(#image-preview[open]) {
   background: transparent;
   cursor: zoom-out;
 }
+
 #image-preview[open] {
   display: grid;
   place-items: center;
 }
+
 #image-preview::backdrop {
   background: rgb(0 0 0 / 85%);
 }
+
 #image-preview button {
   display: block;
   padding: 0;
@@ -191,21 +227,25 @@ html:has(#image-preview[open]) {
   background: transparent;
   cursor: inherit;
 }
+
 #image-preview img {
   display: block;
   max-width: calc(100vw - 32px);
   max-height: calc(100dvh - 32px);
   object-fit: contain;
 }
+
 @media (max-width: 720px) {
   h1 {
     font-size: 1.8rem;
   }
+
   .introduction {
     margin: 48px auto 48px;
     padding: 0 20px;
   }
 }
+
 @media (max-width: 880px) {
   .introduction .badges {
     display: grid;
@@ -215,6 +255,7 @@ html:has(#image-preview[open]) {
     margin-inline: auto;
   }
 }
+
 @media (max-width: 540px) {
   .introduction .screenshots {
     grid-template-columns: 1fr;

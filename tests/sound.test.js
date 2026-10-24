@@ -200,12 +200,14 @@ test('volume zero and rests are silent, and fixed volume overrides the envelope'
   }
   const rms = (samples) =>
     Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length);
+
   const level = (volume) => {
     const ay = new AY();
     ay.play(0, compileScore(`V${volume}N9c))`));
     ay.render(1000);
     return rms(ay.render(4000));
   };
+
   assert(level(15) > level(10));
   assert(level(10) > level(5));
   const ay = new AY();

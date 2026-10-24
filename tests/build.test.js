@@ -89,6 +89,7 @@ test('the complete publication stays under Playload and every local document lin
     assert.match(home, /href="https:\/\/github.com\/kitao\/playload"/);
     assert.match(home, /href="https:\/\/github.com\/sponsors\/kitao"/);
     assert.doesNotMatch(home, /NOTICE|Resource notices|制作履歴|Test material/);
+
     const bundle = (name) =>
       readFile(
         join(
@@ -97,6 +98,7 @@ test('the complete publication stays under Playload and every local document lin
         ),
         'utf8',
       );
+
     const notices = Object.fromEntries(
       await Promise.all(
         [
@@ -206,12 +208,14 @@ test('a failed output replacement restores every previous publication file', asy
   const directory = join(await realpath(parent), 'dist');
   try {
     await buildSite({ directory });
+
     const snapshot = async () =>
       Promise.all(
         (await files(directory))
           .sort()
           .map(async (path) => [path, await readFile(join(directory, path))]),
       );
+
     const previous = await snapshot();
     // Inject the filesystem failure in a separate process, without changing other tests' imports.
     await promisify(execFile)(process.execPath, [

@@ -44,8 +44,10 @@ with zipfile.ZipFile(io.BytesIO(archive)) as source:
         top = ascent - y - height
         inside = 0 <= x and x + width <= 8 and 0 <= top and top + height <= 8
         require(inside, f"Outside the 8x8 cell: U+{cp:04X}")
+
         bitmap = block.split("BITMAP\n", 1)[1].split("ENDCHAR", 1)[0].splitlines()
         require(len(bitmap) == height, f"Bitmap height mismatch: U+{cp:04X}")
+
         rows = [0] * 8
         for offset, byte in enumerate(bitmap):
             rows[top + offset] = int(byte, 16) >> x

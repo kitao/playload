@@ -33,7 +33,7 @@
   "emojiColors": {
     "reference": "Twemoji, PNG at 72px",
     "revision": "b6b55fef1e8636b540a6d016a4729ca8cdf2e60b",
-    "algorithmSHA256": "a937a060b8225a525c680844e0cf05c9a72f753d73fd38a5fafd5dbf3c417106",
+    "algorithmSHA256": "a2391ca3b2bc51215f7dd4285fd458992449a8050708cba00b23cd628d721fc0",
     "policy": {
       "minimumChroma": 20,
       "clusterWidth": 8,
@@ -716,7 +716,7 @@
     "public-pixel-8.hex": "c232be25981e5f49aa3439371f5b7dec36fdc37c817b8cc624bf77c348e2b98c",
     "UnicodeData.txt": "c55225236d6f8867bb47b537fb2a007e32f8d45b7ed28d557b4406901a24fb07",
     "emoji-test.txt": "1d8a944f88d7952f7ef7c5167fef3c67995bcae24543949710231b03a201acda",
-    "twemoji-colors.json": "8f18564ea3a6628ecbf0c8b7db4543da182caa332694564b9ca5e24b78e26a7b",
+    "twemoji-colors.json": "2eae9c7425229c74f6d4d3832ead5f9cf0d22ff0ad83a51d175bf9f3869fd186",
     "twemoji-color-LICENSE.txt": "8ae9438818c26e4873b91d8c6ad620526c011e27e125677f13031eda903f007c",
     "misaki-kana.hex": "e6d0c934b66970020ec1a0b7d8421396ff7eef37abc6fa3a5a9c53b12fc22438",
     "misaki-kana.bdf": "1ffd9f6043dc6620d8092d3c202eda52916c4727d46b027697ba5c6535e48b45",

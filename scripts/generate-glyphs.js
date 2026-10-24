@@ -7,10 +7,15 @@ import { gzipSync } from 'node:zlib';
 import { glyphFallback } from './glyph-fallback.js';
 import { colorPolicy, emojiColor } from './emoji-colors.js';
 import { palette } from '../src/engine/engine.js';
+
 const root = fileURLToPath(new URL('..', import.meta.url));
+
 const read = (name) => readFileSync(root + '/data/fonts/' + name, 'utf8');
+
 const selection = JSON.parse(read('selection.json'));
+
 const key = (ch) => ch.normalize('NFC').replace(/[\uFE0E\uFE0F]/g, '');
+
 const hex = (text) =>
   new Map(
     text
@@ -24,9 +29,11 @@ const hex = (text) =>
         ];
       }),
   );
+
 const unscii = hex(read('unscii-8.hex')),
   publicPixel = hex(read(selection.text.alphabetFont));
 const misaki = hex(read(selection.kana.font));
+
 const unicode = new Map(
   read('UnicodeData.txt')
     .trim()
@@ -36,6 +43,7 @@ const unicode = new Map(
       return [Number.parseInt(cp, 16), { name: name.toLowerCase(), category }];
     }),
 );
+
 // UnicodeData represents ideographs as range endpoints rather than per-letter
 // records. Resolve the source font's encoded cells inside those ranges too.
 let rangeStart;
@@ -52,18 +60,22 @@ for (const [cp, info] of unicode) {
     rangeStart = undefined;
   }
 }
+
 const emojiNames = new Map();
 for (const line of read(selection.emoji.reference).split('\n')) {
   const match = line.match(/^([0-9A-F ]+)\s*; fully-qualified\s*#\s*(\S+)\s+E[\d.]+\s+(.+)$/);
   if (match && [...key(match[2])].length === 1)
     emojiNames.set(key(match[2]).codePointAt(0), { ch: match[2], name: match[3] });
 }
+
 const artwork = (cp) => unscii.get(cp) ?? publicPixel.get(cp);
+
 const symbols = [...new Set([...unscii.keys(), ...publicPixel.keys()])].filter(
   (cp) => artwork(cp) && unicode.get(cp)?.category.startsWith(selection.symbols.category),
 );
 const emoji = [...emojiNames.keys()].filter((cp) => artwork(cp));
 const bank = new Map();
+
 const colorSource = JSON.parse(read(selection.emoji.colors));
 assert.equal(
   colorSource.extractorSHA256,
@@ -79,6 +91,7 @@ const colorSelections = emoji.map((cp) => {
   return { ch: String.fromCodePoint(cp), ...emojiColor(data.samples, palette) };
 });
 const colors = new Map(colorSelections.map((c) => [c.ch, c.ink]));
+
 function add(cp, group) {
   const category = unicode.get(cp)?.category;
   const text =
@@ -114,6 +127,7 @@ function add(cp, group) {
     source,
   });
 }
+
 for (let cp = selection.ascii.from; cp <= selection.ascii.to; cp++)
   add(cp, /[A-Za-z0-9]/.test(String.fromCodePoint(cp)) ? 'letters' : 'symbols');
 // Emoji take precedence for catalog classification, default color and artwork source.
@@ -121,6 +135,7 @@ for (const cp of emoji) if (!bank.has(key(String.fromCodePoint(cp)))) add(cp, 'e
 for (const cp of symbols) {
   if (!bank.has(key(String.fromCodePoint(cp)))) add(cp, 'symbols');
 }
+
 // One authored alphabet, with no per-letter fallback to another typeface.
 // Keep the existing baseline's non-letter punctuation and symbols.
 const baseline = JSON.parse(read(selection.text.punctuationBaseline));
@@ -149,6 +164,7 @@ for (const cp of new Set([...punctuation, ...alphabet])) {
   );
 }
 for (const cp of misaki.keys()) add(cp, 'kana');
+
 const order = ['emoji', 'symbols', 'letters', 'kana'];
 const glyphs = [...bank.values()].sort(
   (a, b) =>
@@ -169,6 +185,7 @@ assert(
   sizes.gzipBytes <= selection.maximumGzipBytes,
   'Preset module exceeds its transfer budget; review the source/font scope',
 );
+
 const inputs = [
   'selection.json',
   selection.text.punctuationBaseline,

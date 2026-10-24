@@ -65,6 +65,7 @@ export const test = base.extend({
     { auto: true },
   ],
 });
+
 // The preview checks its selection only after the image decodes, so a late image's chance
 // to replace or reopen the preview has passed once every decode has settled.
 export async function trackDecodes(page) {
@@ -78,6 +79,7 @@ export async function trackDecodes(page) {
     };
   });
 }
+
 export const decodesSettled = (page) =>
   page.evaluate(async () => {
     await Promise.all(window.imageDecodes);
@@ -93,6 +95,7 @@ export async function watchPolicyViolations(page) {
     );
   });
 }
+
 export const policyViolations = (page) => page.evaluate(() => window.policyViolations);
 
 export { expect };

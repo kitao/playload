@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.2
+
+- Improve the homepage layout and placement of the app launch link.
+- Clarify the GitHub star and support badge actions.
+- Update the local development server's Undici dependency to address security vulnerabilities.
+- Standardize source formatting, code organization, comments, and configuration ordering.
+
 ## 0.9.1
 
 - Add a website link to the app header that remains visible on narrow screens.

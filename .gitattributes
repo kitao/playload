@@ -1,10 +1,16 @@
 * text=auto eol=lf
+
 # Preserve frozen input and reference bytes used by SHA-256 checks.
 data/** -text
-tests/reference/** -text
 tests/browser/reference/** -text
+tests/reference/** -text
+
+# Fonts.
 *.ttf binary
 *.woff binary
-*.png binary
+*.woff2 binary
+
+# Images and video.
 *.jpg binary
+*.png binary
 *.webm binary

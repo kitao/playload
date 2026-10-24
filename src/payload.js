@@ -22,8 +22,10 @@ export async function encode(source) {
   if (!source.isWellFormed()) throw new Error('Source contains an unpaired surrogate');
   const bytes = new TextEncoder().encode(source);
   if (bytes.length > MAX_SOURCE_BYTES) throw new Error('Expanded source exceeds 1 MiB');
+
   const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
   const data = new Uint8Array(await new Response(stream).arrayBuffer());
+
   let binary = '';
   for (const byte of data) binary += String.fromCharCode(byte);
   return {
@@ -38,6 +40,7 @@ export async function decode(hash) {
   const body = match[1];
   if (body.length > Math.ceil((MAX_LEGACY_COMPRESSED_BYTES * 4) / 3) || body.length % 4 === 1)
     throw new Error('Invalid payload length');
+
   const binary = atob(body.replaceAll('-', '+').replaceAll('_', '/'));
   const stream = new Blob([Uint8Array.from(binary, (c) => c.charCodeAt(0))])
     .stream()
@@ -56,6 +59,7 @@ export async function decode(hash) {
   } finally {
     await reader.cancel().catch(() => {});
   }
+
   const bytes = new Uint8Array(length);
   let offset = 0;
   for (const chunk of chunks) {

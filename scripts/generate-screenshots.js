@@ -19,11 +19,13 @@ let browser;
 try {
   await new Promise((resolve, reject) => {
     server.once('exit', (code) => reject(new Error(`Screenshot server stopped (${code})`)));
+
     const poll = () =>
       fetch(url).then(
         (response) => (response.ok ? resolve() : setTimeout(poll, 500)),
         () => setTimeout(poll, 500),
       );
+
     poll();
   });
   browser = await chromium.launch({
@@ -32,10 +34,12 @@ try {
     ignoreDefaultArgs: ['--hide-scrollbars'],
   });
   const images = [];
+
   async function capture(page, name) {
     images.push([`${name}.png`, await page.screenshot({ type: 'png', scale: 'css' })]);
     images.push([`${name}@2x.png`, await page.screenshot({ type: 'png', scale: 'device' })]);
   }
+
   for (const [name, tab] of [
     ['info-api', 'API'],
     ['info-emoji', 'Emoji'],

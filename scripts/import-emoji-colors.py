@@ -1,4 +1,4 @@
-"""Freeze Twemoji color statistics. Pillow 12.3.0; no images are shipped."""
+# Freeze Twemoji color statistics. Pillow 12.3.0; no images are shipped.
 
 import concurrent.futures
 import hashlib
@@ -31,6 +31,7 @@ def histogram(pixels):
         for i, value in enumerate((r, g, b)):
             bucket[i] += value * a
         bucket[3] += a
+
     result = []
     for r, g, b, weight in buckets.values():
         color = "#" + "".join(f"{math.floor(v / weight + 0.5):02x}" for v in (r, g, b))
@@ -39,7 +40,7 @@ def histogram(pixels):
 
 
 def foreground(image):
-    """Remove a flat colored backplate, only when a sizeable foreground remains."""
+    # Remove a flat colored backplate, only when a sizeable foreground remains.
     bounds = image.getchannel("A").point(lambda a: 255 if a >= 128 else 0).getbbox()
     if bounds is None:
         raise ValueError("Reference image has no opaque pixels")
@@ -48,6 +49,7 @@ def foreground(image):
     opaque = sum(p[3] >= 128 for p in pixels)
     if opaque < 0.9 * len(pixels):
         return pixels, False
+
     width, height = cropped.size
     corners = [
         cropped.getpixel((int((width - 1) * x), int((height - 1) * y)))
@@ -58,6 +60,7 @@ def foreground(image):
     color = min((p[:3] for p in corners), key=lambda c: sum(math.dist(c, p[:3]) for p in corners))
     if max(color) - min(color) < 40 or any(math.dist(p[:3], color) > 70 for p in corners):
         return pixels, False
+
     mask = {i for i, p in enumerate(pixels) if p[3] >= 128 and math.dist(p[:3], color) > 80}
     # The plate's dark perimeter is not part of the central symbol. Remove
     # residual components touching its outer edge, without character exceptions.
@@ -75,6 +78,7 @@ def foreground(image):
             i + width if y + 1 < height else -1,
         )
         pending.extend(j for j in neighbors if j in mask)
+
     remaining = [pixels[i] for i in sorted(mask)]
     share = sum(p[3] for p in remaining) / sum(p[3] for p in pixels)
     return (remaining, True) if 0.08 <= share <= 0.6 else (pixels, False)
@@ -105,6 +109,7 @@ if __name__ == "__main__":
             cp, bits = line.split(":")
             if len(bits) == 16:
                 fonts.add(int(cp, 16))
+
     selected = set()
     for line in (ROOT / "data/fonts/emoji-test.txt").read_text(encoding="utf-8").splitlines():
         match = re.match(r"^([0-9A-F ]+)\s*; fully-qualified", line)
@@ -112,9 +117,11 @@ if __name__ == "__main__":
             points = [int(cp, 16) for cp in match[1].split() if cp not in ("FE0E", "FE0F")]
             if len(points) == 1 and points[0] in fonts:
                 selected.add(points[0])
+
     CACHE.mkdir(parents=True, exist_ok=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
         glyphs = dict(pool.map(import_color, sorted(selected)))
+
     if OUTPUT.exists():
         previous = json.loads(OUTPUT.read_text(encoding="utf-8"))
         if previous["revision"] == REVISION:
@@ -122,6 +129,7 @@ if __name__ == "__main__":
                 expected = previous["glyphs"].get(cp)
                 if expected and entry["sha256"] != expected["sha256"]:
                     raise ValueError(f"Twemoji source hash changed: U+{cp}")
+
     output = {
         "source": "Twemoji, PNG at 72px",
         "revision": REVISION,

@@ -2,6 +2,7 @@
 // A clip is the latest ten seconds from a keyframe, within one memory limit.
 const CLIP_MILLISECONDS = 10000;
 export const MAX_RECORDING_BYTES = 64 * 1024 * 1024;
+
 export const recordingTooLarge = () => new Error('Video recording exceeded 64 MiB');
 
 export class WebMBuffer {
@@ -9,6 +10,7 @@ export class WebMBuffer {
     this.frames = [];
     this.pending = new Uint8Array();
   }
+
   get bytes() {
     return (
       this.frames.reduce((sum, frame) => sum + frame.data.length, 0) +
@@ -18,6 +20,7 @@ export class WebMBuffer {
       (this.info?.reduce((sum, field) => sum + field.length, 0) ?? 0)
     );
   }
+
   begin(start) {
     this.offset = start;
     this.scale = 1000000;
@@ -25,6 +28,7 @@ export class WebMBuffer {
     this.trackTypes = new Map();
     this.pending = new Uint8Array();
   }
+
   append(bytes) {
     const data = join([this.pending, bytes]);
     let position = 0;
@@ -39,9 +43,11 @@ export class WebMBuffer {
         position = body;
         continue;
       }
+
       if (size.unknown) throw new Error('Unsupported WebM element');
       const end = body + size.value;
       if (end > data.length) break;
+
       if (id.value === 0x1a45dfa3) this.header ??= data.slice(position, end);
       if (id.value === 0x1549a966) {
         const fields = elements(data, body, end),
@@ -54,6 +60,7 @@ export class WebMBuffer {
           .filter((field) => ![0x4489, 0x2ad7b1, 0xbf].includes(field.id))
           .map((field) => data.slice(field.start, field.end));
       }
+
       if (id.value === 0x1654ae6b) {
         this.tracks = data.slice(position, end);
         for (const { number, type } of trackEntries(data, body, end)) {
@@ -61,6 +68,7 @@ export class WebMBuffer {
           this.trackTypes.set(number, type);
         }
       }
+
       if (id.value === 0xe7) this.clusterTime = uint(data.subarray(body, end));
       if (id.value === 0xa3 || id.value === 0xa0) {
         const fields = id.value === 0xa0 ? elements(data, body, end) : [],
@@ -86,15 +94,19 @@ export class WebMBuffer {
           };
         this.frames.push(frame);
       }
+
       position = end;
     }
+
     this.pending = data.slice(position);
     if (this.pending.length > MAX_RECORDING_BYTES) throw recordingTooLarge();
   }
+
   merge(parser) {
     this.header ??= parser.header;
     this.info ??= parser.info;
     this.timeScale ??= parser.timeScale;
+
     if (parser.tracks) {
       // One rebuilt TrackEntry per track type, numbered by type, from every merged parser.
       this.mergedTracks ??= new Map();
@@ -120,9 +132,11 @@ export class WebMBuffer {
         join([...this.mergedTracks].sort(([a], [b]) => a - b).map(([, entry]) => entry)),
       );
     }
+
     this.frames.push(...parser.frames);
     parser.frames = [];
   }
+
   trim(end) {
     const start = clipStart(this.frames, end)?.time ?? end - CLIP_MILLISECONDS;
     this.frames = this.frames.filter((frame) => frame.time >= start);
@@ -132,29 +146,11 @@ export class WebMBuffer {
     }
     if (this.bytes > MAX_RECORDING_BYTES) throw recordingTooLarge();
   }
+
   seconds(end) {
     const first = clipStart(this.frames, end);
     return first ? Math.max(0, (end - first.time) / 1000) : 0;
   }
-}
-
-// The first keyframe from which a clip ending at `end` can start.
-function clipStart(frames, end) {
-  return frames.find((frame) => frame.keyframe && frame.time >= end - CLIP_MILLISECONDS);
-}
-
-// The fields, track number and track type of each TrackEntry in a Tracks element.
-function trackEntries(bytes, start, end) {
-  return elements(bytes, start, end)
-    .filter((field) => field.id === 0xae)
-    .map((track) => {
-      const fields = elements(bytes, track.body, track.end),
-        value = (id) => {
-          const field = fields.find((child) => child.id === id);
-          return field && uint(bytes.subarray(field.body, field.end));
-        };
-      return { fields, number: value(0xd7), type: value(0x83) };
-    });
 }
 
 export function exportWebM(buffer, mime, end) {
@@ -168,16 +164,19 @@ export function exportWebM(buffer, mime, end) {
     header = elements(buffer.tracks)[0];
   for (const { number, type } of trackEntries(buffer.tracks, header.body, header.end))
     tracks.set(type, number);
+
   const clusters = [];
   const timeScale = buffer.timeScale ?? 1000000,
     clusterSpan = Math.min(1000000000 / timeScale, 32767);
   let time = -clusterSpan,
     blocks = [];
+
   function flush() {
     if (blocks.length)
       clusters.push(element(0x1f43b675, join([element(0xe7, unsigned(time)), ...blocks])));
     blocks = [];
   }
+
   for (const frame of frames) {
     const exactTimestamp = ((frame.time - first.time) * 1000000) / timeScale,
       timestamp = Math.round(exactTimestamp);
@@ -197,6 +196,7 @@ export function exportWebM(buffer, mime, end) {
   }
   flush();
   if (!clusters.length) throw new Error('No video frames were received');
+
   const length = new Uint8Array(8);
   new DataView(length.buffer).setFloat64(0, ((end - first.time) * 1000000) / timeScale);
   return new Blob(
@@ -218,6 +218,25 @@ export function exportWebM(buffer, mime, end) {
   );
 }
 
+// The first keyframe from which a clip ending at `end` can start.
+function clipStart(frames, end) {
+  return frames.find((frame) => frame.keyframe && frame.time >= end - CLIP_MILLISECONDS);
+}
+
+// The fields, track number and track type of each TrackEntry in a Tracks element.
+function trackEntries(bytes, start, end) {
+  return elements(bytes, start, end)
+    .filter((field) => field.id === 0xae)
+    .map((track) => {
+      const fields = elements(bytes, track.body, track.end),
+        value = (id) => {
+          const field = fields.find((child) => child.id === id);
+          return field && uint(bytes.subarray(field.body, field.end));
+        };
+      return { fields, number: value(0xd7), type: value(0x83) };
+    });
+}
+
 function opusDuration(packet) {
   if (!packet.length) return 0;
   const config = packet[0] >> 3;
@@ -229,6 +248,7 @@ function opusDuration(packet) {
     count = code === 0 ? 1 : code === 3 ? packet[1] & 63 : 2;
   return duration * count;
 }
+
 function rewriteBlock(bytes, number, time, scale = 1, exactTime = time) {
   const field = elements(bytes)[0];
   if (field.id === 0xa0)
@@ -264,6 +284,7 @@ function rewriteBlock(bytes, number, time, scale = 1, exactTime = time) {
     ]),
   );
 }
+
 function vint(bytes, offset, id = false) {
   if (offset >= bytes.length) return;
   let width = 1,
@@ -282,6 +303,7 @@ function vint(bytes, offset, id = false) {
   }
   return { width, value, unknown };
 }
+
 function elements(bytes, start = 0, end = bytes.length) {
   const result = [];
   for (let offset = start; offset < end;) {
@@ -294,12 +316,15 @@ function elements(bytes, start = 0, end = bytes.length) {
   }
   return result;
 }
+
 function uint(bytes) {
   return bytes.reduce((value, byte) => value * 256 + byte, 0);
 }
+
 function signed(bytes) {
   return bytes.reduce((value, byte) => value * 256 + byte, bytes[0] & 128 ? -1 : 0);
 }
+
 function signedBytes(value) {
   let width = 1;
   while (value < -(2 ** (8 * width - 1)) || value >= 2 ** (8 * width - 1)) width++;
@@ -310,6 +335,7 @@ function signedBytes(value) {
   }
   return bytes;
 }
+
 function unsigned(value) {
   const bytes = [];
   do {
@@ -318,6 +344,7 @@ function unsigned(value) {
   } while (value);
   return Uint8Array.from(bytes);
 }
+
 function join(parts) {
   const bytes = new Uint8Array(parts.reduce((size, part) => size + part.length, 0));
   let position = 0;
@@ -327,6 +354,7 @@ function join(parts) {
   }
   return bytes;
 }
+
 function element(id, content) {
   let width = 1;
   while (content.length >= 2 ** (7 * width) - 1) width++;

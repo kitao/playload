@@ -14,6 +14,7 @@ import { EditorHistory } from '../src/app/editor-history.js';
 
 function mockWorker(t) {
   const originalWorker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
+
   class Worker {
     constructor(url) {
       this.url = url;
@@ -26,6 +27,7 @@ function mockWorker(t) {
       this.terminated = true;
     }
   }
+
   Object.defineProperty(globalThis, 'Worker', { value: Worker, configurable: true });
   t.after(() => {
     if (originalWorker) Object.defineProperty(globalThis, 'Worker', originalWorker);
@@ -88,6 +90,7 @@ test('failed sound setup closes its context and preserves the original error', a
   for (const worklet of [false, true]) {
     let closed = 0;
     const failure = new Error('Worklet could not load');
+
     class Context {
       constructor() {
         if (worklet)
@@ -97,11 +100,13 @@ test('failed sound setup closes its context and preserves the original error', a
             },
           };
       }
+
       async close() {
         closed++;
         throw new Error('Context already closed');
       }
     }
+
     Object.defineProperty(globalThis, 'AudioContext', { value: Context, configurable: true });
     const errors = [],
       sound = new Sound((message) => errors.push(message));
@@ -293,11 +298,13 @@ test('a starting game gets the longer start budget, then each frame the short on
 
 test('the serialized worklet freezes synthesis during pause and fades pause, resume and reset', async () => {
   let Processor;
+
   class WorkletProcessor {
     constructor() {
       this.port = { postMessage() {} };
     }
   }
+
   class Context {
     constructor() {
       this.destination = {};
@@ -315,6 +322,7 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
         },
       };
     }
+
     createGain() {
       return {
         gain: { value: 1 },
@@ -323,10 +331,12 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
         },
       };
     }
+
     createMediaStreamDestination() {
       return {};
     }
   }
+
   class Node {
     constructor() {
       this.processor = new Processor();
@@ -336,6 +346,7 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
       return target;
     }
   }
+
   const originalContext = Object.getOwnPropertyDescriptor(globalThis, 'AudioContext');
   const originalNode = Object.getOwnPropertyDescriptor(globalThis, 'AudioWorkletNode');
   Object.defineProperty(globalThis, 'AudioContext', { value: Context, configurable: true });
@@ -351,11 +362,13 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
       played.push({ at: processor.samples, ch, score });
       play(ch, score);
     };
+
     const render = (length) => {
       const output = new Float32Array(length);
       assert.equal(processor.process([], [[output]]), true);
       return output;
     };
+
     render(1024);
     const held = processor.lastSample;
     assert(Math.abs(held) > 0.001);
@@ -437,6 +450,7 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   t.after(() => runtime.stop());
   runtime.load('function tick() {}');
   const source = await (await fetch(runtime.worker.url)).text();
+
   const create = () => {
     const messages = [];
     const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
@@ -458,6 +472,7 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
     });
     return { send, messages };
   };
+
   const individual = create(),
     batch = create();
   individual.send({ type: 'input', mask: 16 });
@@ -540,6 +555,7 @@ class Editor {
   dispatchEvent(event) {
     for (const listener of this.listeners.get(event.type) ?? []) listener(event);
   }
+
   setSelectionRange(start, end, direction = 'none') {
     Object.assign(this, {
       selectionStart: start,
@@ -547,12 +563,14 @@ class Editor {
       selectionDirection: direction,
     });
   }
+
   type(text) {
     this.dispatchEvent({ type: 'beforeinput', inputType: 'insertText' });
     this.value += text;
     this.setSelectionRange(this.value.length, this.value.length);
     this.dispatchEvent({ type: 'input', inputType: 'insertText' });
   }
+
   press(code, key, modifiers = { ctrlKey: true }) {
     const event = { type: 'keydown', code, key, ...modifiers, prevented: false };
     event.preventDefault = () => (event.prevented = true);

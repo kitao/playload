@@ -12,14 +12,17 @@ export async function renderReference() {
   const reference = JSON.parse(
     await readFile(new URL('../data/reference.json', import.meta.url), 'utf8'),
   );
+
   const spans = (entries) =>
     entries
       .map(
         ([name, meaning]) => `<span><code>${escapeHTML(name)}</code> ${escapeHTML(meaning)}</span>`,
       )
       .join('');
+
   const code = (value) =>
     escapeHTML(value).replace(/(\/\/[^\n]*)/g, '<span class="code-comment">$1</span>');
+
   const groups = (entries, api) =>
     entries
       .map((group) => {
@@ -45,6 +48,7 @@ export async function renderReference() {
         return `<h3>${escapeHTML(group.title)}</h3>${description}${lengths}<dl class="${api ? 'api-group' : 'mml-group'}">${details}</dl>`;
       })
       .join('\n');
+
   return `<div class="api-columns">
 <section class="api-guide" aria-labelledby="api-heading"><h2 id="api-heading">API</h2>${groups(reference.api, true)}</section>
 <section class="score-guide" aria-labelledby="score-heading"><h2 id="score-heading">ZX 128 PLAY</h2>${groups(reference.sound, false)}</section>

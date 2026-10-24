@@ -1,15 +1,19 @@
-.DS_Store
-node_modules/
-test-results/
-playwright-report/
-coverage/
+# Build outputs and dependencies.
+.playload-build-*/
 dist/
-.venv/
-__pycache__/
+node_modules/
 
-.wrangler/
-.env
-.env.*
+# Verification output.
+coverage/
+playwright-report/
+test-results/
+
+# Local configuration and caches.
+.DS_Store
 .dev.vars
 .dev.vars.*
-.playload-build-*/
+.env
+.env.*
+.venv/
+.wrangler/
+__pycache__/

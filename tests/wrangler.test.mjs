@@ -127,11 +127,13 @@ test('Wrangler runs from this project with its config and an empty env file', as
   );
   assert.equal(calls.length, 1);
   assert.equal(await runWrangler(['deploy', '--dry-run'], { env, spawn: fakeSpawn([], 3) }), 3);
+
   const failing = () => {
     const child = new EventEmitter();
     setImmediate(() => child.emit('error', new Error('Spawn failed')));
     return child;
   };
+
   await assert.rejects(
     runWrangler(['deploy', '--dry-run'], { env, spawn: failing }),
     /Spawn failed/,
@@ -166,6 +168,7 @@ test('the site files to check are this project and the sources the build watches
 
 test('a strict deploy runs only when the site files are committed', async () => {
   const read = async () => ({ build: { watch_dir: ['index.html'] } });
+
   const deploy = async (gitResult, environment = env) => {
     const git = [];
     const calls = [];
@@ -181,6 +184,7 @@ test('a strict deploy runs only when the site files are committed', async () => 
     });
     return { code, git, calls };
   };
+
   const clean = await deploy({ status: 0, stdout: '' }, { PATH: '/usr/bin', GIT_DIR: '/x' });
   assert.equal(clean.code, 0);
   assert.equal(clean.calls.length, 1);

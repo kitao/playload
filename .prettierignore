@@ -1,13 +1,13 @@
 # Frozen source assets, notices, and independent reference implementations.
-data/fonts/
-data/ay-volume-source.json
-tests/reference/
-tests/browser/reference/
 *.svg
+data/ay-volume-source.json
+data/fonts/
+tests/browser/reference/
+tests/reference/
 
 # Generated artifacts: checked by their own generators.
-src/engine/glyphs.js
-src/app/glyph-fallback.woff
-src/app/examples.js
 docs/glyph-coverage.json
 package-lock.json
+src/app/examples.js
+src/app/glyph-fallback.woff
+src/engine/glyphs.js

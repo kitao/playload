@@ -58,6 +58,7 @@ export function publicPixelCells(font) {
       flags.push(flag);
       if (flag & 8) for (let repeat = font[p++]; repeat; repeat--) flags.push(flag);
     }
+
     const coordinates = (short, same) => {
       let value = 0;
       return flags.map((flag) => {
@@ -66,6 +67,7 @@ export function publicPixelCells(font) {
         return value;
       });
     };
+
     const xs = coordinates(2, 16),
       ys = coordinates(4, 32);
     if (flags.some((flag) => !(flag & 1))) throw new Error('Expected straight outlines');

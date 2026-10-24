@@ -5,12 +5,6 @@ export const colorPolicy = Object.freeze({
   contrastTarget: 3,
 });
 
-const linear = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-const rgb = (hex) => [1, 3, 5].map((i) => linear(parseInt(hex.slice(i, i + 2), 16) / 255));
-const radians = (degrees) => (degrees * Math.PI) / 180;
-const sin = (degrees) => Math.sin(radians(degrees));
-const cos = (degrees) => Math.cos(radians(degrees));
-
 // sRGB -> CIELAB, with its D65 reference white.
 export function lab(hex) {
   const [r, g, b] = rgb(hex);
@@ -30,6 +24,7 @@ export function deltaE([l1, a1, b1], [l2, a2, b2]) {
     ap2 = (1 + g) * a2;
   const cp1 = Math.hypot(ap1, b1),
     cp2 = Math.hypot(ap2, b2);
+
   const hue = (a, b) => ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
   const h1 = cp1 === 0 ? 0 : hue(ap1, b1),
     h2 = cp2 === 0 ? 0 : hue(ap2, b2);
@@ -37,11 +32,13 @@ export function deltaE([l1, a1, b1], [l2, a2, b2]) {
   if (cp1 * cp2 === 0) dh = 0;
   else if (dh > 180) dh -= 360;
   else if (dh < -180) dh += 360;
+
   let h = h1 + h2;
   if (cp1 * cp2 !== 0) {
     if (Math.abs(h1 - h2) > 180) h += h < 360 ? 360 : -360;
     h /= 2;
   }
+
   const lp = (l1 + l2) / 2,
     cp = (cp1 + cp2) / 2;
   const t =
@@ -51,6 +48,7 @@ export function deltaE([l1, a1, b1], [l2, a2, b2]) {
     sh = 1 + 0.015 * cp * t;
   const rt =
     -2 * Math.sqrt(cp ** 7 / (cp ** 7 + 25 ** 7)) * sin(60 * Math.exp(-(((h - 275) / 25) ** 2)));
+
   const dl = (l2 - l1) / sl,
     dc = (cp2 - cp1) / sc;
   const dH = (2 * Math.sqrt(cp1 * cp2) * sin(dh / 2)) / sh;
@@ -76,6 +74,7 @@ export function dominantColor(samples) {
     .sort((a, b) => a.hex.localeCompare(b.hex));
   const total = colors.reduce((sum, c) => sum + c.weight, 0);
   if (!total) return null;
+
   let best,
     support = -1;
   for (const candidate of colors) {
@@ -90,6 +89,7 @@ export function dominantColor(samples) {
       support = density;
     }
   }
+
   return best.hex;
 }
 
@@ -114,6 +114,7 @@ export function paletteInk(reference, palette) {
     })
     .filter((c) => c.chromatic === chromatic && c.contrast >= colorPolicy.contrastTarget);
   ranked.sort((a, b) => a.distance - b.distance || a.ink - b.ink);
+
   // This limits default emoji ink, not the engine palette or game overrides.
   return ranked[0].ink;
 }
@@ -128,3 +129,13 @@ export function emojiColor(samples, palette) {
     contrast(reference) < colorPolicy.contrastTarget;
   return { reference, ink: flatNeutral ? 7 : paletteInk(reference, palette) };
 }
+
+const linear = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+
+const rgb = (hex) => [1, 3, 5].map((i) => linear(parseInt(hex.slice(i, i + 2), 16) / 255));
+
+const radians = (degrees) => (degrees * Math.PI) / 180;
+
+const sin = (degrees) => Math.sin(radians(degrees));
+
+const cos = (degrees) => Math.cos(radians(degrees));

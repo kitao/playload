@@ -91,6 +91,7 @@ test('CRT and flat mode have the same maximum picture width and height', async (
     renderer.render(pixels);
     gl.readPixels(0, 0, 640, 576, gl.RGBA, gl.UNSIGNED_BYTE, crt);
     const flat = createDisplay(palette).render(pixels);
+
     // A filled picture measures the actual extent. An isolated edge dot's
     // brightness centroid shifts inward when its halo meets the canvas edge.
     const measure = (rgba) => {
@@ -104,6 +105,7 @@ test('CRT and flat mode have the same maximum picture width and height', async (
       const vertical = Array.from({ length: 576 }, (_, y) =>
         Math.max(...[318, 319, 320, 321].map((x) => light(x, y))),
       );
+
       const span = (line) => {
         // Half peak excludes the faint glow; the narrow center band avoids
         // measuring a phosphor stripe or scanline trough as the picture edge.
@@ -114,8 +116,10 @@ test('CRT and flat mode have the same maximum picture width and height', async (
           1
         );
       };
+
       return { width: span(horizontal), height: span(vertical) };
     };
+
     return { crt: measure(crt), flat: measure(flat) };
   });
   await testInfo.attach('crt-picture-size', {

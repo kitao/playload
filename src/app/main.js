@@ -32,6 +32,7 @@ if (!stylesheet.sheet)
   });
 
 const $ = (id) => document.getElementById(id);
+
 const initialHash = location.hash;
 const canvas = $('display'),
   context = canvas.getContext('2d');
@@ -75,6 +76,9 @@ const pointers = new Map(),
   keys = new Map(),
   startKeys = new Set();
 let gamepadMask = 0;
+
+// Playback
+
 const audio = new Sound((message) => status('Sound: ' + message));
 const runtime = new Runtime(
   (...args) => playback.frame(...args),
@@ -131,6 +135,8 @@ const playback = new Playback({
   onVideoError: (error) => status('Video: ' + error.message),
 });
 
+// Status and views
+
 function updateError() {
   const message = gameError || urlError;
   $('error').textContent = message;
@@ -141,6 +147,7 @@ function updateError() {
 
 let statusTimer,
   copyRevision = 0;
+
 function status(text = '', target = null) {
   clearTimeout(statusTimer);
   const notice = $('status'),
@@ -148,6 +155,7 @@ function status(text = '', target = null) {
   for (const animation of notice.getAnimations()) animation.cancel();
   notice.toggleAttribute('data-copy', copied);
   notice.textContent = text;
+
   if (copied) {
     const source = target.getBoundingClientRect(),
       { width, height } = notice.getBoundingClientRect(),
@@ -168,13 +176,16 @@ function status(text = '', target = null) {
     notice.style.removeProperty('left');
     notice.style.removeProperty('top');
   }
+
   if (text === 'Copied') statusTimer = setTimeout(() => status(), 800);
 }
+
 function dismissCopy() {
   copyRevision++;
   if ($('status').hasAttribute('data-copy')) status();
 }
 document.addEventListener('scroll', dismissCopy, true);
+
 function controls() {
   $('workspace-toolbar').hidden = view === 'info' || (touch && !toolsOpen);
   $('tools-toggle').hidden = !touch || view === 'info';
@@ -195,12 +206,14 @@ function controls() {
     (!playback.capture?.restarting &&
       !['recording', 'paused'].includes(playback.capture?.recorder?.state)) ||
     !!playback.capture?.saveRequest;
+
   $('load').disabled = reading;
   $('filename').textContent = filename;
   $('filename').title = filename;
   for (const button of document.querySelectorAll('[data-input]'))
     button.disabled = !playback.running && !playback.awaitingStart;
 }
+
 function setView(next) {
   dismissCopy();
   if ($('catalog').clientHeight) catalogScroll = $('catalog').scrollTop;
@@ -211,6 +224,7 @@ function setView(next) {
     button.setAttribute('aria-selected', String(button.dataset.view === view));
     button.tabIndex = button.dataset.view === view ? 0 : -1;
   }
+
   release();
   playback.sync();
   controls();
@@ -218,6 +232,9 @@ function setView(next) {
   requestAnimationFrame(fitGame);
   if (view === 'info' && reference === 'characters') renderCharacters();
 }
+
+// Game playback
+
 function paint() {
   playback.paintedFrame = true;
   canvas.dataset.crt = String(crt);
@@ -232,14 +249,17 @@ function paint() {
       crtDisplay = null;
     }
   }
+
   if (crt && crtDisplay?.render(renderer.pixels)) {
     context.drawImage(crtDisplay.canvas, 0, 0);
     return;
   }
+
   if (crt) disableCRT();
   display.render(renderer.pixels);
   context.putImageData(image, 0, 0);
 }
+
 function disableCRT() {
   crt = false;
   canvas.dataset.crt = 'false';
@@ -247,6 +267,7 @@ function disableCRT() {
   $('crt').setAttribute('aria-pressed', 'false');
   $('crt').title = 'CRT is unavailable in this browser.';
 }
+
 function run(code, takeFocus = false, focusGeneration = focusRevision, waitForStart = false) {
   showPlayer();
   playback.revision++;
@@ -259,12 +280,14 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForSt
   playback.paused = waitForStart;
   playback.running = false;
   playback.sync();
+
   pendingSource = code;
   scheduleURL(0);
   gameError = '';
   updateError();
   editorErrorLine = null;
   updateEditorLines();
+
   if (touch && takeFocus && focusGeneration === focusRevision) {
     toolsOpen = false;
     $('screen').focus({ preventScroll: true });
@@ -272,6 +295,7 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForSt
   }
   controls();
   pendingFocus = takeFocus ? { element: document.activeElement, revision: focusGeneration } : null;
+
   if (waitForStart) {
     runtime.stop();
     const welcome = createEngine(glyphs, () => {});
@@ -284,18 +308,21 @@ function run(code, takeFocus = false, focusGeneration = focusRevision, waitForSt
     runtime.suspend(document.hidden);
   }
 }
+
 function runCurrentSource(takeFocus = false) {
   if (reading) return;
   toolsOpen = false;
   unlockSound();
   run($('editor').value, takeFocus);
 }
+
 function unlockSound() {
   audio.init().catch(() => {
     $('sound').disabled = true;
   });
   audio.unlock();
 }
+
 function startGame(takeFocus = true) {
   if (!playback.awaitingStart) return;
   run($('editor').value, takeFocus);
@@ -303,6 +330,7 @@ function startGame(takeFocus = true) {
   if (takeFocus) focusGame(false);
   fitGame();
 }
+
 function targetsPlayer(target) {
   return view === 'play' && !!target.closest('#game');
 }
@@ -322,16 +350,21 @@ for (const type of ['pointerup', 'touchend', 'click'])
   document.addEventListener(type, (event) => {
     if (event.isTrusted && pendingSource && !playback.awaitingStart) unlockSound();
   });
+
+// Focus and input state
+
 function release() {
   keys.clear();
   pointers.clear();
   directions.clear();
   syncInput(0);
 }
+
 function focusEditor() {
   $('editor').focus({ preventScroll: true });
   if (touch || innerWidth < 600) window.scrollTo({ top: 0, behavior: 'instant' });
 }
+
 function focusGame(reveal = true) {
   if (view !== 'play') setView('play');
   const screen = $('screen'),
@@ -341,9 +374,11 @@ function focusGame(reveal = true) {
   if (reveal && (bounds.top < 0 || bounds.bottom > innerHeight))
     target.scrollIntoView({ block: 'center', behavior: 'instant' });
 }
+
 function focusPane() {
   if (view === 'play') $(editorOpen ? focusedPane : 'screen').focus({ preventScroll: true });
 }
+
 function focusAfterRun() {
   if (
     pendingFocus &&
@@ -356,6 +391,7 @@ function focusAfterRun() {
   }
   pendingFocus = null;
 }
+
 function syncInput(padMask = readGamepads()) {
   if (padMask & ~gamepadMask) audio.unlock();
   gamepadMask = padMask;
@@ -366,6 +402,7 @@ function syncInput(padMask = readGamepads()) {
     button.dataset.held = String(!!(mask & (1 << Number(button.dataset.input))));
   runtime.input(mask);
 }
+
 function readGamepads() {
   let mask = 0;
   if (
@@ -393,6 +430,8 @@ function readGamepads() {
   }
   return mask;
 }
+
+// Workspace controls
 
 for (const button of $('views').querySelectorAll('[data-view]'))
   button.onclick = () => {
@@ -506,6 +545,9 @@ $('video').onclick = async () => {
       $('video').focus({ preventScroll: true });
   }
 };
+
+// Clipboard and shared URLs
+
 async function copy(text, target) {
   const version = ++copyRevision;
   let copied = false;
@@ -556,6 +598,7 @@ function gameTitle(code) {
 
 let urlTimer,
   urlRevision = 0;
+
 function scheduleURL(delay = 250) {
   clearTimeout(urlTimer);
   const version = ++urlRevision,
@@ -595,6 +638,9 @@ function scheduleURL(delay = 250) {
     }
   }, delay);
 }
+
+// Editor
+
 function highlightEditor() {
   const editor = $('editor'),
     preview = $('editor-highlight');
@@ -602,6 +648,7 @@ function highlightEditor() {
   updateEditorLines();
   syncEditorScroll();
 }
+
 function syncFormatPosition(entry) {
   const editor = $('editor'),
     style = getComputedStyle(editor),
@@ -625,6 +672,7 @@ function syncFormatPosition(entry) {
     (height > 0 ? Math.max(0, height - thumbInset) + 1 : 0) + 'px',
   );
 }
+
 function updateEditorLines() {
   const count = $('editor').value.split('\n').length;
   $('workbench').style.setProperty('--line-number-digits', Math.max(2, String(count).length));
@@ -632,11 +680,13 @@ function updateEditorLines() {
     i + 1 === editorErrorLine ? `<span class="editor-line-error">${i + 1}</span>` : String(i + 1),
   ).join('\n');
 }
+
 function syncEditorScroll() {
   $('editor-highlight').scrollTop = $('editor').scrollTop;
   $('editor-highlight').scrollLeft = $('editor').scrollLeft;
   $('editor-line-numbers').style.transform = `translateY(${-$('editor').scrollTop}px)`;
 }
+
 $('editor').onscroll = syncEditorScroll;
 
 function changed() {
@@ -647,6 +697,7 @@ function changed() {
   $('error-line').disabled = true;
   controls();
 }
+
 async function formatCurrentSource() {
   if (reading || formatting) return;
   const editor = $('editor'),
@@ -673,6 +724,7 @@ async function formatCurrentSource() {
       timer = setTimeout(() => reject(new Error('Formatting took too long.')), 10000);
       worker.postMessage({ source, start, end });
     });
+
     if (edit !== editRevision || source !== editor.value) {
       status('Code changed while formatting. Your edits were kept.');
       return;
@@ -686,6 +738,7 @@ async function formatCurrentSource() {
       status('Formatting canceled because the editor focus or selection changed.');
       return;
     }
+
     if (result.source === source) return;
     editor.focus({ preventScroll: true });
     editorHistory.replace(result.source, result.start, result.end, direction);
@@ -702,21 +755,27 @@ async function formatCurrentSource() {
     controls();
   }
 }
+
+// File loading
+
 function discard() {
   return (
     $('editor').value === loadedSource ||
     confirm('The code was edited in the browser. Replace it with a file?')
   );
 }
+
 function readRequest() {
   return { edit: editRevision };
 }
+
 async function readFile(file, request, handle = null) {
   const text = await file.text();
   if (request.edit !== editRevision) {
     status('Code changed while loading. Your edits were kept.');
     return false;
   }
+
   fileHandle = handle;
   fileError = '';
   declinedFileSource = null;
@@ -730,6 +789,7 @@ async function readFile(file, request, handle = null) {
   run(loadedSource);
   return true;
 }
+
 async function chooseFile(request) {
   reading = true;
   controls();
@@ -743,6 +803,7 @@ async function chooseFile(request) {
     }
     return;
   }
+
   try {
     const [selected] = await showOpenFilePicker({
       types: [{ description: 'JavaScript', accept: { 'text/javascript': ['.js'] } }],
@@ -758,9 +819,11 @@ async function chooseFile(request) {
     controls();
   }
 }
+
 $('load').onclick = () => {
   if (!reading && discard()) return chooseFile(readRequest());
 };
+
 async function refreshFile() {
   if (checkingFile || reading || !fileHandle || document.hidden) return;
   const handle = fileHandle,
@@ -776,6 +839,7 @@ async function refreshFile() {
       declinedFileSource = null;
       return;
     }
+
     if (editor.value !== loadedSource && editor.value !== text) {
       if (text === declinedFileSource) return;
       if (!confirm('The code was edited in the browser. Replace it with a file?')) {
@@ -783,6 +847,7 @@ async function refreshFile() {
         return;
       }
     }
+
     declinedFileSource = null;
     loadedSource = text;
     editor.value = text;
@@ -800,6 +865,7 @@ async function refreshFile() {
     checkingFile = false;
   }
 }
+
 setInterval(refreshFile, 250);
 window.addEventListener('focus', refreshFile);
 $('file').oncancel = () => {
@@ -829,6 +895,9 @@ $('file').onchange = async () => {
     controls();
   }
 };
+
+// Editor
+
 $('run').onclick = () => runCurrentSource();
 $('format').onclick = formatCurrentSource;
 $('editor').oninput = changed;
@@ -856,6 +925,8 @@ $('editor').onkeydown = (event) => {
 $('editor').value = starter;
 const editorHistory = new EditorHistory($('editor'));
 
+// Reference pages
+
 function setReference(next) {
   dismissCopy();
   if ($('catalog').clientHeight) catalogScroll = $('catalog').scrollTop;
@@ -877,6 +948,7 @@ function setReference(next) {
     renderCharacters();
   }
 }
+
 for (const entry of exampleLinks) {
   const row = document.createElement('li'),
     playLink = document.createElement('a'),
@@ -911,6 +983,9 @@ document.querySelector('.reference-tabs').onkeydown = (event) => {
   buttons[next].focus();
   buttons[next].scrollIntoView({ block: 'nearest', inline: 'nearest' });
 };
+
+// Character catalog
+
 function pattern(canvas, glyph) {
   canvas.width = canvas.height = 8;
   const ctx = canvas.getContext('2d');
@@ -920,11 +995,13 @@ function pattern(canvas, glyph) {
       ctx.fillRect(x, y, 1, 1);
     }
 }
+
 let catalogItems = [],
   catalogScroll = 0,
   catalogStart = -1,
   catalogEnd = -1,
   catalogFrame;
+
 function renderCharacters() {
   catalogItems = glyphs.filter((g) => g.group === category);
   const catalog = $('catalog');
@@ -939,6 +1016,7 @@ function renderCharacters() {
   catalogStart = catalogEnd = -1;
   renderCatalogWindow();
 }
+
 function renderCatalogWindow() {
   const catalog = $('catalog'),
     window = $('catalog-window');
@@ -951,6 +1029,7 @@ function renderCatalogWindow() {
   if (start === catalogStart && end === catalogEnd) return;
   catalogStart = start;
   catalogEnd = end;
+
   const focused = document.activeElement?.dataset.index;
   window.style.top = startRow * 44 + 'px';
   const fragment = document.createDocumentFragment();
@@ -970,6 +1049,7 @@ function renderCatalogWindow() {
     button.onclick = () => copy(glyph.ch, button);
     fragment.append(button);
   }
+
   window.replaceChildren(fragment);
   if (focused != null && end > start) {
     const firstVisible = Math.floor(catalog.scrollTop / 44) * columns;
@@ -981,6 +1061,7 @@ function renderCatalogWindow() {
     window.querySelector('[data-index="' + index + '"]')?.focus({ preventScroll: true });
   }
 }
+
 $('catalog').addEventListener(
   'scroll',
   () => {
@@ -1043,6 +1124,8 @@ for (let index = 0; index < 8; index++) {
   $('palette').append(color);
 }
 
+// Keyboard input
+
 const keyCodes = {
   ArrowUp: 0,
   ArrowDown: 1,
@@ -1057,11 +1140,13 @@ const keyCodes = {
   KeyX: 5,
   KeyK: 5,
 };
+
 function gameButton(event) {
   // Follow Latin key labels; other scripts retain the same physical positions.
   const letter = latinLetter(event);
   return keyCodes[letter ? 'Key' + letter.toUpperCase() : event.code];
 }
+
 const editable = (target) => target.closest('input,textarea,select,[contenteditable]');
 document.addEventListener('keydown', (event) => {
   if (startKeys.has(event.code)) {
@@ -1085,6 +1170,7 @@ document.addEventListener('keydown', (event) => {
     startKeys.add(event.code);
     return;
   }
+
   if (event.isComposing) return;
   if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey) {
     const id =
@@ -1099,6 +1185,7 @@ document.addEventListener('keydown', (event) => {
     }
     return;
   }
+
   if (view !== 'play') return;
   if (
     event.key === 'Escape' &&
@@ -1115,6 +1202,7 @@ document.addEventListener('keydown', (event) => {
     }
     return;
   }
+
   if (editable(event.target)) return;
   const input = gameButton(event);
   if (
@@ -1132,6 +1220,7 @@ document.addEventListener('keydown', (event) => {
     keys.set(event.code, input);
     syncInput();
   }
+
   if (!event.altKey || event.repeat || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const id = {
     KeyE: 'error-line',
@@ -1150,7 +1239,11 @@ document.addEventListener('keyup', (event) => {
     syncInput();
   }
 });
+
+// Touch input
+
 const dpad = document.querySelector('.dpad');
+
 function padMask(event, previous = 0) {
   const rect = dpad.getBoundingClientRect();
   if (
@@ -1170,6 +1263,7 @@ function padMask(event, previous = 0) {
   if (Math.abs(y) > Math.abs(x) * slope) mask |= y < 0 ? 1 : 2;
   return mask;
 }
+
 for (const control of [dpad, ...document.querySelectorAll('.ab [data-input]')]) {
   control.onpointerdown = (event) => {
     if (!(playback.running || runtime.pending) || view !== 'play' || (touch && toolsOpen)) return;
@@ -1183,6 +1277,7 @@ for (const control of [dpad, ...document.querySelectorAll('.ab [data-input]')]) 
     if (control === dpad) directions.add(event.pointerId);
     syncInput();
   };
+
   for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'])
     control.addEventListener(name, (event) => {
       pointers.delete(event.pointerId);
@@ -1195,6 +1290,7 @@ document.addEventListener('pointermove', (event) => {
   pointers.set(event.pointerId, padMask(event, pointers.get(event.pointerId)));
   syncInput();
 });
+
 function nativeTouch(target) {
   const scroll = target.closest('.reference-scroll, #workspace-toolbar');
   return (
@@ -1204,6 +1300,7 @@ function nativeTouch(target) {
       (scroll.scrollWidth > scroll.clientWidth || scroll.scrollHeight > scroll.clientHeight))
   );
 }
+
 // Keep native editing and scrolling; tool chrome must not trigger iOS text gestures.
 $('app').addEventListener(
   'touchstart',
@@ -1237,6 +1334,7 @@ $('app').oncontextmenu = (event) => {
   )
     event.preventDefault();
 };
+
 // A second finger does not generate a compatibility click in every browser.
 let secondaryTap = null;
 document.addEventListener(
@@ -1274,6 +1372,9 @@ window.addEventListener('blur', () => {
   startKeys.clear();
   release();
 });
+
+// Workspace layout
+
 function fitGame() {
   const viewport = $('picture');
   if (!viewport.clientWidth || !viewport.clientHeight) return;
@@ -1289,6 +1390,7 @@ function fitGame() {
     errorRows = Math.max(1, Math.min(5, Math.floor((player.clientHeight - 8) / 20)));
   player.style.setProperty('--error-text-height', errorRows * 20 + 'px');
 }
+
 function setEditorOpen(open) {
   editorOpen = open;
   document.body.dataset.editorClosed = String(!open);
@@ -1298,6 +1400,7 @@ function setEditorOpen(open) {
   if (open && view === 'play' && innerWidth >= 600) setSplit(split);
   fitGame();
 }
+
 $('code-toggle').onclick = () => {
   setEditorOpen(!editorOpen);
   toolsOpen = false;
@@ -1305,9 +1408,11 @@ $('code-toggle').onclick = () => {
   playback.sync();
   focusPane();
 };
+
 function touchLayout() {
   return matchMedia('(pointer:coarse)').matches;
 }
+
 function layout() {
   const next = touchLayout();
   if (next !== touch) toolsOpen = false;
@@ -1320,8 +1425,10 @@ function layout() {
   if (view === 'play' && editorOpen && innerWidth >= 600) setSplit(split);
   else fitGame();
 }
+
 let split = 0.5,
   dragging;
+
 function setSplit(value) {
   const area = $('play'),
     available = Math.max(1, area.clientWidth - 8);
@@ -1335,6 +1442,7 @@ function setSplit(value) {
   $('divider').setAttribute('aria-valuenow', Math.round(split * 100));
   fitGame();
 }
+
 $('divider').onpointerdown = (event) => {
   if (event.button !== 0) return;
   event.preventDefault();
@@ -1369,6 +1477,9 @@ window.addEventListener('resize', () => {
   layout();
   if (reference === 'characters' && view === 'info') renderCharacters();
 });
+
+// Page lifecycle
+
 document.addEventListener('visibilitychange', () => {
   playback.lastFrame = null;
   if (document.hidden) startKeys.clear();
@@ -1390,12 +1501,14 @@ window.addEventListener('hashchange', () => {
   playback.navigate();
   location.reload();
 });
+
 function animate(time) {
   const padMask = readGamepads();
   if (padMask !== gamepadMask) syncInput(padMask);
   playback.advance(time);
   requestAnimationFrame(animate);
 }
+
 function showPlayer() {
   fitGame();
   document.body.removeAttribute('data-loading');

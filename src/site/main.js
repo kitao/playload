@@ -19,6 +19,7 @@ function setLanguage() {
   for (const button of document.querySelectorAll('.language-switch button'))
     button.setAttribute('aria-pressed', button.dataset.language === document.documentElement.lang);
 }
+
 setLanguage();
 window.addEventListener('languagechange', setLanguage);
 
@@ -30,6 +31,7 @@ function openSharedGame() {
   location.replace(app.href);
   return true;
 }
+
 const redirecting = openSharedGame();
 window.addEventListener('hashchange', openSharedGame);
 
@@ -47,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setLanguage();
     });
   }
+
   const preview = document.querySelector('#image-preview');
   let enlarged = preview.querySelector('img');
   let previewSelection = 0;
@@ -69,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch {
         return;
       }
+
       if (selection !== previewSelection) return;
       enlarged.replaceWith(image);
       enlarged = image;
@@ -80,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
       preview.showModal();
     });
   }
+
   preview.addEventListener('click', () => {
     previewSelection++;
     preview.close();

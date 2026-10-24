@@ -470,6 +470,7 @@ test('Tab keeps focus in place throughout the workspace and still indents code',
   await page.goto('/playload/app/');
   const editor = page.locator('#editor'),
     source = await editor.inputValue();
+
   const staysFocused = async (target) => {
     await target.focus();
     for (const key of ['Tab', 'Shift+Tab']) {
@@ -477,6 +478,7 @@ test('Tab keeps focus in place throughout the workspace and still indents code',
       await expect(target).toBeFocused();
     }
   };
+
   await expect(page.locator('#screen')).toBeFocused();
   await staysFocused(page.locator('#screen'));
   await expect(page.locator('#start-game')).toBeVisible();
@@ -795,6 +797,7 @@ test.describe('touch player', () => {
     };
     const dispatch = (type, ...touchPoints) =>
       session.send('Input.dispatchTouchEvent', { type, touchPoints });
+
     const inputMask = () =>
       page.locator('#display').evaluate((canvas) => {
         const context = canvas.getContext('2d');
@@ -804,6 +807,7 @@ test.describe('touch player', () => {
         }
         return mask;
       });
+
     await page.evaluate(() => {
       window.touchCancellations = 0;
       window.gameFocusTargets = [];

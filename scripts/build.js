@@ -20,42 +20,6 @@ import { escapeHTML, renderReference } from './reference.js';
 // canonicalizes it, like the fs/promises realpath used for build outputs.
 const root = realpathSync.native(fileURLToPath(new URL('..', import.meta.url)));
 
-function fill(template, values) {
-  return template.replace(/\{\{([A-Z_]+)\}\}/g, (_, name) => {
-    if (!(name in values)) throw new Error('Unknown template field: ' + name);
-    return values[name];
-  });
-}
-
-async function canonicalDirectory(path) {
-  try {
-    return await realpath(path);
-  } catch (error) {
-    if (error.code !== 'ENOENT' || dirname(path) === path) throw error;
-    return join(await canonicalDirectory(dirname(path)), basename(path));
-  }
-}
-
-// Canonicalize symlinks and letter case so no alias of the sources passes.
-// A symlink at the output path itself stays unresolved: the build replaces
-// that link and never writes into the directory it points to.
-async function outputDirectory(path) {
-  const requested = resolve(path);
-  let directory = join(await canonicalDirectory(dirname(requested)), basename(requested));
-  const details = await lstat(directory).catch((error) => {
-    if (error.code !== 'ENOENT') throw error;
-  });
-  if (details && !details.isSymbolicLink()) directory = await realpath(directory);
-  if (
-    directory === parse(directory).root ||
-    directory === root ||
-    root.startsWith(directory + sep) ||
-    (directory.startsWith(root + sep) && directory !== join(root, 'dist'))
-  )
-    throw new Error('Build output must be dist/ or outside the repository.');
-  return directory;
-}
-
 export async function buildSite({ directory = join(root, 'dist') } = {}) {
   directory = await outputDirectory(directory);
   await mkdir(dirname(directory), { recursive: true });
@@ -130,6 +94,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     const warnings = builds.flatMap(({ value }) => value.warnings);
     if (warnings.length)
       throw new Error((await formatMessages(warnings, { kind: 'warning' })).join(''));
+
     for (const name of ['logo.svg', 'favicon.svg'])
       await cp(
         new URL('../assets/' + name, import.meta.url),
@@ -138,6 +103,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     // The .txt extension gives the license its text/plain type without a Content-Type rule.
     await cp(new URL('../LICENSE', import.meta.url), new URL('playload/LICENSE.txt', output));
     await cp(new URL('../src/site/_headers', import.meta.url), new URL('_headers', output));
+
     // The social preview shows the first homepage screenshot.
     const preview = 'assets/images/example-glyph-quest.png';
     const common = {
@@ -147,12 +113,14 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
       VERSION: escapeHTML(project.version),
       DESCRIPTION: escapeHTML(project.description),
     };
+
     async function page(source, destination, values) {
       const template = await readFile(new URL('../' + source, import.meta.url), 'utf8');
       const target = new URL('playload/' + destination, output);
       await mkdir(new URL('.', target), { recursive: true });
       await writeFile(target, fill(template, { ...common, ...values }));
     }
+
     await page('src/app/index.html', 'app/index.html', {
       REFERENCE: await renderReference(),
     });
@@ -185,6 +153,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     await page('src/site/index.html', 'index.html', {
       INTRODUCTION: introduction,
     });
+
     const backup = stage + '-previous';
     let previous = false;
     try {
@@ -203,6 +172,42 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
   } finally {
     await rm(stage, { recursive: true, force: true });
   }
+}
+
+function fill(template, values) {
+  return template.replace(/\{\{([A-Z_]+)\}\}/g, (_, name) => {
+    if (!(name in values)) throw new Error('Unknown template field: ' + name);
+    return values[name];
+  });
+}
+
+async function canonicalDirectory(path) {
+  try {
+    return await realpath(path);
+  } catch (error) {
+    if (error.code !== 'ENOENT' || dirname(path) === path) throw error;
+    return join(await canonicalDirectory(dirname(path)), basename(path));
+  }
+}
+
+// Canonicalize symlinks and letter case so no alias of the sources passes.
+// A symlink at the output path itself stays unresolved: the build replaces
+// that link and never writes into the directory it points to.
+async function outputDirectory(path) {
+  const requested = resolve(path);
+  let directory = join(await canonicalDirectory(dirname(requested)), basename(requested));
+  const details = await lstat(directory).catch((error) => {
+    if (error.code !== 'ENOENT') throw error;
+  });
+  if (details && !details.isSymbolicLink()) directory = await realpath(directory);
+  if (
+    directory === parse(directory).root ||
+    directory === root ||
+    root.startsWith(directory + sep) ||
+    (directory.startsWith(root + sep) && directory !== join(root, 'dist'))
+  )
+    throw new Error('Build output must be dist/ or outside the repository.');
+  return directory;
 }
 
 if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {

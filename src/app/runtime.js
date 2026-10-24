@@ -8,59 +8,6 @@ export const MAX_FRAME_STEPS = 5;
 export const START_TIMEOUT = 5000;
 export const FRAME_TIMEOUT = 1500;
 
-function gameWorker(presets, engineFactory, compiler, maxSteps) {
-  let engine, tick;
-  self.onmessage = ({ data }) => {
-    try {
-      switch (data.type) {
-        case 'load': {
-          engine = engineFactory(presets, compiler);
-          const api = engine.api;
-          tick = new Function(
-            ...Object.keys(api),
-            data.source +
-              '\n;return typeof tick === "function" ? tick : null;\n//# sourceURL=playload-game.js',
-          )(...Object.values(api));
-          if (!tick) throw new Error('Define function tick()');
-          engine.step(tick);
-          postMessage({ type: 'ready', pixels: engine.pixels, sounds: engine.sounds() });
-          break;
-        }
-        case 'input':
-          engine?.input(data.mask);
-          break;
-        case 'frame': {
-          const steps = data.steps;
-          if (!Number.isInteger(steps) || steps < 1 || steps > maxSteps)
-            throw new Error('Invalid game step count.');
-          const sounds = [];
-          // Keep tick() at 60 Hz, but rasterize and transfer only the last
-          // state. Intermediate ticks still consume btnp and emit sound.
-          for (let frame = 0; frame < steps; frame++) {
-            engine.step(tick);
-            for (const command of engine.sounds()) sounds.push({ ...command, frame });
-          }
-          postMessage({ type: 'frame', pixels: engine.pixels, sounds, steps });
-          break;
-        }
-      }
-    } catch (error) {
-      const line = /playload-game\.js:(\d+):/.exec(error?.stack ?? '');
-      // WebKit gives anonymous Function bodies a line but no source URL in their stack.
-      const gameLine = line
-        ? Number(line[1])
-        : !error?.sourceURL && Number.isInteger(error?.line)
-          ? error.line
-          : null;
-      postMessage({
-        type: 'error',
-        message: String(error?.message ?? error),
-        line: gameLine === null ? null : Math.max(1, gameLine - 2),
-      });
-    }
-  };
-}
-
 // Catalog names and author metadata stay in the UI; workers only need artwork.
 const workerPresets = JSON.stringify(
   glyphs.map(({ ch, rows, ink, paper }) => ({ ch, rows, ink, paper })),
@@ -72,6 +19,7 @@ export class Runtime {
     this.onFrame = onFrame;
     this.onError = onError;
   }
+
   load(source) {
     this.stop();
     const code = `(${gameWorker})(${workerPresets},${createEngine},${compileScore},${MAX_FRAME_STEPS});`;
@@ -83,6 +31,7 @@ export class Runtime {
       this.fail({ message: String(error?.message ?? error) });
       return;
     }
+
     this.pending = true;
     this.starting = true;
     this.worker.onmessage = ({ data }) => {
@@ -93,6 +42,7 @@ export class Runtime {
         });
         return;
       }
+
       const steps = data?.type === 'ready' ? 1 : (data?.steps ?? 1);
       // Game code can post messages too, so accept only the reply being awaited.
       if (
@@ -124,6 +74,7 @@ export class Runtime {
         this.fail({ message: 'Invalid game frame.' });
         return;
       }
+
       clearTimeout(this.watchdog);
       this.pending = false;
       this.starting = false;
@@ -133,9 +84,11 @@ export class Runtime {
       event.preventDefault();
       this.fail({ message: event.message });
     };
+
     this.worker.postMessage({ type: 'load', source });
     this.watch();
   }
+
   watch() {
     if (this.suspended) return;
     this.watchdog = setTimeout(
@@ -143,15 +96,18 @@ export class Runtime {
       this.starting ? START_TIMEOUT : FRAME_TIMEOUT,
     );
   }
+
   suspend(value) {
     this.suspended = value;
     clearTimeout(this.watchdog);
     if (!value && this.worker && this.pending) this.watch();
   }
+
   fail(error) {
     this.stop();
     this.onError(error);
   }
+
   frame(steps = 1) {
     if (
       !this.worker ||
@@ -168,9 +124,11 @@ export class Runtime {
     this.watch();
     return true;
   }
+
   input(mask) {
     this.worker?.postMessage({ type: 'input', mask });
   }
+
   stop() {
     clearTimeout(this.watchdog);
     this.worker?.terminate();
@@ -191,11 +149,13 @@ export class Sound {
     this.paused = false;
     this.queue = [];
   }
+
   async init() {
     if (this.initializing) return this.initializing;
     this.initializing = this.setup();
     return this.initializing;
   }
+
   async setup() {
     try {
       if (globalThis.isSecureContext === false)
@@ -203,6 +163,7 @@ export class Sound {
       this.context = new AudioContext();
       if (!this.context.audioWorklet)
         throw new Error('AudioWorklet is not supported by this browser.');
+
       // Bind the serialized class explicitly; minification can rename its declaration.
       const source = `const AY = ${AY};\nclass Processor extends AudioWorkletProcessor {
         constructor() {
@@ -275,12 +236,14 @@ export class Sound {
       } finally {
         URL.revokeObjectURL(url);
       }
+
       this.node = new AudioWorkletNode(this.context, 'playload-ay', { outputChannelCount: [1] });
       this.monitor = this.context.createGain();
       this.monitor.gain.value = this.enabled ? 1 : 0;
       this.destination = this.context.createMediaStreamDestination();
       this.node.connect(this.monitor).connect(this.context.destination);
       this.node.connect(this.destination);
+
       this.node.port.onmessage = ({ data }) => this.onError(data.error);
       this.node.port.postMessage({ type: 'pause', value: this.paused });
       for (const command of this.queue) this.node.port.postMessage(command);
@@ -295,22 +258,27 @@ export class Sound {
       throw error;
     }
   }
+
   send(command) {
     if (this.failed) return;
     if (this.node) this.node.port.postMessage(command);
     else this.queue.push(command);
   }
+
   play(commands) {
     this.send({ type: 'play', commands });
   }
+
   reset() {
     this.queue = [];
     this.send({ type: 'reset' });
   }
+
   pause(value) {
     this.paused = value;
     this.send({ type: 'pause', value });
   }
+
   mute(value) {
     this.enabled = !value;
     if (this.monitor) {
@@ -321,13 +289,72 @@ export class Sound {
       gain.linearRampToValueAtTime(value ? 0 : 1, now + 0.004);
     }
   }
+
   unlock() {
     if (this.context?.state === 'suspended' || this.context?.state === 'interrupted')
       this.context.resume().catch(() => {});
   }
+
   close() {
     this.context?.close();
   }
+}
+
+function gameWorker(presets, engineFactory, compiler, maxSteps) {
+  let engine, tick;
+  self.onmessage = ({ data }) => {
+    try {
+      switch (data.type) {
+        case 'load': {
+          engine = engineFactory(presets, compiler);
+          const api = engine.api;
+          tick = new Function(
+            ...Object.keys(api),
+            data.source +
+              '\n;return typeof tick === "function" ? tick : null;\n//# sourceURL=playload-game.js',
+          )(...Object.values(api));
+          if (!tick) throw new Error('Define function tick()');
+          engine.step(tick);
+          postMessage({ type: 'ready', pixels: engine.pixels, sounds: engine.sounds() });
+          break;
+        }
+
+        case 'input':
+          engine?.input(data.mask);
+          break;
+
+        case 'frame': {
+          const steps = data.steps;
+          if (!Number.isInteger(steps) || steps < 1 || steps > maxSteps)
+            throw new Error('Invalid game step count.');
+
+          const sounds = [];
+          // Keep tick() at 60 Hz, but rasterize and transfer only the last
+          // state. Intermediate ticks still consume btnp and emit sound.
+          for (let frame = 0; frame < steps; frame++) {
+            engine.step(tick);
+            for (const command of engine.sounds()) sounds.push({ ...command, frame });
+          }
+
+          postMessage({ type: 'frame', pixels: engine.pixels, sounds, steps });
+          break;
+        }
+      }
+    } catch (error) {
+      const line = /playload-game\.js:(\d+):/.exec(error?.stack ?? '');
+      // WebKit gives anonymous Function bodies a line but no source URL in their stack.
+      const gameLine = line
+        ? Number(line[1])
+        : !error?.sourceURL && Number.isInteger(error?.line)
+          ? error.line
+          : null;
+      postMessage({
+        type: 'error',
+        message: String(error?.message ?? error),
+        line: gameLine === null ? null : Math.max(1, gameLine - 2),
+      });
+    }
+  };
 }
 
 function validEvent(event, length) {

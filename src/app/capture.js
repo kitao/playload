@@ -10,9 +10,11 @@ export class Capture {
     this.stream = canvas.captureStream(60);
     for (const track of audioStream?.getAudioTracks() ?? []) this.stream.addTrack(track);
   }
+
   get now() {
     return (this.suspended ? this.suspendedAt : performance.now()) - (this.heldTime ?? 0);
   }
+
   suspend(active) {
     if (!!this.suspended === active) return;
     if (active) {
@@ -29,6 +31,7 @@ export class Capture {
     }
     this.onChange?.();
   }
+
   leave(active) {
     if (!!this.leaving === active) return;
     this.leaving = active;
@@ -42,6 +45,7 @@ export class Capture {
       this.returnResolve = null;
     }
   }
+
   start() {
     if (!this.stream) return;
     const audio = this.nextAudio;
@@ -51,6 +55,7 @@ export class Capture {
     this.closed = false;
     this.error = null;
     this.rollover = false;
+
     this.begin();
     this.timer = setInterval(() => {
       if (this.error || this.closed || this.suspended || this.restarting || this.leaving) return;
@@ -60,9 +65,11 @@ export class Capture {
     }, 1000);
     this.onChange();
   }
+
   sessions() {
     return [this.session, this.audioSession].filter(Boolean);
   }
+
   begin(audio = false) {
     let intervalSupported = false;
     const options = {
@@ -87,6 +94,7 @@ export class Capture {
         mimeType: audio ? 'audio/webm;codecs=opus' : this.mime.replace(',opus', ''),
       });
     } else recorder ??= new MediaRecorder(this.stream, options);
+
     const parser = this.split ? new WebMBuffer() : this.buffer;
     parser.begin(this.now);
     const session = {
@@ -97,6 +105,7 @@ export class Capture {
       requests: [],
       pending: Promise.resolve(),
     };
+
     recorder.ondataavailable = ({ data }) => {
       const request = session.requests.shift();
       if (!request) return;
@@ -122,6 +131,7 @@ export class Capture {
             });
           } while (bytes === null);
           if (session.buffer !== this.buffer || this.closed) return;
+
           try {
             session.parser.append(new Uint8Array(bytes));
             if (this.split) {
@@ -151,6 +161,7 @@ export class Capture {
             }
             throw error;
           }
+
           session.buffer.trim(request.end);
           if (
             this.split &&
@@ -159,6 +170,7 @@ export class Capture {
               MAX_RECORDING_BYTES
           )
             throw recordingTooLarge();
+
           if (request.done) request.done();
           else if (request.resolve) {
             try {
@@ -176,6 +188,7 @@ export class Capture {
           request.reject?.(error);
         });
     };
+
     recorder.onstop = async () => {
       await session.pending;
       // fail() clears restarting, so an errored capture never restarts here.
@@ -192,24 +205,29 @@ export class Capture {
       this.restartResolve = null;
       this.onChange();
     };
+
     recorder.onerror = () => {
       if (!this.sessions().includes(session) || this.closed) return;
       this.fail(new Error('Video recording failed'));
     };
+
     if (audio) this.audioSession = session;
     else {
       this.session = session;
       this.recorder = recorder;
     }
+
     recorder.start();
     if (this.suspended) recorder.pause();
     if (this.split && !audio && !this.audioSession && this.stream.getAudioTracks().length)
       this.begin(true);
   }
+
   flush(request = { end: this.now }) {
     const sessions = this.sessions();
     if (this.split && request.resolve) {
       let remaining = sessions.length;
+
       const done = () => {
         if (--remaining) return;
         try {
@@ -218,10 +236,12 @@ export class Capture {
           request.reject(error);
         }
       };
+
       for (const session of sessions)
         this.flushSession(session, { end: request.end, done, reject: request.reject });
     } else for (const session of sessions) this.flushSession(session, { ...request });
   }
+
   flushSession(session, request) {
     if (this.error) {
       request.reject?.(this.error);
@@ -239,11 +259,13 @@ export class Capture {
       request.reject?.(error);
     }
   }
+
   stop(session = this.session) {
     if (!['recording', 'paused'].includes(session?.recorder.state)) return;
     session.requests.push({ end: this.now, final: true });
     session.recorder.stop();
   }
+
   audio(stream) {
     if (!stream || !this.stream || this.stream.getAudioTracks().length || this.closed || this.error)
       return;
@@ -259,6 +281,7 @@ export class Capture {
     this.nextAudio = stream;
     this.restartVideo();
   }
+
   restartVideo() {
     if (this.restarting || this.error || this.closed) return;
     this.restarting = true;
@@ -267,6 +290,7 @@ export class Capture {
     });
     this.stop();
   }
+
   fail(error) {
     if (this.closed || this.error) return;
     this.error = error;
@@ -278,25 +302,31 @@ export class Capture {
     for (const session of this.sessions()) this.stop(session);
     this.onChange();
   }
+
   get seconds() {
     return this.closed ? 0 : (this.buffer?.seconds(this.now) ?? 0);
   }
+
   async save() {
     if (this.error) throw this.error;
     if (this.saveRequest) throw new Error('Video is already being saved');
+
     const request = {};
     this.saveRequest = request;
     let timer;
+
     try {
       const blob = await new Promise((resolve, reject) => {
         request.resolve = resolve;
         request.reject = reject;
         timer = setTimeout(() => reject(new Error('No video frames were received')), 10000);
+
         const flush = () => {
           if (this.saveRequest !== request) return;
           request.end = this.now;
           this.flush(request);
         };
+
         if (this.restarting) this.restart.then(flush);
         else flush();
       });
@@ -307,6 +337,7 @@ export class Capture {
       if (this.saveRequest === request) this.saveRequest = null;
     }
   }
+
   clear() {
     this.closed = true;
     this.leave(false);
@@ -321,6 +352,7 @@ export class Capture {
     for (const session of this.sessions()) this.stop(session);
     this.audioSession = null;
   }
+
   close() {
     this.clear();
     for (const track of this.stream?.getVideoTracks() ?? []) track.stop();
