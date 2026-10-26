@@ -29,7 +29,7 @@
 - 160 × 144 pixels, 8 colors, CRT display
 - Built-in 8 × 8 Unicode letters, symbols and emoji
 - ZX 128 PLAY-compatible, 3 sound channels
-- 4-direction and 2-button input
+- 4-direction and 2-button input (⬆ ⬇ ⬅ ➡ Ⓐ Ⓑ)
 - The URL’s payload is the whole game — Playable Payload... **Playload!**
 
 [Source code](https://github.com/kitao/playload)

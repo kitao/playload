@@ -21,7 +21,9 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   const pixels = new Uint8Array(width * height);
   const characters = Object.create(null),
     sprites = [],
-    cache = new Map();
+    cache = new Map(),
+    patterns = new WeakMap(),
+    editedCharacters = new Set();
   const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
   let held = 0,
     pressed = 0,
@@ -59,13 +61,14 @@ export function createEngine(presets = [], compileScore = (s) => s) {
 
   // Character data
 
-  function colorPair(initial, inherit = false) {
+  function colorPair(initial, inherit = false, edit = () => true) {
     const validate = (value) => (inherit && value == null ? null : color(value));
     const values = initial.map(validate);
     const pair = new Proxy(values, {
       set(target, index, value) {
         if (index !== '0' && index !== '1') throw new RangeError('Colors have two entries');
-        target[index] = validate(value);
+        const next = validate(value);
+        if (edit()) target[index] = next;
         return true;
       },
       deleteProperty() {
@@ -82,19 +85,76 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         if (!Array.isArray(value) || value.length !== 2)
           throw new TypeError('Colors need [col1, col2]');
         const next = Array.from(value, validate);
+        if (!edit()) return;
         values[0] = next[0];
         values[1] = next[1];
       },
     };
   }
 
+  // Keep byte-array editing, including saved references and subarrays, behind
+  // the same per-character budget. Rendering reads the private bytes directly.
+  function patternView(pattern, edit) {
+    const mutators = ['set', 'fill', 'copyWithin', 'reverse', 'sort'];
+    const view = new Proxy(pattern, {
+      get(target, key) {
+        // Exposing the backing buffer would allow writes outside the budget.
+        if (key === 'buffer') return target.buffer.slice(0);
+        if (key === 'subarray') return (...args) => patternView(target.subarray(...args), edit);
+        const value = Reflect.get(target, key, target);
+        if (typeof value !== 'function' || key === 'constructor') return value;
+        return (...args) => {
+          if (mutators.includes(key)) {
+            const next = target.slice();
+            const result = value.apply(next, args);
+            if (edit()) target.set(next);
+            return result === next ? view : result;
+          }
+          // Array callbacks must receive the guarded view as their array argument.
+          if (typeof args[0] === 'function') {
+            const callback = args[0];
+            args[0] = function (...values) {
+              return callback.apply(
+                this,
+                values.map((item) => (item === target ? view : item)),
+              );
+            };
+          }
+          const result = value.apply(target, args);
+          return result === target ? view : result;
+        };
+      },
+      set(target, key, value) {
+        const next = target.slice();
+        const result = Reflect.set(next, key, value);
+        if (result && edit()) target.set(next);
+        return result;
+      },
+      defineProperty(target, key, descriptor) {
+        const next = target.slice();
+        const result = Reflect.defineProperty(next, key, descriptor);
+        if (result && edit()) target.set(next);
+        return result;
+      },
+    });
+    return view;
+  }
+
   class PcgElem {
     constructor(rows = new Uint8Array(8), col = [7, 0]) {
       const pattern = new Uint8Array(rows);
+      patterns.set(this, pattern);
+      const edit = () => {
+        if (editedCharacters.has(this)) return true;
+        if (editedCharacters.size >= 32) return false;
+        editedCharacters.add(this);
+        return true;
+      };
+      const view = patternView(pattern, edit);
       Object.defineProperties(this, {
         pat: {
           enumerable: true,
-          get: () => pattern,
+          get: () => view,
           set(value) {
             if (typeof value === 'string') {
               if (!/^[0-9a-f]{16}$/i.test(value))
@@ -110,10 +170,10 @@ export function createEngine(presets = [], compileScore = (s) => s) {
             ) {
               throw new TypeError('Pattern needs 8 row bytes');
             }
-            pattern.set(value);
+            if (edit()) pattern.set(value);
           },
         },
-        col: colorPair(col),
+        col: colorPair(col, false, edit),
       });
       Object.preventExtensions(this);
     }
@@ -222,6 +282,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     y = coordinate(y);
     if (typeof str !== 'string') throw new TypeError('Text must be a string');
     col = color(col);
+    if (sprites.length >= 128) return;
 
     // Keep individual ASCII, kana and emoji sprites on the existing fast path.
     if (
@@ -242,6 +303,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           continue;
         }
         sprites.push({ x, y, chr: characterKey(segment), col });
+        if (sprites.length === 128) break;
         x += 8;
       }
     } catch (error) {
@@ -267,7 +329,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   // Rasterization
 
   function draw(chr, x, y, col1, col2) {
-    const pattern = lookup(chr).pat;
+    const pattern = patterns.get(lookup(chr));
     for (let row = 0; row < 8; row++) {
       const py = y + row;
       if (py < 0 || py >= height) continue;
@@ -326,6 +388,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         tick();
       } finally {
         pressed = 0;
+        // Top-level setup shares the first frame's budget, as sound commands do.
+        editedCharacters.clear();
       }
     },
     sounds() {

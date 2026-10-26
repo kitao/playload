@@ -64,6 +64,7 @@ test('the bank follows the declared source repertoires within its transfer budge
     .map((cp) => key(String.fromCodePoint(cp)));
   const allowed = new Set([
     ...Array.from({ length: 95 }, (_, i) => String.fromCodePoint(32 + i)),
+    ...'⬆⬇⬅➡ⒶⒷ',
     ...symbols,
     ...emojis,
     ...standard.codepoints
@@ -88,7 +89,7 @@ test('the bank follows the declared source repertoires within its transfer budge
       g.rows.every((n) => Number.isInteger(n) && n >= 0 && n <= 255),
       g.ch,
     );
-    assert(['unscii', 'public-pixel', 'misaki'].includes(g.source), g.ch);
+    assert(['unscii', 'public-pixel', 'misaki', 'playload'].includes(g.source), g.ch);
     assert(g.rows.some(Boolean) || [' ', '\u00A0', '\u2800'].includes(g.ch), g.ch);
     assert(['letters', 'symbols', 'emoji', 'kana'].includes(g.group));
   }
@@ -132,6 +133,34 @@ test('the complete emoji-test.txt retains its official original hash', () => {
       .digest('hex'),
     sources['emoji-test.txt'].originalSHA256,
   );
+});
+
+test('the six control symbols lead Symbols and draw with the caller colors', () => {
+  const controls = [...'⬆⬇⬅➡ⒶⒷ'];
+  assert.deepEqual(
+    glyphs
+      .filter((g) => g.group === 'symbols')
+      .slice(0, 6)
+      .map((g) => g.ch),
+    controls,
+  );
+  assert.deepEqual(
+    glyphs.filter((g) => g.source === 'playload').map((g) => g.ch),
+    controls,
+  );
+  const engine = createEngine(glyphs);
+  engine.api.put(0, 0, controls.join(''), 5, 2);
+  for (const [index, ch] of controls.entries()) {
+    const glyph = bank.get(ch);
+    assert.equal(glyph.ink, null);
+    assert.equal(glyph.paper, null);
+    // Match the capitals' top/right spacing so controls fit inline without touching.
+    assert.equal(glyph.rows[0], 0);
+    assert(glyph.rows.every((row) => !(row & 1)));
+    for (let y = 0; y < 8; y++)
+      for (let x = 0; x < 8; x++)
+        assert.equal(engine.pixels[y * 160 + index * 8 + x], glyph.rows[y] & (128 >> x) ? 5 : 2);
+  }
 });
 
 test('borrowed artwork keeps every original pixel from its credited native font', () => {
@@ -180,6 +209,10 @@ test('emoji presentation selectors draw the same authored pixels', () => {
     ['♥', '♥︎'],
     ['👾', '👾️'],
     ['✈', '✈️'],
+    ['⬆', '⬆️'],
+    ['⬇', '⬇️'],
+    ['⬅', '⬅️'],
+    ['➡', '➡️'],
   ]) {
     const first = createEngine(glyphs),
       second = createEngine(glyphs);

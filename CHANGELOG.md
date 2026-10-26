@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.3
+
+- Add six built-in control symbols at the start of the Symbols catalog.
+- Use circled A and B consistently in the input specifications, API reference, and keyboard hints.
+- Limit sprites to 128 characters and PCG edits to 32 distinct characters per frame, ignoring excess characters.
+
 ## 0.9.2
 
 - Improve the homepage layout and placement of the app launch link.

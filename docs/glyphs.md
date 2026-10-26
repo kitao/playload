@@ -1,7 +1,8 @@
 # Font coverage
 
-The built-in bank contains **2,460 canonical 8×8 cells**. Public Pixel supplies text;
+The built-in bank contains **2,466 canonical 8×8 cells**. Public Pixel supplies text;
 Unscii and Public Pixel supply symbols and emoji; Misaki Gothic supplies kana.
+Playload supplies six original control symbols.
 Original fonts, licenses and conversion records are in `data/fonts/`;
 [Playload's website](https://kitao.dev/playload/) lists the source projects and licenses.
 
@@ -25,6 +26,14 @@ General_Category is S: mathematics, currency, modifiers or other symbols. The **
 source symbols** include arrows, box drawing, blocks, shapes, braille and legacy-computer
 graphics. Braille Pattern Blank (U+2800) retains its empty bitmap.
 
+The six controls **⬆ ⬇ ⬅ ➡ Ⓐ Ⓑ** are an explicit addition to that source repertoire.
+Their original MIT-licensed artwork is in `data/fonts/playload-controls.hex`, in input order:
+up, down, left, right, A, B. All six lead the Symbols catalog, including the four emoji arrows,
+so authors can find and copy the complete control set together. The direction symbols are
+solid arrows; A/B are circles with the letter cut out of the foreground.
+Each uses a 7×7 area with the top row and right column blank, matching Public Pixel's capitals
+and keeping adjacent controls separate. Colors follow `put` and `pcg` like other symbols.
+
 Emoji includes every fully-qualified Unicode 17.0 emoji that becomes one code point after
 removing FE0E/FE0F and has native artwork in those two fonts: **132 characters**.
 ZWJ sequences, flags, keycaps, skin-tone sequences and missing source glyphs are outside
@@ -36,17 +45,19 @@ spaces and symbols. Letters come entirely from Public Pixel, so the bank does no
 complete WGL4 coverage. The frozen list and source-page hashes are in `data/fonts/wgl4.json`.
 
 Emoji takes catalog precedence: 129 of the 132 emoji also belong to the source-symbol set.
-The final catalogs contain **953 alphabet/number cells, 1,198 symbols, 132 emoji and 177 kana**.
+The final catalogs contain **953 alphabet/number cells, 1,204 symbols, 132 emoji and 177 kana**.
 Encoded code-point counts differ from cell counts because canonically equivalent forms share
 one NFC key, and emoji variation selectors do not add cells.
 
 ## Bitmap selection
 
-The first available source supplies the whole bitmap:
+The first available source supplies the whole bitmap, with the six controls using Playload's
+original artwork:
 
-1. ASCII, alphabet/number cells and source-supported text punctuation: Public Pixel alone.
-2. Emoji, other symbols and pictograms: Unscii, then Public Pixel.
-3. Kana: Misaki Gothic.
+1. The six control symbols: Playload alone.
+2. ASCII, alphabet/number cells and source-supported text punctuation: Public Pixel alone.
+3. Emoji, other symbols and pictograms: Unscii, then Public Pixel.
+4. Kana: Misaki Gothic.
 
 Pixels from different fonts are not mixed within a character. All 95 printable ASCII cells
 use Public Pixel. Each exported glyph records its source. Composed and decomposed forms resolve
@@ -58,6 +69,7 @@ Other artwork can be defined through `pcg[chr].pat`.
 | Public Pixel 1.24 | 1,153 | 953 alphabet/number cells, 164 symbols, 36 emoji |
 | Unscii-8          | 1,130 | 1,034 symbols, 96 emoji                          |
 | Misaki Gothic     |   177 | Kana                                             |
+| Playload          |     6 | Control symbols                                  |
 
 ## Conversion and size
 
@@ -67,8 +79,8 @@ are restored within its native 8×8 cell; the kana-only BDF retains the original
 Unscii's row bytes are used directly. These conversions do not blur, scale or crop artwork;
 `data/fonts/misaki-conversion.json` records affected cells and positions.
 
-The module is **367,804 bytes**, including names and source metadata; local default gzip gives
-**36,425 bytes**. Bitmap rows occupy **19,680 bytes**. A **48 KiB gzip budget** checks module size
+The module is **368,687 bytes**, including names and source metadata; local default gzip gives
+**36,569 bytes**. Bitmap rows occupy **19,728 bytes**. A **48 KiB gzip budget** checks module size
 without cutting the declared repertoire to a character quota. Built-in patterns add no bytes
 to a game's shared source URL; actual transfer compression depends on the host.
 
@@ -134,7 +146,8 @@ frozen inputs. The images are not bundled. Python and Pillow are unnecessary for
 `scripts/import-misaki.py` uses Python's standard library and the hash-checked author archive.
 
 `data/fonts/unicode-source.json` records original hashes and URLs for Unicode names and emoji
-definitions. Original name records are retained for source-font cells and the WGL4 baseline.
+definitions. Original name records are retained for source-font cells, the WGL4 baseline and
+the six Playload controls.
 [The coverage report](glyph-coverage.json) records input/output hashes, sources and counts.
 
 ## Extending coverage

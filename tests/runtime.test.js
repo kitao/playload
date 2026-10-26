@@ -492,6 +492,44 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   );
 });
 
+test('serialized workers reset sprite and PCG limits on every tick of a frame batch', async (t) => {
+  mockWorker(t);
+  const runtime = new Runtime(() => {}, assert.fail);
+  t.after(() => runtime.stop());
+  runtime.load('function tick() {}');
+  const source = await (await fetch(runtime.worker.url)).text();
+  const messages = [];
+  const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
+  runInNewContext(source, context);
+  context.self.onmessage({
+    data: {
+      type: 'load',
+      source: `
+      let frame = 0;
+      function tick() {
+        const base = 0xe000 + frame++ * 33;
+        for (let i = 0; i < 33; i++) pcg[String.fromCodePoint(base + i)].pat.fill(255);
+        if (pcg[String.fromCodePoint(base + 31)].pat[0] !== 255) throw Error('PCG not reset');
+        if (pcg[String.fromCodePoint(base + 32)].pat[0] !== 0) throw Error('PCG overflow');
+        cls(0);
+        for (let i = 0; i < 129; i++)
+          spr(i % 16 * 8, Math.floor(i / 16) * 8, String.fromCodePoint(base), 6);
+      }
+    `,
+    },
+  });
+  context.self.onmessage({ data: { type: 'frame', steps: MAX_FRAME_STEPS } });
+  assert.deepEqual(
+    messages.map((message) => message.type),
+    ['ready', 'frame'],
+  );
+  for (const message of messages)
+    assert.deepEqual(
+      message.pixels,
+      Uint8Array.from({ length: 160 * 144 }, (_, i) => (i % 160 < 128 && i < 160 * 64 ? 6 : 0)),
+    );
+});
+
 test('runtime refuses extra outstanding batches and rejects invalid catch-up sound positions', (t) => {
   mockWorker(t);
   const errors = t.mock.fn();

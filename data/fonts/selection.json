@@ -6,6 +6,9 @@
   "symbols": {
     "category": "S"
   },
+  "controls": {
+    "font": "playload-controls.hex"
+  },
   "emoji": {
     "reference": "emoji-test.txt",
     "colors": "twemoji-colors.json"

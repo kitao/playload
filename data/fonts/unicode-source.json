@@ -2,7 +2,7 @@
   "UnicodeData.txt": {
     "url": "https://www.unicode.org/Public/17.0.0/ucd/UnicodeData.txt",
     "originalSHA256": "2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c",
-    "selection": "Unmodified source lines for all encoded cells in the fixed source fonts and WGL4 repertoire, including CJK range endpoints for the two Public Pixel ideographs."
+    "selection": "Unmodified source lines for all encoded cells in the fixed source fonts, WGL4 repertoire and six Playload controls, including CJK range endpoints for the two Public Pixel ideographs."
   },
   "emoji-test.txt": {
     "url": "https://www.unicode.org/Public/17.0.0/emoji/emoji-test.txt",

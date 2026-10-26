@@ -21,3 +21,5 @@
   <a href="https://kitao.dev/playload/"><img src="assets/images/info-emoji.png" alt="Emoji alongside their built-in 8 by 8 pixel artwork" width="400"></a>
   <a href="https://kitao.dev/playload/"><img src="assets/images/info-examples.png" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
 </p>
+
+4-direction and 2-button input (⬆ ⬇ ⬅ ➡ Ⓐ Ⓑ)

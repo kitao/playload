@@ -1,20 +1,21 @@
 {
-  "total": 2460,
+  "total": 2466,
   "groups": {
     "emoji": 132,
-    "symbols": 1198,
+    "symbols": 1204,
     "letters": 953,
     "kana": 177
   },
   "sources": {
     "unscii": 1130,
     "public-pixel": 1153,
+    "playload": 6,
     "misaki": 177
   },
   "sizes": {
-    "moduleBytes": 367804,
-    "gzipBytes": 36425,
-    "bitmapBytes": 19680,
+    "moduleBytes": 368687,
+    "gzipBytes": 36569,
+    "bitmapBytes": 19728,
     "catalogFontBytes": 6308
   },
   "catalogFont": {
@@ -703,9 +704,10 @@
     ]
   },
   "inputSHA256": {
-    "selection.json": "f3c743b2e19b4eefd813c4a059bbeea6ffce5e5f742ee17c3bc54709b90afc46",
+    "selection.json": "60b060d055cf47abaeb6474dc42fb2449d0e241d5d46903f3f59227b5a8dd7c6",
+    "playload-controls.hex": "535ed164d2b88e67301b3a05ed23da6ead2449055be4ed640d626e1d44bca5a8",
     "wgl4.json": "7fa462bde8377aae5662126f8a24d4c3bb49c2b7e9fa8c6c841b3d118ea8fbcb",
-    "unicode-source.json": "db99969c2dc275af9927a6b0f5973e077037d354825e82697d42b5187e0f5f63",
+    "unicode-source.json": "8e2d55934ace4f17f520265d525faa39f8dd271c2b4791a0938f3d8d78d544d6",
     "unicode-LICENSE.txt": "6875c2de1445bdf16095808f261bc95c66384e08f054af0f4508cb754e99ed5d",
     "unscii-8.hex": "03094f7fbab7085cf6a6b624cee61e47e71ce5d0c2f308c2f4436afdc17f776c",
     "unscii-REVISION": "39a2c009eb5d00bcfc9473be5d10848c483c1a32cb8e9fc7eced7faa5caac1c8",
@@ -714,7 +716,7 @@
     "PublicPixel.ttf": "931eb4bf9ef25a6d4bb31783b8681712a42b7408988d53971a3070a2f7443ccf",
     "public-pixel-LICENSE.txt": "f4e7f373b9b996950337e8d41a4a2939c2d90b7725e9baf3d5084a22717ad328",
     "public-pixel-8.hex": "c232be25981e5f49aa3439371f5b7dec36fdc37c817b8cc624bf77c348e2b98c",
-    "UnicodeData.txt": "c55225236d6f8867bb47b537fb2a007e32f8d45b7ed28d557b4406901a24fb07",
+    "UnicodeData.txt": "e579b40548dd0754979acb71f1c290ed3e15b43fce6b33b561f47ac7f7b5d11d",
     "emoji-test.txt": "1d8a944f88d7952f7ef7c5167fef3c67995bcae24543949710231b03a201acda",
     "twemoji-colors.json": "2eae9c7425229c74f6d4d3832ead5f9cf0d22ff0ad83a51d175bf9f3869fd186",
     "twemoji-color-LICENSE.txt": "8ae9438818c26e4873b91d8c6ad620526c011e27e125677f13031eda903f007c",
@@ -730,5 +732,5 @@
     "alphabetFont": "Public Pixel 1.24",
     "alphabetCodePoints": 946
   },
-  "outputSHA256": "d29cd114fdb97a397d6e8200ebdc236daa356e414b4994e4e94b082215f22bf3"
+  "outputSHA256": "a93cb1f9f5938976b37a865bf0bfd7b3c1dcad35a24de69c97ac1f55476b3ac0"
 }

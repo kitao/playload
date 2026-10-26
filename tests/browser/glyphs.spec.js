@@ -2,6 +2,42 @@ import { test, expect } from './fixtures.js';
 
 import { readFile } from 'node:fs/promises';
 
+test('the six control symbols appear first and copy as usable game text', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.copied = [];
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: async (text) => window.copied.push(text) },
+    });
+  });
+  await page.goto('/playload/app/');
+  await page.getByRole('tab', { name: 'Info', exact: true }).click();
+  await page.getByRole('tab', { name: 'Symbols', exact: true }).click();
+  const controls = [...'⬆⬇⬅➡ⒶⒷ'];
+  for (const [index, ch] of controls.entries()) {
+    const glyph = page.locator('#catalog button').nth(index);
+    await expect(glyph).toHaveAttribute('data-glyph', ch);
+    await glyph.click();
+    await expect(page.locator('#status')).toHaveText('Copied');
+  }
+  expect(await page.evaluate(() => window.copied)).toEqual(controls);
+  await page.getByRole('tab', { name: 'Play', exact: true }).click();
+  await page
+    .locator('#editor')
+    .fill('function tick() { cls(0); put(0, 0, "' + controls.join('') + '"); }');
+  await page.locator('#run').click();
+  await expect(page.locator('#pause')).toBeEnabled();
+  await expect(page.locator('#error-notice')).toBeHidden();
+  await page.locator('#crt').click();
+  await expect
+    .poll(() =>
+      page.locator('#display').evaluate((canvas) => {
+        const ctx = canvas.getContext('2d');
+        return Array.from({ length: 6 }, (_, i) => ctx.getImageData(i * 32 + 12, 4, 1, 1).data[0]);
+      }),
+    )
+    .toEqual(Array(6).fill(220));
+});
+
 test('alphabet previews and clipboard preserve the original letter case', async ({ page }) => {
   await page.addInitScript(() => {
     window.copied = [];

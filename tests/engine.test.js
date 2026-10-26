@@ -287,6 +287,57 @@ test('empty sprite strings draw nothing and later sprite calls cover the entire 
   assert.equal(pixel(engine, 17, 10), 4);
 });
 
+test('a frame draws only the first 128 sprite characters and resets the limit next frame', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  for (const ch of ['X', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
+  engine.step(() => {
+    for (let i = 0; i < 128; i++)
+      api.spr((i % 16) * 8, Math.floor(i / 16) * 8, i % 2 ? '👾' : 'X', 6);
+    api.spr(0, 0, 'X', 3);
+    api.spr(128, 0, 'X', 3);
+  });
+  assert.deepEqual(
+    engine.pixels,
+    Uint8Array.from({ length: 160 * 144 }, (_, i) => (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+  );
+  engine.step(() => api.spr(128, 0, 'X', 5));
+  assert.equal(pixel(engine, 0), 4);
+  assert.equal(pixel(engine, 128), 5);
+});
+
+test('sprite strings share the frame limit and ignore the remainder of an oversized call', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  api.pcg.X.pat = 'FFFFFFFFFFFFFFFF';
+  engine.step(() => {
+    api.spr(-2048, 0, 'X'.repeat(126), 6);
+    api.spr(0, 0, 'X\r\nXX', 3);
+    api.spr(8, 8, 'X', 5);
+  });
+  assert.equal(pixel(engine, 0, 0), 3);
+  assert.equal(pixel(engine, 0, 8), 3);
+  assert.equal(pixel(engine, 8, 8), 4);
+});
+
+test('the sprite limit counts graphemes, excluding newlines and presentation selectors', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  api.cls(4);
+  for (const ch of ['é', '⛩', '👨‍👩‍👧‍👦', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
+  const row = 'e\u0301⛩️👨‍👩‍👧‍👦👾'.repeat(4) + '\r\n';
+  engine.step(() => {
+    api.spr(0, 0, row.repeat(8) + '👾', 6);
+    api.spr(0, 64, '👾', 3);
+  });
+  assert.deepEqual(
+    engine.pixels,
+    Uint8Array.from({ length: 160 * 144 }, (_, i) => (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+  );
+});
+
 test('sprite zero bits are transparent and color zero is opaque black', () => {
   const engine = createEngine(),
     { api } = engine;
@@ -489,6 +540,146 @@ test('color pairs retain references and reject malformed assignments without par
   }, RangeError);
   api.scr[0][0].col = [null, null];
   assert.deepEqual([...api.scr[0][0].col], [null, null]);
+});
+
+test('PCG edits count 32 distinct characters, sharing the budget for patterns and colors', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  const chars = Array.from({ length: 33 }, (_, i) => String.fromCharCode(65 + i));
+  const saved = chars.map((ch) => api.pcg[ch]);
+  api.put(0, 0, chars.slice(0, 20).join(''));
+  api.put(0, 1, chars.slice(20).join(''));
+  engine.step(() => {
+    for (const element of saved) {
+      for (let row = 0; row < 8; row++) element.pat[row] = 255;
+      element.col = [6, 1];
+      element.col[0] = 5;
+    }
+    assert.deepEqual([...saved[31].pat], Array(8).fill(255));
+    assert.deepEqual([...saved[32].pat], Array(8).fill(0));
+    assert.deepEqual([...saved[32].col], [7, 0]);
+    // The first character can still change after all 32 slots have been used.
+    saved[0].pat = '8000000000000000';
+    saved[0].col = [3, 2];
+  });
+  assert.equal(pixel(engine, 0), 3);
+  assert.equal(pixel(engine, 1), 2);
+  assert.equal(pixel(engine, 88, 8), 5);
+  assert.equal(pixel(engine, 96, 8), 0);
+  engine.step(() => {
+    saved[32].pat.fill(255);
+    saved[32].col[0] = 4;
+  });
+  assert.equal(pixel(engine, 96, 8), 4);
+  assert.equal(pixel(engine, 88, 8), 5);
+});
+
+test('PCG reads and rejected writes use no slots, and normalized aliases share one slot', () => {
+  const engine = createEngine(glyphs),
+    { api } = engine;
+  engine.step(() => {
+    for (const glyph of glyphs) {
+      assert.equal(api.pcg[glyph.ch].pat.length, 8);
+      assert.equal(api.pcg[glyph.ch].col.length, 2);
+    }
+    for (let i = 0; i < 40; i++) {
+      const element = api.pcg[String.fromCodePoint(0xe000 + i)];
+      assert.throws(() => {
+        element.pat = 'bad';
+      }, TypeError);
+      assert.throws(() => {
+        element.col = [3, 8];
+      }, RangeError);
+      assert.throws(() => {
+        element.col[0] = 8;
+      }, RangeError);
+      assert.throws(() => element.pat.set(Array(9).fill(0)), RangeError);
+    }
+    api.pcg['é'].pat[0] = 128;
+    api.pcg['e\u0301'].col[0] = 3;
+    api.pcg['⛩'].pat = '8000000000000000';
+    api.pcg['⛩️'].col = [4, 0];
+    api.pcg['👨‍👩‍👧‍👦'].pat.fill(255);
+    for (let i = 0; i < 29; i++) api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 255;
+    api.pcg['\ue01d'].pat[0] = 255;
+    assert.equal(api.pcg['\ue01c'].pat[0], 255);
+    assert.equal(api.pcg['\ue01d'].pat[0], 0);
+  });
+});
+
+test('saved PCG byte views and array editing methods obey the same character limit', () => {
+  const edits = [
+    (pat) => {
+      pat[0] = 128;
+    },
+    (pat) => pat.set([128]),
+    (pat) => pat.fill(128),
+    (pat) => pat.copyWithin(0, 1, 2),
+    (pat) => pat.reverse(),
+    (pat) => pat.sort((a, b) => b - a),
+    (pat) => {
+      pat.subarray(0, 1)[0] = 128;
+    },
+    (pat) => pat.subarray(0, 1).fill(128),
+    (pat) => Object.defineProperty(pat, '0', { value: 128 }),
+    (pat) =>
+      pat.forEach((value, index, rows) => {
+        if (index === 0) rows[0] = 128;
+      }),
+    (pat) => {
+      pat.valueOf()[0] = 128;
+    },
+  ];
+  for (const edit of edits) {
+    const engine = createEngine([{ ch: 'X', rows: [0, 128, 0, 0, 0, 0, 0, 128] }]),
+      { api } = engine,
+      saved = api.pcg.X.pat;
+    engine.step(() => {
+      for (let i = 0; i < 32; i++) api.pcg[String.fromCodePoint(0xe000 + i)].col = [3, 1];
+      edit(saved);
+      assert.equal(saved[0], 0);
+      assert.deepEqual([...saved], [0, 128, 0, 0, 0, 0, 0, 128]);
+    });
+    engine.step(() => edit(saved));
+    assert.equal(saved[0], 128);
+    assert.equal(api.pcg.X.pat, saved);
+  }
+});
+
+test('PCG copies and buffer snapshots do not expose uncounted mutable pattern data', () => {
+  const { api } = createEngine(),
+    pat = api.pcg.X.pat;
+  pat[0] = 128;
+  new Uint8Array(pat.buffer).fill(255);
+  pat.slice().fill(255);
+  pat.map(() => 255);
+  assert.deepEqual([...pat], [128, 0, 0, 0, 0, 0, 0, 0]);
+  pat.subarray(1, 3).set([64, 32]);
+  assert.deepEqual([...pat], [128, 64, 32, 0, 0, 0, 0, 0]);
+});
+
+test('PCG setup shares the first frame budget; failed frames reset it and games are independent', () => {
+  const first = createEngine(),
+    second = createEngine();
+  for (let i = 0; i < 32; i++) first.api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 255;
+  first.step(() => {
+    first.api.pcg.X.pat[0] = 128;
+    second.api.pcg.X.pat[0] = 128;
+    assert.equal(first.api.pcg.X.pat[0], 0);
+    assert.equal(second.api.pcg.X.pat[0], 128);
+  });
+  assert.throws(
+    () =>
+      first.step(() => {
+        for (let i = 0; i < 32; i++) first.api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 64;
+        throw new Error('failed tick');
+      }),
+    /failed tick/,
+  );
+  first.step(() => {
+    first.api.pcg.X.pat[0] = 128;
+  });
+  assert.equal(first.api.pcg.X.pat[0], 128);
 });
 
 test('each game has independent screen, sprites, PCG, input, and sound', () => {

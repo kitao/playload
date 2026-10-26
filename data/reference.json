@@ -15,14 +15,14 @@
         },
         {
           "name": "spr(x, y, str, col)",
-          "description": "8px-spaced text; newlines, transparent, this tick.",
+          "description": "8px-spaced text; newlines, transparent, this tick; max 128 characters per frame.",
           "example": "spr(76, 68, \"👾\", 6)\nspr(72, 64, \"AB\\nCD\", 6)"
         },
         {
           "name": "btn(id)",
           "description": "True while the button is held.",
           "example": "if (btn(3)) put(1, 1, \"→\") // Held",
-          "buttons": ["0 ↑ · 1 ↓ · 2 ← · 3 →", "4 A (Z/J) · 5 B (X/K)"]
+          "buttons": ["0 ↑ · 1 ↓ · 2 ← · 3 →", "4 Ⓐ (Z/J) · 5 Ⓑ (X/K)"]
         },
         {
           "name": "btnp(id)",
@@ -41,7 +41,7 @@
       "entries": [
         {
           "name": "pcg[chr]",
-          "description": "8-byte pattern and foreground/background colors.",
+          "description": "8-byte pattern and foreground/background colors; edit up to 32 characters per frame.",
           "example": "pcg[\"↑\"].pat[0] = 0x18\npcg[\"↑\"].pat = \"183c7e1818181800\"\npcg[\"👾\"].col = [6, 0]"
         },
         {
