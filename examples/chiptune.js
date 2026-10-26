@@ -1,5 +1,5 @@
 // @title Chiptune
-// Three voices play a complete song. A stops / restarts; B resets the song.
+// Three voices play a complete song. Ⓐ stops / restarts; Ⓑ resets the song.
 
 let playing = true;
 let frame = 0;
@@ -100,7 +100,7 @@ function drawVoices() {
       put(2 + i, 10 + ch * 2, '■', col);
     }
   }
-  put(2, 16, playing ? 'A STOP  B RESET' : 'A PLAY  B RESET');
+  put(2, 16, playing ? 'Ⓐ STOP  Ⓑ RESET' : 'Ⓐ PLAY  Ⓑ RESET');
 }
 
 put(6, 2, 'CHIPTUNE', 6);

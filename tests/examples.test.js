@@ -89,7 +89,7 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
     engine.api.scr[17]
       .map((cell) => cell.chr)
       .join('')
-      .includes('A START'),
+      .includes('Ⓐ START'),
   );
   game.feed();
   step(1 << 4, 8);
@@ -115,7 +115,7 @@ test('Snake grows, rejects a queued reversal, pauses, loses and restarts', async
     engine.api.scr[17]
       .map((cell) => cell.chr)
       .join('')
-      .includes('A RESUME'),
+      .includes('Ⓐ RESUME'),
   );
   const paused = structuredClone(game.state());
   step(0, 30);
@@ -462,7 +462,7 @@ test('Gems uses every field cell while keeping collectibles and movement out of 
     engine.api.scr[16]
       .map((cell) => cell.chr)
       .join('')
-      .includes('A DASH'),
+      .includes('Ⓐ DASH'),
   );
 });
 

@@ -41,7 +41,7 @@
       "entries": [
         {
           "name": "pcg[chr]",
-          "description": "8-byte pattern and foreground/background colors; edit up to 32 characters per frame.",
+          "description": "8-byte pattern and foreground/background colors; max 256 bytes written per frame.",
           "example": "pcg[\"↑\"].pat[0] = 0x18\npcg[\"↑\"].pat = \"183c7e1818181800\"\npcg[\"👾\"].col = [6, 0]"
         },
         {

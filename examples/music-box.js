@@ -1,5 +1,5 @@
 // @title Music Box
-// Left/right selects a step; up/down changes its note. A plays or stops; B resets.
+// ⬅➡ select a step; ⬆⬇ change its note. Ⓐ plays or stops; Ⓑ resets.
 
 const pitches = ['&', 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C'];
 const initialNotes = [1, 3, 5, 8, 6, 5, 1, 0];
@@ -33,7 +33,7 @@ function drawNotes() {
       put(3 + step * 2, 12 - note, chr, col1, col2);
     }
   }
-  put(2, 16, playing ? 'A STOP  B RESET' : 'A PLAY  B RESET');
+  put(2, 16, playing ? 'Ⓐ STOP  Ⓑ RESET' : 'Ⓐ PLAY  Ⓑ RESET');
 }
 
 put(5, 1, 'MUSIC BOX', 6);
@@ -45,7 +45,7 @@ for (let note = 0; note < pitches.length; note++) {
 for (let step = 0; step < notes.length; step++) {
   put(3 + step * 2, 13, String(step + 1), 2);
 }
-put(2, 15, 'STEP ←→ NOTE ↑↓');
+put(2, 15, 'STEP ⬅➡ NOTE ⬆⬇');
 drawNotes();
 
 function tick() {

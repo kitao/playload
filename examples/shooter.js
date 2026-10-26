@@ -1,5 +1,5 @@
 // @title Shooter
-// Left/right moves; hold A to fire. B starts a new game.
+// ⬅➡ move; hold Ⓐ to fire. Ⓑ starts a new game.
 
 const waves = [
   { rows: 1, columns: 6, speed: 0.4, fireEvery: 96 },
@@ -36,9 +36,9 @@ function drawStatus() {
   put(1, 0, `WAVE ${wave + 1}/${waves.length}  ♥${lives}`, 6);
   const boss = wave === waves.length - 1 ? ` BOSS ${targets[0].health}` : '';
   put(1, 1, (`SCORE ${String(score).padStart(4, '0')}` + boss).padEnd(19), 7);
-  let instruction = '←→ A FIRE B RESET';
+  let instruction = '⬅➡ Ⓐ FIRE Ⓑ RESET';
   if (state !== 'PLAY') {
-    instruction = state === 'CLEAR' ? 'A NEXT B RESET' : 'A / B PLAY AGAIN';
+    instruction = state === 'CLEAR' ? 'Ⓐ NEXT Ⓑ RESET' : 'Ⓐ / Ⓑ PLAY AGAIN';
   }
   put(1, 17, ' '.repeat(18), 7, 0);
   put(Math.floor((20 - instruction.length) / 2), 17, instruction, 7, 0);

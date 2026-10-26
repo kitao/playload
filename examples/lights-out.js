@@ -1,5 +1,5 @@
 // @title Lights Out
-// Arrows select; A flips a light and its neighbors. B retries the board.
+// ⬆⬇⬅➡ select; Ⓐ flips a light and its neighbors. Ⓑ retries the board.
 
 // Reverse these flips to solve each board; PAR is its minimum move count.
 const puzzles = [
@@ -85,7 +85,7 @@ function drawStatus() {
     `LIGHTS OUT ${level + 1}/${puzzles.length}`,
     `MOVES ${moves}  PAR ${puzzles[level].length}`,
     cleared ? (last ? 'ALL BOARDS CLEAR!' : 'BOARD CLEAR!') : 'TURN ALL LIGHTS OFF',
-    cleared ? (last ? 'A AGAIN  B RESTART' : 'A NEXT  B RETRY') : '↑↓←→ A FLIP B RETRY',
+    cleared ? (last ? 'Ⓐ AGAIN  Ⓑ RESTART' : 'Ⓐ NEXT  Ⓑ RETRY') : '⬆⬇⬅➡ Ⓐ FLIP Ⓑ RETRY',
   ];
   for (const [i, row] of [0, 1, 16, 17].entries()) {
     put(0, row, ' '.repeat(20));

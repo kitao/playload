@@ -1,5 +1,5 @@
 // @title Jump
-// Move left/right, A jumps, B retries. Reach all four flags.
+// ⬅➡ move, Ⓐ jumps, Ⓑ retries. Reach all four flags.
 
 const stages = [
   {
@@ -56,7 +56,7 @@ function finish(result) {
   state = result;
   const last = stage === stages.length - 1;
   const message = result === 'OVER' ? 'TRY AGAIN!' : last ? 'ALL CLEAR!' : 'STAGE CLEAR!';
-  const hint = result === 'OVER' ? 'A / B RETRY' : last ? 'A / B PLAY AGAIN' : 'A NEXT  B RETRY';
+  const hint = result === 'OVER' ? 'Ⓐ / Ⓑ RETRY' : last ? 'Ⓐ / Ⓑ PLAY AGAIN' : 'Ⓐ NEXT  Ⓑ RETRY';
   put(0, 1, ' '.repeat(20));
   put(Math.floor((20 - message.length) / 2), 1, message, 6);
   put(0, 16, ' '.repeat(20));
@@ -95,7 +95,7 @@ function reset() {
   if (ferry) platforms.push(ferry);
   put(level.flag[0], level.flag[1], '🚩', 3);
   put(0, 15, '~'.repeat(20), 3);
-  put(1, 16, '←→ A JUMP B RETRY');
+  put(1, 16, '⬅➡ Ⓐ JUMP Ⓑ RETRY');
   play(0, '');
 }
 

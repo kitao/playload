@@ -520,7 +520,13 @@ test('color pairs retain references and reject malformed assignments without par
     const pair = element.col;
     element.col = [2, 3];
     assert.equal(element.col, pair);
-    for (const value of [null, [], [1], [1, 2, 3], new Uint8Array([1, 2])])
+    const extraColors = [1, 2];
+    extraColors[Symbol.iterator] = function* () {
+      yield 1;
+      yield 2;
+      yield 3;
+    };
+    for (const value of [null, [], [1], [1, 2, 3], new Uint8Array([1, 2]), extraColors])
       assert.throws(() => {
         element.col = value;
       }, TypeError);
@@ -542,39 +548,89 @@ test('color pairs retain references and reject malformed assignments without par
   assert.deepEqual([...api.scr[0][0].col], [null, null]);
 });
 
-test('PCG edits count 32 distinct characters, sharing the budget for patterns and colors', () => {
+test('PCG patterns and colors share 256 bytes per frame', () => {
   const engine = createEngine(),
     { api } = engine;
-  const chars = Array.from({ length: 33 }, (_, i) => String.fromCharCode(65 + i));
+  const chars = Array.from({ length: 27 }, (_, i) => String.fromCharCode(65 + i));
   const saved = chars.map((ch) => api.pcg[ch]);
   api.put(0, 0, chars.slice(0, 20).join(''));
   api.put(0, 1, chars.slice(20).join(''));
   engine.step(() => {
     for (const element of saved) {
-      for (let row = 0; row < 8; row++) element.pat[row] = 255;
-      element.col = [6, 1];
-      element.col[0] = 5;
+      element.pat = 'ffffffffffffffff';
+      element.col = [5, 1];
     }
-    assert.deepEqual([...saved[31].pat], Array(8).fill(255));
-    assert.deepEqual([...saved[32].pat], Array(8).fill(0));
-    assert.deepEqual([...saved[32].col], [7, 0]);
-    // The first character can still change after all 32 slots have been used.
-    saved[0].pat = '8000000000000000';
-    saved[0].col = [3, 2];
+    // 25 complete definitions use 250 bytes. The next pattern gets six bytes.
+    assert.deepEqual([...saved[24].pat], Array(8).fill(255));
+    assert.deepEqual([...saved[24].col], [5, 1]);
+    assert.deepEqual([...saved[25].pat], [255, 255, 255, 255, 255, 255, 0, 0]);
+    assert.deepEqual([...saved[25].col], [7, 0]);
+    assert.deepEqual([...saved[26].pat], Array(8).fill(0));
+    saved[0].pat[0] = 128;
+    saved[0].col[0] = 3;
+    assert.equal(saved[0].pat[0], 255);
+    assert.deepEqual([...saved[0].col], [5, 1]);
   });
-  assert.equal(pixel(engine, 0), 3);
-  assert.equal(pixel(engine, 1), 2);
-  assert.equal(pixel(engine, 88, 8), 5);
-  assert.equal(pixel(engine, 96, 8), 0);
+  assert.equal(pixel(engine, 0), 5);
+  assert.equal(pixel(engine, 40, 8), 7);
+  assert.equal(pixel(engine, 40, 14), 0);
   engine.step(() => {
-    saved[32].pat.fill(255);
-    saved[32].col[0] = 4;
+    saved[25].pat.fill(255);
+    saved[25].col[0] = 4;
   });
-  assert.equal(pixel(engine, 96, 8), 4);
-  assert.equal(pixel(engine, 88, 8), 5);
+  assert.equal(pixel(engine, 40, 14), 4);
 });
 
-test('PCG reads and rejected writes use no slots, and normalized aliases share one slot', () => {
+test('PCG color elements, pairs and saved arrays count writes, with partial pairs at the limit', () => {
+  const engine = createEngine(),
+    { api } = engine,
+    colors = api.pcg.X.col;
+  engine.step(() => {
+    for (let i = 0; i < 253; i++) api.pcg.Z.pat[0] = 0;
+    colors[0] = 3;
+    api.pcg.X.col = [4, 5];
+    colors[1] = 6;
+    assert.deepEqual([...colors], [4, 5]);
+    assert.equal(api.pcg.X.col, colors);
+  });
+  engine.step(() => {
+    for (let i = 0; i < 255; i++) colors[0] = 4;
+    assert.throws(() => {
+      api.pcg.X.col = [6, 8];
+    }, RangeError);
+    api.pcg.X.col = [6, 2];
+    assert.deepEqual([...colors], [6, 5]);
+    api.pcg.Y.pat[0] = 255;
+    assert.equal(api.pcg.Y.pat[0], 0);
+    // Screen colors use their own attributes and have no PCG write cost.
+    for (const row of api.scr) for (const cell of row) cell.col = [3, 2];
+    assert.deepEqual([...api.scr[17][19].col], [3, 2]);
+  });
+  engine.step(() => {
+    for (let i = 0; i < 254; i++) api.pcg.Z.pat[0] = 0;
+    colors.fill(3);
+    api.pcg.X.col = [4, 5];
+    assert.deepEqual([...colors], [3, 3]);
+  });
+});
+
+test('PCG allows 256 one-byte character updates and counts repeated unchanged writes', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  engine.step(() => {
+    for (let i = 0; i < 257; i++) api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 255;
+    assert.equal(api.pcg['\ue0ff'].pat[0], 255);
+    assert.equal(api.pcg['\ue100'].pat[0], 0);
+  });
+  engine.step(() => {
+    for (let i = 0; i < 255; i++) api.pcg.X.pat[0] = 0;
+    api.pcg.X.pat[0] |= 128;
+    api.pcg.X.pat[1] = 64;
+    assert.deepEqual([...api.pcg.X.pat], [128, 0, 0, 0, 0, 0, 0, 0]);
+  });
+});
+
+test('PCG reads, screen edits, empty ranges and invalid writes consume no bytes', () => {
   const engine = createEngine(glyphs),
     { api } = engine;
   engine.step(() => {
@@ -594,56 +650,174 @@ test('PCG reads and rejected writes use no slots, and normalized aliases share o
         element.col[0] = 8;
       }, RangeError);
       assert.throws(() => element.pat.set(Array(9).fill(0)), RangeError);
+      assert.throws(() => element.pat.set([1], -1), RangeError);
+      assert.throws(() => element.pat.fill(1n), TypeError);
+      element.pat[8] = 255;
+      element.pat[-1] = 255;
+      element.pat.set([], 8);
+      element.pat.fill(255, 5, 2);
+      element.pat.copyWithin(0, 5, 2);
+      Object.defineProperty(element.pat, '0', { enumerable: true });
     }
+    api.cls(2);
+    api.put(0, 0, 'screen edits');
+    api.scr[0][0].col = [3, 1];
+    // Normalized aliases share data, but both writes consume a byte.
     api.pcg['é'].pat[0] = 128;
-    api.pcg['e\u0301'].col[0] = 3;
-    api.pcg['⛩'].pat = '8000000000000000';
-    api.pcg['⛩️'].col = [4, 0];
-    api.pcg['👨‍👩‍👧‍👦'].pat.fill(255);
-    for (let i = 0; i < 29; i++) api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 255;
-    api.pcg['\ue01d'].pat[0] = 255;
-    assert.equal(api.pcg['\ue01c'].pat[0], 255);
-    assert.equal(api.pcg['\ue01d'].pat[0], 0);
+    api.pcg['e\u0301'].pat[1] = 64;
+    assert.deepEqual([...api.pcg['é'].pat].slice(0, 2), [128, 64]);
+    for (let i = 0; i < 254; i++) api.pcg.X.pat[0] = 128;
+    api.pcg.X.pat[0] = 64;
+    assert.equal(api.pcg.X.pat[0], 128);
   });
 });
 
-test('saved PCG byte views and array editing methods obey the same character limit', () => {
+test('PCG array methods and saved views charge exactly their written bytes', () => {
   const edits = [
-    (pat) => {
-      pat[0] = 128;
-    },
-    (pat) => pat.set([128]),
-    (pat) => pat.fill(128),
-    (pat) => pat.copyWithin(0, 1, 2),
-    (pat) => pat.reverse(),
-    (pat) => pat.sort((a, b) => b - a),
-    (pat) => {
-      pat.subarray(0, 1)[0] = 128;
-    },
-    (pat) => pat.subarray(0, 1).fill(128),
-    (pat) => Object.defineProperty(pat, '0', { value: 128 }),
-    (pat) =>
-      pat.forEach((value, index, rows) => {
-        if (index === 0) rows[0] = 128;
-      }),
-    (pat) => {
-      pat.valueOf()[0] = 128;
-    },
+    [
+      1,
+      (pat) => {
+        pat[0] = 128;
+      },
+    ],
+    [1, (pat) => pat.set([128])],
+    [3, (pat) => pat.set([128, 64, 32], 2)],
+    [3, (pat) => pat.set(Object.freeze({ length: 3.9, 0: 128, 1: 64, 2: 32 }))],
+    [8, (pat) => pat.fill(128)],
+    [2, (pat) => pat.fill(128, 1, 3)],
+    [2, (pat) => pat.fill(128, -3, -1)],
+    [1, (pat) => pat.copyWithin(0, 1, 2)],
+    [2, (pat) => pat.copyWithin(6, 0)],
+    [4, (pat) => pat.copyWithin(1, 0, 4)],
+    [8, (pat) => pat.reverse()],
+    [2, (pat) => pat.subarray(0, 3).reverse()],
+    [8, (pat) => pat.sort((a, b) => b - a)],
+    [3, (pat) => pat.subarray(0, 3).sort()],
+    [
+      1,
+      (pat) => {
+        pat.subarray(0, 1)[0] = 128;
+      },
+    ],
+    [2, (pat) => pat.subarray(1, 3).fill(128)],
+    [1, (pat) => Object.defineProperty(pat, '0', { value: 128 })],
+    [
+      1,
+      (pat) =>
+        pat.forEach((value, index, rows) => {
+          if (index === 0) rows[0] = 128;
+        }),
+    ],
+    [
+      1,
+      (pat) => {
+        pat.valueOf()[0] = 128;
+      },
+    ],
   ];
-  for (const edit of edits) {
-    const engine = createEngine([{ ch: 'X', rows: [0, 128, 0, 0, 0, 0, 0, 128] }]),
+  const initial = [0, 128, 64, 32, 16, 8, 4, 2];
+  for (const [cost, edit] of edits) {
+    const engine = createEngine([{ ch: 'X', rows: initial }]),
       { api } = engine,
       saved = api.pcg.X.pat;
+    const expected = Uint8Array.from(initial);
+    edit(expected);
     engine.step(() => {
-      for (let i = 0; i < 32; i++) api.pcg[String.fromCodePoint(0xe000 + i)].col = [3, 1];
+      for (let i = 0; i < 256; i++) api.pcg.Z.pat[0] = 0;
       edit(saved);
-      assert.equal(saved[0], 0);
-      assert.deepEqual([...saved], [0, 128, 0, 0, 0, 0, 0, 128]);
+      assert.deepEqual([...saved], initial);
     });
-    engine.step(() => edit(saved));
-    assert.equal(saved[0], 128);
+    engine.step(() => {
+      for (let i = 0; i < 256 - cost; i++) api.pcg.Z.pat[0] = 0;
+      edit(saved);
+      assert.deepEqual([...saved], [...expected]);
+      api.pcg.Y.pat[0] = 255;
+      assert.equal(api.pcg.Y.pat[0], 0, 'The edit must consume exactly its byte count.');
+    });
     assert.equal(api.pcg.X.pat, saved);
   }
+});
+
+test('PCG bulk writes apply remaining bytes and leave the rest unchanged', () => {
+  const cases = [
+    [
+      (element) => {
+        element.pat = 'ffffffffffffffff';
+      },
+      [255, 255, 255, 4, 5, 6, 7, 8],
+    ],
+    [(element) => element.pat.set([255, 255, 255, 255], 2), [1, 2, 255, 255, 255, 6, 7, 8]],
+    [(element) => element.pat.fill(255, 1, 7), [1, 255, 255, 255, 5, 6, 7, 8]],
+    [(element) => element.pat.copyWithin(2, 0, 4), [1, 2, 1, 2, 3, 6, 7, 8]],
+    [(element) => element.pat.reverse(), [8, 7, 3, 4, 5, 6, 7, 1]],
+    [(element) => element.pat.sort((a, b) => b - a), [8, 7, 6, 4, 5, 6, 7, 8]],
+    [(element) => element.pat.subarray(2, 6).fill(255), [1, 2, 255, 255, 255, 6, 7, 8]],
+  ];
+  for (const [edit, expected] of cases) {
+    const engine = createEngine([{ ch: 'X', rows: [1, 2, 3, 4, 5, 6, 7, 8] }]),
+      { api } = engine;
+    engine.step(() => {
+      for (let i = 0; i < 253; i++) api.pcg.Z.pat[0] = 0;
+      edit(api.pcg.X);
+      assert.deepEqual([...api.pcg.X.pat], expected);
+      api.pcg.Y.pat[0] = 255;
+      assert.equal(api.pcg.Y.pat[0], 0);
+    });
+  }
+});
+
+test('PCG method arguments are coerced once and array-like set sources count their actual length', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  let lengths = 0,
+    offsets = 0,
+    values = 0,
+    starts = 0,
+    ends = 0;
+  engine.step(() => {
+    for (let i = 0; i < 251; i++) api.pcg.Z.pat[0] = 0;
+    api.pcg.X.pat.set(
+      {
+        get length() {
+          lengths++;
+          return 3;
+        },
+        0: 1,
+        1: 2,
+        2: 3,
+      },
+      {
+        valueOf() {
+          offsets++;
+          return 1;
+        },
+      },
+    );
+    api.pcg.X.pat.fill(
+      {
+        valueOf() {
+          values++;
+          return 255;
+        },
+      },
+      {
+        valueOf() {
+          starts++;
+          return 5;
+        },
+      },
+      {
+        valueOf() {
+          ends++;
+          return 7;
+        },
+      },
+    );
+    assert.deepEqual([...api.pcg.X.pat], [0, 1, 2, 3, 0, 255, 255, 0]);
+    api.pcg.Y.pat[0] = 255;
+    assert.equal(api.pcg.Y.pat[0], 0);
+  });
+  assert.deepEqual([lengths, offsets, values, starts, ends], [1, 1, 1, 1, 1]);
 });
 
 test('PCG copies and buffer snapshots do not expose uncounted mutable pattern data', () => {
@@ -661,17 +835,19 @@ test('PCG copies and buffer snapshots do not expose uncounted mutable pattern da
 test('PCG setup shares the first frame budget; failed frames reset it and games are independent', () => {
   const first = createEngine(),
     second = createEngine();
-  for (let i = 0; i < 32; i++) first.api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 255;
+  for (let i = 0; i < 256; i++) first.api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 255;
   first.step(() => {
     first.api.pcg.X.pat[0] = 128;
     second.api.pcg.X.pat[0] = 128;
+    first.api.pcg.X.col = [3, 2];
+    assert.deepEqual([...first.api.pcg.X.col], [7, 0]);
     assert.equal(first.api.pcg.X.pat[0], 0);
     assert.equal(second.api.pcg.X.pat[0], 128);
   });
   assert.throws(
     () =>
       first.step(() => {
-        for (let i = 0; i < 32; i++) first.api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 64;
+        for (let i = 0; i < 256; i++) first.api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 64;
         throw new Error('failed tick');
       }),
     /failed tick/,

@@ -1,6 +1,6 @@
 // @title Glyph Quest
 // Collect every gem and the ring, then reach the castle in three guarded dungeons.
-// Arrows move; A stuns nearby ghosts. B retries this stage.
+// ⬆⬇⬅➡ move; Ⓐ stuns nearby ghosts. Ⓑ retries this stage.
 
 const levels = [
   {
@@ -126,13 +126,13 @@ pcg['#'].pat = pcg['▓'].pat;
 function drawStatus() {
   const finalStage = stage === levels.length - 1;
   let title = 'GLYPH QUEST';
-  let controls = 'A STUN   B RETRY';
+  let controls = 'Ⓐ STUN   Ⓑ RETRY';
   if (state === 'CAUGHT') {
     title = 'CAUGHT!';
-    controls = 'B RETRY';
+    controls = 'Ⓑ RETRY';
   } else if (state === 'CLEAR') {
     title = finalStage ? 'ALL CLEAR!' : 'STAGE CLEAR!';
-    controls = finalStage ? 'A RESTART B RETRY' : 'A NEXT   B RETRY';
+    controls = finalStage ? 'Ⓐ RESTART Ⓑ RETRY' : 'Ⓐ NEXT   Ⓑ RETRY';
   }
   const recharge = state === 'PLAY' ? (cooldown ? ' / WAIT' : ' / READY') : '';
 

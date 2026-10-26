@@ -1,5 +1,5 @@
 // @title Sound FX
-// Up / down selects an effect. A plays it; B stops it.
+// ⬆⬇ select an effect. Ⓐ plays it; Ⓑ stops it.
 
 let selected = 0;
 let pulse = 0;
@@ -31,8 +31,8 @@ for (let i = 0; i < effects.length; i++) {
   put(7, 4 + i, effects[i].name, i === selected ? 6 : 7);
 }
 putCentered(12, 'ZX 128 PLAY', 2);
-put(5, 15, '↑↓ SELECT');
-put(3, 16, 'A PLAY  B STOP');
+put(5, 15, '⬆⬇ SELECT');
+put(3, 16, 'Ⓐ PLAY  Ⓑ STOP');
 drawEffect();
 
 function tick() {

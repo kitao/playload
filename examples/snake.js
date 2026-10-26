@@ -1,5 +1,5 @@
 // @title Snake
-// Arrows turn; A starts or pauses. B restarts.
+// ⬆⬇⬅➡ turn; Ⓐ starts or pauses. Ⓑ restarts.
 
 const width = 18;
 const height = 14;
@@ -61,7 +61,7 @@ function drawBoard() {
   const action = { READY: 'START', PLAY: 'PAUSE', PAUSED: 'RESUME', OVER: 'RETRY', WON: 'AGAIN' }[
     state
   ];
-  put(2, 17, `A ${action.padEnd(6)} B RESET`);
+  put(2, 17, `Ⓐ ${action.padEnd(6)} Ⓑ RESET`);
 }
 
 function reset() {

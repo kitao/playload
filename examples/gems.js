@@ -1,5 +1,5 @@
 // @title Gems
-// Arrows move; A dashes, B restarts. Collect the gems before time runs out.
+// ⬆⬇⬅➡ move; Ⓐ dashes, Ⓑ restarts. Collect the gems before time runs out.
 
 const rounds = [
   { gems: 5, seconds: 15 },
@@ -29,7 +29,7 @@ function drawStatus() {
   ];
   if (state === 'PLAY') {
     rows.push(17);
-    messages.push(cooldown ? `WAIT ${Math.ceil(cooldown / 60)}  B RESTART` : 'READY  B RESTART');
+    messages.push(cooldown ? `WAIT ${Math.ceil(cooldown / 60)}  Ⓑ RESTART` : 'READY  Ⓑ RESTART');
   }
   for (const [i, message] of messages.entries()) {
     if (status[i] !== message) {
@@ -63,7 +63,7 @@ function startRound() {
 
   cls(1);
   put(gx, gy, '💎', null, 1);
-  put(1, 16, 'ARROWS MOVE A DASH', 7, 1);
+  put(1, 16, '⬆⬇⬅➡ MOVE Ⓐ DASH', 7, 1);
   drawStatus();
   for (let ch = 0; ch < 3; ch++) play(ch, ch === 0 ? 'T240' : '');
 }
@@ -79,9 +79,9 @@ function finish(next) {
   const bonus = Math.ceil(time / 60);
   if (next !== 'OVER') score += bonus;
   const messages = {
-    CLEAR: [`CLEAR! BONUS +${bonus}`, 'A NEXT  B RESTART'],
-    WON: [`ALL CLEAR! +${bonus}`, 'A / B PLAY AGAIN'],
-    OVER: ['TIME UP!', 'A / B TRY AGAIN'],
+    CLEAR: [`CLEAR! BONUS +${bonus}`, 'Ⓐ NEXT  Ⓑ RESTART'],
+    WON: [`ALL CLEAR! +${bonus}`, 'Ⓐ / Ⓑ PLAY AGAIN'],
+    OVER: ['TIME UP!', 'Ⓐ / Ⓑ TRY AGAIN'],
   };
   const [message, hint] = messages[next];
   put(1, 16, ' '.repeat(18), 7, 1);

@@ -800,7 +800,7 @@ dd {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   column-gap: 16px;
-  row-gap: 6px;
+  row-gap: 4px;
   align-content: start;
   min-width: 0;
 }
