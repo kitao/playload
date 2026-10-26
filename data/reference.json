@@ -41,8 +41,8 @@
       "entries": [
         {
           "name": "pcg[chr]",
-          "description": "8-byte pattern and foreground/background colors; max 256 pattern bytes written per frame.",
-          "example": "pcg[\"↑\"].pat[0] = 0x18 // 1 byte\npcg[\"↑\"].pat = \"183c7e1818181800\" // 8 bytes\npcg[\"👾\"].col = [6, 0]"
+          "description": "8-byte pattern and foreground/background colors; max 256 bytes written per frame.",
+          "example": "pcg[\"↑\"].pat[0] = 0x18 // 1 byte\npcg[\"↑\"].pat = \"183c7e1818181800\" // 8 bytes\npcg[\"👾\"].col = [6, 0] // 2 bytes"
         },
         {
           "name": "scr[cy][cx]",

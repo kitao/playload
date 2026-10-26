@@ -548,10 +548,10 @@ test('color pairs retain references and reject malformed assignments without par
   assert.deepEqual([...api.scr[0][0].col], [null, null]);
 });
 
-test('PCG patterns allow 256 bytes per frame while colors remain writable', () => {
+test('PCG patterns and colors share 256 bytes per frame', () => {
   const engine = createEngine(),
     { api } = engine;
-  const chars = Array.from({ length: 33 }, (_, i) => String.fromCharCode(65 + i));
+  const chars = Array.from({ length: 27 }, (_, i) => String.fromCharCode(65 + i));
   const saved = chars.map((ch) => api.pcg[ch]);
   api.put(0, 0, chars.slice(0, 20).join(''));
   api.put(0, 1, chars.slice(20).join(''));
@@ -560,55 +560,57 @@ test('PCG patterns allow 256 bytes per frame while colors remain writable', () =
       element.pat = 'ffffffffffffffff';
       element.col = [5, 1];
     }
-    // 32 complete patterns use 256 bytes; the next pattern remains unchanged.
-    assert.deepEqual([...saved[31].pat], Array(8).fill(255));
-    assert.deepEqual([...saved[31].col], [5, 1]);
-    assert.deepEqual([...saved[32].pat], Array(8).fill(0));
-    assert.deepEqual([...saved[32].col], [5, 1]);
+    // 25 complete definitions use 250 bytes. The next pattern gets six bytes.
+    assert.deepEqual([...saved[24].pat], Array(8).fill(255));
+    assert.deepEqual([...saved[24].col], [5, 1]);
+    assert.deepEqual([...saved[25].pat], [255, 255, 255, 255, 255, 255, 0, 0]);
+    assert.deepEqual([...saved[25].col], [7, 0]);
+    assert.deepEqual([...saved[26].pat], Array(8).fill(0));
     saved[0].pat[0] = 128;
     saved[0].col[0] = 3;
     assert.equal(saved[0].pat[0], 255);
-    assert.deepEqual([...saved[0].col], [3, 1]);
+    assert.deepEqual([...saved[0].col], [5, 1]);
   });
-  assert.equal(pixel(engine, 0), 3);
-  assert.equal(pixel(engine, 96, 8), 1);
-
+  assert.equal(pixel(engine, 0), 5);
+  assert.equal(pixel(engine, 40, 8), 7);
+  assert.equal(pixel(engine, 40, 14), 0);
   engine.step(() => {
-    saved[32].pat.fill(255);
-    saved[32].col[0] = 4;
+    saved[25].pat.fill(255);
+    saved[25].col[0] = 4;
   });
-  assert.equal(pixel(engine, 96, 8), 4);
+  assert.equal(pixel(engine, 40, 14), 4);
 });
 
-test('PCG color elements, pairs and saved arrays do not consume the pattern byte budget', () => {
+test('PCG color elements, pairs and saved arrays count writes, with partial pairs at the limit', () => {
   const engine = createEngine(),
     { api } = engine,
     colors = api.pcg.X.col;
   engine.step(() => {
-    for (let i = 0; i < 300; i++) {
-      colors[0] = 3;
-      api.pcg.X.col = [4, 5];
-      colors.fill(6);
-    }
-    assert.deepEqual([...colors], [6, 6]);
+    for (let i = 0; i < 253; i++) api.pcg.Z.pat[0] = 0;
+    colors[0] = 3;
+    api.pcg.X.col = [4, 5];
+    colors[1] = 6;
+    assert.deepEqual([...colors], [4, 5]);
     assert.equal(api.pcg.X.col, colors);
-
-    for (let i = 0; i < 255; i++) api.pcg.Z.pat[0] = 0;
+  });
+  engine.step(() => {
+    for (let i = 0; i < 255; i++) colors[0] = 4;
     assert.throws(() => {
       api.pcg.X.col = [6, 8];
     }, RangeError);
     api.pcg.X.col = [6, 2];
-    assert.deepEqual([...colors], [6, 2]);
+    assert.deepEqual([...colors], [6, 5]);
     api.pcg.Y.pat[0] = 255;
-    api.pcg.Y.pat[1] = 128;
-    assert.deepEqual([...api.pcg.Y.pat], [255, 0, 0, 0, 0, 0, 0, 0]);
-
-    colors[0] = 4;
-    api.pcg.X.col = [3, 5];
-    colors[1] = 2;
-    assert.deepEqual([...colors], [3, 2]);
+    assert.equal(api.pcg.Y.pat[0], 0);
+    // Screen colors use their own attributes and have no PCG write cost.
     for (const row of api.scr) for (const cell of row) cell.col = [3, 2];
     assert.deepEqual([...api.scr[17][19].col], [3, 2]);
+  });
+  engine.step(() => {
+    for (let i = 0; i < 254; i++) api.pcg.Z.pat[0] = 0;
+    colors.fill(3);
+    api.pcg.X.col = [4, 5];
+    assert.deepEqual([...colors], [3, 3]);
   });
 });
 
@@ -838,7 +840,7 @@ test('PCG setup shares the first frame budget; failed frames reset it and games 
     first.api.pcg.X.pat[0] = 128;
     second.api.pcg.X.pat[0] = 128;
     first.api.pcg.X.col = [3, 2];
-    assert.deepEqual([...first.api.pcg.X.col], [3, 2]);
+    assert.deepEqual([...first.api.pcg.X.col], [7, 0]);
     assert.equal(first.api.pcg.X.pat[0], 0);
     assert.equal(second.api.pcg.X.pat[0], 128);
   });

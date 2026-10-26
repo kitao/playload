@@ -26,7 +26,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
   let held = 0,
     pressed = 0,
-    patternBytes = 0,
+    pcgBytes = 0,
     sounds = [];
   const color = (col) => {
     if (!Number.isInteger(col) || col < 0 || col > 7) throw new RangeError('Color must be 0–7');
@@ -61,13 +61,16 @@ export function createEngine(presets = [], compileScore = (s) => s) {
 
   // Character data
 
-  function colorPair(initial, inherit = false) {
+  function colorPair(initial, inherit = false, limited = false) {
     const validate = (value) => (inherit && value == null ? null : color(value));
     const values = initial.map(validate);
     const pair = new Proxy(values, {
       set(target, index, value) {
         if (index !== '0' && index !== '1') throw new RangeError('Colors have two entries');
-        target[index] = validate(value);
+        const next = target.slice();
+        next[index] = validate(value);
+        if (limited) writePcg(target, next, Number(index), Number(index) + 1);
+        else target[index] = next[index];
         return true;
       },
       deleteProperty() {
@@ -85,19 +88,22 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           throw new TypeError('Colors need [col1, col2]');
         const next = Array.from(value, validate);
         if (next.length !== 2) throw new TypeError('Colors need [col1, col2]');
-        values[0] = next[0];
-        values[1] = next[1];
+        if (limited) writePcg(values, next);
+        else {
+          values[0] = next[0];
+          values[1] = next[1];
+        }
       },
     };
   }
 
-  // Count pattern writes, including unchanged bytes. A bulk edit uses the
-  // remaining budget before dropping its excess bytes.
-  function writePattern(target, next, start = 0, end = next.length) {
-    const count = Math.min(end - start, 256 - patternBytes);
+  // Count writes, including unchanged bytes. A bulk edit uses the remaining
+  // budget before dropping its excess bytes. Patterns and PCG colors share it.
+  function writePcg(target, next, start = 0, end = next.length) {
+    const count = Math.min(end - start, 256 - pcgBytes);
     if (count <= 0) return;
     for (let i = start; i < start + count; i++) target[i] = next[i];
-    patternBytes += count;
+    pcgBytes += count;
   }
 
   const integer = (value) => Math.trunc(+value) || 0;
@@ -160,10 +166,10 @@ export function createEngine(presets = [], compileScore = (s) => s) {
             if (key === 'reverse') {
               // Reverse writes both ends of each pair, but not an odd middle byte.
               for (let i = 0; i < Math.floor(target.length / 2); i++) {
-                writePattern(target, next, i, i + 1);
-                writePattern(target, next, target.length - i - 1, target.length - i);
+                writePcg(target, next, i, i + 1);
+                writePcg(target, next, target.length - i - 1, target.length - i);
               }
-            } else writePattern(target, next, start, end);
+            } else writePcg(target, next, start, end);
             return result === next ? view : result;
           }
           // Array callbacks must receive the guarded view as their array argument.
@@ -184,14 +190,14 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         const next = target.slice();
         const result = Reflect.set(next, key, value);
         if (result && Object.hasOwn(target, key))
-          writePattern(target, next, Number(key), Number(key) + 1);
+          writePcg(target, next, Number(key), Number(key) + 1);
         return result;
       },
       defineProperty(target, key, descriptor) {
         const next = target.slice();
         const result = Reflect.defineProperty(next, key, descriptor);
         if (result && Object.hasOwn(target, key) && Object.hasOwn(descriptor, 'value'))
-          writePattern(target, next, Number(key), Number(key) + 1);
+          writePcg(target, next, Number(key), Number(key) + 1);
         return result;
       },
     });
@@ -223,10 +229,10 @@ export function createEngine(presets = [], compileScore = (s) => s) {
             ) {
               throw new TypeError('Pattern needs 8 row bytes');
             }
-            writePattern(pattern, next);
+            writePcg(pattern, next);
           },
         },
-        col: colorPair(col),
+        col: colorPair(col, false, true),
       });
       Object.preventExtensions(this);
     }
@@ -442,7 +448,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       } finally {
         pressed = 0;
         // Top-level setup shares the first frame's budget, as sound commands do.
-        patternBytes = 0;
+        pcgBytes = 0;
       }
     },
     sounds() {

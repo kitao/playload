@@ -507,17 +507,15 @@ test('serialized workers reset sprite and PCG limits on every tick of a frame ba
       source: `
       let frame = 0;
       function tick() {
-        const base = 0xe000 + frame++ * 33;
-        for (let i = 0; i < 33; i++) {
+        const base = 0xe000 + frame++ * 27;
+        for (let i = 0; i < 27; i++) {
           const character = pcg[String.fromCodePoint(base + i)];
           character.pat.fill(255);
           character.col = [6, 1];
         }
-        const last = pcg[String.fromCodePoint(base + 31)];
-        const excess = pcg[String.fromCodePoint(base + 32)];
-        if (last.pat[7] !== 255) throw Error('PCG not reset');
-        if (excess.pat[0] !== 0) throw Error('PCG overflow');
-        if (excess.col[0] !== 6 || excess.col[1] !== 1) throw Error('PCG color blocked');
+        const last = pcg[String.fromCodePoint(base + 25)];
+        if (last.pat[5] !== 255) throw Error('PCG not reset');
+        if (last.pat[6] !== 0 || last.col[0] !== 7) throw Error('PCG overflow');
         cls(0);
         for (let i = 0; i < 129; i++)
           spr(i % 16 * 8, Math.floor(i / 16) * 8, String.fromCodePoint(base), 6);

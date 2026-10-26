@@ -4,7 +4,7 @@
 
 - Add six built-in control symbols at the start of the Symbols catalog.
 - Use circled A and B consistently in examples, input specifications, the API reference, and keyboard hints.
-- Limit sprites to 128 characters and PCG pattern writes to 256 bytes per frame, ignoring excess characters and bytes. PCG color changes are unlimited. Initialization shares the first frame’s budget.
+- Limit sprites to 128 characters and PCG writes to 256 bytes per frame, including patterns and colors, ignoring excess characters and bytes. Initialization shares the first frame’s budget.
 
 ## 0.9.2
 
