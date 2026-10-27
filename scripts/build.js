@@ -104,8 +104,9 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     await cp(new URL('../LICENSE', import.meta.url), new URL('playload/LICENSE.txt', output));
     await cp(new URL('../src/site/_headers', import.meta.url), new URL('_headers', output));
 
-    // The social preview shows the first homepage screenshot.
+    // The introduction keeps its screenshot; app/game links identify the tool with its logo.
     const preview = 'assets/images/example-glyph-quest.png';
+    const appPreview = 'assets/images/app-card.png';
     const common = {
       HOME_URL: escapeHTML(homepage.href),
       PREVIEW_IMAGE: escapeHTML(new URL(preview, homepage).href),
@@ -122,9 +123,10 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     }
 
     await page('src/app/index.html', 'app/index.html', {
+      PREVIEW_IMAGE: escapeHTML(new URL(appPreview, homepage).href),
       REFERENCE: await renderReference(),
     });
-    const images = new Set([preview]);
+    const images = new Set([preview, appPreview]);
     const introduction = marked
       .parse(await readFile(new URL('../src/site/index.md', import.meta.url), 'utf8'))
       .replace(

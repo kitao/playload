@@ -39,7 +39,7 @@ test('the complete publication stays under Playload and every local document lin
     const output = await files(directory);
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|LICENSE\.txt|assets\/(?:logo\.svg|favicon\.svg|images\/(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|LICENSE\.txt|assets\/(?:logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
           path,
         ),
       ),
@@ -50,14 +50,17 @@ test('the complete publication stays under Playload and every local document lin
     // Content policies come only from _headers, which the browser checks serve as Cloudflare does.
     for (const document of [home, app])
       assert.doesNotMatch(document, /http-equiv="Content-Security-Policy"/);
-    // Link previews show the published 1600×900 homepage screenshot for both pages.
+    // App links use the logo while the introduction retains its screenshot; both are static.
     for (const document of [home, app]) {
       const meta = (property) =>
         new RegExp(`<meta (?:property|name)="${property}" content="([^"]+)"`).exec(document)?.[1];
       assert.equal(meta('twitter:card'), 'summary_large_image');
       assert.equal(meta('og:url'), /rel="canonical" href="([^"]+)"/.exec(document)[1]);
       const image = new URL(meta('og:image'));
-      assert.equal(image.href, 'https://kitao.dev/playload/assets/images/example-glyph-quest.png');
+      assert.equal(
+        image.href,
+        `https://kitao.dev/playload/assets/images/${document === app ? 'app-card' : 'example-glyph-quest'}.png`,
+      );
       const png = await readFile(join(directory, image.pathname));
       assert.deepEqual(
         [png.readUInt32BE(16), png.readUInt32BE(20)],
