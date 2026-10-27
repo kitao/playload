@@ -71,17 +71,21 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     return (noise >>> 0) % range;
   }
 
-  function glitch(count, w, h) {
-    if (!count) return;
+  function glitch(x, y, w, h) {
     glitched = true;
-    for (let i = 0; i < count; i++) {
-      const x = randomNoise(width - w + 1),
-        y = randomNoise(height - h + 1),
-        mask = [3, 4, 6, 7][randomNoise(4)];
-      for (let row = 0; row < h; row++)
-        for (let col = 0; col < w; col++)
-          if (randomNoise(4)) glitches[(y + row) * width + x + col] ^= mask;
+    const mask = [3, 4, 6, 7][randomNoise(4)];
+    for (let row = 0; row < h; row++) {
+      const py = y + row;
+      for (let col = 0; col < w; col++) {
+        const px = x + col;
+        if (randomNoise(4) && px >= 0 && px < width && py >= 0 && py < height)
+          glitches[py * width + px] ^= mask;
+      }
     }
+  }
+
+  function glitchSprite(x, y) {
+    glitch(x + randomNoise(17) - 8, y + randomNoise(17) - 8, 8, 8);
   }
 
   // Character data
@@ -129,7 +133,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       count = Math.min(length, 256 - pcgBytes);
     for (let i = start; i < start + count; i++) target[i] = next[i];
     pcgBytes += count;
-    glitch(length - count, width, 1);
+    for (let i = count; i < length; i++) glitch(0, randomNoise(height), width, 1);
   }
 
   const integer = (value) => Math.trunc(+value) || 0;
@@ -375,12 +379,11 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       str !== '\n'
     ) {
       if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(str), col });
-      else glitch(1, 8, 8);
+      else glitchSprite(x, y);
       return;
     }
 
     const start = sprites.length;
-    let excess = 0;
     try {
       for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
         if (segment === '\n') {
@@ -389,14 +392,13 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           continue;
         }
         if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(segment), col });
-        else excess++;
+        else glitchSprite(x, y);
         x += 8;
       }
     } catch (error) {
       sprites.length = start;
       throw error;
     }
-    glitch(excess, 8, 8);
   }
 
   function play(ch, str) {

@@ -6,10 +6,11 @@ import { glyphs } from '../src/engine/glyphs.js';
 const pixel = (engine, x, y = 0) => engine.pixels[y * 160 + x];
 
 // On a black screen the displayed feedback is the XOR mask itself.
-function spriteNoise(count) {
+function spriteNoise(positions) {
   const engine = createEngine();
   engine.step(() => {
-    for (let i = 0; i < 128 + count; i++) engine.api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
+    for (const [x, y] of positions) engine.api.spr(x, y, 'X', 7);
   });
   return engine.pixels;
 }
@@ -309,7 +310,10 @@ test('a frame draws only the first 128 sprite characters and resets the limit ne
   });
   assert.deepEqual(
     engine.pixels,
-    spriteNoise(2).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+    spriteNoise([
+      [0, 0],
+      [128, 0],
+    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
   );
   engine.step(() => api.spr(128, 0, 'X', 5));
   assert.equal(pixel(engine, 0), 4);
@@ -328,7 +332,10 @@ test('sprite strings share the frame limit and add noise for each excess charact
   });
   assert.deepEqual(
     engine.pixels,
-    spriteNoise(2).map((mask, i) => mask ^ (i % 160 < 8 && i < 160 * 16 ? 3 : 4)),
+    spriteNoise([
+      [8, 8],
+      [8, 8],
+    ]).map((mask, i) => mask ^ (i % 160 < 8 && i < 160 * 16 ? 3 : 4)),
   );
 });
 
@@ -344,11 +351,14 @@ test('the sprite limit counts graphemes, excluding newlines and presentation sel
   });
   assert.deepEqual(
     engine.pixels,
-    spriteNoise(2).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+    spriteNoise([
+      [0, 64],
+      [0, 64],
+    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
   );
 });
 
-test('overflow shapes stay on screen, share one XOR value, and affect about 75% of dots', (t) => {
+test('overflow shapes share one XOR value and affect about 75% of dots', (t) => {
   t.mock.method(Math, 'random', () => assert.fail('Feedback must not use game randomness'));
   for (const kind of ['sprite', 'pcg']) {
     const engine = createEngine(),
@@ -357,7 +367,8 @@ test('overflow shapes stay on screen, share one XOR value, and affect about 75% 
     for (let frame = 0; frame < 100; frame++) {
       engine.step(() => {
         if (kind === 'sprite') {
-          for (let i = 0; i < 129; i++) api.spr(-8, -8, 'X', 7);
+          for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
+          api.spr(76, 68, 'X', 7);
         } else {
           for (let i = 0; i < 257; i++) api.pcg.X.pat[0] = 0;
         }
@@ -370,6 +381,8 @@ test('overflow shapes stay on screen, share one XOR value, and affect about 75% 
       assert.equal(masks.length, 1);
       assert([3, 4, 6, 7].includes(masks[0]));
       if (kind === 'sprite') {
+        assert(xs.every((x) => x >= 68 && x <= 91));
+        assert(ys.every((y) => y >= 60 && y <= 83));
         assert(Math.max(...xs) - Math.min(...xs) <= 7);
         assert(Math.max(...ys) - Math.min(...ys) <= 7);
         assert(changed.length <= 64);
@@ -389,6 +402,49 @@ test('overflow shapes stay on screen, share one XOR value, and affect about 75% 
       engine.pixels.every((col) => col === 0),
       'Feedback ends with its frame',
     );
+  }
+});
+
+test('sprite feedback follows each grapheme position across lines and fractional origins', () => {
+  const engine = createEngine();
+  engine.step(() => {
+    for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
+    engine.api.spr(30.9, 50.9, 'e\u0301⛩️\r\n👨‍👩‍👧‍👦👾', 7);
+  });
+  assert.deepEqual(
+    engine.pixels,
+    spriteNoise([
+      [30, 50],
+      [38, 50],
+      [30, 58],
+      [38, 58],
+    ]),
+  );
+});
+
+test('sprite feedback clips at screen edges without wrapping or relocating offscreen noise', () => {
+  const reference = spriteNoise([[64, 64]]);
+  for (const [x, y] of [
+    [-8, 64],
+    [0, 64],
+    [152, 64],
+    [160, 64],
+    [64, -8],
+    [64, 0],
+    [64, 136],
+    [64, 144],
+    [0, 0],
+    [152, 136],
+    [-32, -32],
+    [192, 176],
+  ]) {
+    const expected = new Uint8Array(160 * 144);
+    for (let i = 0; i < reference.length; i++) {
+      const px = (i % 160) + x - 64,
+        py = Math.floor(i / 160) + y - 64;
+      if (px >= 0 && px < 160 && py >= 0 && py < 144) expected[py * 160 + px] = reference[i];
+    }
+    assert.deepEqual(spriteNoise([[x, y]]), expected, `Sprite at ${x}, ${y}`);
   }
 });
 

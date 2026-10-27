@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Place sprite overflow noise within ±8 pixels of the intended sprite position, clipping it at screen edges.
+- Use the Playload logo for app and shared-game link previews.
+
 ## 0.9.4
 
 - Show sprite overflow as 8×8 noise rectangles and PCG overflow as horizontal noise lines, one per excess character or byte, in the affected frame.
