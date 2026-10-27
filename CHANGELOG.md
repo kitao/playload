@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.4
 
 - Show sprite overflow as 8×8 noise rectangles and PCG overflow as horizontal noise lines, one per excess character or byte, in the affected frame.
 
