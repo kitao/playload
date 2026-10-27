@@ -497,7 +497,8 @@ test('serialized workers reset limits and feedback on every tick, including batc
   const runtime = new Runtime(() => {}, assert.fail);
   t.after(() => runtime.stop());
   runtime.load('function tick() {}');
-  const source = await (await fetch(runtime.worker.url)).text();
+  // Compare batching with identical noise in both worker contexts.
+  const source = 'Math.random = () => 0.5;\n' + (await (await fetch(runtime.worker.url)).text());
   const messages = [];
   const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
   runInNewContext(source, context);
@@ -505,6 +506,7 @@ test('serialized workers reset limits and feedback on every tick, including batc
     data: {
       type: 'load',
       source: `
+      Math.random = () => { throw Error('Game replacement used for feedback'); };
       let frame = 0;
       function tick() {
         if (frame === 6) { cls(0); return; }

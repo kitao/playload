@@ -5,9 +5,24 @@ import { glyphs } from '../src/engine/glyphs.js';
 
 const pixel = (engine, x, y = 0) => engine.pixels[y * 160 + x];
 
+// Give compared frames the same noise without fixing randomness in the engine.
+function feedbackEngine() {
+  const original = Math.random;
+  let seed = 123456789;
+  try {
+    Math.random = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+    return createEngine();
+  } finally {
+    Math.random = original;
+  }
+}
+
 // On a black screen the displayed feedback is the XOR mask itself.
 function spriteNoise(positions) {
-  const engine = createEngine();
+  const engine = feedbackEngine();
   engine.step(() => {
     for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
     for (const [x, y] of positions) engine.api.spr(x, y, 'X', 7);
@@ -298,7 +313,7 @@ test('empty sprite strings draw nothing and later sprite calls cover the entire 
 });
 
 test('a frame draws only the first 128 sprite characters and resets the limit next frame', () => {
-  const engine = createEngine(),
+  const engine = feedbackEngine(),
     { api } = engine;
   api.cls(4);
   for (const ch of ['X', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
@@ -321,7 +336,7 @@ test('a frame draws only the first 128 sprite characters and resets the limit ne
 });
 
 test('sprite strings share the frame limit and add noise for each excess character', () => {
-  const engine = createEngine(),
+  const engine = feedbackEngine(),
     { api } = engine;
   api.cls(4);
   api.pcg.X.pat = 'FFFFFFFFFFFFFFFF';
@@ -340,7 +355,7 @@ test('sprite strings share the frame limit and add noise for each excess charact
 });
 
 test('the sprite limit counts graphemes, excluding newlines and presentation selectors', () => {
-  const engine = createEngine(),
+  const engine = feedbackEngine(),
     { api } = engine;
   api.cls(4);
   for (const ch of ['é', '⛩', '👨‍👩‍👧‍👦', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
@@ -358,10 +373,31 @@ test('the sprite limit counts graphemes, excluding newlines and presentation sel
   );
 });
 
-test('overflow shapes share one XOR value and affect about 75% of dots', (t) => {
-  t.mock.method(Math, 'random', () => assert.fail('Feedback must not use game randomness'));
+test('feedback captures randomness before game code and consumes it only on overflow', (t) => {
+  const random = t.mock.method(Math, 'random', () => 0.5);
+  const engine = createEngine(),
+    { api } = engine;
+  Math.random = () => assert.fail('Game replacement must not control feedback');
+  engine.step(() => {
+    for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 256; i++) api.pcg.X.pat[0] = 0;
+    assert.equal(random.mock.callCount(), 0);
+    api.spr(40, 40, 'X', 7);
+    assert(random.mock.callCount() > 0);
+    const calls = random.mock.callCount();
+    api.pcg.X.pat[0] = 0;
+    assert(random.mock.callCount() > calls);
+  });
+  const calls = random.mock.callCount(),
+    pixels = engine.pixels.slice();
+  assert(pixels.some((color) => color !== 0));
+  assert.deepEqual(engine.pixels, pixels);
+  assert.equal(random.mock.callCount(), calls);
+});
+
+test('overflow shapes share one XOR value and affect about 75% of dots', () => {
   for (const kind of ['sprite', 'pcg']) {
-    const engine = createEngine(),
+    const engine = feedbackEngine(),
       { api } = engine;
     let dots = 0;
     for (let frame = 0; frame < 100; frame++) {
@@ -406,7 +442,7 @@ test('overflow shapes share one XOR value and affect about 75% of dots', (t) => 
 });
 
 test('sprite feedback follows each grapheme position across lines and fractional origins', () => {
-  const engine = createEngine();
+  const engine = feedbackEngine();
   engine.step(() => {
     for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
     engine.api.spr(30.9, 50.9, 'e\u0301⛩️\r\n👨‍👩‍👧‍👦👾', 7);
@@ -457,8 +493,8 @@ test('PCG feedback counts rejected bytes, including partial patterns and color p
     [256, (pcg) => (pcg.X.col[0] = 3), 1],
     [255, (pcg) => pcg.X.pat.subarray(2, 6).set([1, 2, 3, 4]), 3],
   ]) {
-    const actual = createEngine(),
-      expected = createEngine();
+    const actual = feedbackEngine(),
+      expected = feedbackEngine();
     actual.step(() => {
       for (let i = 0; i < used; i++) actual.api.pcg.X.pat[0] = 0;
       write(actual.api.pcg);
@@ -471,8 +507,8 @@ test('PCG feedback counts rejected bytes, including partial patterns and color p
 });
 
 test('initialization feedback survives the first tick and does not alter screen or sprite data', () => {
-  const engine = createEngine(),
-    reference = createEngine(),
+  const engine = feedbackEngine(),
+    reference = feedbackEngine(),
     { api } = engine;
   for (let i = 0; i < 257; i++) api.pcg.X.pat[0] = 255;
   for (let i = 0; i < 257; i++) reference.api.pcg.X.pat[0] = 255;

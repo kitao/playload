@@ -25,12 +25,13 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     cache = new Map(),
     patterns = new WeakMap();
   const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+  // Capture before game code can replace Math.random().
+  const random = Math.random;
   let held = 0,
     pressed = 0,
     pcgBytes = 0,
     firstFrame = true,
     glitched = false,
-    noise = 0x6d2b79f5,
     sounds = [];
   const color = (col) => {
     if (!Number.isInteger(col) || col < 0 || col > 7) throw new RangeError('Color must be 0–7');
@@ -63,12 +64,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     return 1 << id;
   };
 
-  // Keep feedback deterministic and independent of the game's Math.random().
   function randomNoise(range) {
-    noise ^= noise << 13;
-    noise ^= noise >>> 17;
-    noise ^= noise << 5;
-    return (noise >>> 0) % range;
+    return (random() * range) | 0;
   }
 
   function glitch(x, y, w, h) {

@@ -36,10 +36,11 @@ at a random row. Pattern bytes and both color bytes share the PCG budget; partia
 produce feedback only for the rejected bytes. Initialization shares the first frame's budget.
 
 Each rectangle or line chooses one XOR value from **3, 4, 6, 7** and applies it independently
-to each pixel with **75% probability**, using the existing eight-color palette. A separate
-pseudorandom sequence leaves the game's `Math.random()` untouched. Masks accumulate in a fixed
-screen-sized buffer and are applied after all screen and sprite drawing. Overlaps can cancel;
-there is no cap on the number of shapes and no persistence into a frame without overflow.
+to each pixel with **75% probability**, using the existing eight-color palette. Feedback uses
+`Math.random()`, captured before game code runs so replacing it cannot control the noise.
+Masks accumulate in a fixed screen-sized buffer and are applied after all screen and sprite
+drawing. Overlaps can cancel; there is no cap on the number of shapes and no persistence into
+a frame without overflow.
 Rendering the same frame again does not change its feedback. Screen and PCG data stay intact.
 
 ### CRT rendering
