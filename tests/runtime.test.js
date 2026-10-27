@@ -492,7 +492,7 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   );
 });
 
-test('serialized workers reset sprite and PCG limits on every tick of a frame batch', async (t) => {
+test('serialized workers reset limits and feedback on every tick, including batched ticks', async (t) => {
   mockWorker(t);
   const runtime = new Runtime(() => {}, assert.fail);
   t.after(() => runtime.stop());
@@ -501,12 +501,13 @@ test('serialized workers reset sprite and PCG limits on every tick of a frame ba
   const messages = [];
   const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
   runInNewContext(source, context);
-  context.self.onmessage({
+  const load = {
     data: {
       type: 'load',
       source: `
       let frame = 0;
       function tick() {
+        if (frame === 6) { cls(0); return; }
         const base = 0xe000 + frame++ * 27;
         for (let i = 0; i < 27; i++) {
           const character = pcg[String.fromCodePoint(base + i)];
@@ -522,17 +523,29 @@ test('serialized workers reset sprite and PCG limits on every tick of a frame ba
       }
     `,
     },
-  });
+  };
+  context.self.onmessage(load);
   context.self.onmessage({ data: { type: 'frame', steps: MAX_FRAME_STEPS } });
   assert.deepEqual(
     messages.map((message) => message.type),
     ['ready', 'frame'],
   );
-  for (const message of messages)
-    assert.deepEqual(
-      message.pixels,
-      Uint8Array.from({ length: 160 * 144 }, (_, i) => (i % 160 < 128 && i < 160 * 64 ? 6 : 0)),
-    );
+  const normal = Uint8Array.from({ length: 160 * 144 }, (_, i) =>
+    i % 160 < 128 && i < 160 * 64 ? 6 : 0,
+  );
+  for (const message of messages) {
+    const changed = message.pixels.filter((color, i) => color !== normal[i]).length;
+    assert(changed > 0 && changed <= 14 * 160 + 64);
+  }
+  const individual = [],
+    other = { self: {}, postMessage: (message) => individual.push(structuredClone(message)) };
+  runInNewContext(source, other);
+  other.self.onmessage(load);
+  for (let i = 0; i < MAX_FRAME_STEPS; i++)
+    other.self.onmessage({ data: { type: 'frame', steps: 1 } });
+  assert.deepEqual(messages.at(-1).pixels, individual.at(-1).pixels);
+  context.self.onmessage({ data: { type: 'frame', steps: 1 } });
+  assert(messages.at(-1).pixels.every((color) => color === 0));
 });
 
 test('runtime refuses extra outstanding batches and rejects invalid catch-up sound positions', (t) => {

@@ -5,6 +5,15 @@ import { glyphs } from '../src/engine/glyphs.js';
 
 const pixel = (engine, x, y = 0) => engine.pixels[y * 160 + x];
 
+// On a black screen the displayed feedback is the XOR mask itself.
+function spriteNoise(count) {
+  const engine = createEngine();
+  engine.step(() => {
+    for (let i = 0; i < 128 + count; i++) engine.api.spr(-8, -8, 'X', 7);
+  });
+  return engine.pixels;
+}
+
 test('the public surface has six functions, two variables, and a fixed 20 by 18 screen', () => {
   const engine = createEngine(),
     { api } = engine;
@@ -300,14 +309,14 @@ test('a frame draws only the first 128 sprite characters and resets the limit ne
   });
   assert.deepEqual(
     engine.pixels,
-    Uint8Array.from({ length: 160 * 144 }, (_, i) => (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+    spriteNoise(2).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
   );
   engine.step(() => api.spr(128, 0, 'X', 5));
   assert.equal(pixel(engine, 0), 4);
   assert.equal(pixel(engine, 128), 5);
 });
 
-test('sprite strings share the frame limit and ignore the remainder of an oversized call', () => {
+test('sprite strings share the frame limit and add noise for each excess character', () => {
   const engine = createEngine(),
     { api } = engine;
   api.cls(4);
@@ -317,9 +326,10 @@ test('sprite strings share the frame limit and ignore the remainder of an oversi
     api.spr(0, 0, 'X\r\nXX', 3);
     api.spr(8, 8, 'X', 5);
   });
-  assert.equal(pixel(engine, 0, 0), 3);
-  assert.equal(pixel(engine, 0, 8), 3);
-  assert.equal(pixel(engine, 8, 8), 4);
+  assert.deepEqual(
+    engine.pixels,
+    spriteNoise(2).map((mask, i) => mask ^ (i % 160 < 8 && i < 160 * 16 ? 3 : 4)),
+  );
 });
 
 test('the sprite limit counts graphemes, excluding newlines and presentation selectors', () => {
@@ -334,8 +344,112 @@ test('the sprite limit counts graphemes, excluding newlines and presentation sel
   });
   assert.deepEqual(
     engine.pixels,
-    Uint8Array.from({ length: 160 * 144 }, (_, i) => (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+    spriteNoise(2).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
   );
+});
+
+test('overflow shapes stay on screen, share one XOR value, and affect about 75% of dots', (t) => {
+  t.mock.method(Math, 'random', () => assert.fail('Feedback must not use game randomness'));
+  for (const kind of ['sprite', 'pcg']) {
+    const engine = createEngine(),
+      { api } = engine;
+    let dots = 0;
+    for (let frame = 0; frame < 100; frame++) {
+      engine.step(() => {
+        if (kind === 'sprite') {
+          for (let i = 0; i < 129; i++) api.spr(-8, -8, 'X', 7);
+        } else {
+          for (let i = 0; i < 257; i++) api.pcg.X.pat[0] = 0;
+        }
+      });
+      const pixels = engine.pixels.slice(),
+        changed = Array.from(pixels.keys()).filter((i) => pixels[i] !== 0),
+        xs = changed.map((i) => i % 160),
+        ys = changed.map((i) => Math.floor(i / 160)),
+        masks = [...new Set(changed.map((i) => pixels[i]))];
+      assert.equal(masks.length, 1);
+      assert([3, 4, 6, 7].includes(masks[0]));
+      if (kind === 'sprite') {
+        assert(Math.max(...xs) - Math.min(...xs) <= 7);
+        assert(Math.max(...ys) - Math.min(...ys) <= 7);
+        assert(changed.length <= 64);
+      } else {
+        assert.equal(new Set(ys).size, 1);
+        assert(Math.max(...xs) - Math.min(...xs) > 140);
+      }
+      dots += changed.length;
+      assert.deepEqual(engine.pixels, pixels, 'Repeated rendering must not change feedback');
+      assert.equal(api.pcg.X.pat[0], 0);
+      assert(api.scr.every((row) => row.every((cell) => cell.chr === ' ')));
+    }
+    const density = dots / (100 * (kind === 'sprite' ? 64 : 160));
+    assert(density > 0.72 && density < 0.78, `${kind}: ${density}`);
+    engine.step(() => {});
+    assert(
+      engine.pixels.every((col) => col === 0),
+      'Feedback ends with its frame',
+    );
+  }
+});
+
+test('PCG feedback counts rejected bytes, including partial patterns and color pairs', () => {
+  for (const [used, write, excess] of [
+    [256, (pcg) => (pcg.X.pat = 'ffffffffffffffff'), 8],
+    [253, (pcg) => pcg.X.pat.fill(255), 5],
+    [256, (pcg) => (pcg.X.col = [3, 4]), 2],
+    [255, (pcg) => (pcg.X.col = [3, 4]), 1],
+    [256, (pcg) => (pcg.X.col[0] = 3), 1],
+    [255, (pcg) => pcg.X.pat.subarray(2, 6).set([1, 2, 3, 4]), 3],
+  ]) {
+    const actual = createEngine(),
+      expected = createEngine();
+    actual.step(() => {
+      for (let i = 0; i < used; i++) actual.api.pcg.X.pat[0] = 0;
+      write(actual.api.pcg);
+    });
+    expected.step(() => {
+      for (let i = 0; i < 256 + excess; i++) expected.api.pcg.X.pat[0] = 0;
+    });
+    assert.deepEqual(actual.pixels, expected.pixels);
+  }
+});
+
+test('initialization feedback survives the first tick and does not alter screen or sprite data', () => {
+  const engine = createEngine(),
+    reference = createEngine(),
+    { api } = engine;
+  for (let i = 0; i < 257; i++) api.pcg.X.pat[0] = 255;
+  for (let i = 0; i < 257; i++) reference.api.pcg.X.pat[0] = 255;
+  const mask = reference.pixels.slice();
+  engine.step(() => {
+    api.cls(4);
+    api.spr(0, 0, 'X', 6);
+  });
+  assert.deepEqual(
+    engine.pixels,
+    mask.map((value, i) => value ^ (i < 8 ? 6 : 4)),
+  );
+  engine.step(() => {});
+  assert(engine.pixels.every((col) => col === 4));
+  assert.equal(api.pcg.X.pat[0], 255);
+});
+
+test('invalid and empty writes do not produce overflow feedback', () => {
+  const engine = createEngine(),
+    { api } = engine;
+  engine.step(() => {
+    for (let i = 0; i < 256; i++) api.pcg.X.pat[0] = 0;
+    api.pcg.X.pat.set([]);
+    api.pcg.X.pat.fill(255, 6, 2);
+    api.pcg.X.pat.subarray(0, 0).reverse();
+    assert.throws(() => api.pcg.X.pat.set([1, 2], 7), RangeError);
+    assert.throws(() => (api.pcg.X.col = [2, 8]), RangeError);
+    for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
+    api.spr(0, 0, '', 7);
+    api.spr(0, 0, '\n\r\n', 7);
+    assert.throws(() => api.spr(0, 0, 'X', 8), RangeError);
+  });
+  assert(engine.pixels.every((col) => col === 0));
 });
 
 test('sprite zero bits are transparent and color zero is opaque black', () => {
@@ -571,6 +685,7 @@ test('PCG patterns and colors share 256 bytes per frame', () => {
     assert.equal(saved[0].pat[0], 255);
     assert.deepEqual([...saved[0].col], [5, 1]);
   });
+  engine.step(() => {});
   assert.equal(pixel(engine, 0), 5);
   assert.equal(pixel(engine, 40, 8), 7);
   assert.equal(pixel(engine, 40, 14), 0);

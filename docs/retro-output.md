@@ -26,6 +26,23 @@ amplifier or speaker. Register-level programming and complete ROM behavior are o
 
 ## Display
 
+### Overflow feedback
+
+The first 128 sprite characters and 256 PCG bytes written per frame are accepted.
+Each excess sprite character adds an 8×8 noise rectangle at an integer position wholly
+inside the screen. Each excess PCG byte adds one full-width, one-pixel-high noise line
+at a random row. Pattern bytes and both color bytes share the PCG budget; partial writes
+produce feedback only for the rejected bytes. Initialization shares the first frame's budget.
+
+Each rectangle or line chooses one XOR value from **3, 4, 6, 7** and applies it independently
+to each pixel with **75% probability**, using the existing eight-color palette. A separate
+pseudorandom sequence leaves the game's `Math.random()` untouched. Masks accumulate in a fixed
+screen-sized buffer and are applied after all screen and sprite drawing. Overlaps can cancel;
+there is no cap on the number of shapes and no persistence into a frame without overflow.
+Rendering the same frame again does not change its feedback. Screen and PCG data stay intact.
+
+### CRT rendering
+
 The WebGL renderer adapts Timothy Lottes' public-domain
 [CRT-Lottes shader](https://github.com/libretro/glsl-shaders/blob/e808ca09c699db7a843154cf7dc4dfd766d18a8a/crt/shaders/crt-lottes.glsl),
 whose reference is an RGB-input CGA arcade monitor. It retains Gaussian reconstruction,

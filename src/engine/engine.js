@@ -18,7 +18,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     height = 144,
     columns = 20,
     lines = 18;
-  const pixels = new Uint8Array(width * height);
+  const pixels = new Uint8Array(width * height),
+    glitches = new Uint8Array(width * height);
   const characters = Object.create(null),
     sprites = [],
     cache = new Map(),
@@ -27,6 +28,9 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   let held = 0,
     pressed = 0,
     pcgBytes = 0,
+    firstFrame = true,
+    glitched = false,
+    noise = 0x6d2b79f5,
     sounds = [];
   const color = (col) => {
     if (!Number.isInteger(col) || col < 0 || col > 7) throw new RangeError('Color must be 0–7');
@@ -58,6 +62,27 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       throw new RangeError('Button must be 0–5 (UDLRAB)');
     return 1 << id;
   };
+
+  // Keep feedback deterministic and independent of the game's Math.random().
+  function randomNoise(range) {
+    noise ^= noise << 13;
+    noise ^= noise >>> 17;
+    noise ^= noise << 5;
+    return (noise >>> 0) % range;
+  }
+
+  function glitch(count, w, h) {
+    if (!count) return;
+    glitched = true;
+    for (let i = 0; i < count; i++) {
+      const x = randomNoise(width - w + 1),
+        y = randomNoise(height - h + 1),
+        mask = [3, 4, 6, 7][randomNoise(4)];
+      for (let row = 0; row < h; row++)
+        for (let col = 0; col < w; col++)
+          if (randomNoise(4)) glitches[(y + row) * width + x + col] ^= mask;
+    }
+  }
 
   // Character data
 
@@ -100,10 +125,11 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   // Count writes, including unchanged bytes. A bulk edit uses the remaining
   // budget before dropping its excess bytes. Patterns and PCG colors share it.
   function writePcg(target, next, start = 0, end = next.length) {
-    const count = Math.min(end - start, 256 - pcgBytes);
-    if (count <= 0) return;
+    const length = Math.max(0, end - start),
+      count = Math.min(length, 256 - pcgBytes);
     for (let i = start; i < start + count; i++) target[i] = next[i];
     pcgBytes += count;
+    glitch(length - count, width, 1);
   }
 
   const integer = (value) => Math.trunc(+value) || 0;
@@ -341,7 +367,6 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     y = coordinate(y);
     if (typeof str !== 'string') throw new TypeError('Text must be a string');
     col = color(col);
-    if (sprites.length >= 128) return;
 
     // Keep individual ASCII, kana and emoji sprites on the existing fast path.
     if (
@@ -349,11 +374,13 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       str !== '\r' &&
       str !== '\n'
     ) {
-      sprites.push({ x, y, chr: characterKey(str), col });
+      if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(str), col });
+      else glitch(1, 8, 8);
       return;
     }
 
     const start = sprites.length;
+    let excess = 0;
     try {
       for (const { segment } of segmenter.segment(str.replace(/\r\n/g, '\n'))) {
         if (segment === '\n') {
@@ -361,14 +388,15 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           y += 8;
           continue;
         }
-        sprites.push({ x, y, chr: characterKey(segment), col });
-        if (sprites.length === 128) break;
+        if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(segment), col });
+        else excess++;
         x += 8;
       }
     } catch (error) {
       sprites.length = start;
       throw error;
     }
+    glitch(excess, 8, 8);
   }
 
   function play(ch, str) {
@@ -418,6 +446,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     for (const sprite of sprites) {
       draw(sprite.chr, sprite.x, sprite.y, sprite.col, null);
     }
+    if (glitched) for (let i = 0; i < pixels.length; i++) pixels[i] ^= glitches[i];
     return pixels;
   }
 
@@ -442,6 +471,12 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       held = mask;
     },
     step(tick) {
+      // Setup overflow belongs to the first frame, just like its PCG writes.
+      if (!firstFrame && glitched) {
+        glitches.fill(0);
+        glitched = false;
+      }
+      firstFrame = false;
       sprites.length = 0;
       try {
         tick();

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Show sprite overflow as 8×8 noise rectangles and PCG overflow as horizontal noise lines, one per excess character or byte, in the affected frame.
+
 ## 0.9.3
 
 - Add six built-in control symbols at the start of the Symbols catalog.
