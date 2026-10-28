@@ -27,15 +27,18 @@
   </head>
 
   <body>
-    <nav class="language-switch" aria-label="Language / 言語">
-      <button type="button" lang="en" data-language="en" aria-pressed="false">
-        <span>English</span>
-      </button>
-      <span aria-hidden="true">/</span>
-      <button type="button" lang="ja" data-language="ja" aria-pressed="false">
-        <span>日本語</span>
-      </button>
-    </nav>
+    <header class="site-nav">
+      <a class="parent-link" href="https://kitao.dev/"><span>kitao.dev</span></a>
+      <nav class="language-switch" aria-label="Language / 言語">
+        <button type="button" lang="en" data-language="en" aria-pressed="false">
+          <span>English</span>
+        </button>
+        <span aria-hidden="true">/</span>
+        <button type="button" lang="ja" data-language="ja" aria-pressed="false">
+          <span>日本語</span>
+        </button>
+      </nav>
+    </header>
 
     <main aria-label="Playload">
       <article class="introduction" lang="en">{{INTRODUCTION}}</article>

@@ -171,7 +171,8 @@ test('the complete publication stays under Playload and every local document lin
       assert.equal(new Set(ids).size, ids.length, 'Duplicate document IDs in ' + path);
       for (const [, href] of html.matchAll(/\b(?:href|src)="([^"]+)"/g)) {
         const target = new URL(href.replaceAll('&amp;', '&'), 'https://kitao.dev/' + path);
-        if (target.origin !== 'https://kitao.dev') continue;
+        // The root homepage is hosted separately from Playload's published files.
+        if (target.origin !== 'https://kitao.dev' || target.href === 'https://kitao.dev/') continue;
         assert(target.pathname.startsWith('/playload/'), target.href);
         const destination = target.pathname.endsWith('/')
           ? target.pathname + 'index.html'
