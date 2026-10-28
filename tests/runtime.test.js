@@ -451,12 +451,12 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   runtime.load('function tick() {}');
   const source = await (await fetch(runtime.worker.url)).text();
 
-  const create = () => {
+  const create = async () => {
     const messages = [];
     const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
     runInNewContext(source, context);
     const send = (data) => context.self.onmessage({ data });
-    send({
+    await send({
       type: 'load',
       source: `
       let ticks = 0, presses = 0;
@@ -473,12 +473,12 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
     return { send, messages };
   };
 
-  const individual = create(),
-    batch = create();
-  individual.send({ type: 'input', mask: 16 });
-  batch.send({ type: 'input', mask: 16 });
-  for (let i = 0; i < MAX_FRAME_STEPS; i++) individual.send({ type: 'frame', steps: 1 });
-  batch.send({ type: 'frame', steps: MAX_FRAME_STEPS });
+  const individual = await create(),
+    batch = await create();
+  await individual.send({ type: 'input', mask: 16 });
+  await batch.send({ type: 'input', mask: 16 });
+  for (let i = 0; i < MAX_FRAME_STEPS; i++) await individual.send({ type: 'frame', steps: 1 });
+  await batch.send({ type: 'frame', steps: MAX_FRAME_STEPS });
   const combined = batch.messages.at(-1);
   assert.equal(combined.type, 'frame');
   assert.equal(combined.steps, 5);
@@ -492,6 +492,72 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   );
 });
 
+test('each overflow kind adds one frame of wait, regardless of count, including setup and catch-up ticks', async (t) => {
+  mockWorker(t);
+  const runtime = new Runtime(() => {}, assert.fail);
+  t.after(() => runtime.stop());
+  runtime.load('function tick() {}');
+  const source = await (await fetch(runtime.worker.url)).text();
+  const messages = [],
+    waits = [];
+  const context = {
+    self: {},
+    postMessage: (message) => messages.push(structuredClone(message)),
+    setTimeout: (callback, delay) => waits.push({ callback, delay }),
+  };
+  runInNewContext(source, context);
+  const send = (data) => context.self.onmessage({ data });
+  const starting = send({
+    type: 'load',
+    source: `
+      for (let i = 0; i < 257; i++) pcg.X.pat[0] = 0;
+      let frame = 0;
+      function tick() {
+        cls(0);
+        if (frame === 1 || frame === 3)
+          for (let i = 0; i < 130; i++) spr(-8, -8, 'X', 7);
+        if (frame === 2 || frame === 3)
+          for (let i = 0; i < 258; i++) pcg.X.pat[0] = 0;
+        if (frame === 4)
+          for (let i = 0; i < 5000; i++) pcg.X.pat[0] = 0;
+        if (btnp(4)) put(0, 0, 'X', 7);
+        play(0, 'c');
+        frame++;
+      }
+    `,
+  });
+  assert.equal(messages.length, 0);
+  assert.equal(waits.length, 1);
+  assert.equal(waits[0].delay, 1000 / 60);
+  // Input is still accepted while the worker is waiting.
+  await send({ type: 'input', mask: 16 });
+  waits.shift().callback();
+  await starting;
+  assert.equal(messages[0].type, 'ready');
+
+  const pending = send({ type: 'frame', steps: MAX_FRAME_STEPS });
+  for (const delayFrames of [1, 1, 2, 1]) {
+    assert.equal(messages.length, 1);
+    assert.equal(waits.length, 1);
+    assert.equal(waits[0].delay, (delayFrames * 1000) / 60);
+    waits.shift().callback();
+    await new Promise(setImmediate);
+  }
+  await pending;
+  assert.equal(waits.length, 0);
+  const frame = messages[1];
+  assert.equal(frame.type, 'frame');
+  assert.equal(frame.steps, 5);
+  assert.deepEqual(
+    frame.sounds.map((command) => command.frame),
+    [0, 1, 2, 3, 4],
+  );
+  assert(frame.pixels.every((color) => color === 0));
+  await send({ type: 'frame', steps: 1 });
+  assert.equal(waits.length, 0);
+  assert.equal(messages.length, 3);
+});
+
 test('serialized workers reset limits and feedback on every tick, including batched ticks', async (t) => {
   mockWorker(t);
   const runtime = new Runtime(() => {}, assert.fail);
@@ -500,7 +566,11 @@ test('serialized workers reset limits and feedback on every tick, including batc
   // Compare batching with identical noise in both worker contexts.
   const source = 'Math.random = () => 0.5;\n' + (await (await fetch(runtime.worker.url)).text());
   const messages = [];
-  const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
+  const context = {
+    self: {},
+    postMessage: (message) => messages.push(structuredClone(message)),
+    setTimeout: (callback) => callback(),
+  };
   runInNewContext(source, context);
   const load = {
     data: {
@@ -526,8 +596,8 @@ test('serialized workers reset limits and feedback on every tick, including batc
     `,
     },
   };
-  context.self.onmessage(load);
-  context.self.onmessage({ data: { type: 'frame', steps: MAX_FRAME_STEPS } });
+  await context.self.onmessage(load);
+  await context.self.onmessage({ data: { type: 'frame', steps: MAX_FRAME_STEPS } });
   assert.deepEqual(
     messages.map((message) => message.type),
     ['ready', 'frame'],
@@ -540,13 +610,17 @@ test('serialized workers reset limits and feedback on every tick, including batc
     assert(changed > 0 && changed <= 14 * 160 + 64);
   }
   const individual = [],
-    other = { self: {}, postMessage: (message) => individual.push(structuredClone(message)) };
+    other = {
+      self: {},
+      postMessage: (message) => individual.push(structuredClone(message)),
+      setTimeout: (callback) => callback(),
+    };
   runInNewContext(source, other);
-  other.self.onmessage(load);
+  await other.self.onmessage(load);
   for (let i = 0; i < MAX_FRAME_STEPS; i++)
-    other.self.onmessage({ data: { type: 'frame', steps: 1 } });
+    await other.self.onmessage({ data: { type: 'frame', steps: 1 } });
   assert.deepEqual(messages.at(-1).pixels, individual.at(-1).pixels);
-  context.self.onmessage({ data: { type: 'frame', steps: 1 } });
+  await context.self.onmessage({ data: { type: 'frame', steps: 1 } });
   assert(messages.at(-1).pixels.every((color) => color === 0));
 });
 

@@ -302,7 +302,11 @@ export class Sound {
 
 function gameWorker(presets, engineFactory, compiler, maxSteps) {
   let engine, tick;
-  self.onmessage = ({ data }) => {
+  async function step() {
+    const delayFrames = engine.step(tick);
+    if (delayFrames) await new Promise((resolve) => setTimeout(resolve, (delayFrames * 1000) / 60));
+  }
+  self.onmessage = async ({ data }) => {
     try {
       switch (data.type) {
         case 'load': {
@@ -314,7 +318,7 @@ function gameWorker(presets, engineFactory, compiler, maxSteps) {
               '\n;return typeof tick === "function" ? tick : null;\n//# sourceURL=playload-game.js',
           )(...Object.values(api));
           if (!tick) throw new Error('Define function tick()');
-          engine.step(tick);
+          await step();
           postMessage({ type: 'ready', pixels: engine.pixels, sounds: engine.sounds() });
           break;
         }
@@ -332,7 +336,7 @@ function gameWorker(presets, engineFactory, compiler, maxSteps) {
           // Keep tick() at 60 Hz, but rasterize and transfer only the last
           // state. Intermediate ticks still consume btnp and emit sound.
           for (let frame = 0; frame < steps; frame++) {
-            engine.step(tick);
+            await step();
             for (const command of engine.sounds()) sounds.push({ ...command, frame });
           }
 

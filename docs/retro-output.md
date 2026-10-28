@@ -42,6 +42,10 @@ Masks accumulate in a fixed screen-sized buffer and are applied after all screen
 drawing. Overlaps can cancel; there is no cap on the number of shapes and no persistence into
 a frame without overflow.
 Rendering the same frame again does not change its feedback. Screen and PCG data stay intact.
+Each tick waits **one frame (1/60 second) for sprite overflow** and **one frame for PCG overflow**,
+regardless of the excess amount. A tick with both waits two frames. This includes initialization and
+intermediate ticks in a catch-up batch. The player keeps its usual schedule and catches up
+by skipping intermediate drawings; running sound continues during the wait.
 
 ### CRT rendering
 

@@ -31,7 +31,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     pressed = 0,
     pcgBytes = 0,
     firstFrame = true,
-    glitched = false,
+    spriteOverflow = false,
+    pcgOverflow = false,
     sounds = [];
   const color = (col) => {
     if (!Number.isInteger(col) || col < 0 || col > 7) throw new RangeError('Color must be 0–7');
@@ -69,7 +70,6 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   }
 
   function glitch(x, y, w, h) {
-    glitched = true;
     const mask = [3, 4, 6, 7][randomNoise(4)];
     for (let row = 0; row < h; row++) {
       const py = y + row;
@@ -82,6 +82,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   }
 
   function glitchSprite(x, y) {
+    spriteOverflow = true;
     glitch(x + randomNoise(17) - 8, y + randomNoise(17) - 8, 8, 8);
   }
 
@@ -130,6 +131,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       count = Math.min(length, 256 - pcgBytes);
     for (let i = start; i < start + count; i++) target[i] = next[i];
     pcgBytes += count;
+    if (count < length) pcgOverflow = true;
     for (let i = count; i < length; i++) glitch(0, randomNoise(height), width, 1);
   }
 
@@ -445,7 +447,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     for (const sprite of sprites) {
       draw(sprite.chr, sprite.x, sprite.y, sprite.col, null);
     }
-    if (glitched) for (let i = 0; i < pixels.length; i++) pixels[i] ^= glitches[i];
+    if (spriteOverflow || pcgOverflow)
+      for (let i = 0; i < pixels.length; i++) pixels[i] ^= glitches[i];
     return pixels;
   }
 
@@ -471,9 +474,9 @@ export function createEngine(presets = [], compileScore = (s) => s) {
     },
     step(tick) {
       // Setup overflow belongs to the first frame, just like its PCG writes.
-      if (!firstFrame && glitched) {
+      if (!firstFrame && (spriteOverflow || pcgOverflow)) {
         glitches.fill(0);
-        glitched = false;
+        spriteOverflow = pcgOverflow = false;
       }
       firstFrame = false;
       sprites.length = 0;
@@ -484,6 +487,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         // Top-level setup shares the first frame's budget, as sound commands do.
         pcgBytes = 0;
       }
+      return Number(spriteOverflow) + Number(pcgOverflow);
     },
     sounds() {
       const result = sounds;
