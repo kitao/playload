@@ -515,7 +515,7 @@ test('each overflow kind adds one frame of wait, regardless of count, including 
       function tick() {
         cls(0);
         if (frame === 1 || frame === 3)
-          for (let i = 0; i < 130; i++) spr(-8, -8, 'X', 7);
+          for (let i = 0; i < 258; i++) spr(-8, -8, 'X', 7);
         if (frame === 2 || frame === 3)
           for (let i = 0; i < 258; i++) pcg.X.pat[0] = 0;
         if (frame === 4)
@@ -590,7 +590,7 @@ test('serialized workers reset limits and feedback on every tick, including batc
         if (last.pat[5] !== 255) throw Error('PCG not reset');
         if (last.pat[6] !== 0 || last.col[0] !== 7) throw Error('PCG overflow');
         cls(0);
-        for (let i = 0; i < 129; i++)
+        for (let i = 0; i < 257; i++)
           spr(i % 16 * 8, Math.floor(i / 16) * 8, String.fromCodePoint(base), 6);
       }
     `,
@@ -603,7 +603,7 @@ test('serialized workers reset limits and feedback on every tick, including batc
     ['ready', 'frame'],
   );
   const normal = Uint8Array.from({ length: 160 * 144 }, (_, i) =>
-    i % 160 < 128 && i < 160 * 64 ? 6 : 0,
+    i % 160 < 128 && i < 160 * 128 ? 6 : 0,
   );
   for (const message of messages) {
     const changed = message.pixels.filter((color, i) => color !== normal[i]).length;

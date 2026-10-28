@@ -15,7 +15,7 @@
         },
         {
           "name": "spr(x, y, str, col)",
-          "description": "8px-spaced text; newlines, transparent background, one frame; max 128 characters per frame.",
+          "description": "8px-spaced text; newlines, transparent background, one frame; max 256 characters per frame.",
           "example": "spr(76, 68, \"👾\", 6)\nspr(72, 64, \"AB\\nCD\", 6)"
         },
         {

@@ -2,6 +2,7 @@
 
 ## 0.9.4
 
+- Increased the sprite limit to 256 characters per frame.
 - Limited PCG edits to 256 distinct characters per run.
 - Added visual noise and processing delays when sprite or PCG limits are exceeded.
 - Updated app and shared-game link previews to use the Playload logo.
