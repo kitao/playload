@@ -2,7 +2,7 @@
 
 ## 0.9.4
 
-- Limited sprites to 256 characters per frame and PCG edits to 256 distinct characters per run, with visual noise and processing delays on overflow.
+- Limited PCG edits to 256 distinct characters per run, with visual noise and processing delays when sprite or PCG limits are exceeded.
 - Updated app and shared-game link previews to use the Playload logo.
 - Added a link to kitao.dev on the homepage.
 

@@ -28,7 +28,7 @@ amplifier or speaker. Register-level programming and complete ROM behavior are o
 
 ### Overflow feedback
 
-The first 256 sprite characters and 256 PCG bytes written per frame are accepted.
+The first 128 sprite characters and 256 PCG bytes written per frame are accepted.
 Up to 256 distinct characters can have their PCG patterns or colors written per run.
 The first accepted write reserves a character, even if its value is unchanged. Reads and
 standard-font rendering reserve nothing; empty, invalid and fully rejected writes also reserve

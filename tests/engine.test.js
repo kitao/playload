@@ -24,7 +24,7 @@ function feedbackEngine() {
 function spriteNoise(positions) {
   const engine = feedbackEngine();
   engine.step(() => {
-    for (let i = 0; i < 256; i++) engine.api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
     for (const [x, y] of positions) engine.api.spr(x, y, 'X', 7);
   });
   return engine.pixels;
@@ -312,13 +312,13 @@ test('empty sprite strings draw nothing and later sprite calls cover the entire 
   assert.equal(pixel(engine, 17, 10), 4);
 });
 
-test('a frame draws only the first 256 sprite characters and resets the limit next frame', () => {
+test('a frame draws only the first 128 sprite characters and resets the limit next frame', () => {
   const engine = feedbackEngine(),
     { api } = engine;
   api.cls(4);
   for (const ch of ['X', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
   engine.step(() => {
-    for (let i = 0; i < 256; i++)
+    for (let i = 0; i < 128; i++)
       api.spr((i % 16) * 8, Math.floor(i / 16) * 8, i % 2 ? '👾' : 'X', 6);
     api.spr(0, 0, 'X', 3);
     api.spr(128, 0, 'X', 3);
@@ -328,7 +328,7 @@ test('a frame draws only the first 256 sprite characters and resets the limit ne
     spriteNoise([
       [0, 0],
       [128, 0],
-    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 128 ? 6 : 4)),
+    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
   );
   engine.step(() => api.spr(128, 0, 'X', 5));
   assert.equal(pixel(engine, 0), 4);
@@ -341,7 +341,7 @@ test('sprite strings share the frame limit and add noise for each excess charact
   api.cls(4);
   api.pcg.X.pat = 'FFFFFFFFFFFFFFFF';
   engine.step(() => {
-    api.spr(-2048, 0, 'X'.repeat(254), 6);
+    api.spr(-2048, 0, 'X'.repeat(126), 6);
     api.spr(0, 0, 'X\r\nXX', 3);
     api.spr(8, 8, 'X', 5);
   });
@@ -361,15 +361,15 @@ test('the sprite limit counts graphemes, excluding newlines and presentation sel
   for (const ch of ['é', '⛩', '👨‍👩‍👧‍👦', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
   const row = 'e\u0301⛩️👨‍👩‍👧‍👦👾'.repeat(4) + '\r\n';
   engine.step(() => {
-    api.spr(0, 0, row.repeat(16) + '👾', 6);
-    api.spr(0, 128, '👾', 3);
+    api.spr(0, 0, row.repeat(8) + '👾', 6);
+    api.spr(0, 64, '👾', 3);
   });
   assert.deepEqual(
     engine.pixels,
     spriteNoise([
-      [0, 128],
-      [0, 128],
-    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 128 ? 6 : 4)),
+      [0, 64],
+      [0, 64],
+    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
   );
 });
 
@@ -379,7 +379,7 @@ test('feedback captures randomness before game code and consumes it only on over
     { api } = engine;
   Math.random = () => assert.fail('Game replacement must not control feedback');
   engine.step(() => {
-    for (let i = 0; i < 256; i++) api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
     for (let i = 0; i < 256; i++) api.pcg.X.pat[0] = 0;
     assert.equal(random.mock.callCount(), 0);
     api.spr(40, 40, 'X', 7);
@@ -403,7 +403,7 @@ test('overflow shapes share one XOR value and affect about 75% of dots', () => {
     for (let frame = 0; frame < 100; frame++) {
       engine.step(() => {
         if (kind === 'sprite') {
-          for (let i = 0; i < 256; i++) api.spr(-8, -8, 'X', 7);
+          for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
           api.spr(76, 68, 'X', 7);
         } else {
           for (let i = 0; i < 257; i++) api.pcg.X.pat[0] = 0;
@@ -444,7 +444,7 @@ test('overflow shapes share one XOR value and affect about 75% of dots', () => {
 test('sprite feedback follows each grapheme position across lines and fractional origins', () => {
   const engine = feedbackEngine();
   engine.step(() => {
-    for (let i = 0; i < 256; i++) engine.api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
     engine.api.spr(30.9, 50.9, 'e\u0301⛩️\r\n👨‍👩‍👧‍👦👾', 7);
   });
   assert.deepEqual(
@@ -536,7 +536,7 @@ test('invalid and empty writes do not produce overflow feedback', () => {
     api.pcg.X.pat.subarray(0, 0).reverse();
     assert.throws(() => api.pcg.X.pat.set([1, 2], 7), RangeError);
     assert.throws(() => (api.pcg.X.col = [2, 8]), RangeError);
-    for (let i = 0; i < 256; i++) api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
     api.spr(0, 0, '', 7);
     api.spr(0, 0, '\n\r\n', 7);
     assert.throws(() => api.spr(0, 0, 'X', 8), RangeError);
