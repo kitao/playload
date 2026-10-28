@@ -382,7 +382,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       str !== '\r' &&
       str !== '\n'
     ) {
-      if (sprites.length < 256) sprites.push({ x, y, chr: characterKey(str), col });
+      if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(str), col });
       else glitchSprite(x, y);
       return;
     }
@@ -395,7 +395,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           y += 8;
           continue;
         }
-        if (sprites.length < 256) sprites.push({ x, y, chr: characterKey(segment), col });
+        if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(segment), col });
         else glitchSprite(x, y);
         x += 8;
       }
