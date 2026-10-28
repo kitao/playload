@@ -10,12 +10,12 @@
         },
         {
           "name": "put(cx, cy, str, col1?, col2?)",
-          "description": "Cell text stays; foreground/background, omit/null = PCG.",
+          "description": "Persistent cell text; foreground/background: omit/null = PCG.",
           "example": "put(1, 1, \"HI\\n👾\")\nput(1, 1, \"HI\\n👾\", 6, 0)\nput(1, 1, \"HI\\n👾\", null, 0)"
         },
         {
           "name": "spr(x, y, str, col)",
-          "description": "8px-spaced text; newlines, transparent, this tick; max 128 characters per frame.",
+          "description": "8px-spaced text; newlines, transparent background, one frame; max 256 characters per frame.",
           "example": "spr(76, 68, \"👾\", 6)\nspr(72, 64, \"AB\\nCD\", 6)"
         },
         {
@@ -26,7 +26,7 @@
         },
         {
           "name": "btnp(id)",
-          "description": "New press; same IDs as btn.",
+          "description": "True on a new press; same IDs as btn.",
           "example": "if (btnp(4)) play(1, \"V12O6N1C\")"
         },
         {
@@ -41,12 +41,12 @@
       "entries": [
         {
           "name": "pcg[chr]",
-          "description": "8-byte pattern and foreground/background colors; max 256 bytes written per frame.",
+          "description": "8-byte pattern and foreground/background colors; max 256 modified characters per run, 256 bytes written per frame.",
           "example": "pcg[\"↑\"].pat[0] = 0x18 // 1 byte\npcg[\"↑\"].pat = \"183c7e1818181800\" // 8 bytes\npcg[\"👾\"].col = [6, 0] // 2 bytes"
         },
         {
           "name": "scr[cy][cx]",
-          "description": "Cell characters and colors; null follows PCG.",
+          "description": "Cell character and colors; null inherits PCG colors.",
           "example": "scr[4][3].chr = \"👾\" // [cy][cx]\nscr[4][3].col = [null, 1]"
         }
       ]

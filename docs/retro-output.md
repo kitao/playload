@@ -28,10 +28,14 @@ amplifier or speaker. Register-level programming and complete ROM behavior are o
 
 ### Overflow feedback
 
-The first 128 sprite characters and 256 PCG bytes written per frame are accepted.
+The first 256 sprite characters and 256 PCG bytes written per frame are accepted.
+Up to 256 distinct characters can have their PCG patterns or colors written per run.
+The first accepted write reserves a character, even if its value is unchanged. Reads and
+standard-font rendering reserve nothing; empty, invalid and fully rejected writes also reserve
+nothing. Reserved characters can be rewritten across frames; restarting the game resets the set.
 Each excess sprite character adds an 8×8 noise rectangle offset from its intended draw position
 by a random integer from −16 to +16 pixels on each axis. Pixels outside the screen are clipped.
-Each excess PCG byte adds one full-width, one-pixel-high noise line
+Each PCG byte rejected by either limit adds one full-width, one-pixel-high noise line
 at a random row. Pattern bytes and both color bytes share the PCG budget; partial writes
 produce feedback only for the rejected bytes. Initialization shares the first frame's budget.
 

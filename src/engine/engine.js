@@ -23,7 +23,8 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   const characters = Object.create(null),
     sprites = [],
     cache = new Map(),
-    patterns = new WeakMap();
+    patterns = new WeakMap(),
+    modifiedPcg = new Set();
   const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
   // Capture before game code can replace Math.random().
   const random = Math.random;
@@ -88,7 +89,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
 
   // Character data
 
-  function colorPair(initial, inherit = false, limited = false) {
+  function colorPair(initial, inherit = false, owner = null) {
     const validate = (value) => (inherit && value == null ? null : color(value));
     const values = initial.map(validate);
     const pair = new Proxy(values, {
@@ -96,7 +97,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         if (index !== '0' && index !== '1') throw new RangeError('Colors have two entries');
         const next = target.slice();
         next[index] = validate(value);
-        if (limited) writePcg(target, next, Number(index), Number(index) + 1);
+        if (owner) writePcg(owner, target, next, Number(index), Number(index) + 1);
         else target[index] = next[index];
         return true;
       },
@@ -115,7 +116,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           throw new TypeError('Colors need [col1, col2]');
         const next = Array.from(value, validate);
         if (next.length !== 2) throw new TypeError('Colors need [col1, col2]');
-        if (limited) writePcg(values, next);
+        if (owner) writePcg(owner, values, next);
         else {
           values[0] = next[0];
           values[1] = next[1];
@@ -125,10 +126,13 @@ export function createEngine(presets = [], compileScore = (s) => s) {
   }
 
   // Count writes, including unchanged bytes. A bulk edit uses the remaining
-  // budget before dropping its excess bytes. Patterns and PCG colors share it.
-  function writePcg(target, next, start = 0, end = next.length) {
+  // budget before dropping its excess bytes. Patterns and colors share both limits.
+  // The first accepted write reserves a character for the rest of this run.
+  function writePcg(owner, target, next, start = 0, end = next.length) {
     const length = Math.max(0, end - start),
-      count = Math.min(length, 256 - pcgBytes);
+      count =
+        modifiedPcg.has(owner) || modifiedPcg.size < 256 ? Math.min(length, 256 - pcgBytes) : 0;
+    if (count) modifiedPcg.add(owner);
     for (let i = start; i < start + count; i++) target[i] = next[i];
     pcgBytes += count;
     if (count < length) pcgOverflow = true;
@@ -144,13 +148,13 @@ export function createEngine(presets = [], compileScore = (s) => s) {
 
   // Saved references and subarrays share the byte budget. Rendering reads the
   // private bytes directly; only the range written by each method is copied back.
-  function patternView(pattern) {
+  function patternView(pattern, owner) {
     const mutators = ['set', 'fill', 'copyWithin', 'reverse', 'sort'];
     const view = new Proxy(pattern, {
       get(target, key) {
         // Exposing the backing buffer would allow writes outside the budget.
         if (key === 'buffer') return target.buffer.slice(0);
-        if (key === 'subarray') return (...args) => patternView(target.subarray(...args));
+        if (key === 'subarray') return (...args) => patternView(target.subarray(...args), owner);
         const value = Reflect.get(target, key, target);
         if (typeof value !== 'function' || key === 'constructor') return value;
         return (...args) => {
@@ -195,10 +199,10 @@ export function createEngine(presets = [], compileScore = (s) => s) {
             if (key === 'reverse') {
               // Reverse writes both ends of each pair, but not an odd middle byte.
               for (let i = 0; i < Math.floor(target.length / 2); i++) {
-                writePcg(target, next, i, i + 1);
-                writePcg(target, next, target.length - i - 1, target.length - i);
+                writePcg(owner, target, next, i, i + 1);
+                writePcg(owner, target, next, target.length - i - 1, target.length - i);
               }
-            } else writePcg(target, next, start, end);
+            } else writePcg(owner, target, next, start, end);
             return result === next ? view : result;
           }
           // Array callbacks must receive the guarded view as their array argument.
@@ -219,14 +223,14 @@ export function createEngine(presets = [], compileScore = (s) => s) {
         const next = target.slice();
         const result = Reflect.set(next, key, value);
         if (result && Object.hasOwn(target, key))
-          writePcg(target, next, Number(key), Number(key) + 1);
+          writePcg(owner, target, next, Number(key), Number(key) + 1);
         return result;
       },
       defineProperty(target, key, descriptor) {
         const next = target.slice();
         const result = Reflect.defineProperty(next, key, descriptor);
         if (result && Object.hasOwn(target, key) && Object.hasOwn(descriptor, 'value'))
-          writePcg(target, next, Number(key), Number(key) + 1);
+          writePcg(owner, target, next, Number(key), Number(key) + 1);
         return result;
       },
     });
@@ -235,9 +239,10 @@ export function createEngine(presets = [], compileScore = (s) => s) {
 
   class PcgElem {
     constructor(rows = new Uint8Array(8), col = [7, 0]) {
-      const pattern = new Uint8Array(rows);
+      const pattern = new Uint8Array(rows),
+        owner = this;
       patterns.set(this, pattern);
-      const view = patternView(pattern);
+      const view = patternView(pattern, owner);
       Object.defineProperties(this, {
         pat: {
           enumerable: true,
@@ -258,10 +263,10 @@ export function createEngine(presets = [], compileScore = (s) => s) {
             ) {
               throw new TypeError('Pattern needs 8 row bytes');
             }
-            writePcg(pattern, next);
+            writePcg(owner, pattern, next);
           },
         },
-        col: colorPair(col, false, true),
+        col: colorPair(col, false, owner),
       });
       Object.preventExtensions(this);
     }
@@ -377,7 +382,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       str !== '\r' &&
       str !== '\n'
     ) {
-      if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(str), col });
+      if (sprites.length < 256) sprites.push({ x, y, chr: characterKey(str), col });
       else glitchSprite(x, y);
       return;
     }
@@ -390,7 +395,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
           y += 8;
           continue;
         }
-        if (sprites.length < 128) sprites.push({ x, y, chr: characterKey(segment), col });
+        if (sprites.length < 256) sprites.push({ x, y, chr: characterKey(segment), col });
         else glitchSprite(x, y);
         x += 8;
       }

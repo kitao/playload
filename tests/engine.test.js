@@ -24,7 +24,7 @@ function feedbackEngine() {
 function spriteNoise(positions) {
   const engine = feedbackEngine();
   engine.step(() => {
-    for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 256; i++) engine.api.spr(-8, -8, 'X', 7);
     for (const [x, y] of positions) engine.api.spr(x, y, 'X', 7);
   });
   return engine.pixels;
@@ -312,13 +312,13 @@ test('empty sprite strings draw nothing and later sprite calls cover the entire 
   assert.equal(pixel(engine, 17, 10), 4);
 });
 
-test('a frame draws only the first 128 sprite characters and resets the limit next frame', () => {
+test('a frame draws only the first 256 sprite characters and resets the limit next frame', () => {
   const engine = feedbackEngine(),
     { api } = engine;
   api.cls(4);
   for (const ch of ['X', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
   engine.step(() => {
-    for (let i = 0; i < 128; i++)
+    for (let i = 0; i < 256; i++)
       api.spr((i % 16) * 8, Math.floor(i / 16) * 8, i % 2 ? '👾' : 'X', 6);
     api.spr(0, 0, 'X', 3);
     api.spr(128, 0, 'X', 3);
@@ -328,7 +328,7 @@ test('a frame draws only the first 128 sprite characters and resets the limit ne
     spriteNoise([
       [0, 0],
       [128, 0],
-    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 128 ? 6 : 4)),
   );
   engine.step(() => api.spr(128, 0, 'X', 5));
   assert.equal(pixel(engine, 0), 4);
@@ -341,7 +341,7 @@ test('sprite strings share the frame limit and add noise for each excess charact
   api.cls(4);
   api.pcg.X.pat = 'FFFFFFFFFFFFFFFF';
   engine.step(() => {
-    api.spr(-2048, 0, 'X'.repeat(126), 6);
+    api.spr(-2048, 0, 'X'.repeat(254), 6);
     api.spr(0, 0, 'X\r\nXX', 3);
     api.spr(8, 8, 'X', 5);
   });
@@ -361,15 +361,15 @@ test('the sprite limit counts graphemes, excluding newlines and presentation sel
   for (const ch of ['é', '⛩', '👨‍👩‍👧‍👦', '👾']) api.pcg[ch].pat = 'FFFFFFFFFFFFFFFF';
   const row = 'e\u0301⛩️👨‍👩‍👧‍👦👾'.repeat(4) + '\r\n';
   engine.step(() => {
-    api.spr(0, 0, row.repeat(8) + '👾', 6);
-    api.spr(0, 64, '👾', 3);
+    api.spr(0, 0, row.repeat(16) + '👾', 6);
+    api.spr(0, 128, '👾', 3);
   });
   assert.deepEqual(
     engine.pixels,
     spriteNoise([
-      [0, 64],
-      [0, 64],
-    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 64 ? 6 : 4)),
+      [0, 128],
+      [0, 128],
+    ]).map((mask, i) => mask ^ (i % 160 < 128 && i < 160 * 128 ? 6 : 4)),
   );
 });
 
@@ -379,7 +379,7 @@ test('feedback captures randomness before game code and consumes it only on over
     { api } = engine;
   Math.random = () => assert.fail('Game replacement must not control feedback');
   engine.step(() => {
-    for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 256; i++) api.spr(-8, -8, 'X', 7);
     for (let i = 0; i < 256; i++) api.pcg.X.pat[0] = 0;
     assert.equal(random.mock.callCount(), 0);
     api.spr(40, 40, 'X', 7);
@@ -403,7 +403,7 @@ test('overflow shapes share one XOR value and affect about 75% of dots', () => {
     for (let frame = 0; frame < 100; frame++) {
       engine.step(() => {
         if (kind === 'sprite') {
-          for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
+          for (let i = 0; i < 256; i++) api.spr(-8, -8, 'X', 7);
           api.spr(76, 68, 'X', 7);
         } else {
           for (let i = 0; i < 257; i++) api.pcg.X.pat[0] = 0;
@@ -444,7 +444,7 @@ test('overflow shapes share one XOR value and affect about 75% of dots', () => {
 test('sprite feedback follows each grapheme position across lines and fractional origins', () => {
   const engine = feedbackEngine();
   engine.step(() => {
-    for (let i = 0; i < 128; i++) engine.api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 256; i++) engine.api.spr(-8, -8, 'X', 7);
     engine.api.spr(30.9, 50.9, 'e\u0301⛩️\r\n👨‍👩‍👧‍👦👾', 7);
   });
   assert.deepEqual(
@@ -536,7 +536,7 @@ test('invalid and empty writes do not produce overflow feedback', () => {
     api.pcg.X.pat.subarray(0, 0).reverse();
     assert.throws(() => api.pcg.X.pat.set([1, 2], 7), RangeError);
     assert.throws(() => (api.pcg.X.col = [2, 8]), RangeError);
-    for (let i = 0; i < 128; i++) api.spr(-8, -8, 'X', 7);
+    for (let i = 0; i < 256; i++) api.spr(-8, -8, 'X', 7);
     api.spr(0, 0, '', 7);
     api.spr(0, 0, '\n\r\n', 7);
     assert.throws(() => api.spr(0, 0, 'X', 8), RangeError);
@@ -830,10 +830,11 @@ test('PCG allows 256 one-byte character updates and counts repeated unchanged wr
     assert.equal(api.pcg['\ue100'].pat[0], 0);
   });
   engine.step(() => {
-    for (let i = 0; i < 255; i++) api.pcg.X.pat[0] = 0;
-    api.pcg.X.pat[0] |= 128;
-    api.pcg.X.pat[1] = 64;
-    assert.deepEqual([...api.pcg.X.pat], [128, 0, 0, 0, 0, 0, 0, 0]);
+    const pat = api.pcg['\ue000'].pat;
+    for (let i = 0; i < 255; i++) pat[0] = 0;
+    pat[0] |= 128;
+    pat[1] = 64;
+    assert.deepEqual([...pat], [128, 0, 0, 0, 0, 0, 0, 0]);
   });
 });
 
@@ -1060,9 +1061,134 @@ test('PCG setup shares the first frame budget; failed frames reset it and games 
     /failed tick/,
   );
   first.step(() => {
+    first.api.pcg['\ue000'].pat[0] = 128;
     first.api.pcg.X.pat[0] = 128;
   });
-  assert.equal(first.api.pcg.X.pat[0], 128);
+  assert.equal(first.api.pcg['\ue000'].pat[0], 128);
+  assert.equal(first.api.pcg.X.pat[0], 0, 'A failed tick does not release character slots');
+});
+
+test('PCG reserves 256 characters per run across frames, sharing patterns, colors and aliases', () => {
+  const engine = feedbackEngine(),
+    { api } = engine;
+  api.pcg['é'].pat[0] = 128;
+  engine.step(() => {
+    for (let i = 0; i < 254; i++) api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 0;
+    api.pcg['e\u0301'].col[0] = 2;
+  });
+  assert.equal(
+    engine.step(() => {
+      api.pcg['👾'].col = [4, 1];
+    }),
+    0,
+  );
+  assert.equal(
+    engine.step(() => {
+      api.pcg.X.pat[0] = 255;
+    }),
+    1,
+  );
+  assert.equal(api.pcg.X.pat[0], 0);
+  assert(engine.pixels.some((col) => col !== 0));
+  assert.equal(
+    engine.step(() => {
+      api.pcg['👾'].pat.fill(255);
+      api.pcg['e\u0301'].pat[0] = 64;
+    }),
+    0,
+  );
+  assert.equal(api.pcg['é'].pat[0], 64);
+  assert.deepEqual([...api.pcg['👾'].pat], Array(8).fill(255));
+  assert(engine.pixels.every((col) => col === 0));
+  const restarted = createEngine();
+  assert.equal(
+    restarted.step(() => {
+      restarted.api.pcg.X.pat[0] = 255;
+    }),
+    0,
+  );
+  assert.equal(restarted.api.pcg.X.pat[0], 255);
+});
+
+test('PCG reads, standard rendering and unsuccessful writes do not reserve character slots', () => {
+  const engine = createEngine(glyphs),
+    { api } = engine;
+  engine.step(() => {
+    for (const glyph of glyphs) {
+      void api.pcg[glyph.ch].pat[0];
+      api.put(0, 0, glyph.ch);
+    }
+    for (let i = 0; i < 300; i++) {
+      const pcg = api.pcg[String.fromCodePoint(0xf0000 + i)];
+      pcg.pat.set([]);
+      pcg.pat.subarray(0, 1).reverse();
+      assert.throws(() => {
+        pcg.col = [8, 0];
+      }, RangeError);
+    }
+    for (let i = 0; i < 255; i++) api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 0;
+    api.pcg['\ue000'].pat[0] = 0;
+    api.pcg.X.pat[0] = 255;
+  });
+  assert.equal(
+    engine.step(() => {
+      api.pcg.Y.pat[0] = 128;
+    }),
+    0,
+  );
+  assert.equal(api.pcg.Y.pat[0], 128, 'The rejected X write did not take the last slot');
+  const before = [...api.pcg.X.pat];
+  assert.equal(
+    engine.step(() => {
+      api.pcg.X.pat.fill(255);
+    }),
+    1,
+  );
+  assert.deepEqual([...api.pcg.X.pat], before);
+});
+
+test('saved PCG views and borrowed setters keep the original character owner at capacity', () => {
+  const engine = createEngine([{ ch: 'B', rows: [1, 2, 3, 4, 5, 6, 7, 8] }]),
+    { api } = engine,
+    a = api.pcg.A,
+    b = api.pcg.B,
+    saved = b.pat.subarray(1, 4),
+    colors = b.col,
+    before = [...b.pat];
+  engine.step(() => {
+    a.col[0] = 3;
+  });
+  engine.step(() => {
+    for (let i = 0; i < 255; i++) api.pcg[String.fromCodePoint(0xe000 + i)].pat[0] = 0;
+  });
+  for (const write of [
+    () => {
+      saved[0] = 255;
+    },
+    () => saved.set([255]),
+    () => saved.fill(255),
+    () => saved.copyWithin(0, 1),
+    () => saved.reverse(),
+    () => saved.sort((x, y) => y - x),
+    () => Object.defineProperty(saved, '0', { value: 255 }),
+    () => {
+      colors[0] = 6;
+    },
+    () => Object.getOwnPropertyDescriptor(b, 'pat').set.call(a, Array(8).fill(255)),
+    () => Object.getOwnPropertyDescriptor(b, 'col').set.call(a, [6, 5]),
+  ]) {
+    assert.equal(engine.step(write), 1);
+    assert.deepEqual([...b.pat], before);
+    assert.deepEqual([...b.col], [7, 0]);
+  }
+  assert.equal(
+    engine.step(() => {
+      b.pat[0] = 255;
+      for (let i = 0; i < 256; i++) a.pat[0] = i;
+    }),
+    1,
+  );
+  assert.equal(a.pat[0], 255, 'Character-limit rejection does not consume the byte budget');
 });
 
 test('each game has independent screen, sprites, PCG, input, and sound', () => {
