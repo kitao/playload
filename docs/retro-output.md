@@ -30,7 +30,7 @@ amplifier or speaker. Register-level programming and complete ROM behavior are o
 
 The first 128 sprite characters and 256 PCG bytes written per frame are accepted.
 Each excess sprite character adds an 8×8 noise rectangle offset from its intended draw position
-by a random integer from −8 to +8 pixels on each axis. Pixels outside the screen are clipped.
+by a random integer from −16 to +16 pixels on each axis. Pixels outside the screen are clipped.
 Each excess PCG byte adds one full-width, one-pixel-high noise line
 at a random row. Pattern bytes and both color bytes share the PCG budget; partial writes
 produce feedback only for the rejected bytes. Initialization shares the first frame's budget.

@@ -417,8 +417,8 @@ test('overflow shapes share one XOR value and affect about 75% of dots', () => {
       assert.equal(masks.length, 1);
       assert([3, 4, 6, 7].includes(masks[0]));
       if (kind === 'sprite') {
-        assert(xs.every((x) => x >= 68 && x <= 91));
-        assert(ys.every((y) => y >= 60 && y <= 83));
+        assert(xs.every((x) => x >= 60 && x <= 99));
+        assert(ys.every((y) => y >= 52 && y <= 91));
         assert(Math.max(...xs) - Math.min(...xs) <= 7);
         assert(Math.max(...ys) - Math.min(...ys) <= 7);
         assert(changed.length <= 64);

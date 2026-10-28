@@ -83,7 +83,7 @@ export function createEngine(presets = [], compileScore = (s) => s) {
 
   function glitchSprite(x, y) {
     spriteOverflow = true;
-    glitch(x + randomNoise(17) - 8, y + randomNoise(17) - 8, 8, 8);
+    glitch(x + randomNoise(33) - 16, y + randomNoise(33) - 16, 8, 8);
   }
 
   // Character data
