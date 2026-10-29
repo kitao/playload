@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Play community games in Playload Arcade." />
+    <title>Playload Arcade</title>
+    <meta property="og:title" content="Playload Arcade" />
+    <meta property="og:description" content="Play community games in Playload Arcade." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ARCADE_URL}}" />
+    <meta property="og:image" content="{{PREVIEW_IMAGE}}" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="900" />
+    <meta property="og:image:alt" content="Playload" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="{{ARCADE_URL}}" />
+    <link rel="icon" href="/playload/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300..700&amp;display=swap"
+    />
+    <link rel="stylesheet" href="/playload/assets/bundles/arcade-style.css" />
+  </head>
+  <body>
+    <header class="site-nav arcade-nav">
+      <a class="parent-link" href="/playload/"><span>Playload</span></a>
+    </header>
+    <main class="arcade">
+      <h1>
+        <img src="/playload/assets/logo.svg" alt="Playload" width="256" height="32" />
+        <img src="/playload/assets/arcade-logo.svg" alt="ARCADE" width="192" height="28" />
+      </h1>
+      <p class="badges">
+        <a href="https://github.com/kitao/playload"
+          ><img
+            src="https://img.shields.io/github/stars/kitao/playload?style=social&amp;label=Star%20on%20GitHub"
+            alt="GitHub stars"
+            height="20"
+            loading="lazy"
+            decoding="async"
+        /></a>
+        <a href="https://github.com/sponsors/kitao"
+          ><img
+            src="https://img.shields.io/github/sponsors/kitao?label=Sponsor%20on%20GitHub&amp;logo=github%20sponsors&amp;style=social"
+            alt="GitHub Sponsors"
+            height="20"
+            loading="lazy"
+            decoding="async"
+        /></a>
+        <a href="https://www.patreon.com/tkitao"
+          ><img
+            src="https://img.shields.io/badge/Support%20on%20Patreon-000000?style=social&amp;logo=patreon"
+            alt="Patreon"
+            height="20"
+            loading="lazy"
+            decoding="async"
+        /></a>
+        <a href="https://ko-fi.com/H2H27VDKD"
+          ><img
+            src="https://ko-fi.com/img/githubbutton_sm.svg"
+            alt="Support me on Ko-fi"
+            height="20"
+            loading="lazy"
+            decoding="async"
+        /></a>
+      </p>
+      <ul class="games" aria-label="Games">
+        {{GAMES}}
+      </ul>
+    </main>
+  </body>
+</html>

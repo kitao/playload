@@ -592,6 +592,13 @@ body.resizing {
   color: var(--muted);
 }
 
+.arcade-note {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
 #colors {
   flex-shrink: 0;
   margin-bottom: 12px;

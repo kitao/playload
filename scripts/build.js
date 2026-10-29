@@ -14,6 +14,7 @@ import {
 import { basename, dirname, join, parse, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
+import { formatPayloadSize } from '../src/payload.js';
 import { escapeHTML, renderReference } from './reference.js';
 
 // Module URLs keep the letter case they were loaded with. Native realpath
@@ -65,6 +66,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
           app: 'src/app/main.js',
           'app-style': 'src/app/style.css',
           'site-style': 'src/site/style.css',
+          'arcade-style': 'src/arcade/style.css',
         },
         format: 'esm',
         loader: { '.woff': 'file', '.woff2': 'file' },
@@ -95,7 +97,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     if (warnings.length)
       throw new Error((await formatMessages(warnings, { kind: 'warning' })).join(''));
 
-    for (const name of ['logo.svg', 'favicon.svg'])
+    for (const name of ['logo.svg', 'arcade-logo.svg', 'favicon.svg'])
       await cp(
         new URL('../assets/' + name, import.meta.url),
         new URL('playload/assets/' + name, output),
@@ -111,6 +113,7 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
       HOME_URL: escapeHTML(homepage.href),
       PREVIEW_IMAGE: escapeHTML(new URL(preview, homepage).href),
       APP_URL: escapeHTML(new URL(app, homepage).href),
+      ARCADE_URL: escapeHTML(new URL('arcade/', homepage).href),
       VERSION: escapeHTML(project.version),
       DESCRIPTION: escapeHTML(project.description),
     };
@@ -127,6 +130,56 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
       REFERENCE: await renderReference(),
     });
     const images = new Set([preview, appPreview]);
+    const games = JSON.parse(
+      await readFile(new URL('../data/arcade.json', import.meta.url), 'utf8'),
+    );
+    // Date of the selected version's release post, not a later repost of the same URL.
+    // Undated built-in samples stay at the end in their original order.
+    for (const game of games)
+      if (
+        game.publishedAt !== undefined &&
+        (typeof game.publishedAt !== 'string' ||
+          !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(game.publishedAt) ||
+          !Number.isFinite(Date.parse(game.publishedAt)) ||
+          new Date(game.publishedAt).toISOString() !== game.publishedAt)
+      )
+        throw new Error(`Arcade entry ${game.title} needs a valid UTC publishedAt date.`);
+    games.sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
+    const cards = games.map((game, index) => {
+      for (const field of ['title', 'url', 'image', 'author', 'authorUrl'])
+        if (typeof game[field] !== 'string' || !game[field].trim())
+          throw new Error(`Arcade entry ${index + 1} needs ${field}.`);
+      const url = new URL(game.url, homepage);
+      if (
+        url.origin !== homepage.origin ||
+        url.pathname !== app ||
+        url.search ||
+        !/^#(?:v1|1)\.[A-Za-z0-9_-]+$/.test(url.hash)
+      )
+        throw new Error(`Arcade entry ${index + 1} needs a shared Playload game URL.`);
+      if (!/^https:\/\/x\.com\/[A-Za-z0-9_]{1,15}$/.test(game.authorUrl))
+        throw new Error(`Arcade entry ${index + 1} needs an X profile URL.`);
+      if (!/^assets\/images\/arcade\/[a-z0-9-]+\.png$/.test(game.image))
+        throw new Error(`Arcade entry ${index + 1} needs a local PNG screenshot.`);
+      images.add(game.image);
+      const bytes = Buffer.from(url.hash.split('.')[1], 'base64url').length;
+      return `<li>
+        <a class="game-link" href="${escapeHTML(url.pathname + url.hash)}" target="_blank" rel="noopener">
+          <img src="${escapeHTML(base + game.image)}" alt="" width="160" height="144" loading="lazy" decoding="async" />
+          <span class="game-heading">
+            <span class="game-title">${escapeHTML(game.title)}</span>
+            <span class="game-size" title="Compressed size: ${bytes} bytes">${formatPayloadSize(bytes)}</span>
+          </span>
+        </a>
+        <div class="game-meta">
+          <p class="game-author">by <a href="${escapeHTML(game.authorUrl)}" target="_blank" rel="noopener">${escapeHTML(game.author)}</a></p>
+        </div>
+      </li>`;
+    });
+    await page('src/arcade/index.html', 'arcade/index.html', {
+      PREVIEW_IMAGE: escapeHTML(new URL(appPreview, homepage).href),
+      GAMES: cards.join('\n'),
+    });
     const introduction = marked
       .parse(await readFile(new URL('../src/site/index.md', import.meta.url), 'utf8'))
       .replace(

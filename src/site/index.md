@@ -20,7 +20,10 @@
   <a href="assets/images/info-examples@2x.png"><img src="assets/images/info-examples.png" alt="Playable game and sound examples with their source inside the URL" width="400"></a>
 </p>
 
-<h3 align="center"><a href="https://kitao.dev/playload/app/">Open Playload</a></h3>
+<h3 align="center">
+  <a href="https://kitao.dev/playload/app/">Open Playload</a>
+  <a class="arcade-link" href="/playload/arcade/">Play community games</a>
+</h3>
 
 ## Specifications
 

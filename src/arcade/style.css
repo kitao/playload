@@ -1,0 +1,145 @@
+@import '../site/style.css';
+
+.arcade-nav {
+  max-width: 1024px;
+}
+
+.arcade {
+  max-width: 1088px;
+  margin: 68px auto 64px;
+  padding: 0 32px;
+}
+
+.arcade h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 24px;
+  margin: 0 0 32px;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.arcade h1 img {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.games li {
+  min-width: 0;
+}
+
+.arcade .badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 36px;
+}
+
+.game-link {
+  display: block;
+}
+
+.game-link img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 10 / 9;
+  object-fit: contain;
+  background: var(--panel);
+  image-rendering: pixelated;
+  outline: 1px solid var(--border);
+  outline-offset: -1px;
+}
+
+.game-link:hover img {
+  outline-color: var(--accent);
+}
+
+.game-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 12px;
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.game-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.game-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.game-author {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.game-size {
+  flex-shrink: 0;
+  color: var(--accent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-author a {
+  color: var(--muted);
+  text-underline-offset: 3px;
+}
+
+.game-author a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 800px) {
+  .games {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .arcade {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .arcade {
+    margin-bottom: 40px;
+  }
+
+  .arcade h1 {
+    flex-direction: column;
+  }
+
+  .games {
+    grid-template-columns: minmax(0, 320px);
+    justify-content: center;
+  }
+}

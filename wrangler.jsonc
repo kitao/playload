@@ -12,6 +12,7 @@
       "src",
       "assets",
       "data/reference.json",
+      "data/arcade.json",
       "data/fonts/unicode-LICENSE.txt",
       "LICENSE",
       "package.json",

@@ -13,7 +13,7 @@
     "url": "https://github.com/kitao/playload.git"
   },
   "type": "module",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "engines": {
     "node": ">=24"
   },

@@ -154,10 +154,18 @@ html:lang(ja) .introduction[lang='en'] {
 }
 
 .introduction > .app-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
   margin: 24px 0;
   text-align: center;
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+.app-link .arcade-link {
+  font-size: 1.125rem;
 }
 
 .introduction > .app-link + h2 {

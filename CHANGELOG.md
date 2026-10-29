@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.5
+
+- Added Playload Arcade, a curated community gallery with screenshots, compressed sizes, and author links, accessible from the homepage and Info's Examples tab.
+
 ## 0.9.4
 
 - Limited PCG edits to 256 distinct characters per run.

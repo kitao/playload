@@ -21,6 +21,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { runInNewContext } from 'node:vm';
 import { buildSite } from '../scripts/build.js';
+import { decode } from '../src/payload.js';
 
 async function files(directory, prefix = '') {
   const result = [];
@@ -39,19 +40,20 @@ test('the complete publication stays under Playload and every local document lin
     const output = await files(directory);
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|app\/index\.html|LICENSE\.txt|assets\/(?:logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|(?:app|arcade)\/index\.html|LICENSE\.txt|assets\/(?:(?:arcade-)?logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card|arcade\/[a-z0-9-]+)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
           path,
         ),
       ),
-      'Only the introduction, app, required assets, fonts and project license are published.',
+      'Only the introduction, app, arcade, required assets, fonts and project license are published.',
     );
     const home = await readFile(join(directory, 'playload/index.html'), 'utf8');
     const app = await readFile(join(directory, 'playload/app/index.html'), 'utf8');
+    const arcade = await readFile(join(directory, 'playload/arcade/index.html'), 'utf8');
     // Content policies come only from _headers, which the browser checks serve as Cloudflare does.
-    for (const document of [home, app])
+    for (const document of [home, app, arcade])
       assert.doesNotMatch(document, /http-equiv="Content-Security-Policy"/);
     // App links use the logo while the introduction retains its screenshot; both are static.
-    for (const document of [home, app]) {
+    for (const document of [home, app, arcade]) {
       const meta = (property) =>
         new RegExp(`<meta (?:property|name)="${property}" content="([^"]+)"`).exec(document)?.[1];
       assert.equal(meta('twitter:card'), 'summary_large_image');
@@ -59,7 +61,7 @@ test('the complete publication stays under Playload and every local document lin
       const image = new URL(meta('og:image'));
       assert.equal(
         image.href,
-        `https://kitao.dev/playload/assets/images/${document === app ? 'app-card' : 'example-glyph-quest'}.png`,
+        `https://kitao.dev/playload/assets/images/${document === home ? 'example-glyph-quest' : 'app-card'}.png`,
       );
       const png = await readFile(join(directory, image.pathname));
       assert.deepEqual(
@@ -179,6 +181,10 @@ test('the complete publication stays under Playload and every local document lin
           : target.pathname;
         assert((await stat(join(directory, destination))).isFile(), target.href);
         if (target.hash && destination.endsWith('.html')) {
+          if (target.pathname === '/playload/app/') {
+            assert((await decode(target.hash)).length, 'Arcade game URLs contain readable code.');
+            continue;
+          }
           const document = await readFile(join(directory, destination), 'utf8');
           assert(
             document.includes('id="' + decodeURIComponent(target.hash.slice(1)) + '"'),
@@ -269,6 +275,7 @@ async function fixtureRepository(parent) {
     'dir',
   );
   await mkdir(join(fixture, 'src'));
+  await cp(new URL('../src/payload.js', import.meta.url), join(fixture, 'src/payload.js'));
   await writeFile(join(fixture, 'src/keep.txt'), 'Original source');
   return fixture;
 }
