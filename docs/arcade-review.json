@@ -1,13 +1,13 @@
 {
-  "checkedAt": "2026-10-29T13:47:19.034613+00:00",
+  "checkedAt": "2026-10-29T22:30:04.184Z",
   "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。",
   "counts": {
     "catalog": 23,
     "adapted": 14,
     "normalSearchObserved": 140,
-    "uniqueAuditedPosts": 141,
+    "uniqueAuditedPosts": 142,
     "byStatus": {
-      "重複／旧版": 21,
+      "重複／旧版": 22,
       "保留": 30,
       "採用": 23,
       "対象外": 55,
@@ -1921,6 +1921,52 @@
   ],
   "games": [
     {
+      "title": "Prism Panic",
+      "image": "assets/images/arcade/prism-panic.png",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "sourceUrl": "https://x.com/rukasufall/status/2115813709725757457",
+      "publishedAt": "2026-10-29T14:31:12.973Z",
+      "adapted": true,
+      "observations": [
+        "v0.5原版のB交換、3個消去、得点増加を実ブラウザで確認。",
+        "掲載版で上下左右、Aせり上げ、B交換、GAME OVERとⒷ RETRY、B再挑戦を確認。通常操作で縦消しから落下連鎖し、30→90点になるところまで確認。",
+        "操作表示のみX: RESTART→Ⓑ RETRY。行継続と不要改行を整理して2993bytes。構文解析後のコードを比較し、ラベル以外は一致。"
+      ],
+      "curation": "v0.5: 消去中の交換、コンボ・連鎖、背景アニメーションと効果音を備えた更新版。実ブラウザの進行・再挑戦と実エンジンの補助検査を確認して採用。",
+      "compressedBytes": 2993,
+      "selectionReason": "せり上がる盤面、交換・消去、UIとキャラクター表現がまとまったパズル。",
+      "url": "/playload/app/#v1.7VndcuO4lb7fp5BYMQsQD2WAlAhK1JHi6Xh7uqbcTnX3dM0Oh5uSQEDWtEypJLrHPabuc70XeZW8zzxJCiD15-7dZLPJ1G7VEmWJPPj78J0P54DW5WXrt-WiXKrW7zeL7X3r99NiIf9Fropt2dKYMoigDz0IgUOQgcS35WZRzLt6s7p_cTfdvFjlChQ6Qscs5jGPw5ke6FjHItaxGsQxi5nQjNl6FuvBWYn1Wb3tH4exsL3rFmf9B3KmZvowQxjzZ_1NXz141sLWs9outBBCN0XN1EDFWjDGnO79tJR35LLbvZzT7v10TTSO19PNVr0qSqKBR5QmazlPndTJuutpiY5i8UlRzAFbn-3rmWD8pIi6XpJ-HEYD2jQSTMe5wcrqy0lq7k3__7_-1itkEeuFJwattTbmX8MiWcQCY4nOS8i0lsxq0uhQSCZ6pq9UPB7EeRwr1lhEmM9MEeHeIkUklZYyEo3FKMSWWDAtes8JEOLZ5F_E83mvf57l_yIe6y89kLGKxUBJJrj1ThzlUS4GEWeNRYlYKm3-2LGNjHqRFPHeEtVXGA4ai5bClFgExoP87-NHaxnaOMljLkOtRf9LbeKQ8XAQDhiPTRv-t_T6Ah6jtxMQ4UH9v4ZFMcUkO2_zX1yhQXu2T4UJ7M93rtDPLVqdWpRWn-1ug-SvzL6_vqCok0tpKbg2U2iTO-pLcM2jWciZZiHjtUUJqXMR676eKZ2r6RfV8vfhkSYx6lizuggzI2eCaW5LKI3FhBsttbRYleD9fjDt94JBPwwi1mf_SDy2qKZILoxuw1CENksbSVjGZIPbmJTgrM-CvXdsaPyH4ZFhc3LJ85kSZu_IfKZClUvF7bEit3gGWtTUaGb3l9RSKaUGOrSO_m_j2au3jvFnWWa_L_5nlppf9p_kr4PCA6a4DnWoheaGZ17zm8uZFFYJz4H_M-OzUYDBwrXdG0xwEc9UbrUgWI8x_uvi-d8WD51kqcrWEgrYwgbmsIYcFshghgzeIYMHZDBFDm_Q5_ABGdwggztk8MkYvsc0g3vz8d58XJmPn5DBS2TwiAxWyOAaGXxEBm9N5Stk8C0yuEXWnFF_g4TimHuk37mZlnfdzbTIV_eEVowm-qGQ5WJVtL4imj4ZoBLTLNGrDTEPClmiRlGiPK-uLaFAluSrpxJ_Q-jup7vFUhHPK0ZB33WJGnPXlanyeYaIZX0f2Puq0qZymWqfZ6lq6s1jsH-kNJHd9cP2jpR0t1Hlw6Zoyd0B4XeEPr3CW2SwXk4_EQ7OjXBo_RCA41BY4tVmM_1EBrSrF8slqV8QzOJTBoeS0cPyNEaJHg0S7Xl0meoMDQtJgQFsUcAGGcz3tD42HK8bb505KcevyIAePfgOH-BHQo_YXx_ZZSfkikSNDcO-T_fGEllSjqKktJBUlpaZ67aXqfJ4fU8kctCuSw42bNpB842M0uRz_v5A6NPb7lIV8_Kuqh6rinxE3uu8JhQ-VtXPhJ7gfWHwNkO87epFkROJY5nyrLso5PIhV1uiTzv8bDrUcpO47OrltNzTr0FSHL8gkk7YUFNQpwLTho9Rv2ddcOCgtdIphyijMtVmyVGjoIto1KNGVdoIRqbaM4ycPAYdS5EyFmWr7ZcxI6eHdzZlAd4c0UmaLDQpG3aOK9ETPvS8eXKgwsoz5VCCzCjMcV5VvJYgA-c9D26j11yq-QuHAt9rWFfVkXcyR0aBHZn72jC30KStu9vVvSJfrVZLNS0orXs7dfhQeGXd8KrI1WPtC5Z11Ue1-USIBGXWgIg6VRm1a1EjZoc1Heu5QY2RM7bX4SA5lxxnzIrOQLlKyyzl2Z6HJeruRuUPUlm-7GzaI7KNaFsys4MpMJosR9IqdAkKS7rb7Qlv3qhF2Ot5qn6nPkxvtoQcxYn0PFqmMmubZUjjRvNk72lyZWJEqoFle1aNJeUZcjgOfGT1R0Kf5HJL2N7pBbLqBrZYjMdh0t63a7jXbcRP9GmGHD6hhqv9Pxa0mYDRZ1DDyGJ92i-Oe0ReRhUzAUheRJdhxaBAeRHC1kSOzaneTxfbDDDHuEMKn1NPetq4bmuWPR-xqpqPkUcTNlQpjzqkNG3mGSxrF2o0DRPb-llQ8f2EGnuFJHA1HY0U6PEY-W7z2dBBv__vpunue1P1NdlSuDd35ShyXe26vI1YTL4mGzo0LXa7HRFuQZ9tYB7bDbx-KAkDDfU_T2La3ai1mpaEBxRCOPhibhh5_3mewYFNNF8KhXbFGxwgoprkaZkNm2BnCGtvqFwV5aJ4UM0Ma2w_VpVqI15XVdlGXLmu_fL4hA0fO6RExNWED31Ok7Xrvt9v7KhTemvgUUf5BTi__OmPv_zpjz8U9bdjc0c9wQJfkKijvJLCDBeTRcqyoYn7M9edjbDPXLdNZj53A5rMxuaRbDB6LqQzHS2tYnIMOsrfekufwwKDTmm0FRptzZC8m9wPv6dp1CEbKxe7-Nx4Mx8jj6uqPXtOxAPyoJN7C5hi-11VCbeoXbqcsKGAN_huIvzpsKY1GOp0kyXrqpqnD9lkz0ncWXhriDs5zOBNRofEeHkB9hGmFExj5HS30DZObw7-0yaMBxBn9Ixe3dDrhbD_JxuIjO6eKarXO0iKB56-iEFfxhWzfbixUPDKlMcd7fEoO96LjCa2Ux_6QJxWq9VyvA3tbpcLqYjfo9ADQWHtuqSWawxO6-XVzXXr9v31m5YDAhiFuoozcH75jz-33ly_e_NvDkTAKIUpnkTvciE_EBtDfvI8ePCwvbYHO_Lgv6MXEUM0vp8ip7BuInprVhZr0qeu-x2hMHXdH00GXi3y1jeEJjUDPn8mlZ6VykKTWVkQSavKDiIpfdIok9lGTT_smkD2ZkLeoDbnEDrUYzP_B8-D-o4wRPxQVR-MXlyXfPB5TC94gObMcMh6hbcFhfoi6AQGyCiYbNGeHO-nj4RBfbsoSAxbT1E6LL5Y24PC1ELhbduIJi_cNjJ5e8izp1JpvT0i8DydMitvOcbYAJd-zOjFwABtWik04bm7vVvo0hCXKhOEs1RdRBky2HjIWUengTkSc_gWD8AE1KNdDuhu9xbN-WZZqs0-4O_BwTFp_8E4CvlOLbeq9dF1ie9_rCrymnAKH_F4gjKN6vT7ODFOB252BHn00BxbiDlDHjLPPogv0-ssSXW6ykCnK49nJs_ZG_OcZfAz4fQIgVBKhx_NVq9VVFUmEG294njnmfZkhQVc4xYesQe3GFtocOOhEVCPTrr9_pBfRgxuxsj73YG9rJBvzrzp84hCe2lOG-fHk6flnnpY1ts7p3Cmk63P6f5o_Oi6vn89YjULJ-mjdrxNtJb8feb1I3rql7HpdHZ6bRg_fx94L257r_ncobvPEZsNj-eHtfB1IB1aE7vQhLDqhrYR71yX3NnzQr1xLeiP9p1KULg1A-1ndDxyOxauezviwSTgQ0E95701xpN4yAPqObfiNXc8R7tautKdz-dz10lvfZ4Z8AIRb6vK7EC8nbDhrccpvNpLXOMrn4NEh_GQh_2gJ3piGA3GIvltPHoxmLx0urL5deeqJGHnW09fhNTvxSaI6zGSb0fhJBoO6IS82vNkX5VMFG8eDFoe-GGHaJtoDGLHI5EXdIi85L3aZJcgc6Xn09mL313_68urr5xUXvBeRuGV59FdHcfO_fqebtcb0u12td0T7fVxXTzqFCDN19a3tIPCh4ugZ2gUwygxHc1R00l_KFIHFAVr8YKeMWY_FJkx7r45fcn6hhzHt_H3MmIVs0PxgAEPekC0tdELzjxn6HjEYY6nLyJ2yA8BhcOLgsKfLrlwhQU_c11znnhJn17iPrvqv3K0K1H6yhWwxMNPVE5PRD3dy2Vufo7irO80MwedEky-NwDMScEcwoJ-3yXL0UhVy_E49hXdHX-aipufpvRevQ_-O_OGbYAuTPqkT4uqIp93-BzB6Wku6CXa95shkoXJwM0IJukumjHKBjSPOwswH57BbIDsviM0-Qs",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.1VnrcuO40f0_TyGxYhYggjJASgQlqqV4J87s1JbHqRnv1NZymZQEAbJ2ZEol0V7PmvqfJ8gD5klSDVI3e3Kp_ZL9EqIskY3bwemDbtA6P2_8tpgXC934w3q-uWv8YZzP1Su1zDdFw0DKWcS6rMNCJliQMQUfivU8n7XNenn3-na8fr2caqbBkSbmsYhFHE5Mz8QmlrGJdS-Oecyl4dzW89j0TkpsTupt_ziMpe1dtTjp31MTPTH7GcJYPOuPfU3vWQtbzyu7NFJKUxc90T0dG8k5d9p340LdkvN2-3xG23fjFTEwXI3XG_02L4hhIqI0WalZ6qRO1l6NC3A0j4-K5g6z9dmunksujoqs6hXpxmHUo3UjyU08Ray8upykJh8H-C-7fnj1_43gH1whj3gnPDIYYwyafw2L4hEPeIgMRacl5MYoboWJYpSKyw72VlrEvXgax5rXFhlOJ1hkuLMoGSltlIpkbUGZ2BJLbmTnOQVSPpv87yB62e8_Z_lfRWS9Znoq1rHsacWlsD6Ko2k0lb1I8NqiZay0wT9-aKOiTqRkvLNE1RWGvdpilMQSywD9KH4pR8ao0AZNEQsVGiO7X2oTh1yEvbDHRYxtxL_S64uIUHlHMML9Tvg1LJprrvhpm39whYj2ZM9KjPPPd7E0zy1GH1u00S92OiL50uxfjI5f0NXRpY2SwuAkBpNJdUlhRDQJBTc85KKyaKnMVMamaybaTPX4S5r5xYgU5koTG14ViXMKLrkRtoQKLRh8jDLKotVSdLvBuNsJet0wiHiX_3sR2aLrooRE_YahDG3qRmFY1lSNHE1aCt7lwc5HNlT-GxGpsD7QTKcTLXEXqelEh3qqtLCnjalF1DOyosdwu9OUUVpr3TOhdfcvQLTTcRX3T3LPbof83ywVx_zvZLW91gOuhQlNaKQRyLWoOJ6qiZJWD89X8Z-N16gDRCOM3SVcChlP9NQqQvIO5-LXRvTfFh2dZKGLxoLlbMPWbMZWbMrmwNkEOLsBzu6BszEI9h58wT4BZ1fA2S1w9hkN30OasTv8-IgfF_jxE3D2Bjh7BM6WwNklcPYAnH3AyrfA2bfA2TXw3QH2N0AoDIVHuq2rcXHbXo_z6fKO0JLTxNznqpgv88ZXxNAnRKogzRKzXBN80MATPYgS7XlVbcFyHHi6fCrgN4Ruf7qdLzTxvHwQdF2X6KFwXZVqX2QAUFT3gb0vS4OVi9T4Ikt1XY-Pwe6R0kS1V_ebW1LQ7VoX9-u8obZ7iN8R-vQWroGz1WL8mQjmXEmHVg8BcxzKFnCxXo8_kx5tm_liQar3B1x9ytm-ZHS_PgNRYga9xHgeXaQmA6QheZVDwDYg2Ro4m-2YfaxpXtUOO_HTFL4iPXpw4g3csx8JPYB_d-CXH9ErEz1Ejn2f7owF8KQYRElhMeksLTLXbS5S7YnqnigQzLgu2dugbsfqb-CUJi8J_BOhTx_aC53PituyfCxL8gCi03pHKHsoy58JPcL7GvHWQ3xom3k-JQqGKhVZe56rxf1Ub4g57vAzdqgVp2DRNotxsXOAYYrC8DVRdMT7hjJ9rDGDhAy6HeuEPQmNpUkFizKqUoNrjmoNnUWDDkVdGZSMSo2HlBw9Bi3LkUaLttX2C80g6OGlTluEVwd4iiZzQ4qan6O1mJHoe94s2bNhJZoKVjCVUTaDWVmKSoacOR9FcB29E0rPXjuUiZ2OTVkeqCcz4JTxA3lfI3lzQ5qmvVneafLVcrnQ45zSqrdTBRENF9YTb_OpfqzcwbO2ftDrz4QopnERAGBSnVG7GD3gdljsWM3N9BAE5zsp9pJT1QnOre4QykVaZKnI9kQswLTXenqvtGXMTmc8opoAtinHbUwZp8lioKxKF0xDQbfbPef1a7cMOx1PVy_eewC4L9QgTpTn0SJVWRMXotCV-GTvaXKBkSI1jGc7XtGSigwEOwx84PVHQp_UYkP43vE58PKKbSAfDsOkuWtY02-aAJ_p0wQE-wyGXez-_WBwBk6fYQ0jC_ZpvzzhEXUelRwDkTqLzsOSsxzUWcg2GEDWx6o_Xu5uhBnELZL7gnrKM-i_Da58NuBlORuCiEa8r1MRtUiBbWYZW1R-NIANE9v6WXDx_YSivQQSuIYOBpqZ4RDEdv1i6KDb_SM23X6PVV-TDWV3eFcMItc1riuaAPnoa7KmfWyx3W6JdHP6bB-L2O7j1X1BODOs-idLTNtrvdLjgoiAspAd3DFDTj6-TDnQsznnSzHRLnkNPQDQo2laZP066iFjzTVVy7yY5_d6N8UKmo9lqZsAl2VZNAGWrmu_PDHi_ccWKQBgORJ9X9Bk5bofd_s7ahXeiomopf2cOX_9y5__-pc__5BX345NI_UMc3hNopb2CsomMB_NU571MQVMXHcygC533SaZ-MINaDIZ4iNZQ_RcTadiWljZTCFoaX_jLXzB5hC0ChRYiAKbALkZ3fW_p2nUImsrGbv-KXp0OgQRl2Vz8oKLexBBa-rN2RiaN2Up3bzy62LE-5K9h5uR9Mf9itqgb9J1lqzKcpbeZ6MdLXFr7q1Y3JqyCXuf0T5BV8-ZfWRjyrAxCLqdGxuz13sfGgzpAYszesKwqRn2Qrb7jxyTGd0-k1Wns9eVCDxzFjNzHpfc9hFoocwrUhG3jCei7HAv0U22V5d1GXEajUbD8da0vVnMlSZ-h7IOk5StXJdUoo2Z03hzcXXZuP54-b7hMMk4ZVWV4Mz5rt94f_nh5uL9jcMixillYziK5MVcfSI2mPzkeezeg-bKHvXIvX9DzyIOgP4fg6BsVUf3xqTIV6RLXfc7QtnYdX_EhLycTxvfEJpUHPjimVw6yStVBepJkRNFy9KOoih9MqCSyVqPP23rkPZ-RN6DwXMJ7ZshAvjkeay6IxwAPpXlJ9SM65JPvojpmQgAzxCHHJh7G6bBnAWtAKEMgtEG7GHybvxIOKtu5zmJ2cbTlPbzL9Z2WI61LPc2TQBMEte1VD7s0-6xXBofjiB4nkm5FbkaQozQlR9zetZDqLtmGjBWtze3c1MgeanGgJyl-izKgLO1B4K3TBrgQVmwb2EPTbJquPMeJqwPgGeeRaHXu_C_w8cOWfxP6C0QW73Y6MaD6xLffyhL8o4Iyh7gcKrCRlU-fhyh55nAjUEePcCTDMFz5T4P7QL6Ir3MktSky4yZdOmJDNOevcHnLGM_E0EPEAiltP-AW76SUlliRNp4-eHOw_ZkCTm7hA17hA67hthCY1ceoIg6dNTudvviPOLsagii2-7Zy6r56sShvogoe9Vc4Pnj9MDytNiRzxbVNp9SdqKVjS_o7rz86Lq-fzngFQ1HuaRyvs27lv1dIvYjeuyYIXY6OdLWlJ--JXyU1513YubQ7UvEuO_h9PgWvguUQytm54YQXl7RJsCt65Jbe3yotq8F_WDftSRl1zjQbkbHI9dD6brXAxGMAtGX1HM-WmM8ivsioJ5zLd8Jx3OMa5Sr3NlsNnOd9NoXGYKXAHBdlrgN4XrE-9eeoOztXuUG3vqCKXC4CEXYDTqyI_tRbyiT38aD173RG6et6t-ELgoStr71zFlI_U6M0dwMgXw7CEdRv0dH5O2OKPsGheG8fkC4IvDDFjE25SBkxyORF7SIOhedymTXoKbazMaT17-7_P2bi6-cVJ2JTkbZW8-j2yqcnTr2I92s1qTdbhu7K5qro4WJqJUzhV8b3xLPNNyfBR0kUvajBHvi6dNJf8hTh2nKrMULOmjMfsgzNG6_OX73-oYcTWAD8XnES27HEgFnIugwYqyNngnuOX3HIw53PHMW8X2mCCg7vD9o-OlcSFda_BPXxePFG_r0Bvap1vyz014ByteuZAvY_7rldGTUMZ2pmuIvWYJ3nXryoFUwTP-IAU8OeC4Lul2XLAYDXS6Gw9jXdHv4VSuuf9UyOw3f-zf49o1Q55hM6dO8LMnLDi8RHB_wgk5ifL8eIpljPq5HwBQ8r8coatAibs0ZfniIGYFsvyM0-Rs",
+      "validation": {
+        "checkedAt": "2026-10-29T22:30:04.184Z",
+        "method": "実エンジン createEngine(glyphs) で原版相当の掲載コードを実行。LCG seed=42,20261030。盤面を読み、隣接交換で3個以上が揃う位置へ通常ボタン入力で移動。消去中も交換し、候補がない場合Aでせり上げ、失敗後Bで再開。状態を書き換えない。",
+        "runs": [
+          {
+            "seed": 42,
+            "frames": 9348,
+            "overflows": 0,
+            "maxScore": 760,
+            "maxChain": 3,
+            "maxGroups": 3,
+            "restarts": 9,
+            "swaps": 873
+          },
+          {
+            "seed": 20261030,
+            "frames": 9231,
+            "overflows": 0,
+            "maxScore": 540,
+            "maxChain": 3,
+            "maxGroups": 3,
+            "restarts": 11,
+            "swaps": 864
+          }
+        ],
+        "limits": "全乱数・全盤面の保証ではない。補助検査はブラウザの実時間測定ではない。"
+      }
+    },
+    {
       "title": "rubble.",
       "image": "assets/images/arcade/rubble.png",
       "author": "haruka_apps",
@@ -1962,22 +2008,6 @@
       "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
       "compressedBytes": 2988,
       "selectionReason": "立方体の表面迷路を内側から探索する視点と描画。着想と立体表現に独自性がある。"
-    },
-    {
-      "title": "Prism Panic",
-      "image": "assets/images/arcade/prism-panic.png",
-      "author": "rukasufall",
-      "authorUrl": "https://x.com/rukasufall",
-      "sourceUrl": "https://x.com/rukasufall/status/2115541652538364105",
-      "publishedAt": "2026-10-28T20:30:09.000Z",
-      "adapted": true,
-      "observations": [
-        "v0.3 rechecked: selector movement and B swap visible. Updated source/date and restart label preserved.",
-        "v0.3: holding A raises stack to game over; B RESTART prompt fits. B resets score/time and restarts. B swap and direction selection previously verified."
-      ],
-      "curation": "v0.3: author announces updated swapping/falling/clear animations and chain behavior. Current local build renders playfield/HUD and responds to selection/swap; complete chain coverage not tested.",
-      "compressedBytes": 2954,
-      "selectionReason": "せり上がる盤面、交換・消去、UIとキャラクター表現がまとまったパズル。"
     },
     {
       "title": "TETROMINOS",
@@ -2121,10 +2151,12 @@
       "sourceUrl": "https://x.com/Studio_In_se/status/2114685650989723993",
       "publishedAt": "2026-10-26T11:48:42.000Z",
       "adapted": false,
-      "observations": [],
+      "observations": [
+        "2026-10-30: ユーザー指定の再紹介リンクは既存原版と同一。10種類の画面を通常操作で観察し、ブロック崩しでパドル反射・ブロック破壊・数字取得を確認。撮影を更新。"
+      ],
       "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
       "compressedBytes": 2990,
-      "selectionReason": "数字を選ぶ独自の遊びを、小容量という題材に結びつけている。"
+      "selectionReason": "数字を選ぶ・撃つ・釣る・拾うなど10種類のレトロゲームを、積を3000にする一つの目的でまとめている。"
     },
     {
       "title": "平安京エイリアン",
@@ -2252,8 +2284,9 @@
       "author": "Studio In-se",
       "authorUrl": "https://x.com/Studio_In_se",
       "status": "重複／旧版",
-      "reason": "Same game URL repost",
-      "relatedSourceUrl": "https://x.com/Studio_In_se/status/2114685650989723993"
+      "reason": "リンク先のpayloadと展開したソースが採用済み原版と完全一致。再紹介のため追加・順位変更なし。",
+      "relatedSourceUrl": "https://x.com/Studio_In_se/status/2114685650989723993",
+      "checkedAt": "2026-10-29T22:30:04.184Z"
     },
     {
       "index": 1,
@@ -2262,8 +2295,9 @@
       "author": "Kiyos",
       "authorUrl": "https://x.com/RingMLIFE",
       "status": "保留",
-      "reason": "クリアは可能だが、方向指示と最終面の仕掛けを中心とする短い構成。今回求める、遊びや演出の磨き込みを示す代表作品としては弱いため保留。",
-      "title": "THE PHASE"
+      "reason": "通常操作でCLEARを再確認。最終面は閉じた壁を通り抜ければクリアでき、0秒を待つ必要はない。タイマーは負数になっても進行する。ただし1〜4面にも壁衝突判定がなく、出口の穴以外から指定方向へ抜けても進行する。思い込みを崩す仕掛けと、当たり判定・タイマーの不具合との区別が画面から伝わりにくいため現版は保留。短さや謎解きというジャンルを理由に除外しない。",
+      "title": "THE PHASE",
+      "checkedAt": "2026-10-29T22:30:04.184Z"
     },
     {
       "index": 2,
@@ -3155,11 +3189,12 @@
       "sourceUrl": "https://x.com/rukasufall/status/2115541652538364105",
       "author": "rukasufall",
       "authorUrl": "https://x.com/rukasufall",
-      "status": "採用",
-      "reason": "v0.3: author announces updated swapping/falling/clear animations and chain behavior. Current local build renders playfield/HUD and responds to selection/swap; complete chain coverage not tested.",
+      "status": "重複／旧版",
+      "reason": "確認済みv0.5へ更新。旧版の記録はversionHistoryに保持。",
       "title": "Prism Panic",
       "image": "assets/images/arcade/prism-panic.png",
-      "publishedAt": "2026-10-28T20:30:09.000Z"
+      "publishedAt": "2026-10-28T20:30:09.000Z",
+      "relatedSourceUrl": "https://x.com/rukasufall/status/2115813709725757457"
     },
     {
       "sourceUrl": "https://x.com/FablessBridge/status/2115750025884295404",
@@ -3457,6 +3492,16 @@
       "status": "対象期間外",
       "reason": "Playload公開以前の別の意味のplayloadという語を含む投稿。",
       "observedIn": "通常のplayload検索・最新"
+    },
+    {
+      "sourceUrl": "https://x.com/rukasufall/status/2115813709725757457",
+      "title": "Prism Panic",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "publishedAt": "2026-10-29T14:31:12.973Z",
+      "status": "採用",
+      "reason": "v0.5: 消去中の交換、コンボ・連鎖、背景アニメーションと効果音を備えた更新版。実ブラウザの進行・再挑戦と実エンジンの補助検査を確認して採用。",
+      "observedIn": "ユーザー指定投稿。実ブラウザで本文・短縮URL先を確認。日時は表示時刻とpost IDのUTC時刻を照合。"
     }
   ],
   "criteria": "docs/arcade-curation.mdに従う。3KBでの遊び・映像・音・演出と完成度を評価する。ノイズは回数のみで除外せず、文脈、制御、正常復帰、可読性・操作への影響で判断する。意図的でも仕上がりが不足すれば保留する。",
@@ -3674,8 +3719,9 @@
       "sourceUrl": "https://x.com/RingMLIFE/status/2115727595455369258",
       "publishedAt": "2026-10-29T08:49:01.000Z",
       "originalUrl": "/playload/app/#v1.jVbdTuNGFL7PU3y9WMbeTBKPkzguxmzTJSwrhYCAIlWIi2AmwayxI9uBRAWpV1Vve1P1ru_WJ-gjVDPjcRySLguSc2bmzPn5zt-0WvghD_OI4-JogNOj_vmg1mqhn6bJU4aH5JE30UcLPyLLx2meNWu1WTC9Iv_-_dev5Lo5G-fwQdpBx-7Y7YC5kwlz7Q7xFNc_v_2xYmJuO-hx5qp_yyqZ_vx9xTR59Ue8Wi3iudCec8Fw8fliOCCe3pxyigXFkiIPHzhFTjGJxtkdxW0Sc7HwarXJPA7yMIkhPTVM_FLDpkQgiDLDMgU1m-dGl6JHQUpcCEWvPGxTMEZBTs8G5-cKIULhmF7tpaLvhk_D2IhLhVOhMPaq2k-H_Z-l8gV89BwPS_hwOmJHeAQfzJIL-LA85ZwihYN6U_6uqY7GNzwqXE15Pk9jbYDvo4sPIIefR_0hzi_6nwYEuyCSAkFdMa6Lu03HT4fp-EGjFyRxlmM6nsHHVTyPIgryE6EgZ-JzID5Dcn0lJV175YUAfuHCPix8QBu76InjSZLCEDENlUsh9sBcD2G9rhRqCTOBk4s6QryH68mTcALjO0Ma4_vCDuzswAjl6ns8P0ORrmmayGapMVtQMIdCph5FYG4Vc_BNYmz3lZyXqjf3In4e7oU3HQ_3G96IaDMHddz_rztDZce9XDnCDkX2tB0uxWz5ljdnb0lhnc4WOS8bWXARvkqCDL5M1WaeHIYLfmvYZZXYFhrImhGPp_kdhUWR0Y34OxSWqpuiPNcrNvhSaBMOFWXjl2Wr4RSHN3k8Mzqm8E2SXVOfArNovDQsCnLJrJPuiAWcFDihqFJWrF_kV5WMQmBT92B08LZm3W287SLzet3bIvpw2D8_KoW3Wgii-UO2xE0Uxl92kT8lmMf8kcdI75b53UOG5JGn0Xgm-SeRkKrNmkTYF_3DWuFQ9h3hggag6CTk43DQPyt3S8gu7I513Ltk9kl3ZAd8-pFUoHop8yCJ4WPDE5l1kwjvwNrYQ1dgJJc9yaXarWi8SVzkg9jaxEX2Se3HAnVfom60TTQE5oZtmngP1uwq05YlB9Mc1jqH6CPH4_yu-TBeGA2XFguRCY5FsTBNLanCt8YmCmZpKms1CDd8kqS8qAglQLbxhg-GFhxrFR3VjgUkOzuKaU_gUYaqaP-W9y2h-9Q_HuDkcrAtfMwtwtce2VMekLVEX1miBsPOjvZBVOh2y_QQctZ02UV12SO2RUdZ9aa63mis4ZbMxYBbYA8dkSEL7IN1LEEuRe-0FbUPZne8yrUsvOWrCaRYqb5N9Q2qBFfH0fb8ksm6PiaFYbtST6WbvAJtdVCJkkp_rzzQQ1qvJWZMlpdVlheb3hysGtMLeJTxinB954qQSiur0LxCTzXtCB7tvLmyQPU95UcdbKW2UtxFI2eyeRdvCgpZq5aY3fLSaizoVfFUqBZyARYTGG_DPcc7tC0Rwa4aSD2HQsROviIp2lL41qg9P2_2HSVDPQ3Va_WV2V_v6sJpWemTKElSQ00yUWzFMDPRgm1SuPqhqQrRL7soPsDBbmH1196MPT1n_wM",
-      "reason": "クリアは可能だが、方向指示と最終面の仕掛けを中心とする短い構成。今回求める、遊びや演出の磨き込みを示す代表作品としては弱いため保留。",
-      "category": "editorial-quality"
+      "reason": "通常操作でCLEARを再確認。最終面は閉じた壁を通り抜ければクリアでき、0秒を待つ必要はない。タイマーは負数になっても進行する。ただし1〜4面にも壁衝突判定がなく、出口の穴以外から指定方向へ抜けても進行する。思い込みを崩す仕掛けと、当たり判定・タイマーの不具合との区別が画面から伝わりにくいため現版は保留。短さや謎解きというジャンルを理由に除外しない。",
+      "category": "puzzle-feedback",
+      "checkedAt": "2026-10-29T22:30:04.184Z"
     },
     {
       "title": "Road Dodge",
@@ -4212,9 +4258,11 @@
       {
         "title": "Prism Panic",
         "image": "assets/images/arcade/prism-panic.png",
-        "sourceUrl": "https://x.com/rukasufall/status/2115541652538364105",
+        "sourceUrl": "https://x.com/rukasufall/status/2115813709725757457",
         "action": "retaken",
-        "scene": "盤面をせり上げ、図形ブロックの組とカーソル、キャラクターが見える通常プレイ。"
+        "scene": "v0.5。Bで交換して縦消し→落下連鎖、Aで盤面をせり上げた通常プレイ。スコア90。初期盤面・消去途中・連鎖後を比較し、図形の配置と操作カーソル、キャラクター、得点が明瞭な連鎖後を採用。",
+        "checkedAt": "2026-10-29T22:30:04.184Z",
+        "method": "掲載コードの実ブラウザ通常操作。Screenshot機能で撮影。撮影時のみエンジン一時停止、画像内ポーズ表示なし。"
       },
       {
         "title": "TETROMINOS",
@@ -4290,8 +4338,11 @@
         "title": "PRODUCT IS 3000",
         "image": "assets/images/arcade/product-is-3000.png",
         "sourceUrl": "https://x.com/Studio_In_se/status/2114685650989723993",
-        "action": "retained",
-        "scene": "数字選択中。余白は多いが、数字を選んで積を3000にする中心ルールを伝える代表画面として維持。"
+        "action": "retaken",
+        "scene": "数字選択画面から、ブロック崩しの通常プレイへ変更。3色のブロック、崩した穴、落下する数字2、ボールとパドル、取得済みの積6、1/10の進行表示を同時に写す。",
+        "checkedAt": "2026-10-29T22:33:16.175Z",
+        "method": "元コードの通常操作のみ。最初の数字選択で2×2×2×3×5×5×5=3000を作り、ランダムに選ばれる次のミニゲームへ進む。再実行を交え10種類の画面を観察。釣り、モグラたたき、シューティングとブロック崩し5場面を比較し、色・アクション・数字収集の独自性が読み取れる場面を採用。Screenshot機能使用。撮影時のみ一時停止、画像にポーズ表示なし。",
+        "limits": "全10種のクリア確認ではない。撮影対象の進行と画面比較。"
       },
       {
         "title": "平安京エイリアン",
@@ -4360,5 +4411,43 @@
       "sourceModified": false,
       "forcedStateUsed": false
     }
-  }
+  },
+  "versionHistory": [
+    {
+      "checkedAt": "2026-10-29T22:30:04.184Z",
+      "title": "Prism Panic",
+      "action": "v0.5へ更新",
+      "previous": {
+        "title": "Prism Panic",
+        "url": "/playload/app/#v1.7Vlfb-M4kn-_T2EbiEBaZYeUbFG2XM719GRmMkB3L9KNxgAaHWDTZOIdR_ba8nT3RH7f53vYr3LfZz7Joig5_pPs3d7c7uAOOBGJ6RKL_LHqx6qSdXnZ-NdiXixM4w_r-eah8YdJPtf_opf5pmhYTAVE0IcehCAhyMDg-2I9z--6dr18eH0_Wb9ezgwU2FI2FrGMZRxO7cDG1moRUIsDO7GBCWIV29gM4ljEQlkhdGACE4RujNVCOH0R20HdKn0T2LpV0tju9SupOdV368dhrGJ1WD8OdKCD2FZz7_VNPffp-gM9NVM7fVpfEXpqpK_iMJYHfR3EgThfn9a2Azut9Wltt87EYa9nqPAfZnD6otJTVilllZW60rN6pq22mmTKTM3AxFYJIayTVraVWohW92FS6Ht22e1e3vHuw2TFLI5Xk_XG3OQFsyAjzpOVvktbaSvrriYFtoyIj5oRLXD3s_19oYQ8aqq6b1g_DqMBrwcpYeMZ7U1UVyupuKOxJf7_-nuvUESiFx4JrLWWxL-HRItIBCSJTlsoiMaO08RbpYXqka42Mh7Eszg2opaocDalpsK9RKtIG6t1pGoJMcS1WAmreucGUOps8RfxPNf650n-L-Jx_rIDHZtYDYwWSjrvxNEsmqlBJEUtMSrWxtKfOIzRUS_SKt5LouoKw0EtsVpRi1VAHpS_zT7W6tDFaRlLHVqr-i-NiUMhw0E4EDKmMfLv0XoBD_HtCET4xP7fQ2KEEVqcjvlPrpDQnpxTRYH-_OQqey6x5lhirHl2ugnJf7H6_nqBUUeXsVpJS0tYyh3VpaSV0TSUwopQyEpilLYzFdu-nRo7M5MX2fLb8GhKpDa2omqKVpRCCStdCzVJKNy4_EhYjZL9fjDp94JBPwwi0Rf_SDyumbppqYi3YahCl8WJEs5iusZNIqOk6Itg7x0XGv9heHRYV1qz2dQoOjt6NjWhmWkjXWEzc3gGVlWmscKdL221McYMbOgc_d_Gs2dvFeNPssz-XPzPJJV9xd_IX08MD4SRNrQhVVBkZ1nZd6anWjkmnAP_Z8ZnYgBhkdadDaGkiqfG1XOxEj0h5O-L539bPGwlC1M0cljCGhYwhwlsYIUCtihghgLuUcAUJdxhR8IDCniDAr6ggPckeIdpBh_p32f69xYfd_CKel-hgNco4BoF3KKATyjgBgV8wDSri9OfkHEcS5_1228mxX13PclnywfGS8ETu811MV_mjZ-Z5Y-E0JCiXa4ZfSlQJMUoSgrfr-5qWKJIZstHjT8xvvt0P18Y5vvLUdD3PFaMpeeZtOjIDBF11Q9cvywt3cxT25FZWtT36Wuw_8p5Yrqr7eaeab5bm2K7zhtm94TwW8Yfc3y1Xk--uAcy9rgw-V1xPxzsgDbo7rCId-18sWCC86ddWIwSOxok1vd5ntoMabPJEgNYo4IFCpjXFnNmJPNNam-cOGGDP7MBP3hohvfwHeMHiD8cjCiObKiSYkyG7HT4XqhRJHoUJdpBKrJUZ57XzNPCl1WfGZRgPY89ybAeB_Un0hafm-mPjD9-6FamKcvrsmQ3KHvtHxiHm7L8mvEjvH8ivPUUH7p2ns-YwbFJZdad53qxnZkNs8cKvzAL5knlTyxqG9_yKzHMU5OlNjuM_JqmrvhncC9llXXsMcXIVGY0SIzv83Pa1ZzDX1gBhkOO0qklhZ-PIs_TnvcLK_wcDCf-JDz3_WRuGRFrjOGZsXNnbFsxjIAXvuZJ4WO-O8USvYBlcITFQHGGZVBjMVD4-W_AwgiKb2o0lXXTbrebm0-N96ZglmfdzXJdMGd-HNuO4TvGaX5Tu3pv7ALtlRzOfZk8-dUtkkowUGQc5uiCwMPkM5vTRlaLyRcmoPVRBu-it1Kbu9ctDk2xP4G2LA90YnMUHJry4OdvyM9zy5q2u1k-GPbVcrkwk5zzSr1Vhb0C36Y260hC3GR0GrjTKvBVPTcUY5RC7I_PIDk1mBTCmYz0X6U6S2W233GOtrs2s602zjxQkIF8ZpqIbqSg-MJB8CQfGXewcihQ893MLExhGm_TV3SgRJbt9g_z9ZO_Cns9v6ie_c_4GjuO6NRkTUSbGjqx9M31eUK7xcKXQFNjakFke3u6xWSGEg4rHMz5HeOPerFhgtfBe4mifANrXI7HYdJ8OkiV0W0T8T1_3KKE92gP8a6xtI1X3NIy4gi4TMwIT9ldWTeo6FjLchRJPgqTnIL-HkXUZqYjuR-2tZ_DmmLl4vgYU1pYjuJkeVCaY9xmOSktfZus02WG85Eoy_kYZXQlhkUaBvWsMmqz-Xgccj9ua58pb84zWDzTCPr9f6N5du_o1jdszeEj9QxFA-t5somYX33DFnxII3a7HVPe8jgRiMSOZOwywWpbMAEWqp94Yt5dm5WZFEwGHEJ4csAcH3fJ5-dJEQcuK74U0B2HFzhAxOJqk-psWIdsR_8F18u8mOdbU68wweZ1WRZNxE9lqZuIt57nPnx5JYbXbaYR8fZKDjuSJxPP-7w_0VFb-xOQUbvoLKH161_-_Otf_vxjXn22QGT7LayQIjXFGNji6mqVimxI2WvredsR9oXnsW1HjseSXwSIItmOnWyBET-jfXBCnheIssGgXXTWft6RsMKgrX0DW2Szq4_DdzyN2mxRkcj4ubPGhty7GaOMy7K5PbfMPcqgvfFXMMXmrCyVt9z7WAwV3OHsakq9YWXpYGjTRZZMynKe3mdXezPF7ZU_gbi9gS3cZXzIyPErcF9hyoEGo-S7uWURIi748TFKA4gzfmJxW1vcD2H_6yCojO_OSNbrPbFMBr69iMFexqVwOpIkHHydyrhtfRllh77KeOKU-tCH6vdntuDd1WT2vpisC9aDVqPFu5vFXBvW6XHogeIw8TxWETqGVuPbV2-uG-8-Xt82WqBAcKhuSQGtX__9Pxq31-8_vLr90IIIBOcwRXEIQMVc_8RccPnK9-Hex-bElajsvjPjF5FAJGpMUXKY1DG-MS3yFetzz_uWcZh63neMw8_L-azxPeNJZZKOPGNSzzFpbtm0yJnhZekmMZw_WjTJdG0mP-3qCHd3xe7QUsXFh3ZM6z_4PlQ9JhDxoSwfiEKexx46MuYXkmjMj-qPi6AdEIRRcLU-5D8BVXeesxjWvuF8uHzxbg-WdJcAfXjKtyfR9sNhMd-3qXDkNmOMCaPpxIJfDAjTARIVWZv7uS0YT_LUXEalyFJzEWUoYOGjFG2bBtlu9wGpMlsUZk2_cTu1GgEc8vIfyfAod2axMY0bz2Odzk1Zsh-Y5HCDh9qPBnFXN1xfkRNBEuXZtY897nmMqt9ntVqefsqS1Ka3Gdj01pcZJTTXoe9ZBl8zyQ8QGOd8eFOWzZoVZUnBZ-0vDz2fxrNbXMInXMM19qoiRELr4-Bd_63Ud60KKbzxkfjR41fdfn8oLyMBb8Yo-92BuxxP35y4rCMjDnkqsrNyZILypNQJ3wa6xRMy2GO-dwTk1UHfcDihyboj-b76v_a8TufTSFTm4skZDVzSdV6q30rYTvVIsncg1T7JSYFeu-bJBupd760kEzzfhuexlzfCd872onzDm4hfPI99cYVDdVAd1hsq3arTeQr6M9-s1qzb7VrHjOZkz1KLMmovwdDHuuMmhwLvL4LeSAZXahglpEg1Vyv9MU9bVE46iR_0SJj9mGck3H1__JD0PTvM76LKZSRK4aaSgQAZ9IBZJ-MXUvitYcuvw6C9iMRRJAygJVoc5D7NFfjVpVSecpvYeh5l1Nf88TUWydMbvvPnjqqOe9wXfqZTeApyfHqV1OqpqGd7Mz2j10ZS9Ft15A3aGii9BZxeNiVU9mHQ73ssH42KMh-P407Bd4dXSHH9Csm6QzK3tHN6ICagK8oW_HFVluy5wnMEx_VM0Etsp1NPkawo4dQzUI5Z1XPoGrSM2yugfz5hJiC7bxlP_go",
+        "image": "assets/images/arcade/prism-panic.png",
+        "author": "rukasufall",
+        "authorUrl": "https://x.com/rukasufall",
+        "sourceUrl": "https://x.com/rukasufall/status/2115541652538364105",
+        "publishedAt": "2026-10-28T20:30:09.000Z",
+        "originalUrl": "https://kitao.dev/playload/app/#v1.7Vn_buM4kv7_nsI2EIG0yg4p2aJsuZzr6cnMZIDuXqQbjQE0WsCmycQzjuy15enuifz_PsE-4D7JoSg5_pHc7t7c7mAPOBGJ6RKL_Fj1sapkXV42_rOYFwvT-MN6vnlo_GGSz_V_6GW-KRoWUwER9KEHIUgIMjD4vljP87uuXS8fXt9P1q-XMwMFtpSNRSxjGYdTO7CxtVoE1OLATmxggljFNjaDOBaxUFYIHZjABKEbY7UQTl_EdlC3St8Etm6VNLZ7_UpqTvXd-nEYq1gd1o8DHeggttXce31Tz326_kBPzdROn9ZXhJ4a6as4jOVBXwdxIM7Xp7XtwE5rfVrbrTNx2OsZKvyHGZy-qPSUVUpZZaWu9KyeaautJpkyUzMwsVVCCOuklW2lFqLVfZgU-p5ddruXd7z7MFkxi-PVZL0xN3nBLMiI82Sl79JW2sq6q0mBLSPio2ZEC9z9bH9fKCGPmqruG9aPw2jA60FK2HhGexPV1Uoq7mhsif-__tErFJHohUcCa60l8e8h0SISAUmi0xYKorHjNPFWaaF6pKuNjAfxLI6NqCUqnE2pqXAv0SrSxmodqVpCDHEtVsKq3rkBlDpb_EU8z7X-dZL_i3icv-xAxyZWA6OFks47cTSLZmoQSVFLjIq1sfQnDmN01Iu0iveSqLrCcFBLrFbUYhWQB-Vvs4-1OnRxWsZSh9aq_ktj4lDIcBAOhIxpjPxHtF7AQ3w7AhE-sf_3kBhhhBanY_7GFRLak3OqKNCfn1xlzyXWHEuMNc9ONyH5O6vvrxcYdXQZq5W0tISl3FFdSloZTUMprAiFrCRGaTtTse3bqbEzM3mRLb8Nj6ZEamMrqqZoRSmUsNK1UJOEwo3Lj4TVKNnvB5N-Lxj0wyASffHPxOOaqZuWingbhip0WZwo4Syma9wkMkqKvgj23nGh8Z-GR4d1pTWbTY2is6NnUxOamTbSFTYzh2dgVWUaK9z50lYbY8zAhs7R_2M8e_ZWMf4ky-zPxf9OUtlX_Df564nhgTDShjakCorsLCv7zvRUK8eEc-D_yvhMDCAs0rqzIZRU8dS4ei5WoieE_H3x_LvFw1ayMEUjhyWsYQFzmMAGVihgiwJmKOAeBUxRwh12JDyggDco4AsKeE-Cd5hm8JH-faZ_b_FxB6-o9xUKeI0CrlHALQr4hAJuUMAHTLO6OP0ZGcex9Fm__WZS3HfXk3y2fGC8FDyx21wX82Xe-IVZ_kgIDSna5ZrRlwJFUoyipPD96q6GJYpktnzU-DPju0_384Vhvr8cBX3PY8VYep5Ji47MEFFX_cD1y9LSzTy1HZmlRX2fvgb7r5wnprvabu6Z5ru1KbbrvGF2Twi_Zfwxx1fr9eSLeyBjjwuT3xX3w8EOaIPuDot4184XCyY4f9qFxSixo0FifZ_nqc2QNpssMYA1KliggHltMWdGMt-k9saJEzb4Cxvwg4dmeA_fMX6A-MPBiOLIhiopxmTITofvhRpFokdRoh2kIkt15nnNPC18WfWZQQnW89iTDOtxUH8ibfG5mX5i_PFDtzJNWV6XJbtB2Wv_wDjclOXXjB_h_RPhraf40LXzfMYMjk0qs-4814vtzGyYPVb4lVkwTyp_YlHb-JZfiWGemiy12WHk1zR1xT-DeymrrGOPKUamMqNBYnyfn9Ou5hz-ygowHHKUTi0p_HwUeZ72vF9Z4edgOPEn4bnvJ3PLiFhjDM-MnTtj24phBLzwNU8KH_PdKZboBSyDIywGijMsgxqLgcLPfwMWRlB8U6OprJt2u93cfGq8NwWzPOtuluuCOfPj2HYM3zFO85va1XtjF2iv5HDuy-TJr26RVIKBIuMwRxcEHiaf2Zw2slpMvjABrY8yeBe9ldrcvW5xaIr9CbRleaATm6Pg0JQHP39Dfp5b1rTdzfLBsK-Wy4WZ5JxX6q0q7BX4NrVZRxLiJqPTwJ1Wga_quaEYoxRif3wGyanBpBDOZKT_KtVZKrP9jnO03bWZbbVx5oGCDOQz00R0IwXFFw6CJ_nIuIOVQ4Ga72ZmYQrTeJu-ogMlsmy3f5ivn_xV2Ov5RfXsf8bX2HFEpyZrItrU0Imlb67PE9otFr4EmhpTCyLb29MtJjOUcFjhYM7vGH_Uiw0TvA7eSxTlG1jjcjwOk-bTQaqMbpuI7_njFiW8R3uId42lbbzilpYRR8BlYkZ4yu7KukFFx1qWo0jyUZjkFPT3KKI2Mx3J_bCt_RzWFCsXx8eY0sJyFCfLg9Ic4zbLSWnp22SdLjOcj0RZzscooysxLNIwqGeVUZvNx-OQ-3Fb-0x5c57B4plG0O__kebZvaNb37A1h4_UMxQNrOfJJmJ-9Q1b8CGN2O12THnL40QgEjuSscsEq23BBFiofuKJeXdtVmZSMBlwCOHJAXN83CWfnydFHLis-FJAdxxe4AARi6tNqrNhHbId_RdcL_Ninm9NvcIEm9dlWTQRP5WlbiLeep778OWVGF63mUbE2ys57EieTDzv8_5ER23tT0BG7aKzhNZf__Lnv_7lzz_m1WcLRLbfwgopUlOMgS2urlapyIaUvbaetx1hX3ge23bkeCz5RYAoku3YyRYY8TPaByfkeYEoGwzaRWft5x0JKwza2jewRTa7-jh8x9OozRYViYyfO2tsyL2bMcq4LJvbc8vcowzaG38FU2zOylJ5y72PxVDBHc6uptQbVpYOhjZdZMmkLOfpfXa1N1PcXvkTiNsb2MJdxoeMHL8C9xWmHGgwSr6bWxYh4oIfH6M0gDjjJxa3tcX9EPa_DoLK-O6MZL3eE8tk4NuLGOxlXAqnI0nCwdepjNvWl1F26KuMJ06pD32ofn9mC95dTWbvi8m6YD1oNVq8u1nMtWGdHoceKA4Tz2MVoWNoNb599ea68e7j9W2jBQoEh-qWFND6Ydi4vX7_4dXthxZEIDiHKYpD_Cnm-mfmYstXvg_3PjYnrkJl950Zv4gEIjFjipLDpA7xjWmRr1ife963jMPU875jHH5ZzmeN7xlPKot05BmReo5Ic8umRc4ML0s3ieH80aJJpmsz-XlXB7i7K3aHlgouPrRjWv_B96HqMYGID2X5QAzyPPbQkTG_kMRiflR-XATtgCCMgqv1If0JqLrznMWw9g3nw-WLd3uwpLsE6MNTuj0Jth8Oi_m-TYXjthljTBhNJxb8YkCYDpCoxtrcz23BeJKn5jIqRZaaiyhDAQsfpWjbNMh2uw9IhdmiMGv6idup1QjgkJZ_IsOj3JnFxjRuPI91OjdlyX5gksMNHko_GsRd2XB9RU4ESYxn1z72uOcxKn6flWp5-ilLUpveZmDTW19mlM9ch75nGXzNJD9AYJzz4U1ZNmtWlCXFnrW_PPR8Gs9ucQmfcA3X2KtqEAmtj4N3_bdS37UqpPDGR-JHj191-_2hvIwEvBmj7HcH7nI8fXPiso6MOOSpyM6qkQnKk0onfBvoFk_IYI_53hGQV-d8w-GEJuuO5Pvi_9rzOp1PI1GZiydnNHA513mpfilhO9UTyd6BVPokJ_V57ZonG6h3vbeSTPB8G57HXt4I3znbi_INbyJ-8Tz2xdUN1UF1WG-ocqtO5ynoz3yzWrNut2sdM5qTPUstyqi9BEMf646bHAq8vwh6IxlcqWGUkCKVXK30xzxtUTXpJH7QI2H2Y56RcPf98TPS9-wwv4sql5EohZtKBgJk0ANmnYxfSOG3hi2_joL2IhJHgTCAlmhxkPssV-BXl1J5ym1i63mUUF_zx9dYJE8v-M4fO6oy7nFf95lO4SnI8elNUqunop7tzfSM3hpJ0W_VgTdoa6DsFnB615RQ1YdBv--xfDQqynw8jjsF3x3eIMX1GyTrDsnc0s7peZiArihZ8MdVWbLnCs8RHJczQS-xnU49RbKifFPPQClmVc-ha9Aybq-A_vmEmYDsvmU8-S8"
+      },
+      "currentSourceUrl": "https://x.com/rukasufall/status/2115813709725757457"
+    }
+  ],
+  "targetedRechecks": [
+    {
+      "checkedAt": "2026-10-29T22:30:04.184Z",
+      "scope": "ユーザー指定3投稿。X全体の新規網羅検索ではない。",
+      "sources": [
+        "https://x.com/Studio_In_se/status/2115737127363469788",
+        "https://x.com/rukasufall/status/2115813709725757457",
+        "https://x.com/RingMLIFE/status/2115727595455369258"
+      ],
+      "outcomes": [
+        "PRODUCT IS 3000: 既存原版との同一性確認。スクリーンショット見直し。",
+        "Prism Panic: v0.5へ更新し、採用した版の日時で先頭へ移動。",
+        "THE PHASE: 謎解きとして再評価。通常操作クリア確認、理由を具体化して保留継続。"
+      ],
+      "published": false,
+      "validation": "Prism Panicの掲載コードはラベル以外の構文一致、2乱数系列18579フレームで上限超過0。既存Arcadeブラウザテスト2件合格（リンク、320/375/768/1280px）。",
+      "visualReview": "実ブラウザで通常幅の先頭・PRODUCT IS 3000の行、および375px幅の先頭を確認。画像、容量、作者表記の重なりなし。",
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/arcade-review-2026-10-30"
+    }
+  ]
 }
