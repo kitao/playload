@@ -1,18 +1,20 @@
 {
-  "checkedAt": "2026-10-29T22:30:04.184Z",
+  "checkedAt": "2026-10-30T02:46:57.451Z",
   "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。",
   "counts": {
-    "catalog": 23,
-    "adapted": 14,
+    "catalog": 24,
+    "adapted": 15,
     "normalSearchObserved": 140,
-    "uniqueAuditedPosts": 142,
+    "uniqueAuditedPosts": 144,
     "byStatus": {
       "重複／旧版": 22,
-      "保留": 30,
-      "採用": 23,
+      "保留": 29,
+      "採用": 24,
       "対象外": 55,
+      "差し替え": 1,
       "参照先未解決": 2,
-      "対象期間外": 10
+      "対象期間外": 10,
+      "差し替え依頼": 1
     }
   },
   "ordering": "採用した版の公開日時で新しい順。同じURLの再投稿や紹介で順位を上げない。",
@@ -1921,6 +1923,48 @@
   ],
   "games": [
     {
+      "title": "CAT & FLOWER",
+      "url": "/playload/app/#v1.rVh7cuI4Gv8_pwCx7ZaCcEt-AI0jsgnJdk9VZ3BNenpmimJqjSyMBzBu7ISkSC6xB5iqucQeaE6yJck2Tjrz2N0xTVr6Xvr0PX6SefOm8fc8zleiMTr72DAa__gw_u7ymyO-SbK84Y8Y-Gcw46GYR4v4p-VqnWzSz9ssv7ndAey_Z695f94PeMDnvNfvCUKIQxyXuIQQQgmx-tSmc9u1XXtOheRbxCIkIAEhfSniWI7Ne0J-bN7jhDiWYxH1SL6l-G7gBnW-pJZ8UnukJbVw3-Y2p31Nc6w-lR_H0vyDvUJN0MC2ul2n2-W20iEO4bRv9ykhxLWC0HV7bj_sWcFbNbOCoB_0rH7odoOwy4OgqyxZfVJsnBBbadOABHbXde2u8spR21YP5ZSTvtt3SU_06Xw-D-ehjgEhag8qTPIJAtetf5_OguA1Hn1ir3td_bG7dtdy3W7X7bpOz-m9xldnPgOtl56R-ew5b7XMgmdWA_lPcVtmNVC0luaUA6ljlrLF4Ddo5aca1Gj-C7S63H-xxhf-vbiPL_d7_jwuoxfD97sxbbVqMTUPkSzXqmz75kHjZZ9fjEFpodWq9vun9vai3Mv2XszRCzl_9ry83_Ma93-N6fM6NUvPtU-VxzXfn8qZtVgd9OpeHdLxRK5VhemJ_cO6Ba31bN1Wq56y349Vq8jBF3Ilp3WQ1OS_ok6fxLTKfqvyrdqbWVXD_0erEw719yT4vyn31_vyxX7_ZEwB9j-cfc3AGaXnlI4ovaBUji06suiFZZ1Z1rlljWzrwrbObOvctka2feHYZ4597tgjR46BV5yxF9-zCcEEdyimU3zxA5vIESaYTLF_zSYgFACDeQQw-GcAMJhxMMXjczYBqzXAYBEDDH5agql3tBJ54wMjOGcEL2JG8HoTCkbwThIyjle3OMvxFR7j-VYInOXBNsezJb7JRIZ9fIm_Y5MpzlK8lgoJx8kMr1JGSk_P310x8JF2-5-oNXYbNhfRyA3syLDnQSTc0DZCW0SjS_fCHgV21JpHQS-yR8E8kF_7PAoj-bVHlxfnoyASdjQXocsNhKpg8M2KcTZsjz5N_JEZJ6G4G88hR9NSYJuELGHDqyBfmNsgCTdriI6Th8rHIGfwDt8jNrw7IQ8P9_LP3ZC-fXi4H9LuKWiBwdXk_tgi7bvKJherFRNsCIV533aGQxtJPhTmnZ6Vclka7JKM8QUbTkzTvJqa6yCFkOMYsSFnjC9O40GHInMer3KxhTEbxkNGkHc0v0l4Hm-SRhrzJUT7-WYLZbZiRrz45O1bL2630b7whsnsTLZJCOXAXIkkyhdo6sVz2BxP-NQweJPNlobRhL5hyHXFagV9hNBW5DfbpMEf9aBDHw8riySHHC_RXvP2dwP-yiLHfXw_gPyNRR4IOu7jbMBxOKB4PSB4iZMBwfMBwbsBeayZSsTuXbAWEO0zzoi3umW2l-VyJIsly4NIQFSTLyj7Iowpk91jZjezLN_CLD-2sYzxFbs680sqODsfXYCqANIJmaJj2yHYdgjyxuxsuw3uoZzIYK-gDLKqZ3ZVKQEfIC_hLJ3Q6TFcpafWgCIvmbF0YtUIZXKFSFgido1rkcOJsjVF-DMrhp7MBZtMvaPdIl4J-LnMS5W1z2a6SSGSabqa8CljwARIZTC9yRaQyzIo0h4y4oUnjhcesn7HZDraF99Pwim-Z2VK2hc_SELCdMl6R_EcBrmq8CYDLWAYTem4uQgymCC0V5MgDGGCvM964QQ9Pj4e-Sy5Wa282ZJ1qCcbXrb10zJkWa7qcDzRVTpl1DuaLZmeeVuRiRwiT4EK9dJVcA8JPn93VU91IbT3maw3jTAEeb4ZJ7eMepcyghJlvCzVDpUtmDHdXRCMAMKzw_QcoOeOJlz5ean3pwo7m8SveFbkZIop-lJp9lxpJpVmByULPS1akUKBd0GSo70Me1OY6zJbIZN0KFS2wxNSdJ4nzJCFZZIkgEj4KJIq0UVPZUoRk-kr9Y6EuWZ9T5jzHxn19GJLJFTUyOORRCJ28f1EmOHUkyDFLn4oJ-tO57EIoiw2RwLZhGCKLWxPSyQK2fAPHVL1VMcqvggyAQXayyDOmDDDHym-ZVS81bEtQtHYzPXKUCC0l_FgDCphhPgmyePkRlRNxhRwB7PsmTMd6Ospatclav5JiXstIaFRIkY8h9nJLdrfssybsfCxgL3GrJbGXZCEYit3oT3YsNJXpS_MpNMZEsPYmHHCVzehyKTvFZQKM5TJSRhVqzqyDRRjU5TN6UYh9aaC6cET1I2COIGpCkuWGkaWmrzdRukxs-Qh2yW6jSwMxl1OIwpUQUGY8XaK3rjCfiBoCDNeDA1jdXvyFq1u222sFKlWFDSiIxcgL-NtltZ3L3LID1uXp4dcYIP2yrEJJdglmBIynWw6dIo8KcHgpk3RK6cO-TdpGOQKw1Vf-BgiNtyXWKYhMTxxDKM5yxMYIhS22yrA4dAuY-mbEfPNBZNXHc1rMt8MDaPpmxHyZetgye8rpm8u0N43F52OdzjNapYoDh8r8E55eQgq3aYEOMNIOWOzJdoruLML7DsAWhVBV0cQoEepPMuTFDrIMLSRZpZqC52OBK393cAv7gX4fuAXFwYcDnwzVOdlPiCYDwjOBuRRQ121jhPQOQ3LdaRd5SzMUjN_JVfMUjNRQcxSMzucDFlq3sk2yVIznB5L8aRNEb6XjHvZHU8Z9UNCo4w0x6gnVpmojqviQPmuOp2UdtvTJfOoXGy3pWtDRi2C9iViyz3J0qgQQEgEuNSbEeZOFXuz05HD8ewnwXMzyLI4SqDAEnaFmUmo9UpsUCvlBkUF4gpzyRg9Vegz0O1b5blIc9W8S8YstZ6qW2Yj9b8la_y7Q0NzhPbC3DHaJ56qe4uQ2vrKgaY6ogyjQh9h3nV88w6ddJ8Q7zu-eY9Oumi_uNnmsMSDwsjYzDZrAW_Z8BahvTopLW-XywCWByb4aBEydrkt7Mge9QCqt5m2uT9UTGQLm7saFjqd1e0JLcza0myXeItYQ-o6uIOLGGccHRaiFhm7kf23yJ7bQq4kC6A8omurhpasFZzhAM9knrdy2u7jbEKmODg95ZsVlGMki-TApFM8K5l0-uTwDLfBDqI9X2XqZiavRGif3uRQvuiABjC3IhVBDi2CcA_TLw5r2yH1K_Edi19ZRF6L4uJapAHkahJPdYVL23IPIAFYegQSgPRgAxBSld94WhQxOijdFkq3pdIOyO2MzflmexnwBYQbdcffGEZowVjfm0tfjvt4fK7hU291tpSX_tCCs2UhOVtWoiC_KS80T7pHn_k7VFR_aMkCxMK8x_61OurleY4GNbow56dgm4EBSD8DvbKsjBPbMIpqfnjIjT6SnvjmHfa1Ld8Mp4V0jvbrXMHaFuoiihNYVZNv3nUsggnClFpIqYPR-Op83AS4hx6PynRe59s4iWDGkZkG4bW88sEuBgSUqZXm3a5M_LyI8xwUpaTJUUGOJFma7UsqaK9uaxb6qnTyQjQvLWjyTUG-KS1Qqk2oV1ttRJEdSb7-CNql13mb1vy2Dn6Xl6p1FrEJqP82DrSNs3eXjdGHy7NvmgCDd2dXl43xJ8kEo_HX7745-_jth7OPX42_vm40wXQiMzPVUc8i3QqUdNZZVNwb3lgPBPfxOovUS_vQPu0NuvLmXGR1aKtq7WH6BwE_qDSZVepYHV0aDjq2MPC_vX7f-PVf_wZKXAOXZGu3XEwtDN5_1ahitIh_YyGdKupg8OvPvzR-_fkXbdE79HLH9uITR7VyaMFetx0f0y62LRyfyt8sBvJnjbq86v1S3C3EKXFkh8XTJ1CZ6zdp5f2H52_U_qiIq7KV8mjijybxdGqmQc789-VbpjbfRd4HRh-P8uLKovCVUVTeebyjEj52-ZCgnWyZiqSFLZTlQ9o_1VMHa8jHX4IzGsiSa-Pilbhmu7h2oCL9cJUqMfnLTSE7kKxiCYKvGEGD6k3cO9KQ-3j0Hw",
+      "image": "assets/images/arcade/cat-and-flower.png",
+      "author": "SAILORMAN BRAVO BROS",
+      "authorUrl": "https://x.com/brapunch2000",
+      "sourceUrl": "https://x.com/brapunch2000/status/2115984953674735861",
+      "publishedAt": "2026-10-30T01:51:40.712Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.rVj7cuI4uv8_TwHitEcKQi35AjSOyElITs9WdQbXdO9cDsXWGlkYT8C4sROSInmVrdpX2yfZkmQbJ53ZyzlrmrT06bvpu_wk8_5967-LpFjL1uTiS8tq_c-n6c_XP56IbZoXrWDCwZ_DhYjkMl4lv92uN-k2-7rLi7v7PcDB9_w7MVwOQxGKpRgMB5JS6lLXox6llDJK7SFz2NLxHM9ZMqnWbWpTGtKQ0qFicW3XEQOpPo4YCEpd27WpftS6rde90Aub64pardPGozRpw0NHOIINDc21h0x9XNusH_WVYpKFjt3vu_2-cLQMdalgQ2fIKKWeHUaeN_CG0cAOP-iZHYbDcGAPI68fRn0Rhn2tyR7ScuOUOlqahTR0-p7n9LVXrt62fphggg69oUcHcsiWy2W0jEwMKNV70GFSTxh6XvP7chaG3-HJT_y7Qd98nL7Ttz2v3_f6njtwB9_hm4uAg85bz4S8ei47HVKukXqg_unVDqkHmtYxK9VAyZCKtxz8Dq361IMGLXiD1uT7N2x849-b-_h2v5ev4zJ5M3z_MKadTiOm5BjJylatOyBHibd9fjMGlYZOp97vv7S3N_ne1vdmjt7I-avn7f1eNlb_rzF9Xaek8tz4VHvc8P0lH2nE6ijX9OqYjhd8nTpML_Qf7Za0ziu7nU4zZf84Vp0yB9_wVSudI6ch_yfq9EVM6-x3at_qvZG6Gv5_tCbhWH8vgv-7fP95X77Z778YU4CDTxc_cHDB2CVjE8auGFNjm01sdmXbF7Z9adsTx75y7AvHvnTsieNcuc6F61y6zsRVY-CXZ-zVL3xGMcU9htkcX_3KZ2qEKaZzHHzmMxBJgMEyBhj8OQQYLASY4-kln4H1BmCwSgAGv92CuX-ylkXrE6e44BSvEk7xZhtJTvFeEXKB1_c4L_ANnuLlTkqcF-GuwItbfJfLHAf4Gv_MZ3OcZ3ijBFKB0wVeZ5xWnl5-vOHgC-sPf2L21Gs5QsYTL3Riy1mGsfQix4ocGU-uvStnEjpxZxmHg9iZhMtQfZ3LOIrV15lcX11Owlg68VJGnrAQqoMhtmsu-Lg7-WkWTEiSRvJhuoQCzSuGXRrxlI9vwmJFdmEabTcQnaZPtY9hweEDfkR8_HBGn54e1Z-HMfvw9PQ4Zv1z0AGjm9njqU27D7VOIddrLvkYSvLYdcdjB6l1KMmDmVV8eRbu05yLFR_PCCE3c7IJMwgFThAfC87F6jwZ9Rgiy2RdyB1M-DgZc4r8k-VdKopkm7ayRNxCdFhud1BlK-HUT84-fPCTbhcdSm-4ys5sl0ZQDchapnGxQnM_WcL2dCbmliXafHFrWW0YWJayK9drGCCEdrK426Ut8WwGPfZ8tCzTAgp8iw5m7fAwEu9sejrEjyMo3tv0iaLTIc5HAkcjhjcjim9xOqJ4OaJ4P6LPDVWp3H8MNxKiQy449df33PHzQo1UseRFGEuIGvwl5VCGMeOqe0h-t8iLHcyLUwerGN_wm4ugooKLy8kVqAsgm9E5OnVcih2XIn_KL3a78BGqiQr2Gqog63rmN7UQCADyU8GzGZufwnV2bo8Y8tMFz2Z2g1AlV8qUp3Lf-iwLONO65gh_5eXQV7ngs7l_sl8lawm_Vnmps_aVZNsMIpWmm5mYcw4IQDqD2V2-gkKVQZn2iFM_OnP96Jj1B67S0b36ZRbN8SOvUtK9-lURUm5K1j9JljAsdIW3OegAy2orx8kqzGGK0EFPwiiCKfK_GsMpen5-Pgl4erde-4tb3mO-anjV1i_LkOeFrsPpzFTpnDP_ZHHLzczfyVwWEPkaVJifrcNHSPHlx5tmqkumQ8BVvRmEocgPSJLec-ZfqwgqlPHzzDhUtWDOTXdBMAEIL47TS4BeO5oK7ee12Z8u7HyWvBN5mZM5ZuhbocVroYUSWhyFbPSyaGUGJd6HaYEOKuxtSTZVtiKu6FDqbEdntOw8X5KIR1WSFIAo-CiTqtDFTFVKEVfpq-ROJNnwoS_J8k-c-cbYLZI6avT5RCERv_plJkk09xVI8atfq8mm13sug6iKzVVANqOYYRs78wqJIj7-pw7pempilViFuYQSHVQQF1yS6E8M33MmP5jYlqFobZfGMpQIHVQ8OIeaGSGxTYskvZN1k3EN3OEif-VMDwZmirpNjoZ_iuPRcChoVIiRLGF-do8O9zz3Fzx6LmGvtWikcR-mkdypXRgPtrzyVctLkvZ6Y2pZW5KkYn0XyVz5XkOpJJFKTsqZtuqqNtAL27Jszrcaqbc1TI9eoG4cJinMdFjyzLLyjIhuF2Wn3FaHbJ-aNrIxmPYFixnQBQVhLroZeu9J54miMcxFObSs9f3ZB7S-73axFmRGULKYTTyA_Fx0edbcvSygOG5dnR7KwBYdtGMzRrFHMaN0Ptv22Bz5ioPDbZehd24T8u-yKCw0huu-CDBEfHyosMxAYnTmWlZ7UaQwQijqdnWAo7FTxTIgMQ_Iiqurjllr84BEltUOSIwC1TpYrQ_1YkBW6BCQVa_nH0-zhiaGo-cavDNRHYJatq0AzrIywfniFh003Dkl9h0BrY6gZyII0LMSXhRpBl1kWUZJO8-Mhl5PgdbhYRSU9wL8OArKCwOORgGJ9HlZjCgWI4rzEX02UFfbcUO2ZFFlR-nVzsI8I8U7ZTHPSKqDmGckP54MeUYeVJvkGYnmp4o97TKEH9XCo-qOlwvNQ8KgjFLHmS_XuayPq_JA-bk-nbR01zcl86xd7HaVa2PObIoOFWKrPanSqBFAKgS4NpuRZK-Lvd3rqeF08ZsUBQnzPIlTKLGCXUlyBbV-hQ3aUmExVCKuJLecs3ONPiPTvnWeyzTXzXvLua3t6brlDtL_26rGfz42tEDoIMmesyH1dd3blDbsawfa-oiyrBp9JHnoBeQBnfVfEB97AXlEZ310WN3tCljhQalkSvLtRsJ7Pr5H6KBPStvfFyqA1YEJvtiUTj3hSCd2JgOAmm1mdB6OFRM70hGegYVeb31_xkq1jlLbp_4qMZC6CR_gKsG5QEdDzKZTL3b-K3aWjlSWVAFUR3TDamSrWsE5DvFC5Xmnpt0hzmd0jsPzc7FdQzVGqkiOi2yOF9Uim784PKNduIfoINa5vpmpKxE6ZHcFVC86oAXITmYyLKBNER5g9s1h7bi0eSV-4Mk7m6prUVJeiwyA3MySualwpVvtAaQAK49ACpAZbAFCuvJbL4siQUeh-1LovhLaA7WdKVlud9ehWEG41Xf8rWVFNkzMvbny5XSIp5cGPs1WF7fq0h_ZcHFbci5ua1ZQ3FUXmhfdY878PSqrP7JVAWJJHnHwWR_16jxHowZdkuU52OVgBLKvwFhWlXHmWFZZzU9PhTVEypOAPODA6ApINC-5C3TYFBrWdtAUUZLCupoC8tCzKaYIM2YjLQ4m05vLaRvgAXo-qdL5udglaQxzgUgWRp_VlQ_2MaCgSq1S7_VV4pdlnJegLCVDjktyrMhK7VBRQXd939Aw1KVTlKxFpcGQ70ryXaWBMaNCv9oaJZrsKvLnL6BbeV10WcNv--h3dana5DGfgeZv48DouPh43Zp8ur74sQ0w-Hhxc92a_qQWwWT6w8cfL7788dPFlz9Mf_jcaoP5TGVmbqKex6YVGO1t8ri8N7y3nyge4k0e65f2sXM-GPXVzbnM6tjR1TrA7J8E_CjS5raW8TCze6Y0XHRqYxD88fP3rYsW_F8EtICBLsVgHFMCGHz_h1YdpVXyO6ZMspiLwd_-8tfW3_7yV6PRP3Zzz_GTM1c3c2TDQb-bnLI-dmycnKtfLUbqh40mv-7-it0r2Rl1VY8l8xdgWZh3ae39p9fv1MGkjKzWlYl4FkxmyXxOsrDgwffVe6ZR30f-J86eT4ry0qIRljNU3Xr8kwpA9sWYor1qmppkmG2UF2M2PDdTFxvQx9_CMxqpouvi8qW4obu8eKCyAOA602zqt5uSd6SWShMU33CKRvW7uH9iQPf55O8",
+      "adapted": true,
+      "compressedBytes": 2992,
+      "selectionReason": "約3KBに多色PCGの迷路、追跡する猫と蜂、水くみ・花の育成・回収、コンボと複数面をまとめたアクションゲーム。",
+      "curation": "実ブラウザで水くみ・水やり・育成・回収によるST01クリアとST02進行、被弾・残機消費・ゲームオーバー・再挑戦を確認。",
+      "observations": [
+        "PUSH A (Z)をPUSH Ⓐへ短縮しx=5から7へ中央揃え。成長順を表す装飾矢印は維持。",
+        "上下左右移動・向き変更、Aで水を放つ。Bは未使用。"
+      ],
+      "validation": {
+        "checkedAt": "2026-10-30T02:46:57.451Z",
+        "normalInputEngine": [
+          {
+            "seed": 42,
+            "frames": 12000,
+            "overflow": 0,
+            "sameGameplayFrames": 10428,
+            "modes": [0, 1, 3],
+            "note": "Deterministic directional/A/B input; supplemental only, not all-stage completion."
+          },
+          {
+            "seed": 20261030,
+            "frames": 12000,
+            "overflow": 0,
+            "sameGameplayFrames": 10638,
+            "modes": [0, 1, 3],
+            "note": "Deterministic directional/A/B input; supplemental only, not all-stage completion."
+          }
+        ],
+        "comparison": "表示案内の文字列とそのx座標以外は原版と完全一致。2乱数系列でゲーム状態一致、21066通常画面のピクセル一致を確認。",
+        "noise": "2系列各12000更新で上限超過0。初期PCG24文字192バイト、以後書き換えなし。",
+        "limits": "実ブラウザのステージ2以降、全20面と周回は未踏破。"
+      }
+    },
+    {
       "title": "Prism Panic",
       "image": "assets/images/arcade/prism-panic.png",
       "author": "rukasufall",
@@ -2047,6 +2091,99 @@
       "curation": "After initialization, flower, petals, stem and leaves render with changing view/lighting. Initial sparse tiles are not the completed frame. Demo requires no input; full cycle not timed.",
       "compressedBytes": 2920,
       "selectionReason": "立体モデルの回転と色の変化を見せるデモ。制約内での立体・陰影表現に訴求力がある。"
+    },
+    {
+      "title": "Hexenschuss",
+      "url": "/playload/app/#v1.fVhtU-M4Ev5-vyJ4F5cUt40kvyTEkXNAGGZrl2Vq4GZuNvGxtuMQ1-XFhU2Ii_Dfr1p2Eoad2w9BcktqtVrdz9Pi5KT1zzIr52nrY7pJl0UyeyqKf8zTslVKBgX-WUwkg9WdZDCJUZZIBrNMuqkD80zaEC-kDflGugLySnIhIFtLBvGTZBDhinyIn6igmOGfjWRwLa-jcgaf5bX1GC0nqwXcymuryJZwIa-tZFXAmby2oriAoryXI8uyzh4fo4oIRkNrEeWE3ENGZTD6TGj71ANsuONAdmwblhtSKGaFHIWQLusmrpupaj6cSa11IuXoLJRyPG6Nlyejm1D-JEc34Xg8Xm6l7I_-HQZSbsfL8fh-tArV72S8bLXG4_v7L_f3J62WBrdcane8y27sL6ct_jBJbsSDBrdiL-W8xdPkRkTTSaLBrX0YEC3-ME1xRRypjgZ_yKUM_vz5Zfn6p5VHk9syeiyJB4zClVzI4AVvJZJ_3v38sgj4QHDW47b7-uVPP59HFWGw6NuDxSAytG6L3zjpQ3qexg9p-pBeYDuNptHFNJpiO5xG08l0Mj2bTCfYnk-mk_QhvYwf0mQ6SZMbO74YxpRqPU3rLfrOoDbbUedJ0oeLyyvnXFzxs4sPZ85V98ZLtN5-Cms5eC47jrqpRmvjOCwCputoYWRopy1-I9L0Mv3-d5VOpx-mh9_ZdDIZTg6_DxOch2P4HccfGgvpK3ySZAMVFJDQxlFPcmMUmy2DtazqzrN88qerR4Kjs9Zq2iroTEptvNQGZG3ILk6gPTI7klpL0_Xn_mlH14v8kTzDGmaQUHg2ZJe-wp0kBVRqq0_EFWZhzdPlQzlrO40JEN3KtQxmmby2FtGGzDIoEkOuKVzWds5yyEuIHiFZwbqCNWZEvJJsZ_xcRo9Wkc-zkqB91E-XhZU_FTMy-uFyiFcwH7HwYMj80GXAQvoKH-qtI3iGIoc1JDNIVrjhzieZZH7Wf_Yzw6Bp_Ha_yCCZSZ5NTk8EbR9Wo9rzWu1S8r_qWta6pntdBlkGfEA-E2paLm3bXo9RqN5JhYNSroz-VeZvtMZ4a2lc0FzXo1vCGYWD8njEQohHPAQvpH6d8K_wURK0K5uSo0ms64uJlFzXj_KhrmfrvmS6Ht_1JaPzzDQRsnaA5Sqwshn8ShiFc5JvIK_ApaDCWcCtTV-h-IoZuzdvIrk_CcylPzGloJfEFcakLZw2WZqcgtkFAVww0PqrQAMXuNVxYdLmloOqGkNVcEpSlEHg0GPR5tz_3qeO8ukl4Y6RtYUwZo1im4E2Hn85Qc0CLBd1XsiNDC7JBkwuQDjQZQy0kfwqw_GyhZNbGjhgnVJ_-rRMymy1bJVZ8l9CX0rD8ItZwAakmJkmQjYCrGsKy90y2kMI95N5QeK7wPEGnR6jvrqglcRInWbLCUllkI66IYUovpfxanBtJWk2J3VGYLiPRHgiUpu2eZf2GESJPNzO_tCVZH7V512_MgyaP5WE21CBttUgXul61Y_i-4HdE9QfcdA-_qKBDQL-ILOMQgcc0G4vbj5fauCBC3-QIkHpKUzigTY813raJw37bs8BzkA706zHNE-jkszVci5AO7-5PleXZYPW3o_HCwpew0NryOCRyiA7trdbZaEDa3gcZQYPVSNCSvfnKRTwlPf0hRQjHhqyGImQBpI7jq4rkYl9KEYslDW3Uf8TwU_AUdAsDTh9xYBeTOjLJ-I4TVRp4OBUt4myoPl2usB5F08HHerfEe0N0Wtge-BRv9S5p-t3RPv0r9uPrfGTcM69E9V0NDj1cGE2JXG5zIlDt1vVcSldTCTHoiAul4RTXW8mDHhPlQ5FIuuMiu9kPpSqhJhn8of1win7W8a-IpwCJnCTfjXZuMi6SfqA_EP9x7R8elwqz2BsRAlV2fQsDaMoT2zGtsx_7ru6XpTHNmOBw3SdPB_bfa5EXKjOVyIoPB_bKhJR7CnxR0LhWUqBl1QeC7YX4hSnWckppX5RBl3G6rUOk1IwteZIco47FhdEdHHZkeSprb47nlomJXdtV9eviGg-Pc50HXEETOGASG3AouvDGXQQ1JswyIcBoy-mmQ8HJB8eu2jLDq8ERSyTvLt33K2gtDfPBiReNOQUL8CmeAW8y-D_u5f2yGIi7boQvCIOpa-qHhmq23coxHXPVaGCzs_WSPnZ2jT9KJbRUNfj4SCKDd5jKEBfxqoqUAis6yReIAbfSaersNeFX_HWD4BL_SbAcO6T5C71USv2m6M8gYOznpTWJ9NUoLTeKMNsamIjKKyrJmKVgFFYy3g44D1hef56o-vrStfJetOWVod1YF3VHernm2afLlxbi2xJTj3IN8Z6015T6udVM8qdZpjbDuSVsa7UuIpLdIKyrsS4oy_v_O20eHLjPWj0Deib3M_6QqF-MduRnbpe04OszS0PTM_qIvpvT7QadrKB0-uE9PU1nRdpK5uSxSTgum4Yq7vAcdFl71OZvmCZ718Rtk8kzEfccZrNy_SRFDJ4QRiqIcvfoZcd7m1NFT0vC5pNSToSIZ7zTEGXmY5YSPvp6DQ0RC3kKORKyFloOLTetYULTRPSEeehFMAa8DMdBX-qcRAK3XBnaAsHArOr6zhx3-lz1n1tghFDj76UxypRv_O5jT5Pb5xYqxks_SZNB8oHyf56rMOZ8s3bEzm6njbnYWE_r-pPQ30G6TddJ-k3eRCh9pT65YOuk_IBjyu5ZRskr8z0W98WAwv5FMqHxgWfcDsH0m-mgxwEnTd0Usm8Mjnzq0Cm3_zKlB5V0z2DlDqnqiJFsnToTk39XRmlLgadnmIIJVd6Gv2v8V2gEvLONOskRFZHtlOkXntBXbEpbcvdXRalUB6LGn-4ZyB7dQQ0PY4lCFWVbFMjqKhKm5onLqWB7hGhShRVOSiXyXTkhZCqwLsgcdm22Cltp6NO6O-CG-f1bdHMtzx3PxKXfUZfvrMYUReBpI6Fc4Ka8QAhsmW8w_sD6NTEJ6XJ6UsT11gvNqEX3ZJ0ZIfGPGvz1DHiRdtObYpPZrFDSpsC89ORG0rbx2LykJRH-fCNToJnGrAe2ndIhk643e7tBvyWeB3oKGl6qkh12XugBK5iOZF4ni6DCLE-KqOlUEGGscoF7ILYx7_SFcZt7V5B256PO_X5gCR9Dz2XNCT34eAvowvccjvGvm63XLDBsrGwtUFbaeBRIAkS4HabSOkgbn-_PlpgqSqaFW0NbEohkZIj771L05qKNApJILtM10emQA4UrC7DVnWRn_Q5Z7TUha5_UlsZK0wd3A6ruS1uoaLj5ZBB9aiHZabt-ZWhcmi_ts6XOlts6u9z31zRPtJqFeB6Xf9I6OsrsmTS7zQeE-88BknbYl3ogtXpfuel5Fj8wLvRAty_eieQp0zXkz53sTnm7P0mJu7Seb9Lh9Y1IyYW4tOPohjfOQc9KAlcxgZO7xBce-Gt6N3yOrJ_CIqmo0TVW5A3hXKTX3vXxGlwAE5IEdgVlCiC1Pmg08MExrpSFwO7lyrQ389QHdP097nSDbdbhQXc9XAYyUA4da_PBbIBVpX4tm3QJ5bBS7yDFizE2zESWqyA5PatKJuSa2tW5auS4AIz36i3pplXtC8ssfMkVoRIWXFNWXFNWTGeLH5LWfGOqeKGqbDHdyJ1BIHmTguJL9x3YDmXpol-33myjnDTgXnQGWg3Wm8e2APtJ62HjwWUdZTEwwBuDJgH7JX6yIzZ-tjpY12riIDEw4HX61LkAwHxcKARrVe_LWA_QSA_7Sfg_2CCtxSTV3jmId6hGGiG1qvfHodhwwbtP3VS2T0sftEOVbSToux3XNUGiBul7tDBHVEPtiOtp32-PBt-O9LAY-DRXlEG3LVVrd3nHnNxR0e9Y45aX88-__7L71etejIWj3UNRO7IYtK3B9rZb7-1Ln67PPt8hIqvzq4vWzdfLj9r4HqgZqC7oCmY_vaB1PFUev3jfw",
+      "image": "assets/images/arcade/hexenschuss.png",
+      "author": "H/de.",
+      "authorUrl": "https://x.com/hide_loopcube",
+      "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
+      "publishedAt": "2026-10-27T15:05:27.000Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.fVhtU-M4Ev7OrwjewyXFbSPJLwlx5BwQhtnaZZmacDM3G3yM7TjEdXlxYRPiAv77VctOwrCz9yFIbkmtVqv7eVocH7f-WWblPG19TDfpskhmj0VxME_LVikZFPhnMZEMVjeSwSRGWSIZzDLppg7MM2lDvJA25BvpCsgryYWAbC0ZxI-SQYQr8iF-ooJihn82ksGVvIrKGXyWV9ZDtJysFjCSV1aRLeFcXlnJqoBTeWVFcQFFeSfHlmWdPjxEFRGMhtYiygm5g4zKYPyZ0PaJB9hwx4HsyDYsN6RQzAo5DiFd1k1cN1PVHHw4lVrrWMrxaSjl7W3rdnk8vg7lL3J8Hd7e3i5fpOyP_x0GUr7cLm9v78arUP2Ob5et1u3t3d2Xu7vjVkuDgxGX2g3vsmv7y0mL30-Sa3GvwUjspJy3eJpci2g6STQY2fsB0eL30xRXxJHqaHDwp1zK4Ps_npev3608mozK6KEkHjAKB5dyIYNnvJlIfr_5x_Mi4APBWY_b7uuX734-jyrCYNG3B4tBZGjdFr920vv0LI3v0_Q-Pcd2Gk2j82k0xXY4jaaT6WR6OplOsD2bTCfpfXoR36fJdJIm13Z8Powp1Xqa1lv0nUFtuKNOlKT35xeXzpm45KfnH06dy-61l2i93RTWcvBkdhx1U43WxnFYBEzX0cLI0E5a_Fqk6UX64-8ynU4_TPe_0-lkMpzsfx8mOA_H8DuOPzQW0lc4-CTJBiooIKGNpx4l2RjFhr4wWEtSNd0n-ehPVw8EZ8xaq2mroDMptdulNiBrQ3ZxAu2R2aHUWpquP_VPOrpe5A_kCdYwg4TCkyG7uOONJAVUar9PxBVmYc3T5X05azuNHRCN5FoGs0xeWYtoQ2YZFIkh1xQOLmprZznkJUQPkKxgXcEakyNeSbY9wlxGD1aRz7OSoIXUT5eFlT8WMzL-6XKIVzAfs3BvyXzfZcBCtPtDvXcET1DksIZkBskKd9y6JZPMz_pPfmYYNI3fbhgZJDPJk8npsaDt_Wql96zWu5T8r8qWtbLpTplBlgEfkM-EmpZL27bXYxSqd1LhoJTXZv8m8zdqY7y6NC5oruvRiHBGYa89HrMQ4jEPwQupX6f_Kxx8lAQty6bkcBLr-mIiJdf1w3yo69m6L5muxzd9yeg8M01EsC1-uQq7bAa_EUbhjOQbyCtwKajIFjCy0b7iK6bvzsCJ5P4kMJf-xJSCXhBXGJO2cNpkaXIKZhcEcMFA668CDVzgVseFSZtbjtLVmKqCVJKiDAKHHok25_6PfnWUXy8Id4ysLYQxazTbDLTb2y_HqFqA5Sql53IjgwuyAZMLEA50GQNtLL_K8HbZwtktDRywTqh_MH1cJmW2WrbKLPkvoc8HpWH4xSxgA1LMTBNhHG-p7ZrCcukLoz0Edj-ZFyS-CRxv0Okx6isqiVcSo3aaLScklUE67oYUovhOxqvBlZWk2ZzU6YGhPxbhsUht2uZd2mMQJXJ_S_7B9uyVZH7V512_MgyaP5aE21CB9qJBvNL1qh_FdwO7J6h_MOagffxVAxsE_ElmGYUOOKCNzq8_X2jggQt_kiJB6QlM4oE2PNN62icN-27PAc5AO9WshzRPo5LM1XIuQDu7vjpTt2aD1t6NxwsKXkNQa8jggcogO7JfXpSJDqzhYZwZPFSNCCndn6hQSFTe0WdSjHloyGIsQhpI7ji6rkQm9qEYs1DWrEf9TwQ_AUdBszTg9PUAg3sxoc-fiOM0AaaBg3PdJuCC5tvpAuddPB90qH9DtDc1gAa2Bx71S517un5DtE__Gn1sjT5e32hw4uH8bEricpkTh768qI5L6WIiOZYJcbkknOp6M2HAe6qYKBJZJ1V8I_OhVEXFPJM_rSBO2P_l8EvCKWAONxlYU4-LLJyk98hG1H9Iy8eHZe0RDIsooc8qIJ8kMYyiPLYZoy_Mf-q7ul6URzZjgcN0nTwd2X2uRFyozlciKDwd2SoQUewp8UdC4UlKgRdUHgm2E-IUp1nJKaV-UQZdxuq1DpNSMLXmUHKOOxbnRHRx2aHkqa2-Ox5GR1FKyV3b1fVLIlCNlNzjTNcRTsAUDojUBqzFPpxCBwF-GwP5MGD02TTz4YDkwyMXrdkCl6AIapJ3d-4bCUp782xA4kVDVfECbIoXwbsM_t7JtEcWE2nXBeIlcSh9VS6OhioIHApx3XOpj2bhHWRrLASytWn6USyjoa7Hw0EUG7zHUID-jFWtoMBY10m8QDi-kU5XwbALv-Ht77GX-k2g4dxHyV3qo1bsN4d5BAdnPSqtj6bpo43rjbLMpiY2gsK6aiJXCRiFtYyHA94TluevN7q-rnSdrDdtaXVYB9ZV3aF-vmn26cKVtciW5MSDfGOsN-01pX5eNaPcaYa57UBeGetKjavwRCco60qMPfr8zuNOiyfX3r1G36C_yf2sLxT8F7Mt8akLNj3I2tzywPSsLtLAy7FW4042cHqdkL6-pvMibWVTspgEXNcNY3UTOC667H1K02d8APiXhO0TChMTt5xm8zJ9IIUMnhGHaszyt_BlhztjU8XVy4JmU5KORYgHPVXYZaZjFtJ-Oj4JDVELOQq5EnIWGg6tt23hQtOEdMx5KAWwBv1MR-GfahzEQjfcWtrCgcDs6jpO3HX6nHVft-GIwUefyyOVrj943Uavp9dOrFEVLuk3aTpQ3kv213PtD5Vv3h7J0fW0ORAL-3lVfxrqM0i_6TpJv8m9CLWn1C_vdZ2U93heyS3bIHllpt_6thhYyKpQ3jc--ITbOZB-Mx2kIejQfYBUMq9MzvwqkOk3vzKlR9V0zyClzqmqUZEwHbpVU3-TyiipLgadniIJNaI0NTu8HsQ3gcrKG9OsMxHZHTlPkXvtCHXNprQtd3thlEJ5JGoY4p6BFNYR0PQ41iMIeAj2dbGgQittSqC4lAa6SIQqXVQJodwm07EXQqqi75zEZdtiJ7Sdjjuhvw1xnNe3RTPf8tzdSFz2GX3-wWTEX4STOh7OCGrGE4RImfEW-ffQU9OglCanz01wYwHZxF80IunYDo151uapY8SLtp3aFJ_UYouYNgXmp2M3lLaP1eU-NQ_z4RudBM80YD20b58RnfDlZWc34LfE-0BHSdNTVavL3sMlcBXPicTzdBlEiPlRGS2FCjSMVy5gG8g-_pWuMEa1ewVtez7u1OcDkvQ99FzS0N2Hvb-MLnDL7Ri7Ut5ywQbLxkLXBm2lgUeBJEiFLy-JlA6i94_rowVWrqJZ0dbAphQSKTkS4LtUrSlJo5AEsst0fWwKJEPB6mpsVVf9SZ9zRktd6PontZWxwvTB7bCoe8EtVHQ877OoHvWw3LQ9vzJUHu3W1jlTqnyxqb_Lf3NF-0ivVYDrdf0joa-vyJZJv9N4TLzzGCRti3WhC1an-4OXkiPxE-9GC3D_6p1AnjBdT_rcxeaIs_ebmLhL5_0uHdpUjphZCFI_C2N8-ewVoSRwGRs4vX107YQj0RtxDO2Dv4FG01Gi6i3Wm0I5yq_9a-I02MMnpIjvCk1UuiKKDTo9TGKsNHUxsHupQv_dHNUxTX-XL906X3jY566H40gLwql7fS66FIkBS0189jYgFMvgOd4iDFbl7RjJLVZ4MnoryqbkyppV-aokuMDMN-oRauYV7QtLbP2JJSLSV1zTV1zTV4zHi9_SV7xlrbhhLezxrUgdQih7p4XEt-870JxL00Tvb_1ZR7rpwDzoDLRrrTcP7IH2i9bDpwPKOkriYSA3FswDhhsgTWbrI6ePpa7iBBIPB16vS5EaBMTDgUa0Xv3SgN0EgWS1m4D_qAne8k1e4amHuo53pxlar36J7IcNG7T_1Nll91Q9jIaoWp4UZb_jqjZABCl1hw5uiHrBHWo97fPF6fDboQYeA4_2ijLgrq3q7z73mItbOupZc9j6evr5j1__uGzVk7GYPKiLInJDFpO-PdBOf_-9df77xennQ9R8eXp10br-cvFZA9cDNQM9Bk0F9bMHU8dTCfY_",
+      "adapted": true,
+      "compressedBytes": 2971,
+      "selectionReason": "約3KBに敵編隊、ショット・低速レーザー・ボム、二段階ボスと音楽を収めたASCIIシューティング。作者の差し替え希望を受け再評価。",
+      "curation": "ノイズ発生だけで除外しない。通常画面への復帰、実ブラウザでのボス到達・第二段階、補助検査での通常入力クリアを区別して確認。作者がノイズを意図したとの明言は確認していない。",
+      "observations": [
+        "PUSH SHOTを中央揃えのPUSH Ⓐ/Ⓑへ変更。機体・残機のASCII Aは維持。",
+        "実ブラウザでAショット、Bレーザー、A+Bボム（残数減少）、上下左右移動、通常ボス戦、失敗からBで再挑戦を確認。"
+      ],
+      "validation": {
+        "checkedAt": "2026-10-30T02:46:57.451Z",
+        "normalInputEngine": [
+          {
+            "seed": 42,
+            "frames": 2793,
+            "firstBoss": 1611,
+            "clear": {
+              "frame": 2792,
+              "remainingLives": 1,
+              "bombs": 1,
+              "debug": 0
+            },
+            "phases": ["first", "second"],
+            "overflow": 408,
+            "maxSprites": 191,
+            "longest": 70,
+            "noiseByContext": {
+              "stage": 43,
+              "boss-active": 162,
+              "bomb": 181,
+              "invulnerable": 22
+            },
+            "final": {
+              "t": 2793,
+              "st": 1610,
+              "md": 2,
+              "li": 1,
+              "bm": 1,
+              "px": 12,
+              "py": 122,
+              "iv": 0,
+              "pD": 0,
+              "bT": 0,
+              "db": 0
+            }
+          },
+          {
+            "seed": 20261030,
+            "frames": 2793,
+            "firstBoss": 1611,
+            "clear": {
+              "frame": 2792,
+              "remainingLives": 1,
+              "bombs": 1,
+              "debug": 0
+            },
+            "phases": ["first", "second"],
+            "overflow": 408,
+            "maxSprites": 191,
+            "longest": 70,
+            "noiseByContext": {
+              "stage": 43,
+              "boss-active": 162,
+              "bomb": 181,
+              "invulnerable": 22
+            },
+            "final": {
+              "t": 2793,
+              "st": 1610,
+              "md": 2,
+              "li": 1,
+              "bm": 1,
+              "px": 12,
+              "py": 122,
+              "iv": 0,
+              "pD": 0,
+              "bT": 0,
+              "db": 0
+            }
+          }
+        ],
+        "noise": "通常戦闘およびボス攻撃でもspr超過あり。ボム時限定ではない。検査中最大191、408/2793更新、最長70連続更新。フレーム数を実時間と同一視しない。PCG変更なし。",
+        "limits": "実ブラウザの通常プレイでは第二段階まで到達しゲームオーバー。クリアは無敵・状態改変なしの補助入力検査。"
+      }
     },
     {
       "title": "static.",
@@ -2243,21 +2380,6 @@
       "selectionReason": "経験値回収、武器選択、成長、ボスを備えたサバイバル構成。全武器・ボス攻略の完了は未確認。"
     },
     {
-      "title": "STAR VIPER",
-      "image": "assets/images/arcade/star-viper.png",
-      "author": "H/de.",
-      "authorUrl": "https://x.com/hide_loopcube",
-      "sourceUrl": "https://x.com/hide_loopcube/status/2114378857902133453",
-      "publishedAt": "2026-10-25T15:29:37.000Z",
-      "adapted": true,
-      "observations": [
-        "Title A wide shot, B laser/slow, A+B bomb and A start fit; ship ASCII A remains unchanged."
-      ],
-      "curation": "Distinct playable STAR VIPER variant, not merely an old Hexenschuss URL. Title, wide shot, laser, enemy movement and score increase verified; full completion not tested.",
-      "compressedBytes": 1517,
-      "selectionReason": "1.52KBに敵編隊、複数攻撃、ボム、ボスをまとめたASCIIシューティング。"
-    },
-    {
       "title": "SHOOTER",
       "image": "assets/images/arcade/vertical-shooter.png",
       "author": "しん 🎮",
@@ -2426,8 +2548,8 @@
       "publishedAt": "2026-10-27T15:05:27.000Z",
       "author": "H/de.(LOOPCUBE / TECHNOJAPAN.net)",
       "authorUrl": "https://x.com/hide_loopcube",
-      "status": "保留",
-      "reason": "ボス出現後のspr超過を再現（Down+Aの無敵モードを使ったエンジン検査3600更新中170回）。実ブラウザの通常操作でもボス到達を確認したが、攻撃中の可読性・攻略可能性の再評価は未完了。全てを描画不具合と断定せず保留継続。",
+      "status": "採用",
+      "reason": "約3KBに敵編隊、ショット・低速レーザー・ボム、二段階ボスと音楽を収めたASCIIシューティング。作者の差し替え希望を受け再評価。",
       "title": "Hexenschuss"
     },
     {
@@ -2758,8 +2880,8 @@
       "publishedAt": "2026-10-25T15:29:37.000Z",
       "author": "H/de.(LOOPCUBE / TECHNOJAPAN.net)",
       "authorUrl": "https://x.com/hide_loopcube",
-      "status": "採用",
-      "reason": "Distinct playable STAR VIPER variant, not merely an old Hexenschuss URL. Title, wide shot, laser, enemy movement and score increase verified; full completion not tested.",
+      "status": "差し替え",
+      "reason": "作者の希望によりHexenschussへ掲載枠を差し替え。別作品のため旧版とはしない。",
       "title": "STAR VIPER — Playload",
       "image": "assets/images/arcade/star-viper.png"
     },
@@ -3502,6 +3624,20 @@
       "status": "採用",
       "reason": "v0.5: 消去中の交換、コンボ・連鎖、背景アニメーションと効果音を備えた更新版。実ブラウザの進行・再挑戦と実エンジンの補助検査を確認して採用。",
       "observedIn": "ユーザー指定投稿。実ブラウザで本文・短縮URL先を確認。日時は表示時刻とpost IDのUTC時刻を照合。"
+    },
+    {
+      "sourceUrl": "https://x.com/hide_loopcube/status/2115978752631201995",
+      "title": "Hexenschuss",
+      "status": "差し替え依頼",
+      "publishedAt": "2026-10-30T01:27:02.268Z",
+      "reason": "作者希望を反映。リンクは10月27日公開Hexenschussと同一。掲載順は採用版公開日を維持。"
+    },
+    {
+      "sourceUrl": "https://x.com/brapunch2000/status/2115984953674735861",
+      "title": "CAT & FLOWER",
+      "status": "採用",
+      "publishedAt": "2026-10-30T01:51:40.712Z",
+      "reason": "約3KBに多色PCGの迷路、追跡する猫と蜂、水くみ・花の育成・回収、コンボと複数面をまとめたアクションゲーム。"
     }
   ],
   "criteria": "docs/arcade-curation.mdに従う。3KBでの遊び・映像・音・演出と完成度を評価する。ノイズは回数のみで除外せず、文脈、制御、正常復帰、可読性・操作への影響で判断する。意図的でも仕上がりが不足すれば保留する。",
@@ -3546,28 +3682,6 @@
         "windows": [395, 413, 368, 263, 329, 325],
         "spriteFrames": 0,
         "pcgFrames": 2093
-      }
-    },
-    {
-      "title": "Hexenschuss",
-      "url": "/playload/app/#v1.fVj9UuM4Ev9_nyJ4D5cUt40kfyTEkXNAgNnaZZkauJmbDT7Gdhziuny4sAlxEV7iHuYe6J7kqmUnYdi5-yNIbkmtVqv792txdNT6a5mVs7T1IV2niyKZPhXFT7O0bJWSQYF_5mPJYHkrGYxjlCWSwTSTburALJM2xHNpQ76WroC8klwIyFaSQfwkGUS4Ih_iJyoopvhnLRlcyauonMIneWU9Rovxcg438soqsgWcySsrWRZwIq-sKC6gKO_lyLKsk8fHqCKC0dCaRzkh95BRGYw-Edo-9gAb7jiQHdqG5YYUimkhRyGki7qJ62aimosTqbWOpBydhFLe3bXuFkej61D-LEfX4d3d3WIjZX_09zCQcnO3uLu7Hy1D9Tu6W7Rad3f395_v749aLQ1uuNRueZdd25-PW_xhnFyLBw1uxE7KeYunybWIJuNEgxt7PyBa_GGS4oo4Uh0N_pALGXz7y8vi9ZuVR-ObMnosiQeMwqWcy-AFbyWS327_8jIP-EBw1uO2-_r5m5_PooowmPftwXwQGVq3xa-d9CE9TeOHNH1Iz7CdRJPobBJNsB1Oosl4Mp6cjCdjbE_Hk3H6kJ7HD2kyGafJtR2fDWNKtZ6m9eZ9Z1Cb7ajzJOnD2fmlcyou-cnZxYlz2b32Eq23m8JaDp7LjqNuqtHaOA7zgOk6WhgZ2nGLX4s0PU-__12mk8nFZP87mYzHw_H-dzHGeTiG33F80VhIX-GjJGuooICENo56kmujWG8YrGRVd57lkz9ZPhIcnbaWk1ZBp1JqdwttQFaG7OIE2iPTA6m1NF1_7h93dL3IH8kzrGAKCYVnQ3bpK9xKUkCltvpIXGEW1ixdPJTTttOYANGNXMlgmskrax6tyTSDIjHkisJ5bec0h7yE6BGSJawqWGFGxEvJtsbPZPRoFfksKwnaR_10UVj5UzElox8uh3gJsxEL94bM9l0GLKSvcFFvHcEzFDmsIJlCssQNtz7JJPOz_rOfGQZN47f7RQbJTPJscnokaHu_GtWe1moXkv9Z16LWNdnpMsgi4APyiVDTcmnb9nqMQvVOKhyUcmX0rzJ_ozXGW0vjgua6Ht0QzijslccjFkI84iF4IfXrhH-FD5KgXdmEHIxjXZ-PpeS6fpAPdT1b9SXT9fi2LxmdZaaJkLUFLFeBlc3gV8IonJJ8DXkFLgUVzgJubPoKxRfM2J15Y8n9cWAu_LEpBT0nrjDGbeG0ycLkFMwuCOCCgdZfBhq4wK2OC-M2txxU1RiqglOSogwChx6KNuf-9z51lE_PCXeMrC2EMW0U2wy0u7vPR6hZgOWizjO5lsE5WYPJBQgHuoyBNpJfZHi3aOHklgYOWMfUnzwtkjJbLlpllvyT0JfSMPxiGrABKaamiZCNAOuawnI3jPYQwv1kVpD4NnC8QafHqK8uaCkxUifZYkxSGaSjbkghiu9lvBxcWUmazUidERjuIxEeidSmbd6lPQZRIve3szt0JZlf9XnXrwyD5k8l4TZUoG00iJe6XvWj-H5g9wT1Rxy0D79oYIOAP8g0o9ABB7Sbs-tP5xp44MIfpEhQegzjeKANT7We9lHDvttzgDPQTjTrMc3TqCQztZwL0E6vr07VZdmgtXfj8ZyC1_DQCjJ4pDLIDu3NRlnowAoeR5nBQ9WIkNLdeQoFPOU9fSHFiIeGLEYipIHkjqPrSmRiH4oRC2XNbdT_SPATcBQ0SwNOXzGg52P68pE4ThNVGjg41W2iLGi-nS5w3sXTQYf6t0R7Q_Qa2B541C917un6LdE-_u3mQ-s___q3BsceTs8mJC4XOXHoZqM6LqXzseRYCsTlgnCq682EAe-pgqFIZJ1H8a3Mh1IVDrNM_rBKOGb_l6cvCaeAadskXU0xLnJtkj4g61D_MS2fHhfKHxgRUUJVDj1LwyjKI5uxDfOf-66uF-WhzVjgMF0nz4d2nysRF6rzhQgKz4e2ij8Ue0r8gVB4llLg1ZSHgu2EOMVpVnJKqV-UQZexeq3DpBRMrTmQnOOOxRkRXVx2IHlqq--Op5ZJyV3b1fVLIppPjzNdR_QAUzggUhuw1Lo4gQ5CeXP5-TBg9MU08-GA5MNDF23ZopSgiGCSd3eOuxGU9mbZgMTzhpLiOdgUr4B3Gfxv99IemY-lXZd_l8Sh9FVVIUN1-w6FuO65KlTQ-dkKiT5bmaYfxTIa6no8HESxwXsMBejLWNUCCnd1ncRzRN5b6XQV4rrwK976Hmap3wQYzn2S3KU-asV-c5QncHDWk9L6ZJoKilZrZZhNTWwEhVXVRKwSMAorGQ8HvCcsz1-tdX1V6TpZrdvS6rAOrKq6Q_183ezThStrni3IsQf52lit2ytK_bxqRrnTDHPbgbwyVpUaV3GJTlDWlRh39OWdv50WT669B42-gXqT-1lfKKwvpluKU9drepC1ueWB6VldxPzNkVaDTTZwep2Qvr6msyJtZRMyHwdc1w1jeRs4LrrsfSrTFyzu_UvCdomE-Yg7TrJZmT6SQgYvCD41UPlbzLLDna2pIuVFQbMJSUcixHOeKMAy0xELaT8dHYeGqIUchVwJOQsNh9a7tnChaUI64jyUAlgDeaajQE81DgKgG24NbeFAYHZ1HSfuOn3Ouq9NMGLo0ZfyUCXqdz630efptRNrNW-lX6XpQPkg2Z-PtT9Tvn57IkfX0-Y8LOznVf1pqM8g_arrJP0q9yLUnlK_fNB1Uj7gcSW3bIPklZl-7dtiYCGLQvnQuOAjbudA-tV0kHmg84ZEKplXJmd-Fcj0q1-Z0qNqumeQUudU1aFIkQ7dqqm_K6PUxaDTU7yg5EpPo_81vg1UQt6aZp2EyOXIcYrKay-oKzalbbnby6IUykNR4w_3DOSsjoCmx7HwoKp-bSoDFVVpU-nEpTTQPSJUiaLqBeUymY68EFIVeGckLtsWO6btdNQJ_W1w47y-LZr5lufuRuKyz-jLdxYj6iKQ1LFwSlAzHiBEjoy3eL8HnZr4pDQ5fWniGqvEJvSiG5KO7NCYZW2eOkY8b9upTfGhLLZIaVNgfjpyQ2n7WELuk_IgH77RSfBMA9ZD-_bJ0Ak3m53dgN8SrwMdJU1PlaYuew-UwFUsJxLP02UQIdZHZbQQKsgwVrmAbRD7-Fe6wrip3Sto2_Nxpz4fkKTvoeeShuQu9v4yusAtt2PsqnXLBRssG8tZG7SlBh4FkiABbjaJlA7i9vfrozkWqKJZ0dbAphQSKTny3rs0ralIo5AEsst0fWQK5EDB6uJrWZf2SZ9zRktd6PpHtZWxxNTB7bCG2-AWKjpe9hlUj3pYXNqeXxkqh3Zr63yps8Wm_i73zSXtI61WAa7X9Q-Evr4iSyb9TuMx8c5jkLQt1oUuWJ3ud15KDsUPvBvNwf2zdwJ5zHQ96XMXm0PO3m9i4i6d97t0aF0pYmIhPv0oivF1s9eDksBlbOD09sG1E96I3g2vI_uHoGg6SlS9BXlTKDf5tXdNnAZ74IQUgV1BiSJInQ86PUxgrCt1MbB7qQL93QzVMU1_lyvdcLNRWMBdD4eRDIRT9_pcIBtgVYkv2gZ9Yhm8xFtowfK7HSOhxQpIbt6Ksgm5sqZVviwJLjDztXphmnlF-8ISW09iRYiUFdeUFdeUFePJ4reUFW-ZKm6YCnt8K1JHEGjupJD4rn0HljNpmuj3rSfrCDcdmAWdgXat9WaBPdB-1nr4REBZR0k8DODGgFnAXqmPzJitDp0-1rWKCEg8HHi9LkU-EBAPBxrRevWLAnYTBPLTbgL-5yV4SzF5hWce4h2KgWZovfrFsR82bND-USeV3cPiF-1QRTspyn7HVW2AuFHqDh3cEvVMO9B62qfzk-HXAw08Bh7tFWXAXVvV2n3uMRd3dNTr5aD15eTT77_8ftmqJ2PxWNdA5JbMx317oJ389lvr7Lfzk08HqPjy5Oq8df35_JMGrgdqBroLmoLpB8-ijqeS6qf_Ag",
-      "image": "assets/images/arcade/hexenschuss.png",
-      "author": "H/de.",
-      "authorUrl": "https://x.com/hide_loopcube",
-      "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
-      "publishedAt": "2026-10-27T15:05:27.000Z",
-      "originalUrl": "/playload/app/#v1.fVhtU-M4Ev7OrwjewyXFbSPJLwlx5BwQhtnaZZmacDM3G3yM7TjEdXlxYRPiAv77VctOwrCz9yFIbkmtVqv7eVocH7f-WWblPG19TDfpskhmj0VxME_LVikZFPhnMZEMVjeSwSRGWSIZzDLppg7MM2lDvJA25BvpCsgryYWAbC0ZxI-SQYQr8iF-ooJihn82ksGVvIrKGXyWV9ZDtJysFjCSV1aRLeFcXlnJqoBTeWVFcQFFeSfHlmWdPjxEFRGMhtYiygm5g4zKYPyZ0PaJB9hwx4HsyDYsN6RQzAo5DiFd1k1cN1PVHHw4lVrrWMrxaSjl7W3rdnk8vg7lL3J8Hd7e3i5fpOyP_x0GUr7cLm9v78arUP2Ob5et1u3t3d2Xu7vjVkuDgxGX2g3vsmv7y0mL30-Sa3GvwUjspJy3eJpci2g6STQY2fsB0eL30xRXxJHqaHDwp1zK4Ps_npev3608mozK6KEkHjAKB5dyIYNnvJlIfr_5x_Mi4APBWY_b7uuX734-jyrCYNG3B4tBZGjdFr920vv0LI3v0_Q-Pcd2Gk2j82k0xXY4jaaT6WR6OplOsD2bTCfpfXoR36fJdJIm13Z8Powp1Xqa1lv0nUFtuKNOlKT35xeXzpm45KfnH06dy-61l2i93RTWcvBkdhx1U43WxnFYBEzX0cLI0E5a_Fqk6UX64-8ynU4_TPe_0-lkMpzsfx8mOA_H8DuOPzQW0lc4-CTJBiooIKGNpx4l2RjFhr4wWEtSNd0n-ehPVw8EZ8xaq2mroDMptdulNiBrQ3ZxAu2R2aHUWpquP_VPOrpe5A_kCdYwg4TCkyG7uOONJAVUar9PxBVmYc3T5X05azuNHRCN5FoGs0xeWYtoQ2YZFIkh1xQOLmprZznkJUQPkKxgXcEakyNeSbY9wlxGD1aRz7OSoIXUT5eFlT8WMzL-6XKIVzAfs3BvyXzfZcBCtPtDvXcET1DksIZkBskKd9y6JZPMz_pPfmYYNI3fbhgZJDPJk8npsaDt_Wql96zWu5T8r8qWtbLpTplBlgEfkM-EmpZL27bXYxSqd1LhoJTXZv8m8zdqY7y6NC5oruvRiHBGYa89HrMQ4jEPwQupX6f_Kxx8lAQty6bkcBLr-mIiJdf1w3yo69m6L5muxzd9yeg8M01EsC1-uQq7bAa_EUbhjOQbyCtwKajIFjCy0b7iK6bvzsCJ5P4kMJf-xJSCXhBXGJO2cNpkaXIKZhcEcMFA668CDVzgVseFSZtbjtLVmKqCVJKiDAKHHok25_6PfnWUXy8Id4ysLYQxazTbDLTb2y_HqFqA5Sql53IjgwuyAZMLEA50GQNtLL_K8HbZwtktDRywTqh_MH1cJmW2WrbKLPkvoc8HpWH4xSxgA1LMTBNhHG-p7ZrCcukLoz0Edj-ZFyS-CRxv0Okx6isqiVcSo3aaLScklUE67oYUovhOxqvBlZWk2ZzU6YGhPxbhsUht2uZd2mMQJXJ_S_7B9uyVZH7V512_MgyaP5aE21CB9qJBvNL1qh_FdwO7J6h_MOagffxVAxsE_ElmGYUOOKCNzq8_X2jggQt_kiJB6QlM4oE2PNN62icN-27PAc5AO9WshzRPo5LM1XIuQDu7vjpTt2aD1t6NxwsKXkNQa8jggcogO7JfXpSJDqzhYZwZPFSNCCndn6hQSFTe0WdSjHloyGIsQhpI7ji6rkQm9qEYs1DWrEf9TwQ_AUdBszTg9PUAg3sxoc-fiOM0AaaBg3PdJuCC5tvpAuddPB90qH9DtDc1gAa2Bx71S517un5DtE__Gn1sjT5e32hw4uH8bEricpkTh768qI5L6WIiOZYJcbkknOp6M2HAe6qYKBJZJ1V8I_OhVEXFPJM_rSBO2P_l8EvCKWAONxlYU4-LLJyk98hG1H9Iy8eHZe0RDIsooc8qIJ8kMYyiPLYZoy_Mf-q7ul6URzZjgcN0nTwd2X2uRFyozlciKDwd2SoQUewp8UdC4UlKgRdUHgm2E-IUp1nJKaV-UQZdxuq1DpNSMLXmUHKOOxbnRHRx2aHkqa2-Ox5GR1FKyV3b1fVLIlCNlNzjTNcRTsAUDojUBqzFPpxCBwF-GwP5MGD02TTz4YDkwyMXrdkCl6AIapJ3d-4bCUp782xA4kVDVfECbIoXwbsM_t7JtEcWE2nXBeIlcSh9VS6OhioIHApx3XOpj2bhHWRrLASytWn6USyjoa7Hw0EUG7zHUID-jFWtoMBY10m8QDi-kU5XwbALv-Ht77GX-k2g4dxHyV3qo1bsN4d5BAdnPSqtj6bpo43rjbLMpiY2gsK6aiJXCRiFtYyHA94TluevN7q-rnSdrDdtaXVYB9ZV3aF-vmn26cKVtciW5MSDfGOsN-01pX5eNaPcaYa57UBeGetKjavwRCco60qMPfr8zuNOiyfX3r1G36C_yf2sLxT8F7Mt8akLNj3I2tzywPSsLtLAy7FW4042cHqdkL6-pvMibWVTspgEXNcNY3UTOC667H1K02d8APiXhO0TChMTt5xm8zJ9IIUMnhGHaszyt_BlhztjU8XVy4JmU5KORYgHPVXYZaZjFtJ-Oj4JDVELOQq5EnIWGg6tt23hQtOEdMx5KAWwBv1MR-GfahzEQjfcWtrCgcDs6jpO3HX6nHVft-GIwUefyyOVrj943Uavp9dOrFEVLuk3aTpQ3kv213PtD5Vv3h7J0fW0ORAL-3lVfxrqM0i_6TpJv8m9CLWn1C_vdZ2U93heyS3bIHllpt_6thhYyKpQ3jc--ITbOZB-Mx2kIejQfYBUMq9MzvwqkOk3vzKlR9V0zyClzqmqUZEwHbpVU3-TyiipLgadniIJNaI0NTu8HsQ3gcrKG9OsMxHZHTlPkXvtCHXNprQtd3thlEJ5JGoY4p6BFNYR0PQ41iMIeAj2dbGgQittSqC4lAa6SIQqXVQJodwm07EXQqqi75zEZdtiJ7Sdjjuhvw1xnNe3RTPf8tzdSFz2GX3-wWTEX4STOh7OCGrGE4RImfEW-ffQU9OglCanz01wYwHZxF80IunYDo151uapY8SLtp3aFJ_UYouYNgXmp2M3lLaP1eU-NQ_z4RudBM80YD20b58RnfDlZWc34LfE-0BHSdNTVavL3sMlcBXPicTzdBlEiPlRGS2FCjSMVy5gG8g-_pWuMEa1ewVtez7u1OcDkvQ99FzS0N2Hvb-MLnDL7Ri7Ut5ywQbLxkLXBm2lgUeBJEiFLy-JlA6i94_rowVWrqJZ0dbAphQSKTkS4LtUrSlJo5AEsst0fWwKJEPB6mpsVVf9SZ9zRktd6PontZWxwvTB7bCoe8EtVHQ877OoHvWw3LQ9vzJUHu3W1jlTqnyxqb_Lf3NF-0ivVYDrdf0joa-vyJZJv9N4TLzzGCRti3WhC1an-4OXkiPxE-9GC3D_6p1AnjBdT_rcxeaIs_ebmLhL5_0uHdpUjphZCFI_C2N8-ewVoSRwGRs4vX107YQj0RtxDO2Dv4FG01Gi6i3Wm0I5yq_9a-I02MMnpIjvCk1UuiKKDTo9TGKsNHUxsHupQv_dHNUxTX-XL906X3jY566H40gLwql7fS66FIkBS0189jYgFMvgOd4iDFbl7RjJLVZ4MnoryqbkyppV-aokuMDMN-oRauYV7QtLbP2JJSLSV1zTV1zTV4zHi9_SV7xlrbhhLezxrUgdQih7p4XEt-870JxL00Tvb_1ZR7rpwDzoDLRrrTcP7IH2i9bDpwPKOkriYSA3FswDhhsgTWbrI6ePpa7iBBIPB16vS5EaBMTDgUa0Xv3SgN0EgWS1m4D_qAne8k1e4amHuo53pxlar36J7IcNG7T_1Nll91Q9jIaoWp4UZb_jqjZABCl1hw5uiHrBHWo97fPF6fDboQYeA4_2ijLgrq3q7z73mItbOupZc9j6evr5j1__uGzVk7GYPKiLInJDFpO-PdBOf_-9df77xennQ9R8eXp10br-cvFZA9cDNQM9Bk0F9bMHU8dTCfY_",
-      "reason": "ボス出現後のspr超過を再現（Down+Aの無敵モードを使ったエンジン検査3600更新中170回）。実ブラウザの通常操作でもボス到達を確認したが、攻撃中の可読性・攻略可能性の再評価は未完了。全てを描画不具合と断定せず保留継続。",
-      "overflowAudit": {
-        "title": "Hexenschuss",
-        "frames": 3600,
-        "overflow": 0,
-        "postSetup": 0,
-        "longest": 0,
-        "maxSprites": 97,
-        "windows": [],
-        "spriteFrames": 0,
-        "pcgFrames": 0
       }
     },
     {
@@ -4388,20 +4502,30 @@
         "scene": "通常操作でレベルアップと武器選択を経たLV4・0:28の戦闘。敵、武器、回収するビットが見える。"
       },
       {
-        "title": "STAR VIPER",
-        "image": "assets/images/arcade/star-viper.png",
-        "sourceUrl": "https://x.com/hide_loopcube/status/2114378857902133453",
-        "action": "retaken",
-        "scene": "通常操作でワイドショット、レーザー、ボムを使いボスへ到達。大型ボス・自機の3方向ショット・敵弾を同時に写す。レーザー候補とも比較し、ワイドショットの場面を採用。SCORE3700。",
-        "capturedAt": "2026-10-29T13:47:19.034613+00:00"
-      },
-      {
         "title": "SHOOTER",
         "image": "assets/images/arcade/vertical-shooter.png",
         "sourceUrl": "https://x.com/gameshin_saga/status/2114201748072284356",
         "action": "retaken",
         "scene": "通常プレイで編隊を撃破してレベル10のボス戦へ到達。SCORE1400、ボス残耐久32。ボス・自機・自弾・敵弾が見えるフレームを選定。序盤SCORE20の画像を撤回。",
         "capturedAt": "2026-10-29T13:47:19.034613+00:00"
+      },
+      {
+        "title": "Hexenschuss",
+        "image": "assets/images/arcade/hexenschuss.png",
+        "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
+        "action": "retaken",
+        "checkedAt": "2026-10-30T02:46:57.451Z",
+        "scene": "通常入力で到達した第一段階ボス。大型機体、複数敵弾、レーザー、自機と残機・ボムを一緒に見せる。序盤編隊、ボスの縦レーザー、第二段階との比較から選択。",
+        "method": "掲載用操作表記版を実ブラウザで通常プレイ。Screenshot、CRTオン、撮影時のみエンジン一時停止。"
+      },
+      {
+        "title": "CAT & FLOWER",
+        "image": "assets/images/arcade/cat-and-flower.png",
+        "sourceUrl": "https://x.com/brapunch2000/status/2115984953674735861",
+        "action": "new",
+        "checkedAt": "2026-10-30T02:46:57.451Z",
+        "scene": "ST02、170点。ステージ1を通常クリアし、水くみ・水やり後の芽と育った植物、猫・蜂、バケツ、迷路を見せる。",
+        "method": "同じ採用原版の実ブラウザ通常操作でScreenshot撮影。操作表記版は開始/終了案内だけが異なり、通常画面は2系列21066フレームで原版とピクセル一致を検証。CRTオン。開始直後・水で植物を隠す場面を避けて比較。"
       }
     ],
     "correction": {
@@ -4448,6 +4572,219 @@
       "validation": "Prism Panicの掲載コードはラベル以外の構文一致、2乱数系列18579フレームで上限超過0。既存Arcadeブラウザテスト2件合格（リンク、320/375/768/1280px）。",
       "visualReview": "実ブラウザで通常幅の先頭・PRODUCT IS 3000の行、および375px幅の先頭を確認。画像、容量、作者表記の重なりなし。",
       "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/arcade-review-2026-10-30"
+    },
+    {
+      "checkedAt": "2026-10-30T02:46:57.451Z",
+      "scope": "ユーザー指定2投稿。全X再検索ではない。",
+      "sources": [
+        "https://x.com/hide_loopcube/status/2115978752631201995",
+        "https://x.com/brapunch2000/status/2115984953674735861"
+      ],
+      "outcomes": [
+        "STAR VIPERを作者希望のHexenschussへ置換。採用版は10月27日公開版と同一。",
+        "CAT & FLOWERを追加。計24作品。両作の開始・再挑戦案内を正規ボタン表記へ。"
+      ],
+      "published": false,
+      "validation": "2件の既存Arcadeブラウザテスト合格（リンク、320/375/768/1280px）。全24作品のURL復号、3KB以内、640×576画像、日時降順を確認。",
+      "visualReview": "実ブラウザの通常幅で新作先頭・Hexenschussの行、375px幅で新作の画像・容量・作者名を確認。重なりなし。",
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/arcade-additions-2026-10-30",
+      "catalogValidation": [
+        {
+          "title": "CAT & FLOWER",
+          "bytes": 2992,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Prism Panic",
+          "bytes": 2993,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "rubble.",
+          "bytes": 2994,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Dungeon Escape",
+          "bytes": 2760,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "hollow.",
+          "bytes": 2988,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "TETROMINOS",
+          "bytes": 2356,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "minidius",
+          "bytes": 2972,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Rose in RGB light",
+          "bytes": 2920,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Hexenschuss",
+          "bytes": 2971,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "static.",
+          "bytes": 1881,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "shatter.",
+          "bytes": 2629,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "E CARD",
+          "bytes": 2997,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Ink Battle",
+          "bytes": 2035,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Endless Ghost Tower",
+          "bytes": 2490,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "広告でよく見るゲーム",
+          "bytes": 2888,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Pop Drop",
+          "bytes": 2977,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "PRODUCT IS 3000",
+          "bytes": 2990,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "平安京エイリアン",
+          "bytes": 2913,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "CLASSIC BEAT",
+          "bytes": 2866,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "信長残高不足・原付で本能寺",
+          "bytes": 2856,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Cube Maze 3D",
+          "bytes": 2879,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "SHOGI 9x9",
+          "bytes": 2938,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "Bit-Rate Rush 3KB",
+          "bytes": 2991,
+          "width": 640,
+          "height": 576
+        },
+        {
+          "title": "SHOOTER",
+          "bytes": 2924,
+          "width": 640,
+          "height": 576
+        }
+      ]
+    }
+  ],
+  "replacements": [
+    {
+      "checkedAt": "2026-10-30T02:46:57.451Z",
+      "requestUrl": "https://x.com/hide_loopcube/status/2115978752631201995",
+      "reason": "作者の明示的な差し替え希望。STAR VIPERとHexenschussは別作品として区別し、掲載枠を置換。",
+      "removed": {
+        "title": "STAR VIPER",
+        "url": "/playload/app/#v1.jVZdbuJIEH7fUzg9CnLjttPdtsGxKbIk5AeJQBJmZ1dy_ADEJGQJRJhZBRkuMYeZvc-cZFVt4wCRdoYHm67-uuqrcv300ZH2-2K8mMRa73PjTvvSujm_-20SL7QecHYDoSuZkDJibbDZLdjsDDjrAGfXwNkFcNYEzlrA2SWEETvFxxU-7qAxn_eX1mg-e9HTSTx9XDz5Uq6ZTqEeXvcXT9a8P32Yvei0LLhkexLHYcLYlcmIBqOv0-FiPJtqyaI_X-g07YEI3kkGbbCDW7CDM-jANVxAE3jQgmMeILsA2QXILnid9Jc6Z-Sz8PiXqj6MH6mGD0rourDxNEYL45HeWq2adB4vvs6nQds0M41KhcxVCKmJeNi1H-MhocF4pB-0aQ_sd12L8fBvnabDSaJzGtxZo9n8vD980udQT-ehiAyYhzLCk7iqC8eh6TzkEXyIVIAA4Ovkda4jguGaEYswQdeZ7R5NcVc6THqMvH9Wwio0yHccj5Ef375rf7aa51rvqvuZsGqxWeG4-a_WbvTO77Qjrdfu_kmYU-xXpTpsIOa0e31KmF3sCc4Zufmjd6X9-PZdWRyP9MFi-qo7dLVSf1xK8-8XZFFdj0d6DwDs1QpfMufvMcdhSnBCGu22dtY-b9wdHBCfXDauz7XuF3Qp26_47wwq6PRZ9-5cI8bZllfHlV8g1gO-IdUxDIS0aMs08U-TNk0zwNJ4eAM8qdvUxJektKzWLj2xPF9akrKHZQYRGYR_hAQ3xfd96b_pblYCL-OpfnzMcM94eKOIElsoId9hwq4w3DUelnTjjO7QUqlz6AIAp-mV9fo1edJD1GZ6Cmy6zBQRU6JMUGU8XxsFRERKYedQZJp2kt3RxLBbeSR0_R7AUilzrlS6pemtaQZNcNys4C6LZI-hHocyMiEO7ejEdn2Hfiyjx1H8MOzKQT83cHBpJbOXODtsR1RVZKfucl4qHVzT9BpEcJn76UpmSs6OOROMHAE0AO7v76dhFwC60f30_h7CTxEckYiu40kSa0qV4ErXBU0v9nU5TFQ5k0pZ2Ig26iL4BCEqXAHUwr-iOsBqR-ehsDFupVKnJlyX0xSz5g2E3OtpVa-w98ZMj0nGWedQnpD7-3-OiE9qszrqXe_EEAOgQpHGoRuBjs_VilNDBGpHRDXp0Vh1FasaIKk0xlxzc_PJeKoOlZUaABAnFpeub3GVyYVQcr9KM51udPgut6UvPKoSYzSb6-jbM5gieK6BCJ4NI3O3n2Vtf9GfSl3lFVJSmW0iHWo8ly0pg9M8AChjCqLODWeJ3qdlYeWFgaSzdaTyImcjSyXFzuF7fHjwXPO22TyXrarnGspxizs_tWvv2bXxQ6zzaGJsheUGeNiAAthBzYbyrmw5m89x6Hg18YtB-SktuUdLKlo0uIIrazSeLOK5nkA9TRSxBIdKgmagEmxiE2uzkXZJxyM94zJI9KSwX1OBPZG279FSaQuQU90AhONXKWYg1rPIW6Y26k-SWI0m1MgSNZpWarTkCBTVTW9dNCyX0nTDbAk8WNYwLMHSAI-iIhUahy2VHof-nxc3H7xwfMEpZoiIlFqa8bWq60u43ISrKCkZ1bBrnhlZgypS7MTlnHMf-wSn-NrtWsd50yJ5rWSHaA_kbliwmbW2YvqBrvD8Ct0B7Afd9iuUqnuJGmpx1tcRYjosDh3MGDs6cXy3CDgKVisVAeHyNQ1O4XTj-QDq6UAlygATZaDSehDa6iJScH1avs4WOuJMNTUQZqpo1pwtMoPNnrqMVAoCKK_zUgnfNcEr-E_kEiTlVLJkaB06tXzyb88ryUituHu8Ty3JSH1HbDqb4UUamHBrNbHT3YYg5F5HcKVjdMqWKNQY29XWVO1HzdjtomsyUibs-TC7dqzXr18XunBw5qhrh3I-l0mmE65-xDijVjIZD2PdrFCsiBziMNJuXZyrO1QuUj5Y8_g17i_09ja4ykh24XILkYdsNuBbumVccJZfOYi6yRGf4HVPhW080vcH6-aUjTZ6PSS0_g8",
+        "image": "assets/images/arcade/star-viper.png",
+        "author": "H/de.",
+        "authorUrl": "https://x.com/hide_loopcube",
+        "sourceUrl": "https://x.com/hide_loopcube/status/2114378857902133453",
+        "publishedAt": "2026-10-25T15:29:37.000Z",
+        "originalUrl": "https://kitao.dev/playload/app/#v1.jVZtb-I4EP5-vyL1qigmTmo7CaQJQw9KX5AotGVv96Q0H4CGlh6FitBTUeC_n8YJKVDpdvmQ4PH4mWcm8-KTE-3P5WQ5jbX-98a99qN9e3H_xzRean3g7BZCVzIhZcQ6YLM7sNk5cNYFzm6As0vgrAWctYGzKwgj1sTHNT7uobFYDFbWeDF_1dNpPHtaPvtSbphOoR7eDJbP1mIwe5y_6rQsuGQHEsdhwtiXyYgG4_fZaDmZz7RkOVgsdZr2QQSfJIMO2MEd2ME5dOEGLqEFPGjDKQ-QXYDsAmQXvE0HK50z8l14_EdVH8VPVMMHJXRT2HieoIXJWG-v1y26iJfvi1nQMc0MUUHIHEJITcSjnv0UjwgNJmP9qEP7YH9iLSejf3SajqaJzmlwb43ni4vB6FlfQD1dhCIyYBHKCE_iqi4ch6aLkEfwJVIBKgDfJG8LHTUYrhmxCBN0k9nu0xR3pcOkx8jnZyWsQoN8x_EYafjaz3brQutf974TVi32KpyRpq91Gv2Le-1E63d6Pwlziu2qZKRhNH2t2btpEmYXG4JzRm7_6l_niBVFZ7icvekOXa_VH5fS_NsFWUQ3k7HeBwB7vcaXzLl7zHGYEpyRRqejnXcuGvdHR8QnV42bC633A93J9iv-J4UKOnzeu7_QiHG-49Jp5XeY9YFvWXUNA1XatG2a-KdFW6YZYF08fgCe1G1q4ktSWlZrl55Zni8tSdnjKlMRmQr_qhLcFh_3dfChu1n-v05m-ukpwz3j8YOiltjREvJTTdgVhrvG44pundEdWip1j10A4DS9tt7ek2c9RDTTU8qmy0wRMSXKBFXG87VRqIhIAXaPRYa0l-mOJka9yhOhm88AlkqZc6XSHU3vTDNogeNm1XZVZHoM9TiUkQlxaEdntus79GsNPY3jx1FPDge5gaMrK5m_xtlhO6KqHLt1l_NS6eiGpjcggqvcT1cyU3J2yplg5ASgAfDw8DALewDQix5mDw8QfovghER0E0-TWFNQgiusS5peHmI5TFQ5kwosbERbuAi-QYiAa4Ba-HdUB1jvYR4LG-NWKnVrwnU5TTFrPkDIg4ZW9Qp7H8z0mGScdY_lGXl4-PeE-KQ2ryPuZi-GGAAVijQO3Qh0fK7XnBoiUDsiqkmPxqqlWNUASaUx5pqbm08mM3WorGAAQJxZXLq-xVUmF0LJ_SrNMN3o-FNuS194VCXGeL7Q0bcXMEXwUgMRvBhG5u4gy9rBcjCTusorpKQy20Q61HgpW1IGzTwAKGNKRZ0bzRN9QMvCygsDSWfrSOVFzkaWSoqdww_48OCl5u2yeSlbVc81lOMWd35p1z6wa-OH2OTRxNgKyw3wsAGFYheRDeVd2XK2n-PY8WriN4PyS1rygJZUtGhwDdfWeDJdxgs9gXqaKGIJTpQEzUAl2MYm1uZj7YpOxnrGZZjoSWG_pgJ7Jm3fo6XSjkJOdasgHL9KMQOxnkXeMrXxYJrEai4hIkvUXFqrwZJroKhuepuiYbmUpltmK-DBqoZhCVYGeBSBVGgctlI4Dv0_L26_eOH4glPMEBEpWJrxtaqbK7jahqsoKRnVsGueG1mDKlLszOWccx_7BKf42u9ap3nTInmtZIdoH-R-WLCZtXdi-oWu8PwK3VM4DLrtVyhVlxI11eKsr6OK6bA4dDBj7OjM8d0i4ChYr1UEhMs3NGhCc-v5EOrpUCXKEBNlqNJ6GNrqFlJwfV69zZc66plqaqCaqaJZc3bIDLd76iZSKQigvM5LJXzXBK_gP5FLkJRTyZKhfezU8tG_O68kI7Xi6vE5tSQj9T2x6WyHF2lgwm3UxE73G4KQBx3BlY7RLVuigDF2q62l2o-asbtF12KkTNjLcXbv2Gze3pe6cHDmqHuHcj6XSaYTrn7EOKdWMp2MYt2sUKyIXMVhpNO-vFC3qFykfLAW8Vs8WOqdXeUqI9mVyy1EHrLZKt_RHeOCs_zKQdRFjvgEL3sqbJOxfjhYt6dstNHvI6HNfw"
+      },
+      "adopted": {
+        "title": "Hexenschuss",
+        "url": "/playload/app/#v1.fVhtU-M4Ev5-vyJ4F5cUt40kvyTEkXNAGGZrl2Vq4GZuNvGxtuMQ1-XFhU2Ii_Dfr1p2Eoad2w9BcktqtVrdz9Pi5KT1zzIr52nrY7pJl0UyeyqKf8zTslVKBgX-WUwkg9WdZDCJUZZIBrNMuqkD80zaEC-kDflGugLySnIhIFtLBvGTZBDhinyIn6igmOGfjWRwLa-jcgaf5bX1GC0nqwXcymuryJZwIa-tZFXAmby2oriAoryXI8uyzh4fo4oIRkNrEeWE3ENGZTD6TGj71ANsuONAdmwblhtSKGaFHIWQLusmrpupaj6cSa11IuXoLJRyPG6Nlyejm1D-JEc34Xg8Xm6l7I_-HQZSbsfL8fh-tArV72S8bLXG4_v7L_f3J62WBrdcane8y27sL6ct_jBJbsSDBrdiL-W8xdPkRkTTSaLBrX0YEC3-ME1xRRypjgZ_yKUM_vz5Zfn6p5VHk9syeiyJB4zClVzI4AVvJZJ_3v38sgj4QHDW47b7-uVPP59HFWGw6NuDxSAytG6L3zjpQ3qexg9p-pBeYDuNptHFNJpiO5xG08l0Mj2bTCfYnk-mk_QhvYwf0mQ6SZMbO74YxpRqPU3rLfrOoDbbUedJ0oeLyyvnXFzxs4sPZ85V98ZLtN5-Cms5eC47jrqpRmvjOCwCputoYWRopy1-I9L0Mv3-d5VOpx-mh9_ZdDIZTg6_DxOch2P4HccfGgvpK3ySZAMVFJDQxlFPcmMUmy2DtazqzrN88qerR4Kjs9Zq2iroTEptvNQGZG3ILk6gPTI7klpL0_Xn_mlH14v8kTzDGmaQUHg2ZJe-wp0kBVRqq0_EFWZhzdPlQzlrO40JEN3KtQxmmby2FtGGzDIoEkOuKVzWds5yyEuIHiFZwbqCNWZEvJJsZ_xcRo9Wkc-zkqB91E-XhZU_FTMy-uFyiFcwH7HwYMj80GXAQvoKH-qtI3iGIoc1JDNIVrjhzieZZH7Wf_Yzw6Bp_Ha_yCCZSZ5NTk8EbR9Wo9rzWu1S8r_qWta6pntdBlkGfEA-E2paLm3bXo9RqN5JhYNSroz-VeZvtMZ4a2lc0FzXo1vCGYWD8njEQohHPAQvpH6d8K_wURK0K5uSo0ms64uJlFzXj_KhrmfrvmS6Ht_1JaPzzDQRsnaA5Sqwshn8ShiFc5JvIK_ApaDCWcCtTV-h-IoZuzdvIrk_CcylPzGloJfEFcakLZw2WZqcgtkFAVww0PqrQAMXuNVxYdLmloOqGkNVcEpSlEHg0GPR5tz_3qeO8ukl4Y6RtYUwZo1im4E2Hn85Qc0CLBd1XsiNDC7JBkwuQDjQZQy0kfwqw_GyhZNbGjhgnVJ_-rRMymy1bJVZ8l9CX0rD8ItZwAakmJkmQjYCrGsKy90y2kMI95N5QeK7wPEGnR6jvrqglcRInWbLCUllkI66IYUovpfxanBtJWk2J3VGYLiPRHgiUpu2eZf2GESJPNzO_tCVZH7V512_MgyaP5WE21CBttUgXul61Y_i-4HdE9QfcdA-_qKBDQL-ILOMQgcc0G4vbj5fauCBC3-QIkHpKUzigTY813raJw37bs8BzkA706zHNE-jkszVci5AO7-5PleXZYPW3o_HCwpew0NryOCRyiA7trdbZaEDa3gcZQYPVSNCSvfnKRTwlPf0hRQjHhqyGImQBpI7jq4rkYl9KEYslDW3Uf8TwU_AUdAsDTh9xYBeTOjLJ-I4TVRp4OBUt4myoPl2usB5F08HHerfEe0N0Wtge-BRv9S5p-t3RPv0r9uPrfGTcM69E9V0NDj1cGE2JXG5zIlDt1vVcSldTCTHoiAul4RTXW8mDHhPlQ5FIuuMiu9kPpSqhJhn8of1win7W8a-IpwCJnCTfjXZuMi6SfqA_EP9x7R8elwqz2BsRAlV2fQsDaMoT2zGtsx_7ru6XpTHNmOBw3SdPB_bfa5EXKjOVyIoPB_bKhJR7CnxR0LhWUqBl1QeC7YX4hSnWckppX5RBl3G6rUOk1IwteZIco47FhdEdHHZkeSprb47nlomJXdtV9eviGg-Pc50HXEETOGASG3AouvDGXQQ1JswyIcBoy-mmQ8HJB8eu2jLDq8ERSyTvLt33K2gtDfPBiReNOQUL8CmeAW8y-D_u5f2yGIi7boQvCIOpa-qHhmq23coxHXPVaGCzs_WSPnZ2jT9KJbRUNfj4SCKDd5jKEBfxqoqUAis6yReIAbfSaersNeFX_HWD4BL_SbAcO6T5C71USv2m6M8gYOznpTWJ9NUoLTeKMNsamIjKKyrJmKVgFFYy3g44D1hef56o-vrStfJetOWVod1YF3VHernm2afLlxbi2xJTj3IN8Z6015T6udVM8qdZpjbDuSVsa7UuIpLdIKyrsS4oy_v_O20eHLjPWj0Deib3M_6QqF-MduRnbpe04OszS0PTM_qIvpvT7QadrKB0-uE9PU1nRdpK5uSxSTgum4Yq7vAcdFl71OZvmCZ718Rtk8kzEfccZrNy_SRFDJ4QRiqIcvfoZcd7m1NFT0vC5pNSToSIZ7zTEGXmY5YSPvp6DQ0RC3kKORKyFloOLTetYULTRPSEeehFMAa8DMdBX-qcRAK3XBnaAsHArOr6zhx3-lz1n1tghFDj76UxypRv_O5jT5Pb5xYqxks_SZNB8oHyf56rMOZ8s3bEzm6njbnYWE_r-pPQ30G6TddJ-k3eRCh9pT65YOuk_IBjyu5ZRskr8z0W98WAwv5FMqHxgWfcDsH0m-mgxwEnTd0Usm8Mjnzq0Cm3_zKlB5V0z2DlDqnqiJFsnToTk39XRmlLgadnmIIJVd6Gv2v8V2gEvLONOskRFZHtlOkXntBXbEpbcvdXRalUB6LGn-4ZyB7dQQ0PY4lCFWVbFMjqKhKm5onLqWB7hGhShRVOSiXyXTkhZCqwLsgcdm22Cltp6NO6O-CG-f1bdHMtzx3PxKXfUZfvrMYUReBpI6Fc4Ka8QAhsmW8w_sD6NTEJ6XJ6UsT11gvNqEX3ZJ0ZIfGPGvz1DHiRdtObYpPZrFDSpsC89ORG0rbx2LykJRH-fCNToJnGrAe2ndIhk643e7tBvyWeB3oKGl6qkh12XugBK5iOZF4ni6DCLE-KqOlUEGGscoF7ILYx7_SFcZt7V5B256PO_X5gCR9Dz2XNCT34eAvowvccjvGvm63XLDBsrGwtUFbaeBRIAkS4HabSOkgbn-_PlpgqSqaFW0NbEohkZIj771L05qKNApJILtM10emQA4UrC7DVnWRn_Q5Z7TUha5_UlsZK0wd3A6ruS1uoaLj5ZBB9aiHZabt-ZWhcmi_ts6XOlts6u9z31zRPtJqFeB6Xf9I6OsrsmTS7zQeE-88BknbYl3ogtXpfuel5Fj8wLvRAty_eieQp0zXkz53sTnm7P0mJu7Seb9Lh9Y1IyYW4tOPohjfOQc9KAlcxgZO7xBce-Gt6N3yOrJ_CIqmo0TVW5A3hXKTX3vXxGlwAE5IEdgVlCiC1Pmg08MExrpSFwO7lyrQ389QHdP097nSDbdbhQXc9XAYyUA4da_PBbIBVpX4tm3QJ5bBS7yDFizE2zESWqyA5PatKJuSa2tW5auS4AIz36i3pplXtC8ssfMkVoRIWXFNWXFNWTGeLH5LWfGOqeKGqbDHdyJ1BIHmTguJL9x3YDmXpol-33myjnDTgXnQGWg3Wm8e2APtJ62HjwWUdZTEwwBuDJgH7JX6yIzZ-tjpY12riIDEw4HX61LkAwHxcKARrVe_LWA_QSA_7Sfg_2CCtxSTV3jmId6hGGiG1qvfHodhwwbtP3VS2T0sftEOVbSToux3XNUGiBul7tDBHVEPtiOtp32-PBt-O9LAY-DRXlEG3LVVrd3nHnNxR0e9Y45aX88-__7L71etejIWj3UNRO7IYtK3B9rZb7-1Ln67PPt8hIqvzq4vWzdfLj9r4HqgZqC7oCmY_vaB1PFUev3jfw",
+        "image": "assets/images/arcade/hexenschuss.png",
+        "author": "H/de.",
+        "authorUrl": "https://x.com/hide_loopcube",
+        "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
+        "publishedAt": "2026-10-27T15:05:27.000Z",
+        "originalUrl": "https://kitao.dev/playload/app/#v1.fVhtU-M4Ev7OrwjewyXFbSPJLwlx5BwQhtnaZZmacDM3G3yM7TjEdXlxYRPiAv77VctOwrCz9yFIbkmtVqv7eVocH7f-WWblPG19TDfpskhmj0VxME_LVikZFPhnMZEMVjeSwSRGWSIZzDLppg7MM2lDvJA25BvpCsgryYWAbC0ZxI-SQYQr8iF-ooJihn82ksGVvIrKGXyWV9ZDtJysFjCSV1aRLeFcXlnJqoBTeWVFcQFFeSfHlmWdPjxEFRGMhtYiygm5g4zKYPyZ0PaJB9hwx4HsyDYsN6RQzAo5DiFd1k1cN1PVHHw4lVrrWMrxaSjl7W3rdnk8vg7lL3J8Hd7e3i5fpOyP_x0GUr7cLm9v78arUP2Ob5et1u3t3d2Xu7vjVkuDgxGX2g3vsmv7y0mL30-Sa3GvwUjspJy3eJpci2g6STQY2fsB0eL30xRXxJHqaHDwp1zK4Ps_npev3608mozK6KEkHjAKB5dyIYNnvJlIfr_5x_Mi4APBWY_b7uuX734-jyrCYNG3B4tBZGjdFr920vv0LI3v0_Q-Pcd2Gk2j82k0xXY4jaaT6WR6OplOsD2bTCfpfXoR36fJdJIm13Z8Powp1Xqa1lv0nUFtuKNOlKT35xeXzpm45KfnH06dy-61l2i93RTWcvBkdhx1U43WxnFYBEzX0cLI0E5a_Fqk6UX64-8ynU4_TPe_0-lkMpzsfx8mOA_H8DuOPzQW0lc4-CTJBiooIKGNpx4l2RjFhr4wWEtSNd0n-ehPVw8EZ8xaq2mroDMptdulNiBrQ3ZxAu2R2aHUWpquP_VPOrpe5A_kCdYwg4TCkyG7uOONJAVUar9PxBVmYc3T5X05azuNHRCN5FoGs0xeWYtoQ2YZFIkh1xQOLmprZznkJUQPkKxgXcEakyNeSbY9wlxGD1aRz7OSoIXUT5eFlT8WMzL-6XKIVzAfs3BvyXzfZcBCtPtDvXcET1DksIZkBskKd9y6JZPMz_pPfmYYNI3fbhgZJDPJk8npsaDt_Wql96zWu5T8r8qWtbLpTplBlgEfkM-EmpZL27bXYxSqd1LhoJTXZv8m8zdqY7y6NC5oruvRiHBGYa89HrMQ4jEPwQupX6f_Kxx8lAQty6bkcBLr-mIiJdf1w3yo69m6L5muxzd9yeg8M01EsC1-uQq7bAa_EUbhjOQbyCtwKajIFjCy0b7iK6bvzsCJ5P4kMJf-xJSCXhBXGJO2cNpkaXIKZhcEcMFA668CDVzgVseFSZtbjtLVmKqCVJKiDAKHHok25_6PfnWUXy8Id4ysLYQxazTbDLTb2y_HqFqA5Sql53IjgwuyAZMLEA50GQNtLL_K8HbZwtktDRywTqh_MH1cJmW2WrbKLPkvoc8HpWH4xSxgA1LMTBNhHG-p7ZrCcukLoz0Edj-ZFyS-CRxv0Okx6isqiVcSo3aaLScklUE67oYUovhOxqvBlZWk2ZzU6YGhPxbhsUht2uZd2mMQJXJ_S_7B9uyVZH7V512_MgyaP5aE21CB9qJBvNL1qh_FdwO7J6h_MOagffxVAxsE_ElmGYUOOKCNzq8_X2jggQt_kiJB6QlM4oE2PNN62icN-27PAc5AO9WshzRPo5LM1XIuQDu7vjpTt2aD1t6NxwsKXkNQa8jggcogO7JfXpSJDqzhYZwZPFSNCCndn6hQSFTe0WdSjHloyGIsQhpI7ji6rkQm9qEYs1DWrEf9TwQ_AUdBszTg9PUAg3sxoc-fiOM0AaaBg3PdJuCC5tvpAuddPB90qH9DtDc1gAa2Bx71S517un5DtE__Gn1sjT5e32hw4uH8bEricpkTh768qI5L6WIiOZYJcbkknOp6M2HAe6qYKBJZJ1V8I_OhVEXFPJM_rSBO2P_l8EvCKWAONxlYU4-LLJyk98hG1H9Iy8eHZe0RDIsooc8qIJ8kMYyiPLYZoy_Mf-q7ul6URzZjgcN0nTwd2X2uRFyozlciKDwd2SoQUewp8UdC4UlKgRdUHgm2E-IUp1nJKaV-UQZdxuq1DpNSMLXmUHKOOxbnRHRx2aHkqa2-Ox5GR1FKyV3b1fVLIlCNlNzjTNcRTsAUDojUBqzFPpxCBwF-GwP5MGD02TTz4YDkwyMXrdkCl6AIapJ3d-4bCUp782xA4kVDVfECbIoXwbsM_t7JtEcWE2nXBeIlcSh9VS6OhioIHApx3XOpj2bhHWRrLASytWn6USyjoa7Hw0EUG7zHUID-jFWtoMBY10m8QDi-kU5XwbALv-Ht77GX-k2g4dxHyV3qo1bsN4d5BAdnPSqtj6bpo43rjbLMpiY2gsK6aiJXCRiFtYyHA94TluevN7q-rnSdrDdtaXVYB9ZV3aF-vmn26cKVtciW5MSDfGOsN-01pX5eNaPcaYa57UBeGetKjavwRCco60qMPfr8zuNOiyfX3r1G36C_yf2sLxT8F7Mt8akLNj3I2tzywPSsLtLAy7FW4042cHqdkL6-pvMibWVTspgEXNcNY3UTOC667H1K02d8APiXhO0TChMTt5xm8zJ9IIUMnhGHaszyt_BlhztjU8XVy4JmU5KORYgHPVXYZaZjFtJ-Oj4JDVELOQq5EnIWGg6tt23hQtOEdMx5KAWwBv1MR-GfahzEQjfcWtrCgcDs6jpO3HX6nHVft-GIwUefyyOVrj943Uavp9dOrFEVLuk3aTpQ3kv213PtD5Vv3h7J0fW0ORAL-3lVfxrqM0i_6TpJv8m9CLWn1C_vdZ2U93heyS3bIHllpt_6thhYyKpQ3jc--ITbOZB-Mx2kIejQfYBUMq9MzvwqkOk3vzKlR9V0zyClzqmqUZEwHbpVU3-TyiipLgadniIJNaI0NTu8HsQ3gcrKG9OsMxHZHTlPkXvtCHXNprQtd3thlEJ5JGoY4p6BFNYR0PQ41iMIeAj2dbGgQittSqC4lAa6SIQqXVQJodwm07EXQqqi75zEZdtiJ7Sdjjuhvw1xnNe3RTPf8tzdSFz2GX3-wWTEX4STOh7OCGrGE4RImfEW-ffQU9OglCanz01wYwHZxF80IunYDo151uapY8SLtp3aFJ_UYouYNgXmp2M3lLaP1eU-NQ_z4RudBM80YD20b58RnfDlZWc34LfE-0BHSdNTVavL3sMlcBXPicTzdBlEiPlRGS2FCjSMVy5gG8g-_pWuMEa1ewVtez7u1OcDkvQ99FzS0N2Hvb-MLnDL7Ri7Ut5ywQbLxkLXBm2lgUeBJEiFLy-JlA6i94_rowVWrqJZ0dbAphQSKTkS4LtUrSlJo5AEsst0fWwKJEPB6mpsVVf9SZ9zRktd6PontZWxwvTB7bCoe8EtVHQ877OoHvWw3LQ9vzJUHu3W1jlTqnyxqb_Lf3NF-0ivVYDrdf0joa-vyJZJv9N4TLzzGCRti3WhC1an-4OXkiPxE-9GC3D_6p1AnjBdT_rcxeaIs_ebmLhL5_0uHdpUjphZCFI_C2N8-ewVoSRwGRs4vX107YQj0RtxDO2Dv4FG01Gi6i3Wm0I5yq_9a-I02MMnpIjvCk1UuiKKDTo9TGKsNHUxsHupQv_dHNUxTX-XL906X3jY566H40gLwql7fS66FIkBS0189jYgFMvgOd4iDFbl7RjJLVZ4MnoryqbkyppV-aokuMDMN-oRauYV7QtLbP2JJSLSV1zTV1zTV4zHi9_SV7xlrbhhLezxrUgdQih7p4XEt-870JxL00Tvb_1ZR7rpwDzoDLRrrTcP7IH2i9bDpwPKOkriYSA3FswDhhsgTWbrI6ePpa7iBBIPB16vS5EaBMTDgUa0Xv3SgN0EgWS1m4D_qAne8k1e4amHuo53pxlar36J7IcNG7T_1Nll91Q9jIaoWp4UZb_jqjZABCl1hw5uiHrBHWo97fPF6fDboQYeA4_2ijLgrq3q7z73mItbOupZc9j6evr5j1__uGzVk7GYPKiLInJDFpO-PdBOf_-9df77xennQ9R8eXp10br-cvFZA9cDNQM9Bk0F9bMHU8dTCfY_"
+      },
+      "priorReview": {
+        "title": "Hexenschuss",
+        "url": "/playload/app/#v1.fVj9UuM4Ev9_nyJ4D5cUt40kfyTEkXNAgNnaZZkauJmbDT7Gdhziuny4sAlxEV7iHuYe6J7kqmUnYdi5-yNIbkmtVqv792txdNT6a5mVs7T1IV2niyKZPhXFT7O0bJWSQYF_5mPJYHkrGYxjlCWSwTSTburALJM2xHNpQ76WroC8klwIyFaSQfwkGUS4Ih_iJyoopvhnLRlcyauonMIneWU9Rovxcg438soqsgWcySsrWRZwIq-sKC6gKO_lyLKsk8fHqCKC0dCaRzkh95BRGYw-Edo-9gAb7jiQHdqG5YYUimkhRyGki7qJ62aimosTqbWOpBydhFLe3bXuFkej61D-LEfX4d3d3WIjZX_09zCQcnO3uLu7Hy1D9Tu6W7Rad3f395_v749aLQ1uuNRueZdd25-PW_xhnFyLBw1uxE7KeYunybWIJuNEgxt7PyBa_GGS4oo4Uh0N_pALGXz7y8vi9ZuVR-ObMnosiQeMwqWcy-AFbyWS327_8jIP-EBw1uO2-_r5m5_PooowmPftwXwQGVq3xa-d9CE9TeOHNH1Iz7CdRJPobBJNsB1Oosl4Mp6cjCdjbE_Hk3H6kJ7HD2kyGafJtR2fDWNKtZ6m9eZ9Z1Cb7ajzJOnD2fmlcyou-cnZxYlz2b32Eq23m8JaDp7LjqNuqtHaOA7zgOk6WhgZ2nGLX4s0PU-__12mk8nFZP87mYzHw_H-dzHGeTiG33F80VhIX-GjJGuooICENo56kmujWG8YrGRVd57lkz9ZPhIcnbaWk1ZBp1JqdwttQFaG7OIE2iPTA6m1NF1_7h93dL3IH8kzrGAKCYVnQ3bpK9xKUkCltvpIXGEW1ixdPJTTttOYANGNXMlgmskrax6tyTSDIjHkisJ5bec0h7yE6BGSJawqWGFGxEvJtsbPZPRoFfksKwnaR_10UVj5UzElox8uh3gJsxEL94bM9l0GLKSvcFFvHcEzFDmsIJlCssQNtz7JJPOz_rOfGQZN47f7RQbJTPJscnokaHu_GtWe1moXkv9Z16LWNdnpMsgi4APyiVDTcmnb9nqMQvVOKhyUcmX0rzJ_ozXGW0vjgua6Ht0QzijslccjFkI84iF4IfXrhH-FD5KgXdmEHIxjXZ-PpeS6fpAPdT1b9SXT9fi2LxmdZaaJkLUFLFeBlc3gV8IonJJ8DXkFLgUVzgJubPoKxRfM2J15Y8n9cWAu_LEpBT0nrjDGbeG0ycLkFMwuCOCCgdZfBhq4wK2OC-M2txxU1RiqglOSogwChx6KNuf-9z51lE_PCXeMrC2EMW0U2wy0u7vPR6hZgOWizjO5lsE5WYPJBQgHuoyBNpJfZHi3aOHklgYOWMfUnzwtkjJbLlpllvyT0JfSMPxiGrABKaamiZCNAOuawnI3jPYQwv1kVpD4NnC8QafHqK8uaCkxUifZYkxSGaSjbkghiu9lvBxcWUmazUidERjuIxEeidSmbd6lPQZRIve3szt0JZlf9XnXrwyD5k8l4TZUoG00iJe6XvWj-H5g9wT1Rxy0D79oYIOAP8g0o9ABB7Sbs-tP5xp44MIfpEhQegzjeKANT7We9lHDvttzgDPQTjTrMc3TqCQztZwL0E6vr07VZdmgtXfj8ZyC1_DQCjJ4pDLIDu3NRlnowAoeR5nBQ9WIkNLdeQoFPOU9fSHFiIeGLEYipIHkjqPrSmRiH4oRC2XNbdT_SPATcBQ0SwNOXzGg52P68pE4ThNVGjg41W2iLGi-nS5w3sXTQYf6t0R7Q_Qa2B541C917un6LdE-_u3mQ-s___q3BsceTs8mJC4XOXHoZqM6LqXzseRYCsTlgnCq682EAe-pgqFIZJ1H8a3Mh1IVDrNM_rBKOGb_l6cvCaeAadskXU0xLnJtkj4g61D_MS2fHhfKHxgRUUJVDj1LwyjKI5uxDfOf-66uF-WhzVjgMF0nz4d2nysRF6rzhQgKz4e2ij8Ue0r8gVB4llLg1ZSHgu2EOMVpVnJKqV-UQZexeq3DpBRMrTmQnOOOxRkRXVx2IHlqq--Op5ZJyV3b1fVLIppPjzNdR_QAUzggUhuw1Lo4gQ5CeXP5-TBg9MU08-GA5MNDF23ZopSgiGCSd3eOuxGU9mbZgMTzhpLiOdgUr4B3Gfxv99IemY-lXZd_l8Sh9FVVIUN1-w6FuO65KlTQ-dkKiT5bmaYfxTIa6no8HESxwXsMBejLWNUCCnd1ncRzRN5b6XQV4rrwK976Hmap3wQYzn2S3KU-asV-c5QncHDWk9L6ZJoKilZrZZhNTWwEhVXVRKwSMAorGQ8HvCcsz1-tdX1V6TpZrdvS6rAOrKq6Q_183ezThStrni3IsQf52lit2ytK_bxqRrnTDHPbgbwyVpUaV3GJTlDWlRh39OWdv50WT669B42-gXqT-1lfKKwvpluKU9drepC1ueWB6VldxPzNkVaDTTZwep2Qvr6msyJtZRMyHwdc1w1jeRs4LrrsfSrTFyzu_UvCdomE-Yg7TrJZmT6SQgYvCD41UPlbzLLDna2pIuVFQbMJSUcixHOeKMAy0xELaT8dHYeGqIUchVwJOQsNh9a7tnChaUI64jyUAlgDeaajQE81DgKgG24NbeFAYHZ1HSfuOn3Ouq9NMGLo0ZfyUCXqdz630efptRNrNW-lX6XpQPkg2Z-PtT9Tvn57IkfX0-Y8LOznVf1pqM8g_arrJP0q9yLUnlK_fNB1Uj7gcSW3bIPklZl-7dtiYCGLQvnQuOAjbudA-tV0kHmg84ZEKplXJmd-Fcj0q1-Z0qNqumeQUudU1aFIkQ7dqqm_K6PUxaDTU7yg5EpPo_81vg1UQt6aZp2EyOXIcYrKay-oKzalbbnby6IUykNR4w_3DOSsjoCmx7HwoKp-bSoDFVVpU-nEpTTQPSJUiaLqBeUymY68EFIVeGckLtsWO6btdNQJ_W1w47y-LZr5lufuRuKyz-jLdxYj6iKQ1LFwSlAzHiBEjoy3eL8HnZr4pDQ5fWniGqvEJvSiG5KO7NCYZW2eOkY8b9upTfGhLLZIaVNgfjpyQ2n7WELuk_IgH77RSfBMA9ZD-_bJ0Ak3m53dgN8SrwMdJU1PlaYuew-UwFUsJxLP02UQIdZHZbQQKsgwVrmAbRD7-Fe6wrip3Sto2_Nxpz4fkKTvoeeShuQu9v4yusAtt2PsqnXLBRssG8tZG7SlBh4FkiABbjaJlA7i9vfrozkWqKJZ0dbAphQSKTny3rs0ralIo5AEsst0fWQK5EDB6uJrWZf2SZ9zRktd6PpHtZWxxNTB7bCG2-AWKjpe9hlUj3pYXNqeXxkqh3Zr63yps8Wm_i73zSXtI61WAa7X9Q-Evr4iSyb9TuMx8c5jkLQt1oUuWJ3ud15KDsUPvBvNwf2zdwJ5zHQ96XMXm0PO3m9i4i6d97t0aF0pYmIhPv0oivF1s9eDksBlbOD09sG1E96I3g2vI_uHoGg6SlS9BXlTKDf5tXdNnAZ74IQUgV1BiSJInQ86PUxgrCt1MbB7qQL93QzVMU1_lyvdcLNRWMBdD4eRDIRT9_pcIBtgVYkv2gZ9Yhm8xFtowfK7HSOhxQpIbt6Ksgm5sqZVviwJLjDztXphmnlF-8ISW09iRYiUFdeUFdeUFePJ4reUFW-ZKm6YCnt8K1JHEGjupJD4rn0HljNpmuj3rSfrCDcdmAWdgXat9WaBPdB-1nr4REBZR0k8DODGgFnAXqmPzJitDp0-1rWKCEg8HHi9LkU-EBAPBxrRevWLAnYTBPLTbgL-5yV4SzF5hWce4h2KgWZovfrFsR82bND-USeV3cPiF-1QRTspyn7HVW2AuFHqDh3cEvVMO9B62qfzk-HXAw08Bh7tFWXAXVvV2n3uMRd3dNTr5aD15eTT77_8ftmqJ2PxWNdA5JbMx317oJ389lvr7Lfzk08HqPjy5Oq8df35_JMGrgdqBroLmoLpB8-ijqeS6qf_Ag",
+        "image": "assets/images/arcade/hexenschuss.png",
+        "author": "H/de.",
+        "authorUrl": "https://x.com/hide_loopcube",
+        "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
+        "publishedAt": "2026-10-27T15:05:27.000Z",
+        "originalUrl": "/playload/app/#v1.fVhtU-M4Ev7OrwjewyXFbSPJLwlx5BwQhtnaZZmacDM3G3yM7TjEdXlxYRPiAv77VctOwrCz9yFIbkmtVqv7eVocH7f-WWblPG19TDfpskhmj0VxME_LVikZFPhnMZEMVjeSwSRGWSIZzDLppg7MM2lDvJA25BvpCsgryYWAbC0ZxI-SQYQr8iF-ooJihn82ksGVvIrKGXyWV9ZDtJysFjCSV1aRLeFcXlnJqoBTeWVFcQFFeSfHlmWdPjxEFRGMhtYiygm5g4zKYPyZ0PaJB9hwx4HsyDYsN6RQzAo5DiFd1k1cN1PVHHw4lVrrWMrxaSjl7W3rdnk8vg7lL3J8Hd7e3i5fpOyP_x0GUr7cLm9v78arUP2Ob5et1u3t3d2Xu7vjVkuDgxGX2g3vsmv7y0mL30-Sa3GvwUjspJy3eJpci2g6STQY2fsB0eL30xRXxJHqaHDwp1zK4Ps_npev3608mozK6KEkHjAKB5dyIYNnvJlIfr_5x_Mi4APBWY_b7uuX734-jyrCYNG3B4tBZGjdFr920vv0LI3v0_Q-Pcd2Gk2j82k0xXY4jaaT6WR6OplOsD2bTCfpfXoR36fJdJIm13Z8Powp1Xqa1lv0nUFtuKNOlKT35xeXzpm45KfnH06dy-61l2i93RTWcvBkdhx1U43WxnFYBEzX0cLI0E5a_Fqk6UX64-8ynU4_TPe_0-lkMpzsfx8mOA_H8DuOPzQW0lc4-CTJBiooIKGNpx4l2RjFhr4wWEtSNd0n-ehPVw8EZ8xaq2mroDMptdulNiBrQ3ZxAu2R2aHUWpquP_VPOrpe5A_kCdYwg4TCkyG7uOONJAVUar9PxBVmYc3T5X05azuNHRCN5FoGs0xeWYtoQ2YZFIkh1xQOLmprZznkJUQPkKxgXcEakyNeSbY9wlxGD1aRz7OSoIXUT5eFlT8WMzL-6XKIVzAfs3BvyXzfZcBCtPtDvXcET1DksIZkBskKd9y6JZPMz_pPfmYYNI3fbhgZJDPJk8npsaDt_Wql96zWu5T8r8qWtbLpTplBlgEfkM-EmpZL27bXYxSqd1LhoJTXZv8m8zdqY7y6NC5oruvRiHBGYa89HrMQ4jEPwQupX6f_Kxx8lAQty6bkcBLr-mIiJdf1w3yo69m6L5muxzd9yeg8M01EsC1-uQq7bAa_EUbhjOQbyCtwKajIFjCy0b7iK6bvzsCJ5P4kMJf-xJSCXhBXGJO2cNpkaXIKZhcEcMFA668CDVzgVseFSZtbjtLVmKqCVJKiDAKHHok25_6PfnWUXy8Id4ysLYQxazTbDLTb2y_HqFqA5Sql53IjgwuyAZMLEA50GQNtLL_K8HbZwtktDRywTqh_MH1cJmW2WrbKLPkvoc8HpWH4xSxgA1LMTBNhHG-p7ZrCcukLoz0Edj-ZFyS-CRxv0Okx6isqiVcSo3aaLScklUE67oYUovhOxqvBlZWk2ZzU6YGhPxbhsUht2uZd2mMQJXJ_S_7B9uyVZH7V512_MgyaP5aE21CB9qJBvNL1qh_FdwO7J6h_MOagffxVAxsE_ElmGYUOOKCNzq8_X2jggQt_kiJB6QlM4oE2PNN62icN-27PAc5AO9WshzRPo5LM1XIuQDu7vjpTt2aD1t6NxwsKXkNQa8jggcogO7JfXpSJDqzhYZwZPFSNCCndn6hQSFTe0WdSjHloyGIsQhpI7ji6rkQm9qEYs1DWrEf9TwQ_AUdBszTg9PUAg3sxoc-fiOM0AaaBg3PdJuCC5tvpAuddPB90qH9DtDc1gAa2Bx71S517un5DtE__Gn1sjT5e32hw4uH8bEricpkTh768qI5L6WIiOZYJcbkknOp6M2HAe6qYKBJZJ1V8I_OhVEXFPJM_rSBO2P_l8EvCKWAONxlYU4-LLJyk98hG1H9Iy8eHZe0RDIsooc8qIJ8kMYyiPLYZoy_Mf-q7ul6URzZjgcN0nTwd2X2uRFyozlciKDwd2SoQUewp8UdC4UlKgRdUHgm2E-IUp1nJKaV-UQZdxuq1DpNSMLXmUHKOOxbnRHRx2aHkqa2-Ox5GR1FKyV3b1fVLIlCNlNzjTNcRTsAUDojUBqzFPpxCBwF-GwP5MGD02TTz4YDkwyMXrdkCl6AIapJ3d-4bCUp782xA4kVDVfECbIoXwbsM_t7JtEcWE2nXBeIlcSh9VS6OhioIHApx3XOpj2bhHWRrLASytWn6USyjoa7Hw0EUG7zHUID-jFWtoMBY10m8QDi-kU5XwbALv-Ht77GX-k2g4dxHyV3qo1bsN4d5BAdnPSqtj6bpo43rjbLMpiY2gsK6aiJXCRiFtYyHA94TluevN7q-rnSdrDdtaXVYB9ZV3aF-vmn26cKVtciW5MSDfGOsN-01pX5eNaPcaYa57UBeGetKjavwRCco60qMPfr8zuNOiyfX3r1G36C_yf2sLxT8F7Mt8akLNj3I2tzywPSsLtLAy7FW4042cHqdkL6-pvMibWVTspgEXNcNY3UTOC667H1K02d8APiXhO0TChMTt5xm8zJ9IIUMnhGHaszyt_BlhztjU8XVy4JmU5KORYgHPVXYZaZjFtJ-Oj4JDVELOQq5EnIWGg6tt23hQtOEdMx5KAWwBv1MR-GfahzEQjfcWtrCgcDs6jpO3HX6nHVft-GIwUefyyOVrj943Uavp9dOrFEVLuk3aTpQ3kv213PtD5Vv3h7J0fW0ORAL-3lVfxrqM0i_6TpJv8m9CLWn1C_vdZ2U93heyS3bIHllpt_6thhYyKpQ3jc--ITbOZB-Mx2kIejQfYBUMq9MzvwqkOk3vzKlR9V0zyClzqmqUZEwHbpVU3-TyiipLgadniIJNaI0NTu8HsQ3gcrKG9OsMxHZHTlPkXvtCHXNprQtd3thlEJ5JGoY4p6BFNYR0PQ41iMIeAj2dbGgQittSqC4lAa6SIQqXVQJodwm07EXQqqi75zEZdtiJ7Sdjjuhvw1xnNe3RTPf8tzdSFz2GX3-wWTEX4STOh7OCGrGE4RImfEW-ffQU9OglCanz01wYwHZxF80IunYDo151uapY8SLtp3aFJ_UYouYNgXmp2M3lLaP1eU-NQ_z4RudBM80YD20b58RnfDlZWc34LfE-0BHSdNTVavL3sMlcBXPicTzdBlEiPlRGS2FCjSMVy5gG8g-_pWuMEa1ewVtez7u1OcDkvQ99FzS0N2Hvb-MLnDL7Ri7Ut5ywQbLxkLXBm2lgUeBJEiFLy-JlA6i94_rowVWrqJZ0dbAphQSKTkS4LtUrSlJo5AEsst0fWwKJEPB6mpsVVf9SZ9zRktd6PontZWxwvTB7bCoe8EtVHQ877OoHvWw3LQ9vzJUHu3W1jlTqnyxqb_Lf3NF-0ivVYDrdf0joa-vyJZJv9N4TLzzGCRti3WhC1an-4OXkiPxE-9GC3D_6p1AnjBdT_rcxeaIs_ebmLhL5_0uHdpUjphZCFI_C2N8-ewVoSRwGRs4vX107YQj0RtxDO2Dv4FG01Gi6i3Wm0I5yq_9a-I02MMnpIjvCk1UuiKKDTo9TGKsNHUxsHupQv_dHNUxTX-XL906X3jY566H40gLwql7fS66FIkBS0189jYgFMvgOd4iDFbl7RjJLVZ4MnoryqbkyppV-aokuMDMN-oRauYV7QtLbP2JJSLSV1zTV1zTV4zHi9_SV7xlrbhhLezxrUgdQih7p4XEt-870JxL00Tvb_1ZR7rpwDzoDLRrrTcP7IH2i9bDpwPKOkriYSA3FswDhhsgTWbrI6ePpa7iBBIPB16vS5EaBMTDgUa0Xv3SgN0EgWS1m4D_qAne8k1e4amHuo53pxlar36J7IcNG7T_1Nll91Q9jIaoWp4UZb_jqjZABCl1hw5uiHrBHWo97fPF6fDboQYeA4_2ijLgrq3q7z73mItbOupZc9j6evr5j1__uGzVk7GYPKiLInJDFpO-PdBOf_-9df77xennQ9R8eXp10br-cvFZA9cDNQM9Bk0F9bMHU8dTCfY_",
+        "reason": "ボス出現後のspr超過を再現（Down+Aの無敵モードを使ったエンジン検査3600更新中170回）。実ブラウザの通常操作でもボス到達を確認したが、攻撃中の可読性・攻略可能性の再評価は未完了。全てを描画不具合と断定せず保留継続。",
+        "overflowAudit": {
+          "title": "Hexenschuss",
+          "frames": 3600,
+          "overflow": 0,
+          "postSetup": 0,
+          "longest": 0,
+          "maxSprites": 97,
+          "windows": [],
+          "spriteFrames": 0,
+          "pcgFrames": 0
+        }
+      },
+      "ordering": "2026-10-30の依頼投稿は10月27日公開版と同一payload。ユーザー確認に従い、採用版自体の公開日で並べる。",
+      "archivedImage": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/arcade-additions-2026-10-30/star-viper-previous.png"
     }
   ]
 }
