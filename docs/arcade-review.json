@@ -4514,9 +4514,10 @@
         "image": "assets/images/arcade/hexenschuss.png",
         "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
         "action": "retaken",
-        "checkedAt": "2026-10-30T02:46:57.451Z",
-        "scene": "通常入力で到達した第一段階ボス。大型機体、複数敵弾、レーザー、自機と残機・ボムを一緒に見せる。序盤編隊、ボスの縦レーザー、第二段階との比較から選択。",
-        "method": "掲載用操作表記版を実ブラウザで通常プレイ。Screenshot、CRTオン、撮影時のみエンジン一時停止。"
+        "checkedAt": "2026-10-30T02:58:15.088Z",
+        "scene": "第一段階ボス戦。自機をプレイ領域の中央下に置き、正面のボス、レーザー、扇状の敵弾が見える瞬間。左端に自機が寄った従来画像から差し替え。",
+        "method": "掲載中の操作表記版を実ブラウザで通常プレイ。Bレーザーでボスまで進行、復帰後の自機が明瞭に表示されたフレームを5候補から選択。無敵モード・強制配置・画像加工なし。CRTオンのScreenshot機能を使用し撮影時のみエンジン一時停止。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/hexenschuss-centered"
       },
       {
         "title": "CAT & FLOWER",
@@ -4785,6 +4786,17 @@
       },
       "ordering": "2026-10-30の依頼投稿は10月27日公開版と同一payload。ユーザー確認に従い、採用版自体の公開日で並べる。",
       "archivedImage": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/arcade-additions-2026-10-30/star-viper-previous.png"
+    }
+  ],
+  "screenshotHistory": [
+    {
+      "title": "Hexenschuss",
+      "image": "assets/images/arcade/hexenschuss.png",
+      "sourceUrl": "https://x.com/hide_loopcube/status/2115097553024979399",
+      "action": "retaken",
+      "checkedAt": "2026-10-30T02:46:57.451Z",
+      "scene": "通常入力で到達した第一段階ボス。大型機体、複数敵弾、レーザー、自機と残機・ボムを一緒に見せる。序盤編隊、ボスの縦レーザー、第二段階との比較から選択。",
+      "method": "掲載用操作表記版を実ブラウザで通常プレイ。Screenshot、CRTオン、撮影時のみエンジン一時停止。"
     }
   ]
 }
