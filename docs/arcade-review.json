@@ -1,18 +1,18 @@
 {
-  "checkedAt": "2026-10-31T08:08:36.197Z",
+  "checkedAt": "2026-10-31T12:32:12.215Z",
   "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。",
   "counts": {
-    "catalog": 29,
-    "adapted": 16,
+    "catalog": 30,
+    "adapted": 17,
     "normalSearchObserved": 140,
-    "uniqueAuditedPosts": 150,
+    "uniqueAuditedPosts": 155,
     "byStatus": {
       "重複／旧版": 24,
       "保留": 28,
-      "採用": 29,
-      "対象外": 55,
+      "採用": 30,
+      "対象外": 58,
       "差し替え": 1,
-      "参照先未解決": 2,
+      "参照先未解決": 3,
       "対象期間外": 10,
       "差し替え依頼": 1
     }
@@ -1923,6 +1923,103 @@
     "全掲載画像を縮小一覧で比較した。全作品を今回新たにクリアまで操作したという意味ではない。"
   ],
   "games": [
+    {
+      "title": "ローグライ塔",
+      "url": "/playload/app/#v1.rVnpbxvHFf_Ov2I9ghYz3iE9s0tKFJdDVU7YqI5vyVcW-2F3OSuuxSvkKiJBCjDlIGlQu0dSp20QwAmaBk0K50BaNICd_DFm7CSfkj-hmFkeS4qylDRDaY_fvPfmvTfvWC5PnVKsMxftwe0Hg9uPBvufDW5_NNj_4Mn7f06cOqW8lFMGt98d3H7vu38--ParTwR0PadEN4P-Xwb9-9H0YP_Np2_d_eardwXFEOp_-vTefwb9T76_9c53798Z7O9__9eHg_1bg1v7gujb_r-e3v980P_0u9c_fvLb1wb7-0_ufvH0wcMfHvXF9NM3bj2903_y6Oun9z4b9O88-eCdQf_VQf_hoP_RiPPON4--HPS_GOz_TvAIJqt43r5c39rhlWCbJ4NWWdms7_Lm0JCLFcfjiqO49ao7NOS5ei1s1itKWOZj-HS96rYUt1L3thVe49WOUq2_wqu8FqbE9KYgrTitUNkOKpWW0qnvKGG9fkLMnas3IzkthSmVem2LN4e0Tae2xVOJRCJR4aFykVmAELJMsoSTFUp0f5kADAjhhBKfGIR6vmdwgIGu61maJlmSJpxkDR9gkPZImghIfNI-l4xSGiWEZMVhCHGJZ-VxRJUlS0I-WZ5AhBNf_GdjECEkTaYYx5IkRNM0Q4wxrYCyxCGevKGzjEQX601BabIUo9IJmZI1Xj0OTQ3_AORJqpWYBhGjQWjWyI4RAmx8hYG10889X_z1C-u_OfPi2XPnL1y8dHljE-BrLGAFi2IdL-EMNmwrKBR0G-8yip9nFsEUE5wUB4qJjS8xC_x4_85dgMGP9z9-S57u_h5g8Phv_wA2vsGs9FAO3mAWkPN_-joi-0N0elWe_vi6PN379w9fRvgHb0f4_YjnYXQXLfTha8DGF4Q2hpCNl3Fa6ivulmz8ktSTyj8dL4sDNeQfxctYJzZejywRVoqjgVMZcZHK4IyN10aTdAhLqpQ04hyzAF6YM_BCaiM1MwQ4NdamwIUpytFIpaLjHPajQMlYPA5lbBRnwOnVi0exz6wuxvqzKOcMgA91aUzJYxgV82EMjPNPgQfYx8ofi3IkdgKuPUOlWYsOUA7HxtFmzoI_yaXjXZqodyRYnIDH12rKUXPAhQm4Ft1uTIEyMBdiWvykeJ5k0vg8sWj9WLb_9Cid2CbA9Wm9ZrJsGJKzax3b0mIcPESl4mHsCzFwkloLciemLRol04EScbx42JiAP9ulB8VuzAMPc9SsAnPB2MQw9sRnGlybI_NAgTxU5tzVD1H-mZEzf6GjXbowL85Ht-txsYdodRg4FDxddccFNwaOvTUDptZk0s6AEzHjIE9NAvJn6BkPnKH3psj-v8Q_qMBMlM6k35HsC8cD43EVb9nHZB-N4rNViuSuP0P5tV-u4xfjUmfEFmNaxTYwqvJ4_PC0Po7LMTgplHFwPH4eOE9mtPPT4Fw9D4Lznf8LuHSe2I154FFrTVEer5oNk3hapVgLntWzeFDm4UX7OA-r48L9rCD_RVx6CFicA45b9MKR7McEo_0cVvIDiXMMmfNVmqf88WTOc6mNE6cZdLCLWKFqubbl2IyBBdDruW3GHFV1O4y5OHGGQcQKrUYTtk9mk1nckUfwuP-G_H5oIJwoNRkMcAuxQle8UGiwq1Zgm41Uhde2wnKv10g1dlplmEqlWshs8nCnWVMaqVajEngcnnPCcqrp1Er1KkQnx0wEU2QRey_h15swYMQM8joxA01DDW_LumIFtp1qOCG7aAU2nkBevcKsazBAmNgJAYMrICIENEu9JUd86TY8w1v2gBkRXB0RjL6T09HLhiHBtWkCw1taSutxgutHSbgxSzB6ewHMxERLqbv4Lh9TTGL6BLs2wowJdn0O3Y1pOn-n5oVBvaZUX4EcyV0KGbeIjR3GrbSNXcatjI1LjFtLNvZw2Qx8GOaNXshYGnkszOurJFfCZXlVyhF8Gjqah12tjFZLLFnKQUdj4p6VkckrLa4IAYWVXk9usOO2YDvpoHxaVcdAJ-lKIFw0ChQ5GoPtgqOqJ4Roil2EkrCdHwJJCQj5sFNwIwy7GhVEnfwYSFIUW_4Ey6BuyNiyqsISm460dI8g02OO9rxVss0yc8WFZtjmaejhMloVbL0eLDFY0mC4aPR6YT6zSnMGQotplIOOsJaV0R4fRXIaG9jBLi6hvYnDz8Ia6ooYvsmIeTNPl82bmoYOBHXXY1Xrpi3yxpNpqKqNnRAG-CYGj99-D2CK5MQGUFXYarMAtzrsZoStCywUWNhhN_GY78f7H78rEjSiWgOquqWqMBCEQZzwktUKbHxDHIe0RaCqNVWFLzO_QMlqqQl1bIla1mw6HZgmKLXNOy2IbLRIiUZzPi5GKW69jOGK5qOT69bLdo9gmBY3a9HNEharURuhvUQxVXUakLOCUEJGoIw_oACEzMlsl1uGnUyKYOQWtQtEVQWSp0jOsJcsEcS2mI-FmZCHtFiYCdkor6NyI8m4pYvFqJ1kTriNyy22hEuc6QQLiRqjBDcqTgfqGGzSLDmXvXKdZgm5Ri4Y56kHkOTNU1Xd1rQo0mRO7Y30mzZoI1IQX4jOaC8eG-ch6raYn6d01U_SnL8Y-ZrEfL0ycXVuxWwF4w2h2Ireh-nYkB8iPjbKAWJQ3dDFe1Vg-Ulqm1V2zmrZMkpDCDBA5hajZpFZtulVWpAg8yykyGyzVtvssFYnpuFliLo-o2a5waplliGmE24zSkzuM8MMPLbNdkO2w8otVuKsGrKGy7bqzC21mVvqMKfDiOm2mdthSWo6bUbNq8yybCz_bFP6mWBw5boxcjDQAFc9Nfrn6pbKQarJG9wJ4crKCkLmeRj3YIk7JYi65QYj5lad0bHIC5ktECcMA28bou6uqsJdRvBliJApdkq8PgU-0PzoNoMJvmQRW-NDICsBamtOuD3k0CVk2Fq5oYFTQKuWNaAoigJGEukyBuJ1vAK0EQ-RYBDyqgK0wENmIvDhVh11z8DRwhkMmry1UwnBCFnGwK_U600lpt7KUPREdgZTMhQ9lC3QJfGqFTx-879Kk4fNzki3tHjxCgb9Dwf9Lwf9vwNkHqhEIQsW01j0e0qyWrion8zilSUNhoUCRSezWPRZLDosMt2wBjNIVS_DUVvfS-yGmmbuiETYSSbNEhdX8AxEuMSTycju3bCwjLqBD3dEGhVTrXqVi2SfZHjaZqwtLjI2Yx2EZJLusBUiEr3cKhDULbeSydGiuyEj0pASI2YpnzZLmoYCHwr95JtpinXbKtkIdR0my73LhsW-anU017bammOfiMoubGvMwR2NuUiErGM6Hebu7SWEsDRS1RMNV1W5L-1y26yN3Q7rYDdkNEtww2UUcz-ZjGoIxWBTT5OrVL-wdJ56L8ji1nAZo1GdcAW3DDhsJKEbnoJuWFgiqwbJUR31CFrUkZkYuXnICEV6OW0cZVjkUk2rhgUDdavCE4EPJamw1m1rbqltusztaG6pY05WFaXWjD_4rY7SluSEYY4wzEV7eyOFk0k3FBsGeZu5bcw7zO3gUXbjMbPwgY43WZpEqgluHXUrUfutBjXIfY1imCbJTXRKF114dusmMckqUXd0GG_LRn0yMF3GO8NefTIQxsaNQG6TO9vSTNGKNwt0FTx-cA_kgCJaoRk92oonW1WNioc5bjZR3DmjuBPbPIxI2XwYwduahtBeMrnZ6wm7CNqTeayqbcaCtpQbdFC3FeTpKvcnFq9g7ms6yrWCvL7qhNsay4hrYxVWy7LjlBvihHKyzppT_Wc5Fj3mlvCKp2nSwKCNg2gfpRptxsJIh7CDur7oTr7GuJ9fEUVznKBnIZJZ1BBZlFCU4ZO9eK7H4Ip80JhFrwKcOYhekw6dRa_Ppb0B8BIyE3uyX0Z-3xM_km6Wndq2_NXSrzcVYXdQ2xK_Xv7qWlApvei4da_sJP4H",
+      "image": "assets/images/arcade/roguelike-ish-tower.png",
+      "author": "野生の南瓜",
+      "authorUrl": "https://x.com/WildKabocha",
+      "sourceUrl": "https://x.com/WildKabocha/status/2116496378063126565",
+      "publishedAt": "2026-10-31T11:43:53.788Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.rVlbbxvHFX7nr1iPoMWMd0jP7JISxeVQlRM2quO75FsW-7C7nBVX4i3kKiJBCjDlIGlQu7fUaRsEcIKmQZPCTYq0QAA7-TFm7CRPyU8oZpaXJUVZSpqhtJdvzjlzzplzWS7PnFGsc5ftwZ2HgzuPBwefDe58PDj48OkHf0qcOaO8klMGd94b3Hn_2388_ObLfwnoZk6Jbgb9Pw_6D6LpwcEfn7197-sv3xMUQ6j_6bP7_x30__Xd7Xe__eDu4ODgu788GhzcHtw-EETf9P_57MG_B_1Pv33zk6e_fmNwcPD03ufPHj76_nFfTD976_azu_2nj796dv-zQf_u0w_fHfRfH_QfDfofjzjvfv34i0H_88HBbwSPYLKKF-2r9a1dXgl2eDJolZXN-h5vDg25XHE8rjiKW6-6Q0NeqNfCZr2ihGU-hs_Wq25LcSt1b0fhNV7tKNX6a7zKa2FKTG8K0orTCpWdoFJpKZ36rhLW66fE3IV6M5LTUphSqde2eHNI23RqWzyVSCQSFR4ql5kFCCHLJEs4WaFE95cJwIAQTijxiUGo53sGBxjoup6laZIlacJJ1vABBmmPpImAxCftc8kopVFCSFYchhCXeFYeR1RZsiTkk-UJRDjxxX82BhFC0mSKcSxJQjRNM8QY0wooSxziyRs6y0h0sd4UlCZLMSqdkClZ49Xj0NTwD0GepFqJaRAxGoRmjewYIcDG1xhYO_vCi8VfvrT-q3Mvn79w8dLlK1c3NgG-wQJWsCjW8RLOYMO2gkJBt_Eeo_hFZhFMMcFJcaCY2PgKs8APD-7eAxj88OCTt-Xp3m8BBk_--ndg41vMSg_l4A1mATn_h68ist9Fp9fl6fdvytP9_3z_RYR_-E6EP4h4HkV30UIfvQFsfEloYwjZeBmnpb7ibsnGr0g9qfzT8bI4UEP-UbyMdWLj9cgSYaU4GjiVERepDM7YeG00SYewpEpJIy4wC-CFOQMvpDZSM0OAU2NtClyYohyNVCo6zmE_DpSMxZNQxkZxBpxevXgc-8zqYqw_j3LOAPhIl8aUPIFRMR_GwDj_FHiIfaz8iShHYifg2nNUmrXoEOVwbBxv5iz4o1w63qWJeseCxQl4cq2mHDUHXJiAa9HtxhQoA3MhpsWPiudJJo3PE4vWT2T7j4_SiW0CXJ_WaybLhiE5u9aJLS3GwSNUKh7FvhADJ6m1IHdi2qJRMh0qESeLh40J-JNdeljsxjzwKEfNKjAXjE0MY098psG1OTIPFcgjZc5d_Qjlnxs58xc63qUL8-J8dLseF3uEVkeBQ8HTVXdccGPg2FszYGpNJu0MOBEzDvLUJCB_gp7xwBl6b4rs_0v8wwrMROlM-h3LvnAyMB5X8ZZ9QvbRKD5fpUju-nOUX_v5On4xLnVGbDGmVWwDoyqPxw9P6-O4HIOTQhkHx-OngfNkRjs_Dc7V8zA43_k_g0vnid2YBx631hTlyarZMImnVYq14Fk9i4dlHl20T_KwOi7czwvyn8WlR4DFOeC4RS8cy35CMNrPYSU_lDgnkDlfpXnKn0zmPJfaOHGWQQe7iBWqlmtbjs0YWAC9nttmzFFVt8OYixPnGESs0Go0Yft0NpnFHXkET_pvye-HBsKJUpPBALcQK3TFC4UGu24FttlIVXhtKyz3eo1UY7dVhqlUqoXMJg93mzWlkWo1KoHH4QUnLKeaTq1Ur0J0esxEMEUWsfcTfr0JA0bMIK8TM9A01PC2rGtWYNuphhOyy1Zg4wnk1SvMugEDhImdEDC4BiJCQLPUW3LEl27DM7xlD5gRwfURweg7OR29bBgS3JgmMLylpbQeJ7h5nIRbswSjtxfATEy0lLqL7_IxxSSmT7AbI8yYYDfn0N2apvN3a14Y1GtK9TXIkdylkHGL2Nhh3Erb2GXcyti4xLi1ZGMPl83Ah2He6IWMpZHHwry-SnIlXJZXpRzBZ6GjedjVymi1xJKlHHQ0Ju5ZGZm80uKKEFBY6fXkBjtuC7aTDsqnVXUMdJKuBMJFo0CRozHYLjiqekqIpthFKAnb-SGQlICQDzsFN8Kwq1FB1MmPgSRFseVPsQzqhowtqyosselIS_cIMj3maC9aJdssM1dcaIZtnoUeLqNVwdbrwRKDJQ2Gi0avF-YzqzRnILSYRjnoCGtZGe3zUSSnsYEd7OIS2p84_Dysoa6I4W1GzO08XTa3NQ0dCuqux6rWti3yxpNpqKqN3RAGeBuDJ--8DzBFcmIDqCpstVmAWx22HWHrAgsFFnbYNh7z_fDgk_dEgkZUa0BVt1QVBoIwiBNesVqBjW-J45C2CFS1pqrwVeYXKFktNaGOLVHLmk2nA9MEpXZ4pwWRjRYp0WjOx8Uoxa1XMVzRfHR63XrV7hEM0-JmLbpZwmI1aiO0nyimqk4DclYQSsgIlPEHFICQOZntcsuwk0kRjNyidoGoqkDyFMkZ9oolgtgW87EwE_KQFgszIRvldVRuJBm3dLEYtZPMCXdwucWWcIkznWAhUWOU4EbF6UAdg02aJRey127SLCE3yCXjIvUAkrx5qqo7mhZFmsyp_ZF-0wZtRAriS9EZ7cdj4yJE3Rbz85Su-kma8xcjX5OYr1cmrs6tmK1gvCEUW9H7MB0b8kPEx0Y5QAyqG7p4rwosP0lts8ouWC1bRmkIAQbI3GLULDLLNr1KCxJknocUmW3Wapsd1urENLwKUddn1Cw3WLXMMsR0wh1Gicl9ZpiBx3bYXsh2WbnFSpxVQ9Zw2VaduaU2c0sd5nQYMd02czssSU2nzah5nVmWjeWfbUo_Ewyu3TRGDgYa4KqnRv9c3VI5SDV5gzshXFlZQci8COMeLHGnBFG33GDE3KozOhZ5KbMF4oRh4O1A1N1TVbjHCL4KETLFTonXp8AHmh_dZjDBVyxia3wIZCVAbc0Jd4YcuoQMWys3NHAGaNWyBhRFUcBIIl3GQLyOV4A24iESDEJeVYAWeMhMBD7cqqPuOThaOINBk7d2KyEYIcsY-JV6vanE1FsZip7IzmBKhqKHsgW6JF61grbS5GGzM9IsLV67gkH_o0H_i0H_bwCZh-pQyILFNBbdnpKsFi7qp7N4ZUmDYaFA0eksFl0Wi_6KTDeswQxS1atw1NT3E3uhppm7Ig12k0mzxMUVPAcRLvFkMrJ6Lywso27gw12RRMVUq17lItUn-Z22GWuLi4zNWAchmaK7bIWINC-3CgR1y61kcrToXsiINKTEiFnKp82SpqHAh0I_-V6aYt22SjZCXYfJYu-yYamvWh3Nta225tinoqIL2xpzcEdjLhIB65hOh7n7-wkhLI1U9VTDVVXuS7vcNmtjt8M62A0ZzRLccBnF3E8mowpCMdjU0-Q61S8tXaTeS7K0NVzGaFQlXMEtww0bSeiGZ6AbFpbIqkFyVEc9ghZ1ZCZGbh4yQpFcThtH-RW5VNOqYcFA3arwROBDSSqsdduaW2qbLnM7mlvqmJNVRaE14499q6OkJTlhmCMMc9H-_kjhZNINxYZB3mZuG_MOczt4lNt4zCx8oONNliaRaoJbR91K1HyrQQ1yX6MYpklyE53RRQ-e3bpJTLJK1BsdxtuyTZ8OTJfxzrBTnw6EsXEjkNvkzo40UzTizQJdBU8e3gc5oIhGaEYPtuK5VlWj0mGOW00Ud84o7sQ2DyNSth5G8I6mIbSfTG72esIugvZlFqtqm7GgLeUGHdRtBXm6yv2JxSuY-5qOcq0gr6864Y7GMuLaWIXVsuw35YY4oZyssuZU91mORY-5JbziaZo0MGjjINpHqUabsTDSIeygri96k68x7udXRMkcJ-h5iGQWNUQWJRRl-FwvnuoxuCYfM2bR6wBnDqM3pENn0ZtzaW8BvITMxL7slpHf98VPpJtlp7Yjf7P0601F2B3UtsRvl7-4EVRKLztu3Ss7if8B",
+      "adapted": true,
+      "compressedBytes": 2946,
+      "selectionReason": "階層ごとに変わる地形・敵と成長要素に、設置ボムによる通行阻止・遠隔移動・自爆リスクを組み合わせ、経路と攻め方を考えさせる塔登り。オリジナルの魔術師キャラクターと結果画面までまとまっている。",
+      "curation": "通常操作で5階まで進行、敗北と再挑戦を確認して採用。無限の塔なので有限の全クリア判定はない。補助検査では19階/25階まで到達。",
+      "observations": [
+        "指定投稿、作者の補足返信、作者プロフィールの直近投稿を照合。この取得範囲では更新版リンクは見つからなかった。先行する20:35の投稿はPlayloadという文のみで、作品URLを確認できない。実体のある指定投稿の20:43公開を採用日時とする。",
+        "実ブラウザで原版の起動・画面を確認。掲載版は上下左右の単押し/長押し、壁衝突、接触戦闘と撃破、回復、攻撃力10→15、階段による1→5階進行とボム補充を確認。",
+        "3階でⒶ設置、向きを変えてⒷ入力による遠隔移動、壁際で停止する爆弾、壁で止まる火柱、退避後の生存を確認。ボムの敵通行阻止と残弾数に応じた爆風長はソースでも照合。",
+        "5階で接触戦闘による敗北→Ⓑで1階・HP50・初期ステータスへ戻ることを確認。別走行の1階では設置場所に留まり、爆風でHP0になることを実ブラウザで確認。自分も即死する仕様は作者の補足と一致。",
+        "画面のx retryのみⒷ retryへ置換。同じ座標、同じ7文字幅。操作判定・難度・ゲーム進行を変えていない。構文木比較でもラベル以外は一致。元2943bytes、掲載2946bytes、共有URL長も上限内。コメント内のZ/Xは実キーボード名なので保持。",
+        "通常プレイでPCG/sprノイズ、HUDの欠け、操作表示の重なりは観察されなかった。描画上限の計測は補助検査の条件に限る。"
+      ],
+      "validation": {
+        "checkedAt": "2026-10-31T12:32:12.215Z",
+        "method": "createEngine(glyphs)で掲載ソースを実行。LCG seeds=42,20261031。盤面を読み、敵隣接を避ける重み付き経路でアイテム→階段へ通常方向入力。敗北後はB入力で再挑戦。各45001フレーム。状態書き換え・無敵化なし。爆弾を使わない経路検査であるため、原版/掲載版の爆弾設置・B遠隔移動・自爆・再挑戦を別シナリオで追加検証。",
+        "runs": [
+          {
+            "seed": 42,
+            "frames": 45001,
+            "overflows": 0,
+            "retries": 9,
+            "maxFloor": 25,
+            "maxKills": 14,
+            "maxItems": 24
+          },
+          {
+            "seed": 20261031,
+            "frames": 45001,
+            "overflows": 0,
+            "retries": 9,
+            "maxFloor": 19,
+            "maxKills": 12,
+            "maxItems": 19
+          }
+        ],
+        "bombScenarios": [
+          {
+            "source": "original.js",
+            "scenario": "self-blast",
+            "frames": 243,
+            "overflows": 0,
+            "initialHP": 50,
+            "bombsAfterPlacement": 2,
+            "bombMoved": false,
+            "died": true,
+            "finalHP": 0,
+            "retryVerified": true
+          },
+          {
+            "source": "original.js",
+            "scenario": "remote",
+            "frames": 282,
+            "overflows": 0,
+            "initialHP": 50,
+            "bombsAfterPlacement": 2,
+            "bombMoved": true,
+            "died": false,
+            "finalHP": 50,
+            "retryVerified": false
+          },
+          {
+            "source": "adapted.js",
+            "scenario": "self-blast",
+            "frames": 243,
+            "overflows": 0,
+            "initialHP": 50,
+            "bombsAfterPlacement": 2,
+            "bombMoved": false,
+            "died": true,
+            "finalHP": 0,
+            "retryVerified": true
+          },
+          {
+            "source": "adapted.js",
+            "scenario": "remote",
+            "frames": 282,
+            "overflows": 0,
+            "initialHP": 50,
+            "bombsAfterPlacement": 2,
+            "bombMoved": true,
+            "died": false,
+            "finalHP": 50,
+            "retryVerified": false
+          }
+        ],
+        "limits": "ブラウザで到達したのは5階、補助入力での最高到達は25階。全乱数・全フロアや作者の50階到達は確認していない。補助検査はブラウザ実時間測定ではない。"
+      }
+    },
     {
       "title": "Prism Panic",
       "image": "assets/images/arcade/prism-panic.png",
@@ -4186,6 +4283,53 @@
       "authorUrl": "https://x.com/rukasufall",
       "originalUrl": "https://kitao.dev/playload/app/#v1.7VnZjuM4sn33V9gCUiCtsDMoyZLsNO2pHQV01l6JBtSahkyTTqO9JGxl9ZLy-3zBfOB8ySAoecuqmWkMbvcFLq4IaAluhyeCESHp8vIvxbxY6Oa7zXy7bL7LV3PVUOvVtmgamSJE0IMQAhDgZ6Dlx2IzX826ZrNePrvNN8_WUw1KOrFJMBGJSIKJ6ZvEJHFiEt1PEkwwNoi2HhPTPyuJOau3_ZMgiW3vqsVZ_76a6Ik5zBAk4lF_6mv6j1rYeqzksYnj2NRFT3RfJyZGRKe7zAt1yy673csZ7y7zO2bk6C7fbPXrVcEMiIjzxp2apU7qZN27vJCOxuSkaHTA1mf7eoxRnJS4qteslwRRn9eNYjTJlLBidTg197l0oqhneiYwsYjQj9BUDZQwwhhjV4CowsSPJ4lBjQZNYhCpGicYY4xB1cMYgwoVattTaMS-NtqERlEHhSdHSM2o4bkwxlgh_tA4EQYYYRicCAgT4p8jURihjwEhis5LgMYotHZAuo8VxiH1Vlok_WSaJBprSRxMJ1TiYC9RcaS0USqKawlpxZYkRvMNSfxo8n-J6HG_P07y_4j-zyA67uDDXqt2wumO-KMkGnXtGf7dXvsfOAIMzva6MtqYb438-7RmwX5rFiPIk07NhNb2VW2sIyNM3yjja9TToF53gCJJEkXOOUgqH1o5WjRWKb_LjrRRlaclJ62JytAORQ5ZEyorIXlQRYoEMbCBrVfNashrBRonVSUVhSEG9YhWU1R-LyIdKaXUVFHYoTCLQWDOC0lEtcgjgXXMsRfjE7bI5JHOwzzSMZVDr9gSJ5TA4L_TWmBZDkQvCVWlhSOQKoTbNhWYuEZFHMWRUZrW1leBjmkILXRfB7UG8L_XGh3C6uiAEWsEp5K-mupzyX8-_uPujzH-39v9dB9Usd9Ha6-kAqFjgULZpGOqJirWRsfiz_WQpHdCs7fUWMTJRE-t3mIMEcWfjeg069rr_9RC_ljJUWt7idNY6KK5gAK2MIc1LGECM4mwkgifJcJUInyRAl7KjoD3EuFaItxJhO9J8EGmGXyk02s6vaLTzxLhR4lwLxGeSoTnEuFWItxQ5SeJ8EwibCTWWewvknE5Eh7rta_z4ra7yVfT9ZLxEnnD3K9UMV-vmr8ywx8IqJZp1jDrDaMHJfFKDaMr5XlVbQ6FxMZ0_ZDLXxjf_Xw7X2jmecXQ77kuUyPhujpVHZFJmVe3Pt2WpaGqRWo6IktVVUtPfv3EeUN37-63tyznu40u7jerpt4d0L1l_OGT3BAxi_xXJsC5jh1ePfjgOBwW8slmk__K-rxr5osFq14faOEpwqFk_LA0I6MrM-xfGc_ji9RkkhhoFNKHrYxhLhHWe0rva36XtabOFDSRNOlRe5_lFJ4wfsT-3ZFZPCE2vlIjYrfTOWLKJV7lw-gqt5hUluaZ67YWqfJEdc-0FGBclx1ksm4H9VUi542vCXzD-MNNd6FXs-K2LO_Lkt1KEba_Yxxuy_IF4yeAfyPA9RA3XTNfTZmWI52KrDtfqcX9VG-ZOe3wgjpUtqblomsWebHn34DmcvQb03yMA8NBnVqXkXhlhr3Q6uBIQnNtUgFRxnVqaM1RZUAX0TDkZFMmk1KnxiNCjk9-2xKkSKBsrb2QWAp-eKFTFt71EZvmjblhec3NcR1mLAaet24ciLDWmQrIQWcc1mUpRWWACM6N8N9Gb4TSs2cOB7EzZXlkm60lnrD1jtiiOVumu10vNb3jGs6reZzKWyj5yhL_ejXVv1TsYyal8RzHwlVDrMaghtU8oEZSIO5Nrf_IqASiNSs78as0z1KR7Re7kIY2TaE3e1JMS9o2mKU64_UMjcVQWxNcgJI53-32nNZv1HEQhp6q3qkPs2uJV3qYXGnP43mqs5Y0qSZF0YO9541X5ANSA5jttz5JUpFJAcdxjww-YfxBLbYM92otJJbXsJXFaBQ0Wvt2e55NS37PH1ZSwPfSwKv9dwVDEyB_hDSILNSH_dqEx_RlVCJ5GH0RXQYlQiH1RQBbcg3zU3s-XWs9wFombVZ0BPe0ZwjMlpa9HmJZrkdSRGMcqFREbZZTm3UGi0qBRlLDhm39yGt0Olec5KVkvmv4cKjAjEZS7OZfDe33en-lprsPVPWObTl8pLt8GLmucV3RksX4HZvzATXY7XYsdgv-aH-KxO7Pu_uCIRioPp0kvLvRdzovmPA5BHBQxZoIef11DJF9G0S-6ersiueyL6UaT9I8G9S-zNrqnKv1qpiv7nU9w1K27stSteTzssxb8qnr0tkTYxzct1ku5dOxGHQEbyxd9_V-10bt3FuCiNqqU4Dzj7__7R9__9sPq-rq2LhQDT6Tv7Gorbycw0rOxrMUswH59JXrroayh67bYquOcH3eWI3okc1l9NiGzkxoYY1lIv226my9RUfATPrtnMwqILNaSfZ5_HHwgadRm82tpdiFT0iRk5EUSVm2Vo9JmErhtyfeDL7I1ueyjN3CanMxxkEML-Xncdz5MrCE-gOTzrPGsizX6TQb7xlJ2jNvCUl7Ait4mfEBI_3OwD7CFw7UWAq-IyiRlPMTqyD_7EOS8TN2Tc2uF8D-6xrEGd89tqYwPJiT8D1zkYC5TEq0nQRJOHh5KpK28USUHe_jjDdsJ_oSypxms9l0vDnvbhdzpVkn5BBCzGHpuqwy1QSc5qsn1y-ab29efGg6EANyqKoEgvP9oPnhxcdPTz58ciAC5By-SDz6mGKufmKV__jZ82DqydbSpmxs2vnMLyKUkrT_RQoOy9p5NyfF6o71uOu-ZRy-uO4Tuqzn0-ZPjDcqDjrikbGE1lisxosV07ws7Sia8wcjdWOy0flPu9qNvRyzl9JQmsEHZkQA3nseVHcMpXxflu_JYlyXve-IhF8IX1JCcAhqhbcFJc2F3_YJyNAfb6XNCZf5Lwyhup2vWAJbT3E-KL5ZG0JBtVB425akkLDZW8rNIYyemUvz5gjB80yK1sL1SCYEXHcS5Bd9Qlq3UpKcc3d7OzcFMZcqcsFZqi6iTCLMPSmwbVKfsl0Bz-QBWQzVaJd9vtvdyJt9WKvd_R4dHIPzG1KRFDu92OrmreuyTodC9ndMcLiVx_yIGnGrpvsxaR1EJCW79yTlJIwyxEPY2XvwRfo8u0pN-jQDkz71REZBzt7Qc5bBCyb4EQHjnA9uy7JVW1FZkivaesXxzqP27Kks4Lncwr0MYSMTiwyuPUn2E_Jxt9cbiMsI4XokRa_bt0dlyddn6uyIiENrkWJ2moc8LPa8w6La3xMOZ1ay7Qi-T3vvXbfTeT7EigP-WOs2xlrm90G3E_FTpYyo01liWtN9nuvfxG_DN2Lm8N0juK7Llo_ysOCNrxxecUqLZlhe85a8I8dg84Rqz1rEt_ZFKeawodr9dI7HNqPYdTdD4Y99MYi559xYYTJOBsLnnvM2fiMczzGuUa5yZ7PZzHXSTUdkhDyWclOWtPc2YxxsPMHh0960jfzUEaClw7jHvU4bLuHS74roMkgwvBLx2Omq-pfOk4IF7WeeuQh4J0Ty4GYk2bNhMI4GfT5mn_YU2TcgcuH1A2EVfidoM2NjDOF1PBZ5fpvpSxFWIrsA-lIyyyfPnr94-erJUyfVFyLMOHzyPL6rHNi5Sl_z7d2GdbtdU2WSy-O6RNQuQNNl27Gcg5LTCz8kEuNB1KCOBjQ46Q-r1AHFwUo8PyRh9sMqI-Hup9N3J3LB1EoIHxJRx4gEEOhKAebR-5zNjWz7kHhrJ5D0vWTPw2mMifnh_5r16JcRlmgxCh9B-CEwY2X8QqDnDByPOeh45iLCQ8zxORzeLJT8-VLEbmxZWbmuaskf-cOP8uQ33r9NFHOpO8qNYSEP_7ucMI5CE07VlD43Cuw59cR-OwdKIWh-Sj4opfN7PZcthkNVLkajpKP47vifK6n_c5nDnph2PtP7OAGdUUjmD7OyZF_3-BrCKeF-SIzXQ1zNKKrXIxDJs3qMvEYtkvYM6OQRaEKye8v4PwE",
       "observedIn": "作者プロフィールの最新投稿と個別投稿。X全体の再探索ではない。"
+    },
+    {
+      "sourceUrl": "https://x.com/WildKabocha/status/2116496378063126565",
+      "title": "ローグライ塔",
+      "author": "野生の南瓜",
+      "authorUrl": "https://x.com/WildKabocha",
+      "publishedAt": "2026-10-31T11:43:53.788Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.rVlbbxvHFX7nr1iPoMWMd0jP7JISxeVQlRM2quO75FsW-7C7nBVX4i3kKiJBCjDlIGlQu7fUaRsEcIKmQZPCTYq0QAA7-TFm7CRPyU8oZpaXJUVZSpqhtJdvzjlzzplzWS7PnFGsc5ftwZ2HgzuPBwefDe58PDj48OkHf0qcOaO8klMGd94b3Hn_2388_ObLfwnoZk6Jbgb9Pw_6D6LpwcEfn7197-sv3xMUQ6j_6bP7_x30__Xd7Xe__eDu4ODgu788GhzcHtw-EETf9P_57MG_B_1Pv33zk6e_fmNwcPD03ufPHj76_nFfTD976_azu_2nj796dv-zQf_u0w_fHfRfH_QfDfofjzjvfv34i0H_88HBbwSPYLKKF-2r9a1dXgl2eDJolZXN-h5vDg25XHE8rjiKW6-6Q0NeqNfCZr2ihGU-hs_Wq25LcSt1b0fhNV7tKNX6a7zKa2FKTG8K0orTCpWdoFJpKZ36rhLW66fE3IV6M5LTUphSqde2eHNI23RqWzyVSCQSFR4ql5kFCCHLJEs4WaFE95cJwIAQTijxiUGo53sGBxjoup6laZIlacJJ1vABBmmPpImAxCftc8kopVFCSFYchhCXeFYeR1RZsiTkk-UJRDjxxX82BhFC0mSKcSxJQjRNM8QY0wooSxziyRs6y0h0sd4UlCZLMSqdkClZ49Xj0NTwD0GepFqJaRAxGoRmjewYIcDG1xhYO_vCi8VfvrT-q3Mvn79w8dLlK1c3NgG-wQJWsCjW8RLOYMO2gkJBt_Eeo_hFZhFMMcFJcaCY2PgKs8APD-7eAxj88OCTt-Xp3m8BBk_--ndg41vMSg_l4A1mATn_h68ist9Fp9fl6fdvytP9_3z_RYR_-E6EP4h4HkV30UIfvQFsfEloYwjZeBmnpb7ibsnGr0g9qfzT8bI4UEP-UbyMdWLj9cgSYaU4GjiVERepDM7YeG00SYewpEpJIy4wC-CFOQMvpDZSM0OAU2NtClyYohyNVCo6zmE_DpSMxZNQxkZxBpxevXgc-8zqYqw_j3LOAPhIl8aUPIFRMR_GwDj_FHiIfaz8iShHYifg2nNUmrXoEOVwbBxv5iz4o1w63qWJeseCxQl4cq2mHDUHXJiAa9HtxhQoA3MhpsWPiudJJo3PE4vWT2T7j4_SiW0CXJ_WaybLhiE5u9aJLS3GwSNUKh7FvhADJ6m1IHdi2qJRMh0qESeLh40J-JNdeljsxjzwKEfNKjAXjE0MY098psG1OTIPFcgjZc5d_Qjlnxs58xc63qUL8-J8dLseF3uEVkeBQ8HTVXdccGPg2FszYGpNJu0MOBEzDvLUJCB_gp7xwBl6b4rs_0v8wwrMROlM-h3LvnAyMB5X8ZZ9QvbRKD5fpUju-nOUX_v5On4xLnVGbDGmVWwDoyqPxw9P6-O4HIOTQhkHx-OngfNkRjs_Dc7V8zA43_k_g0vnid2YBx631hTlyarZMImnVYq14Fk9i4dlHl20T_KwOi7czwvyn8WlR4DFOeC4RS8cy35CMNrPYSU_lDgnkDlfpXnKn0zmPJfaOHGWQQe7iBWqlmtbjs0YWAC9nttmzFFVt8OYixPnGESs0Go0Yft0NpnFHXkET_pvye-HBsKJUpPBALcQK3TFC4UGu24FttlIVXhtKyz3eo1UY7dVhqlUqoXMJg93mzWlkWo1KoHH4QUnLKeaTq1Ur0J0esxEMEUWsfcTfr0JA0bMIK8TM9A01PC2rGtWYNuphhOyy1Zg4wnk1SvMugEDhImdEDC4BiJCQLPUW3LEl27DM7xlD5gRwfURweg7OR29bBgS3JgmMLylpbQeJ7h5nIRbswSjtxfATEy0lLqL7_IxxSSmT7AbI8yYYDfn0N2apvN3a14Y1GtK9TXIkdylkHGL2Nhh3Erb2GXcyti4xLi1ZGMPl83Ah2He6IWMpZHHwry-SnIlXJZXpRzBZ6GjedjVymi1xJKlHHQ0Ju5ZGZm80uKKEFBY6fXkBjtuC7aTDsqnVXUMdJKuBMJFo0CRozHYLjiqekqIpthFKAnb-SGQlICQDzsFN8Kwq1FB1MmPgSRFseVPsQzqhowtqyosselIS_cIMj3maC9aJdssM1dcaIZtnoUeLqNVwdbrwRKDJQ2Gi0avF-YzqzRnILSYRjnoCGtZGe3zUSSnsYEd7OIS2p84_Dysoa6I4W1GzO08XTa3NQ0dCuqux6rWti3yxpNpqKqN3RAGeBuDJ--8DzBFcmIDqCpstVmAWx22HWHrAgsFFnbYNh7z_fDgk_dEgkZUa0BVt1QVBoIwiBNesVqBjW-J45C2CFS1pqrwVeYXKFktNaGOLVHLmk2nA9MEpXZ4pwWRjRYp0WjOx8Uoxa1XMVzRfHR63XrV7hEM0-JmLbpZwmI1aiO0nyimqk4DclYQSsgIlPEHFICQOZntcsuwk0kRjNyidoGoqkDyFMkZ9oolgtgW87EwE_KQFgszIRvldVRuJBm3dLEYtZPMCXdwucWWcIkznWAhUWOU4EbF6UAdg02aJRey127SLCE3yCXjIvUAkrx5qqo7mhZFmsyp_ZF-0wZtRAriS9EZ7cdj4yJE3Rbz85Su-kma8xcjX5OYr1cmrs6tmK1gvCEUW9H7MB0b8kPEx0Y5QAyqG7p4rwosP0lts8ouWC1bRmkIAQbI3GLULDLLNr1KCxJknocUmW3Wapsd1urENLwKUddn1Cw3WLXMMsR0wh1Gicl9ZpiBx3bYXsh2WbnFSpxVQ9Zw2VaduaU2c0sd5nQYMd02czssSU2nzah5nVmWjeWfbUo_Ewyu3TRGDgYa4KqnRv9c3VI5SDV5gzshXFlZQci8COMeLHGnBFG33GDE3KozOhZ5KbMF4oRh4O1A1N1TVbjHCL4KETLFTonXp8AHmh_dZjDBVyxia3wIZCVAbc0Jd4YcuoQMWys3NHAGaNWyBhRFUcBIIl3GQLyOV4A24iESDEJeVYAWeMhMBD7cqqPuOThaOINBk7d2KyEYIcsY-JV6vanE1FsZip7IzmBKhqKHsgW6JF61grbS5GGzM9IsLV67gkH_o0H_i0H_bwCZh-pQyILFNBbdnpKsFi7qp7N4ZUmDYaFA0eksFl0Wi_6KTDeswQxS1atw1NT3E3uhppm7Ig12k0mzxMUVPAcRLvFkMrJ6Lywso27gw12RRMVUq17lItUn-Z22GWuLi4zNWAchmaK7bIWINC-3CgR1y61kcrToXsiINKTEiFnKp82SpqHAh0I_-V6aYt22SjZCXYfJYu-yYamvWh3Nta225tinoqIL2xpzcEdjLhIB65hOh7n7-wkhLI1U9VTDVVXuS7vcNmtjt8M62A0ZzRLccBnF3E8mowpCMdjU0-Q61S8tXaTeS7K0NVzGaFQlXMEtww0bSeiGZ6AbFpbIqkFyVEc9ghZ1ZCZGbh4yQpFcThtH-RW5VNOqYcFA3arwROBDSSqsdduaW2qbLnM7mlvqmJNVRaE14499q6OkJTlhmCMMc9H-_kjhZNINxYZB3mZuG_MOczt4lNt4zCx8oONNliaRaoJbR91K1HyrQQ1yX6MYpklyE53RRQ-e3bpJTLJK1BsdxtuyTZ8OTJfxzrBTnw6EsXEjkNvkzo40UzTizQJdBU8e3gc5oIhGaEYPtuK5VlWj0mGOW00Ud84o7sQ2DyNSth5G8I6mIbSfTG72esIugvZlFqtqm7GgLeUGHdRtBXm6yv2JxSuY-5qOcq0gr6864Y7GMuLaWIXVsuw35YY4oZyssuZU91mORY-5JbziaZo0MGjjINpHqUabsTDSIeygri96k68x7udXRMkcJ-h5iGQWNUQWJRRl-FwvnuoxuCYfM2bR6wBnDqM3pENn0ZtzaW8BvITMxL7slpHf98VPpJtlp7Yjf7P0601F2B3UtsRvl7-4EVRKLztu3Ss7if8B",
+      "status": "採用",
+      "reason": "階層ごとに変わる地形・敵と成長要素に、設置ボムによる通行阻止・遠隔移動・自爆リスクを組み合わせ、経路と攻め方を考えさせる塔登り。オリジナルの魔術師キャラクターと結果画面までまとまっている。",
+      "observedIn": "指定投稿、作者プロフィールの直近投稿、補足返信と先行投稿を確認。X全体の探索ではない。"
+    },
+    {
+      "sourceUrl": "https://x.com/WildKabocha/status/2116497003039633678",
+      "title": "ローグライ塔：操作説明",
+      "author": "野生の南瓜",
+      "authorUrl": "https://x.com/WildKabocha",
+      "publishedAt": "2026-10-31T11:46:22.794Z",
+      "status": "対象外",
+      "reason": "採用元への作者の補足返信。Z設置/X遠隔操作、通行阻止、残弾数に比例する火柱、自分も即死する仕様を記載。別作品・更新版ではない。"
+    },
+    {
+      "sourceUrl": "https://x.com/WildKabocha/status/2116497502283436124",
+      "title": "ローグライ塔：投稿方法の補足",
+      "author": "野生の南瓜",
+      "authorUrl": "https://x.com/WildKabocha",
+      "publishedAt": "2026-10-31T11:48:21.823Z",
+      "status": "対象外",
+      "reason": "プロフィール上の最新投稿。URL掲載方法についての補足で、新版リンクは見当たらない。"
+    },
+    {
+      "sourceUrl": "https://x.com/WildKabocha/status/2116494203912163658",
+      "title": "Playload：先行投稿",
+      "author": "野生の南瓜",
+      "authorUrl": "https://x.com/WildKabocha",
+      "publishedAt": "2026-10-31T11:35:15.430Z",
+      "status": "参照先未解決",
+      "reason": "個別投稿を確認したがPlayloadという文のみで作品URLがない。採用版の公開時刻の根拠には使わない。"
+    },
+    {
+      "sourceUrl": "https://x.com/WildKabocha/status/2116494291585667284",
+      "title": "先行投稿への反応",
+      "author": "野生の南瓜",
+      "authorUrl": "https://x.com/WildKabocha",
+      "publishedAt": "2026-10-31T11:35:36.333Z",
+      "status": "対象外",
+      "reason": "プロフィール上で「な、なぜ……！？」という投稿を確認。作品URLなし。採用版や更新版の根拠には使わない。"
     }
   ],
   "criteria": "docs/design.mdに従う。3KBでの遊び・映像・音・演出と完成度を評価する。ノイズは回数のみで除外せず、文脈、制御、正常復帰、可読性・操作への影響で判断する。意図的でも仕上がりが不足すれば保留する。",
@@ -4872,9 +5016,20 @@
     "method": "実エンジンを一時コピーして上限超過と変更文字数を記録。seed=712313。HOTDOGは7200更新、Aを6更新毎・Bを400更新毎と方向入力。HexはDown+A無敵で開始しAを保持。その他は3600更新の定型入力。数は実時間ではなく更新回数。ソース読解と実ブラウザ表示を別途評価。"
   },
   "screenshotReview": {
-    "checkedAt": "2026-10-31T08:08:36.197Z",
+    "checkedAt": "2026-10-31T12:32:12.215Z",
     "method": "既存全画像を縮小した一覧で比較。9作品はアプリのScreenshot機能で撮り直し。撮影場面は通常操作・通常再生。移行中・終了画面は不採用。撮影時には画面を固定するためエンジンを一時停止したが、画像にポーズ表示は含めない。",
     "items": [
+      {
+        "title": "ローグライ塔",
+        "image": "assets/images/arcade/roguelike-ish-tower.png",
+        "sourceUrl": "https://x.com/WildKabocha/status/2116496378063126565",
+        "url": "/playload/app/#v1.rVnpbxvHFf_Ov2I9ghYz3iE9s0tKFJdDVU7YqI5vyVcW-2F3OSuuxSvkKiJBCjDlIGlQu0dSp20QwAmaBk0K50BaNICd_DFm7CSfkj-hmFkeS4qylDRDaY_fvPfmvTfvWC5PnVKsMxftwe0Hg9uPBvufDW5_NNj_4Mn7f06cOqW8lFMGt98d3H7vu38--ParTwR0PadEN4P-Xwb9-9H0YP_Np2_d_eardwXFEOp_-vTefwb9T76_9c53798Z7O9__9eHg_1bg1v7gujb_r-e3v980P_0u9c_fvLb1wb7-0_ufvH0wcMfHvXF9NM3bj2903_y6Oun9z4b9O88-eCdQf_VQf_hoP_RiPPON4--HPS_GOz_TvAIJqt43r5c39rhlWCbJ4NWWdms7_Lm0JCLFcfjiqO49ao7NOS5ei1s1itKWOZj-HS96rYUt1L3thVe49WOUq2_wqu8FqbE9KYgrTitUNkOKpWW0qnvKGG9fkLMnas3IzkthSmVem2LN4e0Tae2xVOJRCJR4aFykVmAELJMsoSTFUp0f5kADAjhhBKfGIR6vmdwgIGu61maJlmSJpxkDR9gkPZImghIfNI-l4xSGiWEZMVhCHGJZ-VxRJUlS0I-WZ5AhBNf_GdjECEkTaYYx5IkRNM0Q4wxrYCyxCGevKGzjEQX601BabIUo9IJmZI1Xj0OTQ3_AORJqpWYBhGjQWjWyI4RAmx8hYG10889X_z1C-u_OfPi2XPnL1y8dHljE-BrLGAFi2IdL-EMNmwrKBR0G-8yip9nFsEUE5wUB4qJjS8xC_x4_85dgMGP9z9-S57u_h5g8Phv_wA2vsGs9FAO3mAWkPN_-joi-0N0elWe_vi6PN379w9fRvgHb0f4_YjnYXQXLfTha8DGF4Q2hpCNl3Fa6ivulmz8ktSTyj8dL4sDNeQfxctYJzZejywRVoqjgVMZcZHK4IyN10aTdAhLqpQ04hyzAF6YM_BCaiM1MwQ4NdamwIUpytFIpaLjHPajQMlYPA5lbBRnwOnVi0exz6wuxvqzKOcMgA91aUzJYxgV82EMjPNPgQfYx8ofi3IkdgKuPUOlWYsOUA7HxtFmzoI_yaXjXZqodyRYnIDH12rKUXPAhQm4Ft1uTIEyMBdiWvykeJ5k0vg8sWj9WLb_9Cid2CbA9Wm9ZrJsGJKzax3b0mIcPESl4mHsCzFwkloLciemLRol04EScbx42JiAP9ulB8VuzAMPc9SsAnPB2MQw9sRnGlybI_NAgTxU5tzVD1H-mZEzf6GjXbowL85Ht-txsYdodRg4FDxddccFNwaOvTUDptZk0s6AEzHjIE9NAvJn6BkPnKH3psj-v8Q_qMBMlM6k35HsC8cD43EVb9nHZB-N4rNViuSuP0P5tV-u4xfjUmfEFmNaxTYwqvJ4_PC0Po7LMTgplHFwPH4eOE9mtPPT4Fw9D4Lznf8LuHSe2I154FFrTVEer5oNk3hapVgLntWzeFDm4UX7OA-r48L9rCD_RVx6CFicA45b9MKR7McEo_0cVvIDiXMMmfNVmqf88WTOc6mNE6cZdLCLWKFqubbl2IyBBdDruW3GHFV1O4y5OHGGQcQKrUYTtk9mk1nckUfwuP-G_H5oIJwoNRkMcAuxQle8UGiwq1Zgm41Uhde2wnKv10g1dlplmEqlWshs8nCnWVMaqVajEngcnnPCcqrp1Er1KkQnx0wEU2QRey_h15swYMQM8joxA01DDW_LumIFtp1qOCG7aAU2nkBevcKsazBAmNgJAYMrICIENEu9JUd86TY8w1v2gBkRXB0RjL6T09HLhiHBtWkCw1taSutxgutHSbgxSzB6ewHMxERLqbv4Lh9TTGL6BLs2wowJdn0O3Y1pOn-n5oVBvaZUX4EcyV0KGbeIjR3GrbSNXcatjI1LjFtLNvZw2Qx8GOaNXshYGnkszOurJFfCZXlVyhF8Gjqah12tjFZLLFnKQUdj4p6VkckrLa4IAYWVXk9usOO2YDvpoHxaVcdAJ-lKIFw0ChQ5GoPtgqOqJ4Roil2EkrCdHwJJCQj5sFNwIwy7GhVEnfwYSFIUW_4Ey6BuyNiyqsISm460dI8g02OO9rxVss0yc8WFZtjmaejhMloVbL0eLDFY0mC4aPR6YT6zSnMGQotplIOOsJaV0R4fRXIaG9jBLi6hvYnDz8Ia6ooYvsmIeTNPl82bmoYOBHXXY1Xrpi3yxpNpqKqNnRAG-CYGj99-D2CK5MQGUFXYarMAtzrsZoStCywUWNhhN_GY78f7H78rEjSiWgOquqWqMBCEQZzwktUKbHxDHIe0RaCqNVWFLzO_QMlqqQl1bIla1mw6HZgmKLXNOy2IbLRIiUZzPi5GKW69jOGK5qOT69bLdo9gmBY3a9HNEharURuhvUQxVXUakLOCUEJGoIw_oACEzMlsl1uGnUyKYOQWtQtEVQWSp0jOsJcsEcS2mI-FmZCHtFiYCdkor6NyI8m4pYvFqJ1kTriNyy22hEuc6QQLiRqjBDcqTgfqGGzSLDmXvXKdZgm5Ri4Y56kHkOTNU1Xd1rQo0mRO7Y30mzZoI1IQX4jOaC8eG-ch6raYn6d01U_SnL8Y-ZrEfL0ycXVuxWwF4w2h2Ireh-nYkB8iPjbKAWJQ3dDFe1Vg-Ulqm1V2zmrZMkpDCDBA5hajZpFZtulVWpAg8yykyGyzVtvssFYnpuFliLo-o2a5waplliGmE24zSkzuM8MMPLbNdkO2w8otVuKsGrKGy7bqzC21mVvqMKfDiOm2mdthSWo6bUbNq8yybCz_bFP6mWBw5boxcjDQAFc9Nfrn6pbKQarJG9wJ4crKCkLmeRj3YIk7JYi65QYj5lad0bHIC5ktECcMA28bou6uqsJdRvBliJApdkq8PgU-0PzoNoMJvmQRW-NDICsBamtOuD3k0CVk2Fq5oYFTQKuWNaAoigJGEukyBuJ1vAK0EQ-RYBDyqgK0wENmIvDhVh11z8DRwhkMmry1UwnBCFnGwK_U600lpt7KUPREdgZTMhQ9lC3QJfGqFTx-879Kk4fNzki3tHjxCgb9Dwf9Lwf9vwNkHqhEIQsW01j0e0qyWrion8zilSUNhoUCRSezWPRZLDosMt2wBjNIVS_DUVvfS-yGmmbuiETYSSbNEhdX8AxEuMSTycju3bCwjLqBD3dEGhVTrXqVi2SfZHjaZqwtLjI2Yx2EZJLusBUiEr3cKhDULbeSydGiuyEj0pASI2YpnzZLmoYCHwr95JtpinXbKtkIdR0my73LhsW-anU017bammOfiMoubGvMwR2NuUiErGM6Hebu7SWEsDRS1RMNV1W5L-1y26yN3Q7rYDdkNEtww2UUcz-ZjGoIxWBTT5OrVL-wdJ56L8ji1nAZo1GdcAW3DDhsJKEbnoJuWFgiqwbJUR31CFrUkZkYuXnICEV6OW0cZVjkUk2rhgUDdavCE4EPJamw1m1rbqltusztaG6pY05WFaXWjD_4rY7SluSEYY4wzEV7eyOFk0k3FBsGeZu5bcw7zO3gUXbjMbPwgY43WZpEqgluHXUrUfutBjXIfY1imCbJTXRKF114dusmMckqUXd0GG_LRn0yMF3GO8NefTIQxsaNQG6TO9vSTNGKNwt0FTx-cA_kgCJaoRk92oonW1WNioc5bjZR3DmjuBPbPIxI2XwYwduahtBeMrnZ6wm7CNqTeayqbcaCtpQbdFC3FeTpKvcnFq9g7ms6yrWCvL7qhNsay4hrYxVWy7LjlBvihHKyzppT_Wc5Fj3mlvCKp2nSwKCNg2gfpRptxsJIh7CDur7oTr7GuJ9fEUVznKBnIZJZ1BBZlFCU4ZO9eK7H4Ip80JhFrwKcOYhekw6dRa_Ppb0B8BIyE3uyX0Z-3xM_km6Wndq2_NXSrzcVYXdQ2xK_Xv7qWlApvei4da_sJP4H",
+        "action": "new",
+        "checkedAt": "2026-10-31T12:32:12.215Z",
+        "scene": "通常操作で回復を取得して3階へ進み、中央の囲まれた場所へ爆弾を設置。上から右へ退避し、隣接敵との戦闘後にHP29・kill1の状態で起爆した場面。自機、残る敵2体、強化アイテム、階段、壁で止まるT字状の火柱が共に読める。",
+        "method": "実ブラウザで掲載用Ⓑ表記版を通常プレイ。初回5階まで進行後の再挑戦で撮影。3階の遠隔移動中/上端の爆風/中央の設置直後、5階の通常画面と比較し、主役が画面端に隠れず仕組みの見える中央の起爆場面を採用。CRTオン、Screenshotの640×576 PNGを無加工で使用。撮影時のみエンジンを一時停止。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/roguelike-ish-tower-2026-10-31"
+      },
       {
         "title": "rubble.",
         "image": "assets/images/arcade/rubble.png",
@@ -5556,6 +5711,24 @@
       "validation": "lint・整形・生成物照合・233 Nodeテスト・音の参照比較が合格。初回ブラウザ試験はタイトルコメントの空白を固定した期待値により1件失敗。リンク実体の復号ソースと読込結果を直接比較するようテストを修正し、ブラウザ47テスト再実行で全件合格。29作品のURL復号、3000bytes以内、共有URL長、画像640×576、公開日時の降順、台帳の元投稿・日時の一致を確認。他28作品のカタログ項目は変更なし。",
       "scopeLimits": "Prism Panicの今回の更新版を確認した範囲。X全体の最新投稿探索、全乱数・全盤面の保証ではない。公開未実施。",
       "visualReview": "ローカルArcadeの1280px幅と375px幅を実ブラウザで確認。Prism Panicが先頭で、Rubyと進行盤面の新画像、タイトル、3.00 KB、作者が重なりなく表示される。"
+    },
+    {
+      "checkedAt": "2026-10-31T12:32:12.215Z",
+      "scope": "ユーザー指定「ローグライ塔」の採用検討とローカル取り込み。作者の直近プロフィール、補足返信、先行投稿を照合。",
+      "sources": [
+        "https://x.com/WildKabocha/status/2116496378063126565",
+        "https://x.com/WildKabocha/status/2116497003039633678"
+      ],
+      "outcomes": [
+        "ローグライ塔を追加して30作品。採用版の公開日時の降順で先頭へ。",
+        "画面の再挑戦表記をⒷ retryへ整備。2946bytes（2.95 KB）。",
+        "通常プレイで複数候補を撮影し、自機・敵・火柱・階段の関係が読める3階の場面を選定。"
+      ],
+      "published": false,
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/roguelike-ish-tower-2026-10-31",
+      "validation": "実ブラウザの動作・進行・操作・敗北・再挑戦を確認。補助2条件各45001フレームと、原版/掲載版の爆弾シナリオ計1050フレームで上限超過0。npm run check合格（lint・整形・生成物照合・233 Nodeテスト・音の参照比較・47ブラウザテスト）。30作品のURL復号、3000bytes以内、共有URL長、画像640×576、公開日時の降順、台帳の元投稿・日時の一致を確認。他29作品のカタログ項目は変更なし。",
+      "scopeLimits": "指定作品を確認した範囲。Xの全件探索、全乱数・全階層・50階到達の検証ではない。この記録は公開前の取り込み確認。",
+      "visualReview": "ローカルArcadeの1280px幅と375px幅を実ブラウザで確認。ローグライ塔が先頭で、中央の火柱・自機・敵・階段が見える画像、タイトル、2.95 KB、作者が重なりなく表示される。375px幅で横スクロールなし。"
     }
   ],
   "replacements": [
