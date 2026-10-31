@@ -1,4 +1,5 @@
 import { test, expect, watchPolicyViolations, policyViolations } from './fixtures.js';
+import { decode } from '../../src/payload.js';
 
 test('Arcade opens games and author profiles separately under the site content policy', async ({
   page,
@@ -10,11 +11,12 @@ test('Arcade opens games and author profiles separately under the site content p
   expect(response.headers()['content-security-policy']).not.toContain("'unsafe-eval'");
   await expect(page).toHaveTitle('Playload Arcade');
   const game = page.locator('.game-link').first();
-  const title = await game.locator('.game-title').textContent();
+  const gameURL = new URL(await game.getAttribute('href'), page.url());
+  const source = await decode(gameURL.hash);
   const opened = context.waitForEvent('page');
   await game.locator('img').click();
   const player = await opened;
-  await expect(player.locator('#editor')).toHaveValue(new RegExp('// @title ' + title));
+  await expect(player.locator('#editor')).toHaveValue(source);
   await player.locator('#start-game').click();
   await expect(player.locator('#pause')).toBeEnabled();
   await player.close();
