@@ -1,15 +1,15 @@
 {
-  "checkedAt": "2026-10-31T12:32:12.215Z",
-  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。",
+  "checkedAt": "2026-11-01T04:09:26.434Z",
+  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。",
   "counts": {
-    "catalog": 30,
-    "adapted": 17,
+    "catalog": 32,
+    "adapted": 18,
     "normalSearchObserved": 140,
-    "uniqueAuditedPosts": 155,
+    "uniqueAuditedPosts": 157,
     "byStatus": {
       "重複／旧版": 24,
       "保留": 28,
-      "採用": 30,
+      "採用": 32,
       "対象外": 58,
       "差し替え": 1,
       "参照先未解決": 3,
@@ -1923,6 +1923,238 @@
     "全掲載画像を縮小一覧で比較した。全作品を今回新たにクリアまで操作したという意味ではない。"
   ],
   "games": [
+    {
+      "title": "print(3000)",
+      "url": "/playload/app/#v1.bVjdchrJ9b_nKVpdq6k-9AF3z4BADD3YlmSvd1fI0VqKs9T8IwSNwEbDLLTWcgSpfGcvUpVUKqXkLg-Q--R9dJPbPMK_umcGkHehJE1Pnz4fv_PZevKEPDUTM9UknU8SwwIhBJSm2hAzGbxXjIGK7uzyUvUuSqVSKSIkJyWOlGSfpyS4wIIg2_f39_eJzCk4IaSyJs5IN6zqguzlvMoZCS9oC-IN3z0hBPG3qZ-UtimLg8HmSLNMytKvr7W1H7-0zd_qUkBAAsi4PCVEONX1WoeMhPnAg_Lelv05G6uMU2iLn-9w2hbgXvyIgdk2DbigXPAtcAu8cuCp5UB5zoQ7RQmpbMwvb5hJn3K_LjYWbSjX8NCAcruiglbnOtV9w3yA_EDgjtTyI8UBYTXIjCLVxXQy0EwQkh1CK6ZGiCyQXUuxi2raHx4lQ1ZDS-6ECEKI_IGZx30zrl5PElaKiJWHDkgnoW9P3W47b-uIXc5nN8nQRWC1VkjZy6RkZx4JWXw7NywzxvHf0_sFWUbVC1DYb1wqRdV3s0nCKNICobX7bJokygrNgcllJJxD6RNXb6KjHXSytRRCtIJHSbWlgih4Es_bBNBTsiRkueE6UixRbltFyQaXEcuB-9GEChrtejuAR_lQiJWiTIJyUAQDKW-p5BKcyHqhyv8Rj_BMm6iIdO6SWeSx-pT0SCBI_AhaIURMiv0Kz_OoStY_T9fa9AghdNA3NC5F1alOrsy4bGGDwiTrglslCnp2q5SsCwH8dstZBTNZBJXlNtfDm4FmrI-XoKJSKeqXLx1mTwkvuOfnEEmcSy9FmfwMAPw0k__7p3_RNSUpO1VyJP_3z798_whpQup7jfW2IOT20TbbEXxHcAvUlsyMeCfLgoJPIIQs-PxynezZbilK-_OFfmW1e_68SQHlXiki2_EZFTEDUIpGN8nATGYJGTG4K0VzbW7myToUre9W21mwtvzN50fkqHtIH9W5GBOh6HntpNaVYkAxtav9kyBbze1K-icNuzypDSh-pej53km9K4UeUPxM0eOGJah3g4G-OujWX1KcKYE3uMDv8ANe4Ry7eIrneKYEHqiKxI9K4ARP8Dle46ESOFJS-jhUAgeqIn08Uon-QI77Kb5wT19rg79QWkVfm_kkuaqO5rPrg3F_fjAbalZvBLUa14BvLUVP7_qi3ESmn_hiKaDcjPFru7GoTpLB9GaoF8UWToXdmFdHk2T4KhnqW2ZUZHoiVkoDToRybfZKfYdz9aF63U-ZFVCtVnUM2FVv2RXgqZq7HdbTMajoLdMAeK56sTVyhf2MyaI47Zq2UZYJJZuyLiAOR7M5m2rTSzGJZyMyB5ZmeiqlPY-ZXrrri1glEGbuJiaveRSqZj65ttUbVpC9vChdAL5UTKNRlFoz0hvDApR1ZDdcCskpoVxD3iQkFPVf1oBflC642XqBdRSwwm-cKS8ZPT3rEvLw13-zb4AiJYScdQ9PyMNf_8PeAgX8Vm0MtagP9e3JiGngMrRKCNT42HYUqHebHdM56dRbsiVaPmBBaTqGU9qihKLA_L3cz1i4Nyv80sm7UUzzyzytYbd4woX1xQf767J3E1cX6XRiHDwb00ez-VF_MGbMYGqhykKARtTzFtX0ZjFmKZeA1mnGqj3tDzSjEUVKId6cTnBajGV9lZZ9wafcl2GiFH1KO9-pfivZUZRQz_uQce31MYlhBSsonE-MEqFp74eGc_iWGQgngsEqHEwXTAKmg6vqf__0r2raN4ru1xp6WGvokd7rX2ohaIYNypr1CeX04f5va5SdWwkpXXC2hb1sOmfDZrzYAhllA-nD_a-2qdFHCfglE4DfMAitxj9xQZYBV1iRKBEm7bSchrbJOkSmSvNkN8W-MpwlT1Kbf8eK9aMogLKscTa1T-FRddxfsGNYLo-qC23YMfYEPvrGgEfVK7sFvb7XiJdK-s0oYlOvAfii2h8O2TGsVmFRIsufW_3A6SalXxm1teel0_5HJtF06LEfnDdPZLc-oC1byBonvqt7EObEIYxUNvP0bx0DjaOKD2g8jw02O7ZsDSrSB8CPEz0drtbyf8oy4blMJ1GKk71uYKWM-DBq-CGMKmovOxluquFRdTDV_TkDfK7EhuNIMO1Q7Rm01ULpPNiVkp6ne6Log-16pxegj7W41fNRYiPGqeqtSw15R2YjoqFYjpUIx-13-eHlcmccjrlKYJqF67s8Y8Y45glAOFXTYsZEPwuGvmqWTThUDT4tBoF-hRXPHdMSgC8ZfX36qvvmVfclzU4dK7Gufu9wbKvftKoTM5_oBYMsfp5ZUCpsvGFrIIokaqGe8e23a-NeKxm-bjfD10UIfqEC_q7c5-x1RULZhA7t8ufsC24yPd5YbGyWj7ey-hZvxHZsv1cifN9uhO85h3Rw1buNbTr2Xseei8P3nvcmg-sZvxHlPn9fNjbB7dFX6pjzXb9TkS2JQ6FeRaKjBa-1nlVq4Y-ESNCVAwo4cITPKrWWJQ7ZUFQGUH4VKREOuJJ--RW8UW-qo8nU6Dm7VRG7zQjEcvkTdotfYFpE5RqcW-v5N1Bsr1YFGEOb4K4Lb-Jt4OLtuZLOd89eH52SL54d71DUgE5lgW5E8LvBwBt4Vuehkj4WPOuf1reacAXOieHMtH0BZcaM50PZt7m1SOessceZ8WqAUoiKQfrwj19TbPwgu37G4G7oeSyT9VMG2yplWXZAXdCdnnVt1wU8URIXawd_u1EuK1vSd1Urw-tEice0lk7bODHzj3cvci0YdfMVxb5gACxRkc5i4OKzu2R1AbAa9M1gzBK4y_QcCJZUk_61Lpr5KgPnRqmicVUkpsoslz_IbaWyi2Yev64YYNph10oWppvOZ5w62_OBrPWZK1hu20d63jyprTe3BzcLlOlQOyK2nJQdcvDV0bPTrM13j96-Kfo-QOsbBhs__NyGyLWy09yXbBMXXwF-4h17yho7E1tjQi_GVF1xvXFFyBI1FSwFsHGecqXBZJgmEE5GbIfZcWhX7rflcpm2fbFcppGs7wPcnefd9Qqz0SzJhrYkhhjwiqstKTYLDMx7SdwTsd3J1dZlHUnPM9XF7FpbBl-znAg8b2e9qGiAzly0TFHgUtFKBKxWOM6Hx8mIXcPdzsTzLk2Sshp4Hpuon9sZDB75XqueQIk-BliPH0-klyZhBpzVZ0q3RUe0zrhE5jjWYbnUUeB5Z5Hc87zZbk0pAZ53nqvkeTsnnufAiNV5NZ2lbMs5gJZ5Pa-xRjmWAVTcXx9C43lW950Nt1x7A-BG-cKET_LbpbdjYqzFB8o49bucUuXm5kLgQaRE56Blle_oVkWGJlIi03kmWK_i26sgViTKuGfiTOZqDaXVjU3UzxjACo1wkwjY5HMTeYoJqCjlmx7dfLKH6_9f2MVbZqCXxJUUANYTA7kSDO5mnOPE8ybVRN8aBtXhLNFOmgAcCwZ4ncs_VL0A97COtbg3iyLfC9ztwAjWRXdBOM3UyWYkI5jBeS91sQT4sT1fQ_vLmSdtrnC-LmFnb2XdFjHXB_Ls3Rzp2MH47G1T2FYRsMHVwRWMDvoHV4eXh2An8Y9Kbdg_qi1r3ABPN73OzhOxQy1pf_Q8W4bthOGiXcZ44nmbPOiIVgOyUt3tiRi7PRlX2LXnzbxmJ7CNntrLNMWgKJpr5Ed8iFL6211hPzRtmYWNi4x0M1mN0JSbUDHlJiYbHtq-5fn7qUqi1POSdjPMrjkGWRKlHUoe7n_9cP-bh_vfPtz_7uH-9w_3f3i4_-PD_fe016ywaSdppRDbywVsDco47chWA6edRkvCJrJtrXjhWv4vmAHX9VU2iRoIXxSTWviI_qj6Xn9czzCpGnFmnsiau5eGaaQafoayX-NmV9bKTUzRcsdDWF1nW7Ny0NiVgY-zcmO31uR7NdsLf0_xMAPfl3yAUtQqbBBVpO_NwE7t39P1HN-wlz768Pc_U3zeCVqTjnXQXstvHS6XdXuByq-TV2IFDMLS_wM",
+      "image": "assets/images/arcade/print-3000.png",
+      "author": "Studio In-se",
+      "authorUrl": "https://x.com/Studio_In_se",
+      "sourceUrl": "https://x.com/Studio_In_se/status/2116733883727421586",
+      "publishedAt": "2026-11-01T03:27:39.551Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.bVjdchrJ9b_nKVpdq6k-9AF3z4BADD3YlmSvd1fI0VqKs9T8IwSNwEbDLLTWcgSpfGcvUpVUKqXkLg-Q--R9dJPbPMK_umcGkHehJE1Pnz4fv_PZevKEPDUTM9UknU8SwwIhBJSm2hAzGbxXjIGK7uzyUvUuSqVSKSIkJyWOlGSfpyS4wIIg2_f39_eJzCk4IaSyJs5IN6zqguzlvMoZCS9oC-IN3z0hBPG3qZ-UtimLg8HmSLNMytKvr7W1H7-0zd_qUkBAAsi4PCVEONX1WoeMhPnAg_Lelv05G6uMU2iLn-9w2hbgXvyIgdk2DbigXPAtcAu8cuCp5UB5zoQ7RQmpbMwvb5hJn3K_LjYWbSjX8NCAcruiglbnOtV9w3yA_EDgjtTyI8UBYTXIjCLVxXQy0EwQkh1CK6ZGiCyQXUuxi2raHx4lQ1ZDS-6ECEKI_IGZx30zrl5PElaKiJWHDkgnoW9P3W47b-uIXc5nN8nQRWC1VkjZy6RkZx4JWXw7NywzxvHf0_sFWUbVC1DYb1wqRdV3s0nCKNICobX7bJokygrNgcllJJxD6RNXb6KjHXSytRRCtIJHSbWlgih4Es_bBNBTsiRkueE6UixRbltFyQaXEcuB-9GEChrtejuAR_lQiJWiTIJyUAQDKW-p5BKcyHqhyv8Rj_BMm6iIdO6SWeSx-pT0SCBI_AhaIURMiv0Kz_OoStY_T9fa9AghdNA3NC5F1alOrsy4bGGDwiTrglslCnp2q5SsCwH8dstZBTNZBJXlNtfDm4FmrI-XoKJSKeqXLx1mTwkvuOfnEEmcSy9FmfwMAPw0k__7p3_RNSUpO1VyJP_3z798_whpQup7jfW2IOT20TbbEXxHcAvUlsyMeCfLgoJPIIQs-PxynezZbilK-_OFfmW1e_68SQHlXiki2_EZFTEDUIpGN8nATGYJGTG4K0VzbW7myToUre9W21mwtvzN50fkqHtIH9W5GBOh6HntpNaVYkAxtav9kyBbze1K-icNuzypDSh-pej53km9K4UeUPxM0eOGJah3g4G-OujWX1KcKYE3uMDv8ANe4Ry7eIrneKYEHqiKxI9K4ARP8Dle46ESOFJS-jhUAgeqIn08Uon-QI77Kb5wT19rg79QWkVfm_kkuaqO5rPrg3F_fjAbalZvBLUa14BvLUVP7_qi3ESmn_hiKaDcjPFru7GoTpLB9GaoF8UWToXdmFdHk2T4KhnqW2ZUZHoiVkoDToRybfZKfYdz9aF63U-ZFVCtVnUM2FVv2RXgqZq7HdbTMajoLdMAeK56sTVyhf2MyaI47Zq2UZYJJZuyLiAOR7M5m2rTSzGJZyMyB5ZmeiqlPY-ZXrrri1glEGbuJiaveRSqZj65ttUbVpC9vChdAL5UTKNRlFoz0hvDApR1ZDdcCskpoVxD3iQkFPVf1oBflC642XqBdRSwwm-cKS8ZPT3rEvLw13-zb4AiJYScdQ9PyMNf_8PeAgX8Vm0MtagP9e3JiGngMrRKCNT42HYUqHebHdM56dRbsiVaPmBBaTqGU9qihKLA_L3cz1i4Nyv80sm7UUzzyzytYbd4woX1xQf767J3E1cX6XRiHDwb00ez-VF_MGbMYGqhykKARtTzFtX0ZjFmKZeA1mnGqj3tDzSjEUVKId6cTnBajGV9lZZ9wafcl2GiFH1KO9-pfivZUZRQz_uQce31MYlhBSsonE-MEqFp74eGc_iWGQgngsEqHEwXTAKmg6vqf__0r2raN4ru1xp6WGvokd7rX2ohaIYNypr1CeX04f5va5SdWwkpXXC2hb1sOmfDZrzYAhllA-nD_a-2qdFHCfglE4DfMAitxj9xQZYBV1iRKBEm7bSchrbJOkSmSvNkN8W-MpwlT1Kbf8eK9aMogLKscTa1T-FRddxfsGNYLo-qC23YMfYEPvrGgEfVK7sFvb7XiJdK-s0oYlOvAfii2h8O2TGsVmFRIsufW_3A6SalXxm1teel0_5HJtF06LEfnDdPZLc-oC1byBonvqt7EObEIYxUNvP0bx0DjaOKD2g8jw02O7ZsDSrSB8CPEz0drtbyf8oy4blMJ1GKk71uYKWM-DBq-CGMKmovOxluquFRdTDV_TkDfK7EhuNIMO1Q7Rm01ULpPNiVkp6ne6Log-16pxegj7W41fNRYiPGqeqtSw15R2YjoqFYjpUIx-13-eHlcmccjrlKYJqF67s8Y8Y45glAOFXTYsZEPwuGvmqWTThUDT4tBoF-hRXPHdMSgC8ZfX36qvvmVfclzU4dK7Gufu9wbKvftKoTM5_oBYMsfp5ZUCpsvGFrIIokaqGe8e23a-NeKxm-bjfD10UIfqEC_q7c5-x1RULZhA7t8ufsC24yPd5YbGyWj7ey-hZvxHZsv1cifN9uhO85h3Rw1buNbTr2Xseei8P3nvcmg-sZvxHlPn9fNjbB7dFX6pjzXb9TkS2JQ6FeRaKjBa-1nlVq4Y-ESNCVAwo4cITPKrWWJQ7ZUFQGUH4VKREOuJJ--RW8UW-qo8nU6Dm7VRG7zQjEcvkTdotfYFpE5RqcW-v5N1Bsr1YFGEOb4K4Lb-Jt4OLtuZLOd89eH52SL54d71DUgE5lgW5E8LvBwBt4Vuehkj4WPOuf1reacAXOieHMtH0BZcaM50PZt7m1SOessceZ8WqAUoiKQfrwj19TbPwgu37G4G7oeSyT9VMG2yplWXZAXdCdnnVt1wU8URIXawd_u1EuK1vSd1Urw-tEice0lk7bODHzj3cvci0YdfMVxb5gACxRkc5i4OKzu2R1AbAa9M1gzBK4y_QcCJZUk_61Lpr5KgPnRqmicVUkpsoslz_IbaWyi2Yev64YYNph10oWppvOZ5w62_OBrPWZK1hu20d63jyprTe3BzcLlOlQOyK2nJQdcvDV0bPTrM13j96-Kfo-QOsbBhs__NyGyLWy09yXbBMXXwF-4h17yho7E1tjQi_GVF1xvXFFyBI1FSwFsHGecqXBZJgmEE5GbIfZcWhX7rflcpm2fbFcppGs7wPcnefd9Qqz0SzJhrYkhhjwiqstKTYLDMx7SdwTsd3J1dZlHUnPM9XF7FpbBl-znAg8b2e9qGiAzly0TFHgUtFKBKxWOM6Hx8mIXcPdzsTzLk2Sshp4Hpuon9sZDB75XqueQIk-BliPH0-klyZhBpzVZ0q3RUe0zrhE5jjWYbnUUeB5Z5Hc87zZbk0pAZ53nqvkeTsnnufAiNV5NZ2lbMs5gJZ5Pa-xRjmWAVTcXx9C43lW950Nt1x7A-BG-cKET_LbpbdjYqzFB8o49bucUuXm5kLgQaRE56Blle_oVkWGJlIi03kmWK_i26sgViTKuGfiTOZqDaXVjU3UzxjACo1wkwjY5HMTeYoJqCjlmx7dfLKH6_9f2MVbZqCXxJUUANYTA7kSDO5mnOPE8ybVRN8aBtXhLNFOmgAcCwZ4ncs_VL0A97COtbg3iyLfC9ztwAjWRXdBOM3UyWYkI5jBeS91sQT4sT1fQ_vLmSdtrnC-LmFnb2XdFjHXB_Ls3Rzp2MH47G1T2FYRsMHVwRWMDvoHV4eXh2An8Y9Kbdg_qi1r3ABPN73OzhOxQy1pf_Q8W4bthOGiXcZ44nmbPOiIVgOyUt3tiRi7PRlX2LXnzbxmJ7CNntrLNMWgKJpr5Ed8iFL6211hPzRtmYWNi4x0M1mN0JSbUDHlJiYbHtq-5fn7qUqi1POSdjPMrjkGWRKlHUoe7n_9cP-bh_vfPtz_7uH-9w_3f3i4_-PD_fe016ywaSdppRDbywVsDco47chWA6edRkvCJrJtrXjhWv4vmAHX9VU2iRoIXxSTWviI_qj6Xn9czzCpGnFmnsiau5eGaaQafoayX-NmV9bKTUzRcsdDWF1nW7Ny0NiVgY-zcmO31uR7NdsLf0_xMAPfl3yAUtQqbBBVpO_NwE7t39P1HN-wlz768Pc_U3zeCVqTjnXQXstvHS6XdXuByq-TV2IFDMLS_wM",
+      "adapted": false,
+      "compressedBytes": 2996,
+      "selectionReason": "ネコでJavaScriptの文字を押してコードを組み替え、実際に実行した結果をプリンターで見せるパズル。数式から文字列・型変換・Unicode・自動セミコロン挿入まで37問で扱い、コードの意味と押す順序の両方を考えさせる。",
+      "curation": "ユーザー指定の新作を動作・操作・画面確認後に採用。",
+      "observations": [
+        "作者公開の原版2996bytesをそのまま掲載。操作案内は元からⒶ(Z)・Ⓑ(X)を使用。",
+        "実ブラウザで下→右→右→上と移動して1問目の3をコード行に押し、Ⓑで一手戻し、再度押してⒶ実行。「3000! CLEAR」からⒶで2問目へ進行した。",
+        "元の1問目をそのまま実行すると0を印刷して継続。9問目では3+000、23問目ではtrueが印刷され、誤答後も操作可能。文字を押した後の取り消しも確認。",
+        "Ⓑ+➡の通常操作で後半まで移動し、5・9・18・23・32・37問目と38番目のTHE END画面を実ブラウザで確認。補助検査では37問と終了画面の初期表示を通して上限超過0。",
+        "補助検査で構文を崩して実行し、PAPER JAM!/ReferenceErrorから入力可能な状態に戻ること、正答時のクリアを確認。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-01T04:09:26.434Z",
+        "limits": "全37問の通常解答による全クリアは未確認。後半の確認は作品内の問題移動操作を使った表示確認。エンディングへの問題移動と、37問を解いて到達することは別。",
+        "method": "実エンジンcreateEngine(glyphs)で通常のB+右入力により全37問と終了画面の初期表示を確認。5744フレーム時点で上限超過0。別走行では通常の方向入力で1問目を解き、実行→クリア、構文を崩した実行→ReferenceErrorを確認。補助観察用にクロージャ内の状態を読み出す関数だけ追加し、盤面・キャラクターは書き換えていない。",
+        "initialScreens": {
+          "problems": 37,
+          "endingScreens": 1,
+          "frames": 5744,
+          "overflows": 0
+        },
+        "firstProblem": {
+          "inputs": "下→右→右→上→Ⓐ。通常のボタン入力のみ。",
+          "frames": 353,
+          "overflows": 0,
+          "result": "3をコード行へ押し込み、print(3000)の実行後にクリア状態を確認。"
+        }
+      }
+    },
+    {
+      "title": "td maze.",
+      "url": "/playload/app/#v1.jVlLc-PGEb7zV3w6mADEIQWATxEiFSxFS6po9SK98obFbEEkRKJEkTAArUivVJWLN7nZXqfinFKVnH2OD8kpuedH8JekegZPSk5FB5Ez093T09Nfd09zZwe_CpxgZiMY48762i7ldnbQP5Bn1t312FKQx8FqbhUv8Nr62oZ53ITpeYsHH3eL9zZG956_8LADE8FiMpnZeLBmM-zgFfwHJxhNYR7ncqPF3A_QOUILsqOg1UYv8Jz5pHTjLe46U8vrLMa2XK2XKxUU4ChGyGGeHJ710MJAupBVBZAYpAu5VFWibw3x7eDtqVm8kIYRX6_TPe0Kxl7f7B93iOjVyVnn15y8d3R22UdCbl5enl0J8vXH74li_fEH8fGd-PiUEB98SYQqg8pQ1Bi0IcPBW5rjIz6vxtRXaEHTGejomspwihausI0jhl7fvOyjhd06w-GZeYIWdN3I5WZ2gHO0MJktrq1Zf-r4pfOzk-POW-zvQ2foZdf4WWlJYyBxarT1a5OkzO0HfOHMg4bpedZKPlUYzMNuakGrJStHx73-c55KI76Qi3D1OMWHbVQUhu7JC7vxtVihs4N3vV8WQMuXv7Qc2sVakh0ZrBVaaDCMaFxlGNG4anAa2yUrMHLNXmC7vhjNLD-Ihru7DNd2dhwsAmsW0wtJ_mL23h53SR7drWebY8sN4vG15XmO7XWm1nxij8U2k9nioe_c2Z4Y-rY9fmPN6GortYZmRFCY28vg0poTk8zxIMsJafx1G1qtVqnqVRSgqVp5V63oellBu92GKj4aCnag1er1uq7VIkOPZtYdKSm_Z5gtGKYCc_J77GG2wD79a-I92pg62Kd_TbwnE9_cz0eBs5jj-t6ZjV9bruxOLd9W8CEH3Cw8yGQWh1sIDvZwasApFMQ6IHanK3HwGa4YVhzw2MGVgkeyKlG9Ns8HzhAtbC3x-EjkBIkiNBptrej_iuaOojk-qmIfGppCyFOkjtjRweIGA73BUNYYKipDpczQ2GVktaGS7KgRs3MDeatHguUeSdawjy1-TjQhzitYartD4QsRTzhdjqftmW_zNS5IJ5mhwTihHhI-pSzr2b4dmLOZLIx2UbpxZjNZVQx0T5LvHCpiWNTC8WWybB52kwGBVozKqkJaCZAYIUiMEBBGBhBGBhAN1dgAhPEMEMjCwdiAg_ECHIwsHLiMLCBQQA_bqKv8ZmKvo3OkjUa6maNA9oXRyAlpKhIae6YVHhx7qBiwyDPpdi4GPgURFGAN0UYyJCFDJZJlkSzPDu49sSPpIBzszlpecGByHGX5hV7DNHr8wHbNiT0PZH9xPx-fzYXaQhaZ01phG1ekz5Jh4tn2eGWilRJnhKe0RBjhdzNaeDaZepf-IqeMAomsYA9qSW0onCc9T-EzQh932Nhct-KSboW5bjeBPCdVfRRw8HZwOww1PvhycDs0UlTXi_k9EZ4TBMrI57FFzj_3h9jHayuYlu6cuUzgNA-7fLrdhq5EUI7NMkIrZVm-HzcxF1-AnD1SmR9JERLIEP4I7cROCj5kjOaPDG6XW4PHjqf4NuaEFWspDmYNGeYrcT_81DQxdYIrKmlaHNPz6ObmyyEPHkYuY66Ieh8-mkhRM1jB4YJ7PhG2eMpPmD37gfYVJPvQKyqaKWHFso4milQe_O9ATKYgOztDulRVVRWIYaFAm0VXwIETbx6Mux4hlJQgS8uxHqQFOb889xUyu1altEMOVUQaVZE7RhpTcLWw1YqdO58XcnwFlLuUdLT7f_yShN-SQItY024SxoDUpMVDvd5InXBm3YVVW71GWaFBNdrgfGj8kjlJ1Au5jXypezJwhonj2REFcCGyDE-_Mh-QNYV1t2Fz0zUUhqJOOUqvRP4LITPtAGR42cY2ac756oJUeG8OIkNkjzz3jXDhMrvg2Q_RBQmURiq_ZPFGJhLE_uk_iyqnHIIMzpgw5EU7yi_FHoXB4_gQajvj5TA6OmlFa-0W1TTRrnF0md2GyPO431K6zue5sC3alMG-uTklyUS5T2o0adXYkGPf3FBtGRIL9MU4E6wCY8J8aQVjERwjXBAHyaasGCt84QW4ZIWKcdpdaFiATPu029BedJSnrBfwuiQEHcU8nvrnyzD3z1ci3EWJX8SAJLGLMckI_e7xMSkS2oSh-EbS1UJEkmAgZM_nE_a9pKBQMrVFlpuKl4Ht4jNUGokx5FjMTuhA_GVVTgf8ZM-4LtmDmtWBXlRKum6xXSqlEyEbNUs-j0RsUt-8IDcpHfUKmtBqipIpiGyXqtdKslOhQGVYC1qVRPV4gorKHarwnlVP2vOSTFx-tozbLPaycTVtKtoyXY9pFOsoc0Y1ijuzVrLKIPX1inpWfVMf2ZOOpEQp8ymXS4pXI8epNaLWdPWs_KYyatiNScNuKIqUeUsEzug2rHa5yYO5K1cV0obep_I53Qi1GcpGqjgWm8b0FSUbh0XMGUXpdbRMDktLW63wdZ3PIxwTSMOXAOHst63IDXjq-cBf1XJP6PLZS7pwIK1iFx1RicB10wjd_BuFOY3xh4vOzc-fpyH9MqIvx_S6oL8K6ZMSMbze1Cv_c7PXf_eqe9o5oncQBSo9k7tSAVxw5_Pkg3uoVMN4nhSlWy_LpcrtVokiQuwpSuI0xaJQcuaH7uXeB7LohEj9A_k__yAD_6YL81hioDwbE2kVTsX7OYPzIUM9vSrQLXVP3zQlehHw7s2gR9FQQvdcTPKGkWy7Ssm1xr3A8gJZZ5BUSWHUAVCVbG0UwsMXtZG_mcjvvkIrqkgYfenyCo-Xq9ZSLpVK3ZOSf0-otFYyz20MUYqrKCG4aKPRFC1I__pZYriZiO7E9SSqSoQtyev8IXm8IF7_6Q-SIah1Q1BrEbrjJyVPLdyLE8ZexFYP2Sovswlnj7f78zcRXy3kKz_ju_sKvCyP0z6xisbYIPPMEctcmjBbG7rKC74kuFC1R_LqqoJ91Ckx0lDTVOyjFg0rNKqiiTBMPmW02UOxkZzh3z9GR3hB9VANTU2d-Xd_ixiqEQO5mi8aEzpP4X7cmVAYRlO6QLo8xYjSq-96srXENrWaZOKxVooYSesfv5XS7R5xzBrnJbZRmm2UsP3xnxJDWTgrR4bOqKkn9fpZR48TbsrfywwSyN_rDAkASQKtvOr2-mkJSf59QUJ1U0KFQeqchQiU45TZBl1SPCxAsl0JTUjFIompbYqpMkjmwblQRE4yopCTjDcFVTYF1UKb9Ha65xI30SbCg7BeD6hg1yv0ZRPlAcXfgJpRNYaAd6MCakfVwprCtejdPwi9OpbsroRkdyXqYXf1vCCeEE1ACaiBAtxVBAzi9xYPr1aBnQSBtOxlKHsZyl6mZcfSueLLSPqSYSq6JmUNRVE0TdLFJI_YvE_G6R4fkRoVwtbahPfbJrzhVqmLqVVCW9bCnlg-HxKJWoUE56EpSlpNxId85G8tqljdZaLQUy776VpByb33p3LIpiTPGcAdTQadIzlwlGFJXIlrBUaMWa2MAoIlQ50-VwyCNuXET7lUJinzjv33648_rD9-t_74qXlR_Pzk7ArrH79tmofd07604f7EVHnWzt1P1XjSodnvgv-A0D2A2Uf3XKtucfflvyV0vujj7Lx72j0IV6i9IZl99LD-9Pdm58g8Peyie_pG2oAMbU2evv7p4_qn369_-mb9l78WiOXKPDnB-tPPTUqZif8nXHUGaWp597fWO8t1fSlOqTmgLwr7VJqntPyOfgpBCx9gu-l-d6o3nmqLsxj06cb3E_XE_gs",
+      "image": "assets/images/arcade/td-maze.png",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "sourceUrl": "https://x.com/haruka_apps/status/2116694074258522364",
+      "publishedAt": "2026-11-01T00:49:28.234Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.jVnNUiPJEb7rKT4Oo-5GJdHdav2gRsI9QguEGQRIO-yYkCcaqZE6EFJvdzNIOxDhiyd82z-H12e_hA_2yb77IXgSR1b1r2Ad5oBUVZlZWVn5ZWaldnbwm9AN5w7CCe7s75xKYWcHwwN5bt9dT2wFRRysF3b5HO_s7xxYxy1Yvr98CHC3_ORgfO8HSx87sBAup9O5gwd7PscO3iJ4cMPxDNZxoTBeLoIQ3SO0IbsK2h0MQt9dTCs3_vKuO7P97nLiyLVG1TBQgquYEYd1ctgfoI0r6VxWFUBikM7lSk2JvzXFt4MPp1b5XBrFfINu77QnGAdDa3jcJaK3J_3ubzn54Kh_MURKbl1c9C8F-fOXH4ni-cvP4uMH8fFTSnzwDRGqDCpDWWPQRgwHH2iOj_i8mlBfog1NZ6CjayrDKdq4xDaOGAZD62KINnYbDId96wRt6LpZKMydEGdoYzpfXtvz4cwNKmf9k-PuB-zvQ2cY5Nf4WWlJYyBxarz1O4ukLJwHfO0uwqbl-_ZaPlUYrMNeZkGrpytHx4PhSx6jmVzIebR6nOHDNgyFoXfyym58LVGof_Bx8OsCaPni15Yju9grsiODvUYbTYYxjWsMYxrXTE7jeGQFRq45CB0vEKO5HYTxcHeX4drJj8NlaM8TeiEpWM4_OZMeyaO79R1rYnthMr62fd91_O7MXkydidhmOl8-DN07xxfDwHEm7-05Xa1Rb2pmDIWFswov7AUxyRwPspySJl-3odXrRk2voQRN1aq7qqHrVQWdTgeq-Ggq2IFWbzQaulaPDT2e23ekpPyJYb5kmAnMyZ-wh_kS-_SvhU_oYOZin_618IlMfHO_GIfucoHre3c-eWd7sjezA0fB5wJws_Qhk1lcbiG42MOpCbdUEuuA2J2uxMUbXDKsOeCxg0sFj2RVonpnnV25I7SxtcLjI5ETJMrQaLS1pv9rmjuK5_iohn1oaAkhT7E6YkcXyxtc6U2GqsZgqAxGlaG5y8hqIyXdUSNm9wby1oAEywOSrGEfW_ycaEGcV7DUd0fCF2KeaLqaTDvzwOFrXJBOMiODcUI9InzKWNZ3Aie05nNZGO28cuPO57KqmOidpN85VMSwrEXji3TZOuylAwKtGFVVhbQSIDEjkJgRIMwcIMwcIJqquQEI8wUgkIeDuQEH8xU4mHk4cBl5QKCEAbbRUPnNJF5H58gajXSzxqEcCKORE9JULDTxTDs6OPZgmLDJM-l2zq8CCiIowR6hg3RIQkZKLMsmWb4T3vtiR9JBONidvTrnwOQ4yvMLvUZZ9ASh41lTZxHKwfJ-MekvhNpCFpnTXmMbl6TPimHqO85kbaGdEWdGp7RFGOF3M176Dpl6l_5ip4wDiaxgD2pFbSqcJztP4TNGH3fYxFy34pJuhbluN4G8IFUDlHDw4ep2FGl88M3V7cjMUF0vF_dEeEYQqKJYxBY5_yIYYR_v7HBWuXMXMoHTOuzx6U4HuhJDOTHLGO2MZfl-3MRcfAly_khVfiRFSCBDBGN0Ujsp-JwzWjA2uV1uTR47npLbWBBW7JU4mD1iWKzF_fBT08TMDS-ppGlzTC_im1usRjx4mIWcuWLqfQRoIUPNYIeHS-75RNjmKT9l9p0H2leQ7EM3VLQywspVHS2UqTz434GYTEF2dkd0qaqqKhDDUok2i6-AAyfZPJz0fEIoKUGWlhM9SAtyfnkRKGR2rUZphxyqjCyqYneMNabgamOrnTh3sSjkBAoodynZaPf_-CUJvyWBNrFm3SSKAZlJm4d6vZk54dy-i6q2Rp2yQpNqtKuzkflr5iRRr-Q28qXeyZU7Sh3PiSmAc5FlePqV-YCsKay7DYebrqkwlHXKUboR-y-EzKwDkOFlB9ukOedrCFLhvQWIDJE_8iIwo4WL_ILvPMQXJFAaq_yaxZu5SJD4Z_AiqpxyCDK4E8KQH-8ovxZ7FAaf40Oo7U5Wo_jopBWtddpU08S7JtFlfhshz-d-S-m6WOTCtmhTBufm5pQkE-U-qdGiVXNDjnNzQ7VlRCzQl-BMsAqMCfNlFUxEcIxwQRwkm7ISrPCFV-CSFyrGWXehYQky7dPpQHvVUZ7yXsDrkgh0FPN46l-soty_WItwFyd-EQPSxC7GJCPyu8fHtEjoEIaSG8lWCzFJioGIvVhM2ffSgkLJ1RZ5biperhwPb2A0U2PIiZidyIH4y6qaDfjpnkldsgc1rwO9qJRs3eJ4VEqnQjZqlmIRqdi0vnlFblo66gZa0OqKkiuIHI-qVyPdqVSiMqwNrUaiBjxBxeUOVXgvqiftZUkmLj9fxm0We_m4mjUVbZmtxzSKdZQ54xrFm9trWWWQhrqh9mvvG2Nn2pWUOGU-FQpp8WoWOLVG1Jqu9qvvjXHTaU6bTlNRpNxbInTHt1G1y00eLjy5ppA29D6Vz-hGqM1QNTPFsdg0oTeUfBwWMWccp9fxKj0sLW21o9d1sYhoTCCNXgKEs9-3Yzfgqeczf1XLA6HLm9d04UBaJy46phKB66YRuvk3CnMa4w8XnZufP08j-lVMX03odUF_GdGnJWJ0vZlX_lfWYPjxbe-0e0TvIApUei53ZQK44C4WyQf3YNSieJ4WpVuvy6XK7VaJI0LiKUrqNOWyUHIeRO7l3Yey6IRIwwP5P_8gA_-uB-tYYqA8mxBpBqfi_ZyrsxFDI7sq0C31Tt-3JHoR8O7N1YCioYTemZjkDSPZ8ZSKZ08Goe2Hss4gqZLCqAOgKvnaKIJHIGqjYDOR332LdlyRMPrS4xUeL1ftlVypVHonleCeUGmvZZ7bGOIUZygRuGij8QxtSP_6u8RwMxXdietpXJUIW5LXBSPyeEH8_Jc_Saag1k1BrcXoTp6UPLVwL04ZBzFbI2IzXmcTzp5s99c_xnz1iK_6gu_uW_CyPEn7xCoaY1e5Z45Y5tKE2TrQVV7wpcGFqj2S11AV7KNBiZGGmqZiH_V4aNCohhaiMPmU02YP5WZ6hn__Eh_hFdUjNTQ1c-Y__C1mqMUM5GqBaEzoPIUHSWdCYRjP6ALp8hQzTq-B58v2CtvUapKJx14rYiQ9__K9lG33iGPWOS-xjbNs45Ttz_-UGKrCWTkydEZNPWkwzDt6knAz_l5lkED-3mBIAUgSaOVtbzDMSkjz7ysSapsSDAap248QKCcpswO6pGRYguR4ElqQymUSU98UU2OQrIMzoYicZkQhJx1vCjI2BdUjmwx2emcSN9EmwsOoXg-pYNcN-rKJ8pDib0jNqDpDyLtRIbWj6lFN4dn07r-KvDqR7K2FZG8t6mFv_bIgnhJNSAmoiRK8dQwM4veXD2_XoZMGgazsVSR7FcleZWUn0rniq1j6imEmuiZVDWVRNE2zxSSP2LxPxukeH5EZlaLW2pT326a84WY0xNQ6pa1qUU-sWIyIRK1CgovQFCWrJpJDPvK3FlWs3ipV6KmQ__TssOLdBzM5YlPS5wzgjadX3SM5dJVRRVyJZ4dmglmtihLCFUODPtcMgjbjxE-FTCap8o79j89ffn7-8sPzl59a5-WvTvqXeP7l-5Z12DsdShvuT0zGi3bufqbGkw6tYQ_8B4TeAawhemdabYu7L_8tofv1EP2z3mnvIFqh9ob0rv--h-7XF4P-BYZ9yBprKiWr3Tt9L20ghzQghxfxtmS1Lq2TE7xtUb5MnT-lbTBIM9u_v7U_2p4XSEk-LQBDUdVncjzl5I_0Owja-AzHyza7M43xTE-cJYjPdr2fqCH2Xw",
+      "adapted": true,
+      "compressedBytes": 2825,
+      "selectionReason": "学習した経路と試行回数のグラフを同時に見せ、壁の追加や環境変化に対する経路の学び直しと、4方式の違いを操作して観察できる強化学習デモ。",
+      "curation": "ユーザー指定の新作を動作・操作・画面確認後に採用。",
+      "observations": [
+        "原版2812bytes。操作案内2か所だけを「AT S Ⓐ:CHANGE ENV」「⬆⬇⬅➡+Ⓐ:WALL Ⓑ:ALGO」に置換し、20文字幅へ収めた。経路上の矢印はQ値の表示なので保持。",
+        "実ブラウザで方向入力のカーソル移動、Ⓐの壁切替、ⒷのQ(.8)→DYNA-Q切替を確認。EP15で通路が閉じ、Q(.8)がEP34でSTEP16・BEST16・CONV12ep・ADPT9epとなる場面を確認。",
+        "補助検査では原版と掲載版で学習指標・音が一致。4方式×3環境の検証結果はvalidationに記録。45エピソードで学習が停止するデモの仕様をソースで確認。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-01T04:09:26.434Z",
+        "limits": "ブラウザではQ(.8)とDyna-QのBLOCK環境を確認。その他の方式・環境と45EP到達は補助検査。全ての壁配置や学習収束は保証しない。",
+        "method": "実エンジンcreateEngine(glyphs)で原版と掲載版を実行。4方式×3環境を作者のPOLICY/SCENEオプションで初期化。各4000フレーム、500/502フレームでA、501フレームで右を入力。状態の書き換えなし。全フレームで学習指標と音イベントを比較して一致し、上限超過0。",
+        "runs": [
+          {
+            "policy": 0,
+            "scene": 0,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 2169,
+              "lastSteps": 19,
+              "bestSteps": 16,
+              "solvedEp": 25,
+              "reAdaptEp": -1
+            }
+          },
+          {
+            "policy": 0,
+            "scene": 1,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 3994,
+              "lastSteps": 18,
+              "bestSteps": 18,
+              "solvedEp": 44,
+              "reAdaptEp": 29
+            }
+          },
+          {
+            "policy": 0,
+            "scene": 2,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 2570,
+              "lastSteps": 20,
+              "bestSteps": 16,
+              "solvedEp": 26,
+              "reAdaptEp": 20
+            }
+          },
+          {
+            "policy": 1,
+            "scene": 0,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 1557,
+              "lastSteps": 16,
+              "bestSteps": 16,
+              "solvedEp": 12,
+              "reAdaptEp": -1
+            }
+          },
+          {
+            "policy": 1,
+            "scene": 1,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 2139,
+              "lastSteps": 16,
+              "bestSteps": 16,
+              "solvedEp": 11,
+              "reAdaptEp": 7
+            }
+          },
+          {
+            "policy": 1,
+            "scene": 2,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 2201,
+              "lastSteps": 18,
+              "bestSteps": 16,
+              "solvedEp": 19,
+              "reAdaptEp": 4
+            }
+          },
+          {
+            "policy": 2,
+            "scene": 0,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 1694,
+              "lastSteps": 26,
+              "bestSteps": 20,
+              "solvedEp": 8,
+              "reAdaptEp": -1
+            }
+          },
+          {
+            "policy": 2,
+            "scene": 1,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 3784,
+              "lastSteps": 18,
+              "bestSteps": 18,
+              "solvedEp": 13,
+              "reAdaptEp": 21
+            }
+          },
+          {
+            "policy": 2,
+            "scene": 2,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 2307,
+              "lastSteps": 28,
+              "bestSteps": 20,
+              "solvedEp": 23,
+              "reAdaptEp": -1
+            }
+          },
+          {
+            "policy": 3,
+            "scene": 0,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 1247,
+              "lastSteps": 16,
+              "bestSteps": 16,
+              "solvedEp": 10,
+              "reAdaptEp": -1
+            }
+          },
+          {
+            "policy": 3,
+            "scene": 1,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 1611,
+              "lastSteps": 16,
+              "bestSteps": 16,
+              "solvedEp": 12,
+              "reAdaptEp": 9
+            }
+          },
+          {
+            "policy": 3,
+            "scene": 2,
+            "frames": 4000,
+            "overflow": 0,
+            "stats": {
+              "ep": 45,
+              "totalSteps": 1382,
+              "lastSteps": 22,
+              "bestSteps": 16,
+              "solvedEp": 11,
+              "reAdaptEp": 3
+            }
+          }
+        ]
+      }
+    },
     {
       "title": "ローグライ塔",
       "url": "/playload/app/#v1.rVnpbxvHFf_Ov2I9ghYz3iE9s0tKFJdDVU7YqI5vyVcW-2F3OSuuxSvkKiJBCjDlIGlQu0dSp20QwAmaBk0K50BaNICd_DFm7CSfkj-hmFkeS4qylDRDaY_fvPfmvTfvWC5PnVKsMxftwe0Hg9uPBvufDW5_NNj_4Mn7f06cOqW8lFMGt98d3H7vu38--ParTwR0PadEN4P-Xwb9-9H0YP_Np2_d_eardwXFEOp_-vTefwb9T76_9c53798Z7O9__9eHg_1bg1v7gujb_r-e3v980P_0u9c_fvLb1wb7-0_ufvH0wcMfHvXF9NM3bj2903_y6Oun9z4b9O88-eCdQf_VQf_hoP_RiPPON4--HPS_GOz_TvAIJqt43r5c39rhlWCbJ4NWWdms7_Lm0JCLFcfjiqO49ao7NOS5ei1s1itKWOZj-HS96rYUt1L3thVe49WOUq2_wqu8FqbE9KYgrTitUNkOKpWW0qnvKGG9fkLMnas3IzkthSmVem2LN4e0Tae2xVOJRCJR4aFykVmAELJMsoSTFUp0f5kADAjhhBKfGIR6vmdwgIGu61maJlmSJpxkDR9gkPZImghIfNI-l4xSGiWEZMVhCHGJZ-VxRJUlS0I-WZ5AhBNf_GdjECEkTaYYx5IkRNM0Q4wxrYCyxCGevKGzjEQX601BabIUo9IJmZI1Xj0OTQ3_AORJqpWYBhGjQWjWyI4RAmx8hYG10889X_z1C-u_OfPi2XPnL1y8dHljE-BrLGAFi2IdL-EMNmwrKBR0G-8yip9nFsEUE5wUB4qJjS8xC_x4_85dgMGP9z9-S57u_h5g8Phv_wA2vsGs9FAO3mAWkPN_-joi-0N0elWe_vi6PN379w9fRvgHb0f4_YjnYXQXLfTha8DGF4Q2hpCNl3Fa6ivulmz8ktSTyj8dL4sDNeQfxctYJzZejywRVoqjgVMZcZHK4IyN10aTdAhLqpQ04hyzAF6YM_BCaiM1MwQ4NdamwIUpytFIpaLjHPajQMlYPA5lbBRnwOnVi0exz6wuxvqzKOcMgA91aUzJYxgV82EMjPNPgQfYx8ofi3IkdgKuPUOlWYsOUA7HxtFmzoI_yaXjXZqodyRYnIDH12rKUXPAhQm4Ft1uTIEyMBdiWvykeJ5k0vg8sWj9WLb_9Cid2CbA9Wm9ZrJsGJKzax3b0mIcPESl4mHsCzFwkloLciemLRol04EScbx42JiAP9ulB8VuzAMPc9SsAnPB2MQw9sRnGlybI_NAgTxU5tzVD1H-mZEzf6GjXbowL85Ht-txsYdodRg4FDxddccFNwaOvTUDptZk0s6AEzHjIE9NAvJn6BkPnKH3psj-v8Q_qMBMlM6k35HsC8cD43EVb9nHZB-N4rNViuSuP0P5tV-u4xfjUmfEFmNaxTYwqvJ4_PC0Po7LMTgplHFwPH4eOE9mtPPT4Fw9D4Lznf8LuHSe2I154FFrTVEer5oNk3hapVgLntWzeFDm4UX7OA-r48L9rCD_RVx6CFicA45b9MKR7McEo_0cVvIDiXMMmfNVmqf88WTOc6mNE6cZdLCLWKFqubbl2IyBBdDruW3GHFV1O4y5OHGGQcQKrUYTtk9mk1nckUfwuP-G_H5oIJwoNRkMcAuxQle8UGiwq1Zgm41Uhde2wnKv10g1dlplmEqlWshs8nCnWVMaqVajEngcnnPCcqrp1Er1KkQnx0wEU2QRey_h15swYMQM8joxA01DDW_LumIFtp1qOCG7aAU2nkBevcKsazBAmNgJAYMrICIENEu9JUd86TY8w1v2gBkRXB0RjL6T09HLhiHBtWkCw1taSutxgutHSbgxSzB6ewHMxERLqbv4Lh9TTGL6BLs2wowJdn0O3Y1pOn-n5oVBvaZUX4EcyV0KGbeIjR3GrbSNXcatjI1LjFtLNvZw2Qx8GOaNXshYGnkszOurJFfCZXlVyhF8Gjqah12tjFZLLFnKQUdj4p6VkckrLa4IAYWVXk9usOO2YDvpoHxaVcdAJ-lKIFw0ChQ5GoPtgqOqJ4Roil2EkrCdHwJJCQj5sFNwIwy7GhVEnfwYSFIUW_4Ey6BuyNiyqsISm460dI8g02OO9rxVss0yc8WFZtjmaejhMloVbL0eLDFY0mC4aPR6YT6zSnMGQotplIOOsJaV0R4fRXIaG9jBLi6hvYnDz8Ia6ooYvsmIeTNPl82bmoYOBHXXY1Xrpi3yxpNpqKqNnRAG-CYGj99-D2CK5MQGUFXYarMAtzrsZoStCywUWNhhN_GY78f7H78rEjSiWgOquqWqMBCEQZzwktUKbHxDHIe0RaCqNVWFLzO_QMlqqQl1bIla1mw6HZgmKLXNOy2IbLRIiUZzPi5GKW69jOGK5qOT69bLdo9gmBY3a9HNEharURuhvUQxVXUakLOCUEJGoIw_oACEzMlsl1uGnUyKYOQWtQtEVQWSp0jOsJcsEcS2mI-FmZCHtFiYCdkor6NyI8m4pYvFqJ1kTriNyy22hEuc6QQLiRqjBDcqTgfqGGzSLDmXvXKdZgm5Ri4Y56kHkOTNU1Xd1rQo0mRO7Y30mzZoI1IQX4jOaC8eG-ch6raYn6d01U_SnL8Y-ZrEfL0ycXVuxWwF4w2h2Ireh-nYkB8iPjbKAWJQ3dDFe1Vg-Ulqm1V2zmrZMkpDCDBA5hajZpFZtulVWpAg8yykyGyzVtvssFYnpuFliLo-o2a5waplliGmE24zSkzuM8MMPLbNdkO2w8otVuKsGrKGy7bqzC21mVvqMKfDiOm2mdthSWo6bUbNq8yybCz_bFP6mWBw5boxcjDQAFc9Nfrn6pbKQarJG9wJ4crKCkLmeRj3YIk7JYi65QYj5lad0bHIC5ktECcMA28bou6uqsJdRvBliJApdkq8PgU-0PzoNoMJvmQRW-NDICsBamtOuD3k0CVk2Fq5oYFTQKuWNaAoigJGEukyBuJ1vAK0EQ-RYBDyqgK0wENmIvDhVh11z8DRwhkMmry1UwnBCFnGwK_U600lpt7KUPREdgZTMhQ9lC3QJfGqFTx-879Kk4fNzki3tHjxCgb9Dwf9Lwf9vwNkHqhEIQsW01j0e0qyWrion8zilSUNhoUCRSezWPRZLDosMt2wBjNIVS_DUVvfS-yGmmbuiETYSSbNEhdX8AxEuMSTycju3bCwjLqBD3dEGhVTrXqVi2SfZHjaZqwtLjI2Yx2EZJLusBUiEr3cKhDULbeSydGiuyEj0pASI2YpnzZLmoYCHwr95JtpinXbKtkIdR0my73LhsW-anU017bammOfiMoubGvMwR2NuUiErGM6Hebu7SWEsDRS1RMNV1W5L-1y26yN3Q7rYDdkNEtww2UUcz-ZjGoIxWBTT5OrVL-wdJ56L8ji1nAZo1GdcAW3DDhsJKEbnoJuWFgiqwbJUR31CFrUkZkYuXnICEV6OW0cZVjkUk2rhgUDdavCE4EPJamw1m1rbqltusztaG6pY05WFaXWjD_4rY7SluSEYY4wzEV7eyOFk0k3FBsGeZu5bcw7zO3gUXbjMbPwgY43WZpEqgluHXUrUfutBjXIfY1imCbJTXRKF114dusmMckqUXd0GG_LRn0yMF3GO8NefTIQxsaNQG6TO9vSTNGKNwt0FTx-cA_kgCJaoRk92oonW1WNioc5bjZR3DmjuBPbPIxI2XwYwduahtBeMrnZ6wm7CNqTeayqbcaCtpQbdFC3FeTpKvcnFq9g7ms6yrWCvL7qhNsay4hrYxVWy7LjlBvihHKyzppT_Wc5Fj3mlvCKp2nSwKCNg2gfpRptxsJIh7CDur7oTr7GuJ9fEUVznKBnIZJZ1BBZlFCU4ZO9eK7H4Ip80JhFrwKcOYhekw6dRa_Ppb0B8BIyE3uyX0Z-3xM_km6Wndq2_NXSrzcVYXdQ2xK_Xv7qWlApvei4da_sJP4H",
@@ -4330,6 +4562,26 @@
       "publishedAt": "2026-10-31T11:35:36.333Z",
       "status": "対象外",
       "reason": "プロフィール上で「な、なぜ……！？」という投稿を確認。作品URLなし。採用版や更新版の根拠には使わない。"
+    },
+    {
+      "url": "https://kitao.dev/playload/app/#v1.jVnNUiPJEb7rKT4Oo-5GJdHdav2gRsI9QguEGQRIO-yYkCcaqZE6EFJvdzNIOxDhiyd82z-H12e_hA_2yb77IXgSR1b1r2Ad5oBUVZlZWVn5ZWaldnbwm9AN5w7CCe7s75xKYWcHwwN5bt9dT2wFRRysF3b5HO_s7xxYxy1Yvr98CHC3_ORgfO8HSx87sBAup9O5gwd7PscO3iJ4cMPxDNZxoTBeLoIQ3SO0IbsK2h0MQt9dTCs3_vKuO7P97nLiyLVG1TBQgquYEYd1ctgfoI0r6VxWFUBikM7lSk2JvzXFt4MPp1b5XBrFfINu77QnGAdDa3jcJaK3J_3ubzn54Kh_MURKbl1c9C8F-fOXH4ni-cvP4uMH8fFTSnzwDRGqDCpDWWPQRgwHH2iOj_i8mlBfog1NZ6CjayrDKdq4xDaOGAZD62KINnYbDId96wRt6LpZKMydEGdoYzpfXtvz4cwNKmf9k-PuB-zvQ2cY5Nf4WWlJYyBxarz1O4ukLJwHfO0uwqbl-_ZaPlUYrMNeZkGrpytHx4PhSx6jmVzIebR6nOHDNgyFoXfyym58LVGof_Bx8OsCaPni15Yju9grsiODvUYbTYYxjWsMYxrXTE7jeGQFRq45CB0vEKO5HYTxcHeX4drJj8NlaM8TeiEpWM4_OZMeyaO79R1rYnthMr62fd91_O7MXkydidhmOl8-DN07xxfDwHEm7-05Xa1Rb2pmDIWFswov7AUxyRwPspySJl-3odXrRk2voQRN1aq7qqHrVQWdTgeq-Ggq2IFWbzQaulaPDT2e23ekpPyJYb5kmAnMyZ-wh_kS-_SvhU_oYOZin_618IlMfHO_GIfucoHre3c-eWd7sjezA0fB5wJws_Qhk1lcbiG42MOpCbdUEuuA2J2uxMUbXDKsOeCxg0sFj2RVonpnnV25I7SxtcLjI5ETJMrQaLS1pv9rmjuK5_iohn1oaAkhT7E6YkcXyxtc6U2GqsZgqAxGlaG5y8hqIyXdUSNm9wby1oAEywOSrGEfW_ycaEGcV7DUd0fCF2KeaLqaTDvzwOFrXJBOMiODcUI9InzKWNZ3Aie05nNZGO28cuPO57KqmOidpN85VMSwrEXji3TZOuylAwKtGFVVhbQSIDEjkJgRIMwcIMwcIJqquQEI8wUgkIeDuQEH8xU4mHk4cBl5QKCEAbbRUPnNJF5H58gajXSzxqEcCKORE9JULDTxTDs6OPZgmLDJM-l2zq8CCiIowR6hg3RIQkZKLMsmWb4T3vtiR9JBONidvTrnwOQ4yvMLvUZZ9ASh41lTZxHKwfJ-MekvhNpCFpnTXmMbl6TPimHqO85kbaGdEWdGp7RFGOF3M176Dpl6l_5ip4wDiaxgD2pFbSqcJztP4TNGH3fYxFy34pJuhbluN4G8IFUDlHDw4ep2FGl88M3V7cjMUF0vF_dEeEYQqKJYxBY5_yIYYR_v7HBWuXMXMoHTOuzx6U4HuhJDOTHLGO2MZfl-3MRcfAly_khVfiRFSCBDBGN0Ujsp-JwzWjA2uV1uTR47npLbWBBW7JU4mD1iWKzF_fBT08TMDS-ppGlzTC_im1usRjx4mIWcuWLqfQRoIUPNYIeHS-75RNjmKT9l9p0H2leQ7EM3VLQywspVHS2UqTz434GYTEF2dkd0qaqqKhDDUok2i6-AAyfZPJz0fEIoKUGWlhM9SAtyfnkRKGR2rUZphxyqjCyqYneMNabgamOrnTh3sSjkBAoodynZaPf_-CUJvyWBNrFm3SSKAZlJm4d6vZk54dy-i6q2Rp2yQpNqtKuzkflr5iRRr-Q28qXeyZU7Sh3PiSmAc5FlePqV-YCsKay7DYebrqkwlHXKUboR-y-EzKwDkOFlB9ukOedrCFLhvQWIDJE_8iIwo4WL_ILvPMQXJFAaq_yaxZu5SJD4Z_AiqpxyCDK4E8KQH-8ovxZ7FAaf40Oo7U5Wo_jopBWtddpU08S7JtFlfhshz-d-S-m6WOTCtmhTBufm5pQkE-U-qdGiVXNDjnNzQ7VlRCzQl-BMsAqMCfNlFUxEcIxwQRwkm7ISrPCFV-CSFyrGWXehYQky7dPpQHvVUZ7yXsDrkgh0FPN46l-soty_WItwFyd-EQPSxC7GJCPyu8fHtEjoEIaSG8lWCzFJioGIvVhM2ffSgkLJ1RZ5biperhwPb2A0U2PIiZidyIH4y6qaDfjpnkldsgc1rwO9qJRs3eJ4VEqnQjZqlmIRqdi0vnlFblo66gZa0OqKkiuIHI-qVyPdqVSiMqwNrUaiBjxBxeUOVXgvqiftZUkmLj9fxm0We_m4mjUVbZmtxzSKdZQ54xrFm9trWWWQhrqh9mvvG2Nn2pWUOGU-FQpp8WoWOLVG1Jqu9qvvjXHTaU6bTlNRpNxbInTHt1G1y00eLjy5ppA29D6Vz-hGqM1QNTPFsdg0oTeUfBwWMWccp9fxKj0sLW21o9d1sYhoTCCNXgKEs9-3Yzfgqeczf1XLA6HLm9d04UBaJy46phKB66YRuvk3CnMa4w8XnZufP08j-lVMX03odUF_GdGnJWJ0vZlX_lfWYPjxbe-0e0TvIApUei53ZQK44C4WyQf3YNSieJ4WpVuvy6XK7VaJI0LiKUrqNOWyUHIeRO7l3Yey6IRIwwP5P_8gA_-uB-tYYqA8mxBpBqfi_ZyrsxFDI7sq0C31Tt-3JHoR8O7N1YCioYTemZjkDSPZ8ZSKZ08Goe2Hss4gqZLCqAOgKvnaKIJHIGqjYDOR332LdlyRMPrS4xUeL1ftlVypVHonleCeUGmvZZ7bGOIUZygRuGij8QxtSP_6u8RwMxXdietpXJUIW5LXBSPyeEH8_Jc_Saag1k1BrcXoTp6UPLVwL04ZBzFbI2IzXmcTzp5s99c_xnz1iK_6gu_uW_CyPEn7xCoaY1e5Z45Y5tKE2TrQVV7wpcGFqj2S11AV7KNBiZGGmqZiH_V4aNCohhaiMPmU02YP5WZ6hn__Eh_hFdUjNTQ1c-Y__C1mqMUM5GqBaEzoPIUHSWdCYRjP6ALp8hQzTq-B58v2CtvUapKJx14rYiQ9__K9lG33iGPWOS-xjbNs45Ttz_-UGKrCWTkydEZNPWkwzDt6knAz_l5lkED-3mBIAUgSaOVtbzDMSkjz7ysSapsSDAap248QKCcpswO6pGRYguR4ElqQymUSU98UU2OQrIMzoYicZkQhJx1vCjI2BdUjmwx2emcSN9EmwsOoXg-pYNcN-rKJ8pDib0jNqDpDyLtRIbWj6lFN4dn07r-KvDqR7K2FZG8t6mFv_bIgnhJNSAmoiRK8dQwM4veXD2_XoZMGgazsVSR7FcleZWUn0rniq1j6imEmuiZVDWVRNE2zxSSP2LxPxukeH5EZlaLW2pT326a84WY0xNQ6pa1qUU-sWIyIRK1CgovQFCWrJpJDPvK3FlWs3ipV6KmQ__TssOLdBzM5YlPS5wzgjadX3SM5dJVRRVyJZ4dmglmtihLCFUODPtcMgjbjxE-FTCap8o79j89ffn7-8sPzl59a5-WvTvqXeP7l-5Z12DsdShvuT0zGi3bufqbGkw6tYQ_8B4TeAawhemdabYu7L_8tofv1EP2z3mnvIFqh9ob0rv--h-7XF4P-BYZ9yBprKiWr3Tt9L20ghzQghxfxtmS1Lq2TE7xtUb5MnT-lbTBIM9u_v7U_2p4XSEk-LQBDUdVncjzl5I_0Owja-AzHyza7M43xTE-cJYjPdr2fqCH2Xw",
+      "sourceUrl": "https://x.com/haruka_apps/status/2116694074258522364",
+      "publishedAt": "2026-11-01T00:49:28.234Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "title": "td maze.",
+      "status": "採用",
+      "reason": "学習した経路と試行回数のグラフを同時に見せ、壁の追加や環境変化に対する経路の学び直しと、4方式の違いを操作して観察できる強化学習デモ。"
+    },
+    {
+      "url": "https://kitao.dev/playload/app/#v1.bVjdchrJ9b_nKVpdq6k-9AF3z4BADD3YlmSvd1fI0VqKs9T8IwSNwEbDLLTWcgSpfGcvUpVUKqXkLg-Q--R9dJPbPMK_umcGkHehJE1Pnz4fv_PZevKEPDUTM9UknU8SwwIhBJSm2hAzGbxXjIGK7uzyUvUuSqVSKSIkJyWOlGSfpyS4wIIg2_f39_eJzCk4IaSyJs5IN6zqguzlvMoZCS9oC-IN3z0hBPG3qZ-UtimLg8HmSLNMytKvr7W1H7-0zd_qUkBAAsi4PCVEONX1WoeMhPnAg_Lelv05G6uMU2iLn-9w2hbgXvyIgdk2DbigXPAtcAu8cuCp5UB5zoQ7RQmpbMwvb5hJn3K_LjYWbSjX8NCAcruiglbnOtV9w3yA_EDgjtTyI8UBYTXIjCLVxXQy0EwQkh1CK6ZGiCyQXUuxi2raHx4lQ1ZDS-6ECEKI_IGZx30zrl5PElaKiJWHDkgnoW9P3W47b-uIXc5nN8nQRWC1VkjZy6RkZx4JWXw7NywzxvHf0_sFWUbVC1DYb1wqRdV3s0nCKNICobX7bJokygrNgcllJJxD6RNXb6KjHXSytRRCtIJHSbWlgih4Es_bBNBTsiRkueE6UixRbltFyQaXEcuB-9GEChrtejuAR_lQiJWiTIJyUAQDKW-p5BKcyHqhyv8Rj_BMm6iIdO6SWeSx-pT0SCBI_AhaIURMiv0Kz_OoStY_T9fa9AghdNA3NC5F1alOrsy4bGGDwiTrglslCnp2q5SsCwH8dstZBTNZBJXlNtfDm4FmrI-XoKJSKeqXLx1mTwkvuOfnEEmcSy9FmfwMAPw0k__7p3_RNSUpO1VyJP_3z798_whpQup7jfW2IOT20TbbEXxHcAvUlsyMeCfLgoJPIIQs-PxynezZbilK-_OFfmW1e_68SQHlXiki2_EZFTEDUIpGN8nATGYJGTG4K0VzbW7myToUre9W21mwtvzN50fkqHtIH9W5GBOh6HntpNaVYkAxtav9kyBbze1K-icNuzypDSh-pej53km9K4UeUPxM0eOGJah3g4G-OujWX1KcKYE3uMDv8ANe4Ry7eIrneKYEHqiKxI9K4ARP8Dle46ESOFJS-jhUAgeqIn08Uon-QI77Kb5wT19rg79QWkVfm_kkuaqO5rPrg3F_fjAbalZvBLUa14BvLUVP7_qi3ESmn_hiKaDcjPFru7GoTpLB9GaoF8UWToXdmFdHk2T4KhnqW2ZUZHoiVkoDToRybfZKfYdz9aF63U-ZFVCtVnUM2FVv2RXgqZq7HdbTMajoLdMAeK56sTVyhf2MyaI47Zq2UZYJJZuyLiAOR7M5m2rTSzGJZyMyB5ZmeiqlPY-ZXrrri1glEGbuJiaveRSqZj65ttUbVpC9vChdAL5UTKNRlFoz0hvDApR1ZDdcCskpoVxD3iQkFPVf1oBflC642XqBdRSwwm-cKS8ZPT3rEvLw13-zb4AiJYScdQ9PyMNf_8PeAgX8Vm0MtagP9e3JiGngMrRKCNT42HYUqHebHdM56dRbsiVaPmBBaTqGU9qihKLA_L3cz1i4Nyv80sm7UUzzyzytYbd4woX1xQf767J3E1cX6XRiHDwb00ez-VF_MGbMYGqhykKARtTzFtX0ZjFmKZeA1mnGqj3tDzSjEUVKId6cTnBajGV9lZZ9wafcl2GiFH1KO9-pfivZUZRQz_uQce31MYlhBSsonE-MEqFp74eGc_iWGQgngsEqHEwXTAKmg6vqf__0r2raN4ru1xp6WGvokd7rX2ohaIYNypr1CeX04f5va5SdWwkpXXC2hb1sOmfDZrzYAhllA-nD_a-2qdFHCfglE4DfMAitxj9xQZYBV1iRKBEm7bSchrbJOkSmSvNkN8W-MpwlT1Kbf8eK9aMogLKscTa1T-FRddxfsGNYLo-qC23YMfYEPvrGgEfVK7sFvb7XiJdK-s0oYlOvAfii2h8O2TGsVmFRIsufW_3A6SalXxm1teel0_5HJtF06LEfnDdPZLc-oC1byBonvqt7EObEIYxUNvP0bx0DjaOKD2g8jw02O7ZsDSrSB8CPEz0drtbyf8oy4blMJ1GKk71uYKWM-DBq-CGMKmovOxluquFRdTDV_TkDfK7EhuNIMO1Q7Rm01ULpPNiVkp6ne6Log-16pxegj7W41fNRYiPGqeqtSw15R2YjoqFYjpUIx-13-eHlcmccjrlKYJqF67s8Y8Y45glAOFXTYsZEPwuGvmqWTThUDT4tBoF-hRXPHdMSgC8ZfX36qvvmVfclzU4dK7Gufu9wbKvftKoTM5_oBYMsfp5ZUCpsvGFrIIokaqGe8e23a-NeKxm-bjfD10UIfqEC_q7c5-x1RULZhA7t8ufsC24yPd5YbGyWj7ey-hZvxHZsv1cifN9uhO85h3Rw1buNbTr2Xseei8P3nvcmg-sZvxHlPn9fNjbB7dFX6pjzXb9TkS2JQ6FeRaKjBa-1nlVq4Y-ESNCVAwo4cITPKrWWJQ7ZUFQGUH4VKREOuJJ--RW8UW-qo8nU6Dm7VRG7zQjEcvkTdotfYFpE5RqcW-v5N1Bsr1YFGEOb4K4Lb-Jt4OLtuZLOd89eH52SL54d71DUgE5lgW5E8LvBwBt4Vuehkj4WPOuf1reacAXOieHMtH0BZcaM50PZt7m1SOessceZ8WqAUoiKQfrwj19TbPwgu37G4G7oeSyT9VMG2yplWXZAXdCdnnVt1wU8URIXawd_u1EuK1vSd1Urw-tEice0lk7bODHzj3cvci0YdfMVxb5gACxRkc5i4OKzu2R1AbAa9M1gzBK4y_QcCJZUk_61Lpr5KgPnRqmicVUkpsoslz_IbaWyi2Yev64YYNph10oWppvOZ5w62_OBrPWZK1hu20d63jyprTe3BzcLlOlQOyK2nJQdcvDV0bPTrM13j96-Kfo-QOsbBhs__NyGyLWy09yXbBMXXwF-4h17yho7E1tjQi_GVF1xvXFFyBI1FSwFsHGecqXBZJgmEE5GbIfZcWhX7rflcpm2fbFcppGs7wPcnefd9Qqz0SzJhrYkhhjwiqstKTYLDMx7SdwTsd3J1dZlHUnPM9XF7FpbBl-znAg8b2e9qGiAzly0TFHgUtFKBKxWOM6Hx8mIXcPdzsTzLk2Sshp4Hpuon9sZDB75XqueQIk-BliPH0-klyZhBpzVZ0q3RUe0zrhE5jjWYbnUUeB5Z5Hc87zZbk0pAZ53nqvkeTsnnufAiNV5NZ2lbMs5gJZ5Pa-xRjmWAVTcXx9C43lW950Nt1x7A-BG-cKET_LbpbdjYqzFB8o49bucUuXm5kLgQaRE56Blle_oVkWGJlIi03kmWK_i26sgViTKuGfiTOZqDaXVjU3UzxjACo1wkwjY5HMTeYoJqCjlmx7dfLKH6_9f2MVbZqCXxJUUANYTA7kSDO5mnOPE8ybVRN8aBtXhLNFOmgAcCwZ4ncs_VL0A97COtbg3iyLfC9ztwAjWRXdBOM3UyWYkI5jBeS91sQT4sT1fQ_vLmSdtrnC-LmFnb2XdFjHXB_Ls3Rzp2MH47G1T2FYRsMHVwRWMDvoHV4eXh2An8Y9Kbdg_qi1r3ABPN73OzhOxQy1pf_Q8W4bthOGiXcZ44nmbPOiIVgOyUt3tiRi7PRlX2LXnzbxmJ7CNntrLNMWgKJpr5Ed8iFL6211hPzRtmYWNi4x0M1mN0JSbUDHlJiYbHtq-5fn7qUqi1POSdjPMrjkGWRKlHUoe7n_9cP-bh_vfPtz_7uH-9w_3f3i4_-PD_fe016ywaSdppRDbywVsDco47chWA6edRkvCJrJtrXjhWv4vmAHX9VU2iRoIXxSTWviI_qj6Xn9czzCpGnFmnsiau5eGaaQafoayX-NmV9bKTUzRcsdDWF1nW7Ny0NiVgY-zcmO31uR7NdsLf0_xMAPfl3yAUtQqbBBVpO_NwE7t39P1HN-wlz768Pc_U3zeCVqTjnXQXstvHS6XdXuByq-TV2IFDMLS_wM",
+      "sourceUrl": "https://x.com/Studio_In_se/status/2116733883727421586",
+      "publishedAt": "2026-11-01T03:27:39.551Z",
+      "author": "Studio In-se",
+      "authorUrl": "https://x.com/Studio_In_se",
+      "title": "print(3000)",
+      "status": "採用",
+      "reason": "ネコでJavaScriptの文字を押してコードを組み替え、実際に実行した結果をプリンターで見せるパズル。数式から文字列・型変換・Unicode・自動セミコロン挿入まで37問で扱い、コードの意味と押す順序の両方を考えさせる。"
     }
   ],
   "criteria": "docs/design.mdに従う。3KBでの遊び・映像・音・演出と完成度を評価する。ノイズは回数のみで除外せず、文脈、制御、正常復帰、可読性・操作への影響で判断する。意図的でも仕上がりが不足すれば保留する。",
@@ -5261,6 +5513,24 @@
         "scene": "四字熟語を直した直後の通常プレイ。修正した語が緑、次の十人十色の列と手のカーソルが見える。得点画面より、誤字を直す仕組みが伝わる場面を優先。",
         "method": "掲載版を実ブラウザで通常操作。アプリのScreenshot機能、CRT有効、640×576。撮影時のみエンジン一時停止、ポーズ表示・後加工なし。",
         "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/arcade-additions-2026-10-31"
+      },
+      {
+        "title": "td maze.",
+        "image": "assets/images/arcade/td-maze.png",
+        "sourceUrl": "https://x.com/haruka_apps/status/2116694074258522364",
+        "action": "new",
+        "checkedAt": "2026-11-01T04:09:26.434Z",
+        "scene": "Q(.8)、BLOCK環境のEP34。EP15の通路閉鎖後、別経路のQ値の矢印、エージェント、壁編集カーソル、学習曲線と再適応の指標が見える。",
+        "method": "掲載版を実ブラウザで通常操作。CRTオン、アプリのScreenshot機能で640×576 PNGを取得。撮影時のみアプリの再生を一時停止。画像加工・強制配置なし。複数候補を比較して選定。"
+      },
+      {
+        "title": "print(3000)",
+        "image": "assets/images/arcade/print-3000.png",
+        "sourceUrl": "https://x.com/Studio_In_se/status/2116733883727421586",
+        "action": "new",
+        "checkedAt": "2026-11-01T04:09:26.434Z",
+        "scene": "9問目の通常プレイ。Ⓐで実行し、「print(\"3+0\"+0+0)」から「3+000」が印刷された状態。コード、ネコ、印刷結果、RUN/UNDO案内が一緒に見え、3000を作る目的と文字列結合の課題が伝わる。",
+        "method": "掲載版を実ブラウザで通常操作。CRTオン、アプリのScreenshot機能で640×576 PNGを取得。撮影時のみアプリの再生を一時停止。画像加工・強制配置なし。複数候補を比較して選定。"
       }
     ],
     "correction": {
@@ -5729,6 +5999,24 @@
       "validation": "実ブラウザの動作・進行・操作・敗北・再挑戦を確認。補助2条件各45001フレームと、原版/掲載版の爆弾シナリオ計1050フレームで上限超過0。npm run check合格（lint・整形・生成物照合・233 Nodeテスト・音の参照比較・47ブラウザテスト）。30作品のURL復号、3000bytes以内、共有URL長、画像640×576、公開日時の降順、台帳の元投稿・日時の一致を確認。他29作品のカタログ項目は変更なし。",
       "scopeLimits": "指定作品を確認した範囲。Xの全件探索、全乱数・全階層・50階到達の検証ではない。この記録は公開前の取り込み確認。",
       "visualReview": "ローカルArcadeの1280px幅と375px幅を実ブラウザで確認。ローグライ塔が先頭で、中央の火柱・自機・敵・階段が見える画像、タイトル、2.95 KB、作者が重なりなく表示される。375px幅で横スクロールなし。"
+    },
+    {
+      "checkedAt": "2026-11-01T04:09:26.434Z",
+      "scope": "ユーザー指定のtd maze.とprint(3000)をローカルArcadeに取り込み。指定投稿の作品URLを取得し、既存の採用・保留と照合。",
+      "sources": [
+        "https://x.com/haruka_apps/status/2116694074258522364",
+        "https://x.com/Studio_In_se/status/2116733883727421586"
+      ],
+      "outcomes": [
+        "新作2作品を追加して32作品。採用版の公開日時の降順でprint(3000)、td maze.を先頭へ。",
+        "td maze.の操作案内のみ短縮・正規シンボル化。print(3000)は原版のまま。",
+        "CRT有効の通常再生・通常操作から掲載画像を撮影し、複数候補を比較。"
+      ],
+      "published": false,
+      "scopeLimits": "ユーザー指定の2投稿のみ。未確認事項は各作品のvalidation.limitsに記録。全問解答や全ての迷路配置の保証はしない。",
+      "validation": "lint・整形・生成物照合・Nodeテスト・音の参照比較が合格。標準検査の初回ブラウザ実行では途中からローカル配信のHTTP 500が発生（32件成功・15件失敗）。並行プレビューを停止し、ブラウザ検査を単独で再実行して47件すべて成功。500の根本原因は未確定。本体コードは変更していない。32作品のURL復号・3000bytes以内・共有URL長・画像640×576・公開日時順・台帳の採用版日時を確認。既存30作品のカタログ項目は変更なし。",
+      "visualReview": "実ブラウザで1280px・375px幅を視覚確認。新作2件の画像・タイトル・容量・作者名に重なりや横スクロールなし。掲載画像を単独と一覧の両方で比較。",
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/arcade-additions"
     }
   ],
   "replacements": [
