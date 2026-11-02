@@ -1,16 +1,16 @@
 {
-  "checkedAt": "2026-11-01T08:48:06.653Z",
-  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。",
+  "checkedAt": "2026-11-02T09:35:32.336Z",
+  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。",
   "counts": {
-    "catalog": 34,
-    "adapted": 19,
+    "catalog": 32,
+    "adapted": 20,
     "normalSearchObserved": 140,
-    "uniqueAuditedPosts": 159,
+    "uniqueAuditedPosts": 174,
     "byStatus": {
-      "重複／旧版": 24,
+      "重複／旧版": 29,
       "保留": 28,
-      "採用": 34,
-      "対象外": 58,
+      "対象外": 70,
+      "採用": 32,
       "差し替え": 1,
       "参照先未解決": 3,
       "対象期間外": 10,
@@ -1902,27 +1902,147 @@
       "detectedSameNineTitles": true
     },
     "thisReview": {
-      "buildTests": {
-        "passed": 8,
-        "failed": 0
-      },
-      "catalogConsistency": "23掲載・23選定理由・23撮影判断、保留との重複なし、採用版公開日時降順、全画像ファイル存在を確認",
-      "renderedGallery": "実ブラウザで23件の表示と復活した2作品を確認。最終画像23枚を一覧比較。",
-      "format": "docs/arcade-curation.md, docs/arcade-review.json, data/arcade.json の整形チェック合格",
-      "scope": "既存のunitTests等は前回の検証記録。今回エンジンの変更はなく、全テストの再実行はしていない。"
+      "checkedAt": "2026-11-02T09:35:32.336Z",
+      "scope": "GBC Music playerを権利確認待ちで除外した公開対象32作品。",
+      "status": "pass",
+      "standardCheck": "最終32作品でnpm run check合格。lint・整形・生成物照合・233 Nodeテスト・音の参照比較・47ブラウザテスト成功。",
+      "catalog": "32作品の共有URL復号、3000bytes以内、640×576 PNG、日時降順、台帳のURL・日時・採用状態を照合。GBCの楽曲を含むURLと画像が公開対象から除かれていることを確認。",
+      "visual": "Arcadeブラウザ検査で320/375/768/1280pxの全32作品の画像読み込みと横はみ出しなしを確認。先頭はBrumaria、3D REVERSI、Cube Maze 3D。1ページを維持。新規2作品と迷路更新版の画像を実ブラウザと縮小一覧で確認。",
+      "dryRun": "32作品で既存のwranglerラッパーによるdeploy --dry-run成功。",
+      "publication": "ユーザーが32作品でのpush・deployを明示承認。この記録は公開前の検査結果。公開完了は実際の配信先とGit履歴で別途確認する。"
     },
-    "scopeNote": "このvalidationオブジェクトには初期監査と過去の再確認記録を保持している。現在の掲載件数はcounts、最新の変更範囲と検査結果はtargetedRechecks末尾、個別の最新確認はgamesを参照。"
+    "scopeNote": "catalog等の既存項目は過去の検査記録。今回の最終状態はthisReview、targetedRechecks末尾と各更新作品のvalidationを参照。"
   },
   "limits": [
-    "3600フレームの定型入力検査は全ステージ・全入力・全乱数の保証ではない。特定のボス戦などは別途検査が必要。",
-    "THE PHASEのみ今回実ブラウザでCLEARまで確認。掲載23作品すべてのクリアや完成度を検証完了したという意味ではない。",
-    "AFTER LOAD HD、10SEC RACEは参照先未解決。",
-    "外部公開・デプロイはしていない。",
-    "今回の再評価では新しいX検索は実施していない。141投稿の探索記録は前回の確認結果を継承。",
-    "Hexenschussのボス戦の可読性・攻略可能性は再評価未完了。",
-    "全掲載画像を縮小一覧で比較した。全作品を今回新たにクリアまで操作したという意味ではない。"
+    "X最新検索で実際に観測した19投稿を確認した。X全投稿や全作者の完全な網羅は保証しない。",
+    "既存ゲームの品質は通過済みとして扱い、収録対象への該当性を確認した。全32作品を今回新たにクリアまで遊んだという意味ではない。",
+    "3D REVERSIは1対局と再戦、Cube Maze 3Dは3x3・4x4のクリア、GBC Music playerは一巡を補助検査。全難度・全乱数・全入力の保証ではない。",
+    "新規3作品とCube Maze 3D更新版の画像はChromeで通常操作した実画面。アプリScreenshotのダウンロード取得が利用できなかったためキャンバス領域を撮影し、JPEGからPNGへの形式変換のみ行った。",
+    "GBC Music playerは原曲・権利者・利用許諾を特定できていないため掲載保留。違法性を断定したものではない。"
   ],
   "games": [
+    {
+      "title": "Brumaria",
+      "url": "/playload/app/#v1.fThtc9pI0t_5FfYHq6Y1LayRkMBCLS7rXTapPWezzsttFcVWCSxF3BGJR5o4xoH__lSPEBDv1fkD6unu6en36fH19cU_9Eqvs4uf7j_evbp_8-ri0e3f9L2LVz_9cv_h1fvesiobffGavBH-i8rs28XHValHr-o63YpBMBoGHuCU7lJd9PN1VdX4M6nsxjaIOi0fqi8Cdi6-IaGxwJpcoEQob2hpkMob2QYuQKrQHw3sGu_PGb-vM31RttJXX76uhT8cDEPl3_i2lmE48sLAC327kMobDpQXquHQruXPeFrCXz_36kx_rcsf5JR_lUmSKP-cEztsCEmSuHv89Pagy0kTfV1jQ8V1jTlNRQmY0VQ0gCmVTo4VNU6Ga0rt1Ba-49kp4Ioqu2pXFRxUEfcixwxsoZy1-V2BvBe5VIxcnxCYSdVxrToORq3tFVwPvJvBTTj0boI9fnhtVAVKjI1fVqXwFE5FKEf2p7fGCm8IUo3awHxJn4SLB0I4AKc_CEB6LbFZlaKvlK1_xLg3dgEAeDvtjhrKQSd84AHefuoIwndtcaCoITj9AMC2Pby97zhGcuAeFbsxxN_fdcTvbc7VdC90kgywSJIBYEmeVU8cFSlsSFn1pIg05gbSUYEZlbE7UYEjVGA1EPEvpsSrHJzAEXWSeNYQeqtcZLG326Wxu9uliQ-H9HAPqV5RI4XvZGCXuKbcSXFlDllHFW4MVEVr3NLtVKxwA7ig23sDObefzJdPWMTkvhS8bPOv-b9aiwXgHR1D4eFUbJ0lSGU2H0P44XUr2EeDWmartdjKJYBzF5_pnVe14PTU5I51PBhrKWGVm91StP5Rnl0CbtolLyINkNxJ5Z3EHIDz0zkeeCfPciZzfIB9j49rnsjFZkudfR_u_xbAg4hOdJ2MLKuO1dCy7kVga6kUDu1C-nB1c0PkWpbQTvPE6SBF4TRbhhI_tKzL398ZSXt89bIJmcbB7mT8dF2lOhycU_r5ar0Wb9O30Mu_lku9qsqLX--MtJd6YklvWqDh8Boop9tPLZRxoA2U0kGdo-tLcsdl_HpcSgn_mhkhWMKcyrielImyrDKuHd-ycilKp2Gz4mziRoxVP2Kl8nY7wz0JWvrEi-p4NBlGKirj4SSMXE6SPM7Yi6zFlecTuZ01JakDfnLKmkaeci9zcgBHRVPROC-wUvUOKolzKwLYr3KRQmdtTe64jl-PaymhjlPLuuy4a5hPzmAKojqhlIOeyuBMKtNcMGlUUW3cOK7O5FSOgvkYKsdhW1_Nyjl5diXFh3uhHR8Lx4fdziw8LBwPJipyAS_PVXS8cR2TZ5Q8hcnxxiVjOVAHhzWkHe7nhVPyYR_uRYM5dNSMk4MRmFImB7KlXnnMeinqXQlnZ2bjOk7NieeG-sc0aSh1vHETUyrVuJESREMMt5FKF42oIfYs67gsIfaiM6I8pwzgzGMNzM_828CcBrDf71sjpn_-rTTfdBmvstDWsujdzer5JZWWJRiiEg9FAnt8f3YPrnKhaSo0YEFTUQCKmqaiBoiPDS9g39QJvT71lumfbb10KXrmnq45hEQll8Qeb0_HXYr3Qjt9DnLfwxp2u_dCyxdrQ5cv6O0a8CeauThCD5WLysMBqgGG6KNSqPAGVYBDVD4Gc_zlZWfxfHfgAv5KmpL3ul6Vn_t5XX25LdL6tnrIRDD0BwOpAX8zO-_SDb4js9Xwie_rrPysi8gLwj0KoKQVOzq0JBcAP_7tzCAE_CedLf6g2Rxvf__49gN1-03dbJ5ws8XNMxYLLHIsHrB4wmKLxTMWDW5TclGvyOmrEB-fycXPNbmY8883TeeXhhrr2Atcc218b57IC0KHG4gPV4HyuMN3mMBgDkEsTGE8YbM1l9bmmQqp-mGARXJjWUWsDm27ZTnLabNNsmBwih_TvZMovZYEizpL_7M_9u1l2uhDbhwGsqnYPHG7norNFsxQtnmGXrEgF4sH8sNeV8XHM9S15lo-WxeA1fm6BlyTjt122FhR0YEbqg-gicCWxDp2J5snp4xKqZzNE9gZLkisGLt1mqhh7BbsFJckNox9dvIoZ-wz2NWLm_smbGOwysU2XljWNl5ORPFAW9xKyrCUtMYiZ8saWkO0OJAXuJCUYiNpxWTF5BVETFriUlKFuaQNkzwmbQBzHn3yhF7vdsVD4oeHOuUwTv8UJTaAxcLUaInc7eb4TVtWSFQsLEuwc5mhq-7iiUosttTgY7V6EMUz5bA_xUyvlv8R8D2vpcRtKqnv-kNbLHQpPHD44wMgfwPg-391GoschcdhRKFeyb7rBe1Wt92qgP8OMdbtzmXViG3K7ek4u_KyPlH1ivvekapXwP2pzSSTR8AlEpLxwBmaf58dBTDvdTdHq_fEjVqlJt_0pO8OgqjvDoOo1XDi9N2gvbOb08SxeZLabrCkzVYWdtO7FTWWyOL77IduKfseTMTmiWrcbKmE6HN9Ijo_sqq-xx48MjNOwv7x2SGjlutHfVd5JpaPzzFPW4_PNvVHAeDjc-Ja1uWt6LqKfDRnGx4O9-ZZ0uPzwe62zByudlP7n2u6vHx_2JsDspLcEHLpcUNoJXDcNoLvrM_1bse-YfibPpxhVAyCqK9GplUB5vVVN50eq1jbNaZU2DVWxOO5o-0SV-QUdvliFlODgbnkT1evO25iFbrm3v3eGSI8u3FUcAPXKnTt_tDDDQk14OdaecJtKZOFncu1vcEFpY62c7myN7ikStb2pmf60hYXuGx78x0N2C9cLsVD7IfdeZrjvrW5V3PgFwzVtHmWS4ZyUqEtXKIi58cNP5szg_IOqJpRKQVciJN7kSeJhxn_FAu4UmFUPCTKm_w0G9jCt0qQwrcamEfmJXngwYouzZvIslRgZdzpipx7cO0Uz0l_ZOYadaj0O2pPFsp6NXsjzP0C80kaKzcqHmI1sixRWVbKzymXKAWYeFEQrSdBlMY3ExX5gN5R1hHl_yh-t7sUvpUDP8m8iR8pwMGR42B7GnuRe4D8KI2VMkcBBkfOqt2vIg8wPO2fCp9fslOhXLvgb15fqxEchmZWPpwMowHg8LiHTfMsiy2a-FEIyP7ILatouEjCS8M3aD9pPDB7Di5j09VRq3vRXclwpYaH43zDHwLWsXhlGox2-q6yTX8pDLgAmCeJMg9nvg2MuFMOsVgT9W2SeHAV9u6omqiIrTde0uxE_gwjjz9B5OH_VGV_bLP9gV08yC7hmsSdBJHjRcYBLBzwBhKTeYozT_FIwBc9ewD23Fk4B12DGMA-WzfZxSoXy8Q9qS-8AV9_18ueZn_q-MZlV02FMMWhuc3beQ3XI_aIMHXCSDc02BDgasgZK-5oCPtfZlykpWzmdLf_2E1W-Ee_Hb7o5fNYjcwl2yELcsdF7LnjgruCGbM6Gb0fnzujFy8JbjIj02LMrlmriBjZWtYgR3Yhy_lcyt5BApZ_G7paTdrdep60QM1jfE0aXujdMutL4t5aEtW73Yud5RwMSUOvQ-x2oqQajtfVbN77bwaYWSo_069tliPTKs_sKlu7mnmrRb4j5Y2SpIFewy-0fN911ab_72pVCn4z_9b_nGmRQ6_8ul5fUmZZ4uMsm5PiGG2-NoWYmYEOzaiB2Rz2ZrrlodPoc0ibiyq_-MNoOjvjxnROmlsWSyd-aYr0cGQGgAdsa6AmHk7JUVjTzQs_eEF48kRD3HhfJk4bgO9t0uQzPf_r3aycz3Tr0sKyMinHxRgKiwpHYSPlvok1jzTE_4gqAS8_zsq5ZWVxbUKcYUGleVlz2SRcknVMG_ieUoG_9R-ydaYz8c9ZOgfkX8rwt37DlmH637Pj3SxlhS6NenwFLz_PfhUpzPubVM_03OChx2yU48aher__yAt1-t_Xsp4V81k971X9ZVETb8eqv6zWNGuwnO_3mydqnmQ_4Bmj2TKw7aZpnZbecYZ3QnCO83wIaGAnNGN_-wQwMPR6_w8",
+      "image": "assets/images/arcade/brumaria.png",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "sourceUrl": "https://x.com/rukasufall/status/2117166709551300715",
+      "publishedAt": "2026-11-02T08:07:33.269Z",
+      "adapted": false,
+      "compressedBytes": 2969,
+      "selectionReason": "起伏のある立体フィールドを一人称で自由に歩き回り、跳び、地形・水辺・洞窟を探索できる。自動鑑賞でなくプレイヤーが移動を選ぶ遊びとして採用。",
+      "curation": "ユーザーのゲームとゲームミュージック収録・自由探索を含む方針で採用。新規候補の品質を実画面と操作で確認。",
+      "observations": [
+        "公開投稿と共有URLのソースを実ブラウザで照合。掲載版を通常入力で操作し、CRTありの実画面を撮影。",
+        "作者投稿の作品名Brumariaで掲載。ソースの@title BRUMARIA v0.9.2 ABERTASとコードは原版のまま。",
+        "歩行・方向転換・Aジャンプ・Bとの組合せによる視線操作を実画面で確認。勝敗や得点はないが、自由にフィールドを動けるものを含むというユーザー基準に合致。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-02T09:19:04.771Z",
+        "method": "実ブラウザの通常入力と、実エンジンによる補助検査。ゲーム状態の強制変更なし。",
+        "limits": "全地形・全対局・全乱数・全難度を網羅した保証ではない。",
+        "browser": "地形・木・水辺が見える通常の探索画面。新規候補として通常表示と操作を確認し、明らかな品質不足は見られなかった。"
+      }
+    },
+    {
+      "title": "3D REVERSI",
+      "url": "/playload/app/#v1.dVh3b-pKFv9_P4Xhaa0ZfOy4UBJgYHkJyUVLighpQn6SY2yMHhcsbG7RJdKS7b333nvv9cNcf4H3EfbMGEOyRQqeetrvzDlnJjs70nvicTzxJOtA6rUv273zzrsmXiw57NiJAy0aTyFOu-4sgjDtOrcRBGn3KW7w1l3nBfjsPJ6PpyPNn8-e7gfOfH829CBiAx0MMMGCIpSgDBUbXDb1nksX42m825rPnZfEtPSiTmHG1sNSmWr-eDIhODlkA03TZjZ0mMMaOmPOclkR31JZNGULGzhlxIEYQvApa7wKG8wsynJYN4yyLLspMx-Msl4g4ZLpVPGIDvrSoWIuVAKCLaSTMaX0DhaMDJCjDYMAfBsiztafzQlHyGX60iMhCVRkEBJfRZLl0kAD9NqsztzaTFHoKXEUsaMw23HhQV8xIFY4kRgtdYhQ3HUmDqUhaFqZy0tlBTu7yNktRLVMfsB2a4Gq1mg2EeFExCfGvlDL0kpUCUkkOvUSfrKdIXMUnC_SgovQxqgV78-Wem1YZ0SMLTGmtaEwIgS0FFXmZHzJRZeAjxp32WBvD1SzBIYOJdFRi7zFPz6FX2z5Cm90G664A8MJdzDkL64R8Cv9tHRiDEfSxbWp81EZR75zgGPL5OPiieH4fHWXjyxclS6NEifi2w5bfISbTMf3hnktCifjmOSlPB04NoUx0-GCGdDCdsJMOMB-nxl7cM5UA25x9gnOXOKvh_1D_J3g7xn-XuBvxAY2TPlnn3-e46fmL6ZuPJ5NpbY4bAEVHvL4EgKfcwaxvQHal2b-QEWAdkGtAAo0oAK7sGenRBFi74PLWc8YoQgMIRU5oiqi7MsVSuumcHdtRqgsO4PIZsxSgxp1tXARBSSiECnMf7gcyLKXLmLAuPRu7sWL-VTy7ri8IxEfKMfBYEVZ6SAWcRZ7cxKyBjcqBJyaeNNRHFA4XsdUdhQD1l5PcHODbF9mscctRtEBIAzOwLNZWFvrENzBnHt_YIBpCwVi1CST7WCfsa3gLc5P10HtgZ_BdiRUF3hHGcFaCl-y1A2fpvo0nYAQ4Vd9UD1a3fOsAkGRdBCrhq2KnqnGtuAY1pmeygmZYRZIJkDNOG81zGxm5WLN45HHDZZlDBVGeBftaRpV1aCF7qBYCIjXaFhQUUVLqRKgsz0-xoZSm2ZAhXebGEc0pSiz2tGiydj1CK0dE0zAHIE0OaCN0WMbhSVuw0NlPIbR6jWYT2_nnvP29kRsAH6J9r_C_QfMgSliOwKHwjQz02DMaZKpNp66k8XQi0gf0xzps-lAtymPFFolPWbsYtegNW8SeRLy4lws1dmAdclwhPFmlUQo4WYTroiZEnD7ROJjczJC1ZmF6w5Hz6o6jbhZrJZw87pH77aav03oq9G6YJSL23oxGpgVm40GVtlmJh_tilHJzqL_hKmabqVJgOuDmvF4F4lJh3wfS8axVbo0MPsQgvnH2_cc71Z8Mens-_gdvXF7cDt6Az2XpymhAflLwzg1TywMLcfzfH84HI08z3FGI7ELt1ARiGfroGL6NqwqWlnVSpVSIV6fg8GurpTwADrqCd0JgFh7ZRXHIQ5UswyBfQdvMgfp99kx9xkcUNjPjj05Zw6mtgPgwB-geaaumIVsGTro8iY5ZEYRgTUorV4RXXwtereNvHjscoTdScRBdTfwthQFXuAhOFTZYQMzpsIQzAIhJmPjpqaXsVuR-1QUnqpmlQoO0XSz0KIUTRGHdtCFduptOGKGfCgCbxEj9kYJ8t3WyVE1r5CLZj5Z_TxZ_T25_3yy-kK-mm-fHHU750_yVMlL3cu8MlEG-Xe-_dl_5YE3fxfND76UtwcTDGyoUFgzLUPK7D5Z_SxZfTtZ_SpZ_Qa5vv7az5f7ZxdSsvpyskIZH0pW303uP4idZfL-zyb3f80tk9XvktUnk_tPJ6vP5pbvfPvTH3rM5uNIkuNMNiNMf8tWNXn_z5P3_4N_Vz-RxMIHUAracHN60ZP6F70TKZPef9I5eW_n5Gh51jo_zy0Peq0r6ah13E7F4X7pqnOS40JE75wLeP25Pz05vZL6p9JZt3WTp1nhW2LhGzefVcs2lDfmV0C4Jv_6Fx96_YsPv_7FB19_67sScji76GPzZ0Syul7b4UOEX0o34QpUwKBgIP06xXIkGZM29qFxX09WP0juV2iixBhegjS0bIMSmvkz1Jw7ZmlqOEjuP4c0v05WX0zu38fREbt_vpRSmD6S3H88uf9IbmlpReSLsErJPcr66Dvf_tynkA73IVFy_9Hk_hMoAYWiLqvk_d9P3v974bGilqw-xv_4Ch4e7tVPSKlvOKC5JbI467XPzzkG0nm_1evnEAGGVj3AVGIbW7gLHpvR77XO-IzUOZFaUrdz0kaeSHjY7ZzxFomEAdL-ae8Eb9USV15q9fi289ZhWzo8Fddtru3x6XmfEwjfSv9fw4c-1rBEtB03yIo4dzS_UpqAY1mO63vN6WIyqZYpBXIbT0OiY9oWHSPrlCjF-nDxFjNAhD88m42H6eYiX8HYhzHP0zik23LnMLNYc_BWjV9FSYtTzAjPX5iidoijmCh1h-cyCFlAdsWVOkYOp-SMqEXNwnmK1UM5gjPyaOiA0zB0vK0je32vWa5aFGfMUjpRkeWUA8Rb8k3fASwNWx33ag6vyAskcJBCp5B2dinvr_k4Gz7bvr48IzofGTboW6t9XuR9ZJlVY0xxvkhx4DKtpBCfF3WYsX2slEPvxalPfAqDISxsdkYicNPrymjg4-WPdHBxueRBKcu5W1k2GDuQ5W2RxWXKrR2qJqo0VEyh2AJ25RaiUqE1dzaNx9NFeq_rMh2umAEXjLPncm4buizPGtlNxkc3GMINxNTVW9UszOiOYXKn1g30dJdpu5ikLc0oFnyKvDyiGegWEmdzlCJ3v66Vmpb6pPqEcrmDCfThcm0edCn0uBju7gqUzJ3LpY4CuqgJGjJRezsWGjFR0haN4X64JoMJjvqKaUOPJ5mLZqX6YH4za1QroJULVxT8HDtfLrtYfjhXQ_BM4ekDOuBQlqMQXYbe7au7kH_9jT_kAc_jnZljYzz4GNE5drBcihepld1EN3dcfl7S4lVUiCE7FEifO1bB60fDQBQeLYeDWDFky97uymbSzY9uTeI4p1e2G37beBBQFo-nkginbDLGDXHdxE8WYyGLUl1RTYTIYyQAD_vprM87c2-4cD2C_pjBEDpwytyBeO-idxWfKruFWJnZSEOCui6j-qe2okCEUDIWvOXRer2izihwv3lENVJlO-LxHdlaNJvHm3yDzxw15E8sFIJYmmDZ26s8LndwzW5UCo66R4WC0eYt65EOvlUgF3FaV8nnYcGGm6g5FYGyqOPR5S2bbVbEm2aGsObITd0y8YAPFna9hXpml_8XilILXQwCUtT3ysqC2lroxMyFIe5kp3CjKHeciLWEZdcsanJVqlxdw7ab_FvtYB6orUsdhyolgKjJzxUiCAgmbCTANa2SyJ2juQiJ5gZztl17MD-bsME1cN42HkZa4_en5wNTR8fEqBq9Q2Ofa_7EiUmKF38QEZqVcB3yaR3i96IuJsNmXs8r3WqXKvm0MomVdrbSrrb5irQu3_zw01eclQUG4E0Ay0qv3e_d8PLf7_S7bax_vPI8-D8Qhs3_rB05zFn_s37U0sMs1iyqitbcvGoc3DthZKJgfaDvtpSs6Gzrzbj5uORUyZgZopvVpq1kvp3pKQt6l2Y8ipiqKkb4S3K5fYlsCSZs8kAuT7m0zwJStkRm7GN0pJuNVHe-K9PPRHoMe1nuq2o6Y3GOOEXrFZxVlK0db5L-VnpOUtVeViP5kwlCphreXu3RE2-a7vDY6METz4MAzBRUH594ODYAEx5wcsAfVQjaMGma_H7dUgJa5eWqEfIHKPMhZgG9e5PE-F5CVGv_Bg",
+      "image": "assets/images/arcade/3d-reversi.png",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "sourceUrl": "https://x.com/haruka_apps/status/2117019390462071240",
+      "publishedAt": "2026-11-01T22:22:09.661Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.dVjbbhvHGb7vUywZdDHDnV3tgQeJ5IilJUomSpMCRUk2CAZYUbskEZpccJe2A1NAKadG0qRNnfQAtAWMoLkIEiAt2t4UKfow3hfII_SbWS4lBykg7pz_w_fPfxjt7Cg_iybR1FOcQ6XbOG90T5s_mXqR4vIHbjQ2wsmMRUl3OA9ZkHTdy5CNk-5jbPA2XfcZ8_lptJjMRoa_mD8-GLuLg_mVx0LeN5nFbOawPCuwIisN2JDPvKfK2WQW7dYXC_d9Yjtm3qRszjfDQpEa_mQ6JZi84n3DMOYD1uQu3zc5d1erkvwWirIpOmhYhxOXRSxgPuX7z4N9budVNahaVlFVhwkxn1lFM0eCFTep5hGTmSuXyrlAGxO0LJmMKKXXbMlJHxQHrD9m_oCFgqw_XxCB0JCbK48EZKyDQEB8HUdWKwsKmJV5lQ8rc02jHeJqckduvjNkd_qaxSJNHhKjlQna1-xhyg7cAJpRFPwSXuOdXVAe5sJKyn_MdytjXa_QdCLERCgmJr4UyzEKVAtIKDvVAj7pzoBDklDP09wQ0EZCKvTnK7NyVeVEjh05ppUrqUQAVAKILI9haQiTAORr1uL9vT2m2wVmmbCs6Oh50Yo_TOGLVq6gMQfsQhgwmAoDs-zZQwB-YXYKbetqpJw9tE0xKmLku4cYO7YY59uW64vVXTFysKqcWwV5CNuO6nKUb9uu711ljTCYTiKSVbK07w4om3CTnXGL1dFOuc0O0e9xa4-dct1il5i9j5lz_LroH-HXxu8Jfs_wG_H-gM3E50B8nuJT8ZezYTSZz5SGvGxjKi3kiSUAn3H70WALtK_M_b4OgHaZXmJgaLES22V7g-RQCOx9eAJIzzmBsQNCSmpIdaDsqyVKq7Y0d2VOqKq6_XDAuaOPK3RoBMtwTELKQo37d5fHquoli3CYIb1eeNFyMVO8a8HvWPoH-LhwVvBKBpH0s8hbkIDvC6UCTBtTbzaKxpQ92PhUehXHvLGZEOqO032pxp7QGKzHuMbU7XsDHlQ2Moyv2UJYv49IMJACREKSDW8suJzfMr7F-fHGqT3cuA1sx1J0iXeYHthwEUuOvqVT0x8nEywA_LrPdI-W9zwnR8CS9iPdGuiyZ-sQWFAMqggNzxM3sewcSRnoP6BMt57o8WK-4gnPEwqrKlwFoAndeVSzyrpFc61-Pjcm3v6-w0q6bClFvCmpnhijoRTcNyoE11sfB5pKmGrtGuF0MvQIrTwgCMACgSQ4QMfwBzoKTYb7HoTxOLzV2-c-vVx47nu3N2IL8PvQ_zn2HyKEzoDtiCGizVI1LUTWGpkZk9lwurzyQtJDmCM9Puub8C94Ci2TLrd20bVoxZuGngJagoqDWJdSOcfFdeFvTiFxpSfwxQtiJweEfjLw8QUZQXTuYF3chppTdvejWr5cwOZNj17fSv4eoc9Hm4RRzN_mi1HfLg34qO8UB-CD0a4cFQap97e5bphOEgSkPJdc-LsMTCbL9pAyHjiFcwvRhxDEH-_Ac71L-UXQOUCk8UfvXB5ejt6B5bI0OWix7Llldey2A9dyPc_3r65GI89z3dFI7sIWKh3xZONUAG_rViWjqBuFUiEXbe5Bf9fUCriArt6mO2NGnL2ijnGAgW4X2Xhwze4Jf3p-wB8Im7FDyg7Sa09OYcz7_JAJ4A-hnm1qdi5dZk2YvEaOuJUHsBal5QvAJr4Ovb71vGgyFAgPp6EAdbiFt65p7BkuwZHOj_YRMTUOMHOE2JxPaoZZzIkw1qMy8ZQNp5BziWHauTqlUEVe2n6LNRJrs2NuqUfS8ZYRsLcKLNuqt4_LWY2c1bLx-pt4_V1883m8_l22nG20j1vN0_tZqmWV1nlWm2r97PevX_03y0TznWy-_EN20J_CsVkJhkmIFllC7CZefx2vX8frb-P130H1zZ--WR2cnCnx-o_xGjxexusv4ptforOKX7yKb_6dWcXrf8TrX8c3n8brV5nV968_ffk2mY9xJCOIbEcIf6t6OX7xTfziP-K7_kqRCx-AC3R41DnrKr2zbltJuffuN9s_b7aPVyf109PM6rBbv1CO6w8aCTvsVy6a7YxkInqnCYP7nQul11FOWvVHWZrmvRXy3qT2pFwcsOJW-xKTlsk-6Jw3lHr55Kyn3CsDvnL2zctXb15-voMRIFfevPztm5efiRWkKQtlEU5t4qqAj3NlqxQ0-nO8_jK-WUMvhXNUPgbU2UID3b6GuMIaKxsrX8c3n-HM3-L17-ObXwhI5O5vVkqCzYfxzcfxzYeZlWPkBd31t0p8A14fff_6s9_gnNz3VXzzUXzzieTwAWRZxy_-Gr_4pzRT3ojXv5J_WMGNEab8JKH9hUAxswKJk27j9BQIKKe9ereXAQAcSt0BEpqkqgjY39ai162fiBml2VbqSqvZboAkDh61mieixSEpv3LQ6bZRSStCdqXeFdtO60cN5agjS2wh7IPOaU8ckPZU_q-Ad-1qICs03OE4zdvCuKKKtOH6kapG1b3abDmdlouUMnIZzQK46molO1baKVBUCuTsXcRB6fHsyXxylWzOixW4O0omEZrzKIC3Gc5FJV1xUUjji4JQRqyIExGyEJV2UOTa4LojwheC2pjsyioaBXGlQ06InkcMQMGAhKEdsxPy1tBl7r5lokAHeXOvViw7FDN2IZkoqWpCAcS2x7d9lyEb3Mq4V3FFEl7igIsTCFRJZ5eK_oaOe4dO2jdXJxAXI8QM81ZrX-R1X5DcJGBENV9GNdRsRgHlu8jjKN0OkByvvGcdn_iU9a_YcsBPkJGHSYUy6vuo90gTi6uVcERVzVyqKpzrUFXv5FVf2KZDrnQbIl1pthRsyXbVOlAp0cpwPosms2VSyrWQrS5gxTMuyAs-l_umqs730-LFhxksaQZim_qlbufmdMeyhVGrFizd4sYu4rJjWPkcpL7gHjEQe1GUpXO4HWfcrxqFmqPfL9-Xmas_ZT12vlGPtSiqZrAR5i6xgr1zjicDrbSEJB0y1bs7DpSYakkrlIEdHpL-FKOeZg9YV4SYs1qpfGd-O2uVS8wo5i4o8zP8dLVqIeMIqpakmcDTYzDAkaqGAUwG6_ZQaWff_OVfWUQ_em1n-AQXHw6d4YerlXyEOmnxuS1rxX1J8lVeI5aK2of0hGE1VBz7yI3sreWgH2mW6gxud6Uzyea3CiV5nZMq7ZEoMO44lCP8qSDdKZ2MsCGq2vikPhbwMJEVYgIij5Mx89BPZn3RWXhXS9SEsMccb7Im3sDDvnziwrqaT7XdXKTNBzhDxlWYJeh3BsjeIaDEY-Fdj1arJX0uHASlGEGpKoVtyvd2ODDC-SLaxhu8bPRAvqo64kGP5_zgTvUe9JtYG-yXcq6-R6WA4fb56pEmnicsE4qzQy2bxdP6aus1Hekoy6opy9Aln29X5DNmDlgz5FHVsXHB-8tBtQ4503r_maZVgiGcgOTNvaK2pAMjcCOOhy128g57pGnX4hCvS80e8rAmRCkLca3BoCa-5SbiwKbqElCT5AALa-JeAUEGMNmWA3uIkjccLqAuIDGG4wW_XbszP5_y_kMmaA9wGWlFlExP-7YJw6DU7dBrKPvU8KduRBK8xBuI0DRtow5N0pAohVoIhrWsmdVa5ZYofpLEJFYa6Uqj3BAryiZ5i8tPnwtSDq49sn-93G30uo-Q-nvNXquB5CfSzp1__Ain-bHMkUHE-tHsUUmuslxzqC5be_uMcbF3yslUQ3agP3W0NOXcZptJ7e2EUyYTSVrkniQz3XIW20XMEyQkcoh3FIjqOvz7fXJ--_S4PTDl0zt8RcClPcSroiPjYg--QTZK6hutaSqfjfNwelXt6TrbKAiKIg5UkZR68KGtHvfg6VvuGUXXu2mGFG8kJETd8vYqb73pZul_DUZ33nQe3nR2Aqov3nQe7DYVLzocZ_gh1kCHac0WBXVdG9OySFb7gXhxcp9FfEyv75EIDySgWvkf",
+      "adapted": true,
+      "compressedBytes": 2941,
+      "selectionReason": "立体盤面で着手を選び、石を返してCPUと対戦するリバーシ。0.9.5対応更新で従来保留していた表示崩れが解消し、対局・終局・再戦が成立する。",
+      "curation": "ユーザーのゲームとゲームミュージック収録・自由探索を含む方針で採用。新規候補の品質を実画面と操作で確認。",
+      "observations": [
+        "公開投稿と共有URLのソースを実ブラウザで照合。掲載版を通常入力で操作し、CRTありの実画面を撮影。",
+        "操作説明の文字列だけ正規シンボルへ置換。難度・ルール・描画処理・入力処理は変更なし。原版と掲載版の補助検査結果は同一。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-02T09:19:04.771Z",
+        "method": "実ブラウザの通常入力と、実エンジンによる補助検査。ゲーム状態の強制変更なし。",
+        "limits": "全地形・全対局・全乱数・全難度を網羅した保証ではない。",
+        "labels": [
+          ["MOVE A:PUT B:LV", "⬆⬇⬅➡ ⒶPUT ⒷLV"],
+          ["↑↓/B:LANG ←→:LV", "⬆⬇/ⒷLANG ⬅➡LV"],
+          ["A:HOW TO PLAY", "ⒶHOW TO PLAY"],
+          ["A:RETRY B:TITLE", "ⒶRETRY ⒷTITLE"],
+          ["PRESS A: START!", "PRESS Ⓐ START!"]
+        ],
+        "originalCompressedBytes": 2979,
+        "run": {
+          "frames": 2808,
+          "overflows": 0,
+          "moves": 30,
+          "state": 3,
+          "outcome": 5,
+          "black": 29,
+          "white": 35,
+          "retry": {
+            "state": 2,
+            "occupied": 4
+          }
+        },
+        "browser": "通常の手操作で複数手の着手・CPUの応手・石の反転と読みやすい盤面を確認。"
+      }
+    },
+    {
+      "title": "Cube Maze 3D",
+      "url": "/playload/app/#v1.dVfXeuNGsr4_T8HhZ_PrBgoQAIKURLLJQ0EYWR6FMUVNgmF_FARBsiVQJnqydHdy3Lx7s-ne17vvM0-yfwEMmqTQXR2qu8JfVY21tdo_6wt9mdaC5ydpbX_yJq01t_8pmeaFriVqf6LPSavELi5yStEn04Jy9Oevr6eaChU55JIXUzanqBlToKLIcslyY4qWHbcWdzGNlUhIS9VPIic2NBoziVymXKY8UGjoUIkI-yiNKaeMAjAU9tXkWhTMWcRGbmruMjPlLpA0Ukd6dpFn9tlsehWcT2bB9DSlEOJeQfw97ievaKjy9GXt-CLXG8PZbPJaeE3HdyRtqSimpwridM-mM3GZsgGcbtLzWu1uYpryaZTECk2_DzmF20jAw1PRSPjOZtvEOBlE2B13YIz3fmOYAcc-zxN9Mc1rZ0K-XZg4irt8lVYODOwsr9agda_ZRmuai92p0l96DuVKr3nOjQP7u96GA0NsGClc8OGtdxVp-93Esroyi4ZRYbptxxBQpClNsQ5F4tg0u9Ud8N46talFPjXJIxfH2MV0psXcaVmkYyuD3vKOrC5k9e9KOlYB9tHhJ2S6OBP3hO678uYmi8axfPuRkCt1Pylrl7lvbgJ4apAqNe6kstEQhxHviW_YJP1-uVPeJvb18-JcRLrnDTY3Nzt8oSGyaD0eNDuuZHRRTnwSjekwlre3tyxNdX1em55FrD_kec8EDFkrQSO7q90FdtcSCe2KiFmgUUQJA5ePplGsCkBxcxM4dIDBLYCdzlSRzKIgjrLSLHmjkfTdRsM00_7mhnzLBymH_aIv8ufp7fvYaLleoxFWRgdzyek2tFxsn_szxVWaIQvYjOxZevo8SVmRnAoOQfNplH-XQhjE0Hdeq2UIPiMmR3bzXgi7hopDR8NWfEGKyOwN0WBlqFJ5W4kdVsIaKlxJW0lPOAM4hqjM1TseCAhM1wlwiPXYvp5oNcT1asSGkR22zF4pLu9XxwS9BsX1TGwYGW0YATEbHcqOOLOT85kqhyCnl8pt7A0idmMnOqRx6czKBI8WCWcJNY60tOf6fjddYTbnWEzKFAPEUIGsBp5qMQpwokqizHQbzbhb9FR6T43RNhp5hTFtitQqpCECS8s1MQYtbyXl0A2622cXl5dCE4M5NUNh23Yu56O9amS6kJiukDzLVAq1IrRlj5YTqA8StPXxooXVJq9aH7AstzPvhyyr1TboJUu1a7XYAr1iWd2w5I3p64WFr5AYIiBo4Ha8uDRlApAZQltuwxtYLoJO0sNlZgdH2zcS5C9tpvTqbsYvFCzqKZVL6x5CVKVIueVINLmjkRITy5VrHoWKbwV8vmZYSwTXFcydn-7mp-krgSP5mjHW9mS_zPOHIqQRpdaItDWSWBTFTSD7ymk0it6k0Qh6kwEEKSigHGAa0lhs0VU0jIFIaY5WQ7ccZuVtIuFLvhZDSiSFnAJ6jozppcJ8BSqNzLGWs7MTKelooSzuoKioEgVLGuVGYSbG2NRGYKVAfW5kVmIEpsZcahSUg04wp40C4zHGY6wXGGfYH8Q0ZW9EVW4r-MgjcSSWY4pYAk5rcKYmKyWr3EY_MFvO27FZJLJM2CmI0tla5JLH6LD3vnLt9RZ9pX4QdnODLLvpS_rijv_Upr1upazOhmO6KFLJWk7rnsWkBplXZW9GD-gFndNzOqAduqBtuqRd2lcOTVSTTvD_zcclhI6x_gz_P6rNeZb7XgmO1RnX8OdqW12qHXWBHQcQECySdpW7vknLCqwFjCHf5v0Xkc-57IViq2Dubk6PYBYk9WzhvSixZ5P8dHolJOlYfqYmrEr7K1xSSMrUQ5FKCtAlssv5_uZGzKKMa1WvVxBmKlIkUTM2vUYTx7MrTFciJYhz9UI9YCtMkBfLprKCI2-73ws5t8A1A-36kt8zFNUfud5h68BNszqBbh76B14WhPNB88BLk5L2eSFJMz_wwvZOPS7LenmIQ_XxZnt__dHGoX96NgnCk200O1un20l2cticnBz64DvZPpGyLqlkcXFiG4dvnk7SDNMLyZ6wZGKiEoK08K1L14LTwBtV5gZkh6blGYmkUwBQTcqqVH9VN5Puyl0XyY94Mx0vXymJOtH5tWhKq-w9PCZKwp1POJJSdSS-on3LGxwJoNQj23GNY0kHsnMgudzuS276niw5fDwinoj9nj-YmG4HLihnW5gVgKPsppdFynV2Pi1nqX4-y2tPxKQ6rOdJYVm7PeXMRfFlxeuteLdN5a61HdrBwg6SialsF3nH5SHA-lCcSwWUvGBGVg4g34Mn3NS3XMfYtlqOcWnarRsHK_1vogkjlzv1DOJi6wmFok2QX7KdJ_3WwIcmki5WmHwjLqqLHV92D9RLDJ0qUQtNKQPZxJQbR2lsaWkkzA2GSkhEVFnx70GBe3cOXWXAUvOk8gb6RsOyfuw5pYUyxMtVyvbDskDoSkp6vnwLavkCzpW1-eGbKlvck6kp8utzDqkynAQ_DTKI37EyTsX8dElQeCxXdoN-DnlzFZBWRSnzLGLzxg3Emb4bouekS_F2VHROnBaJo_ieOq9ecabJaF1AWUOEq4g3xPgnxpGKDuhIvBSRVX61OKR5BeJgFafdsu9rDMjuuUqQm5JoNenxG6UaJBB3okK4cE804UI2PIcLc97F4olqz8NnhVqG4PyF4cjSljmNOROOlN1sr01Q8kTTbiHIRhKjp8vK-VrZ3oaxRY-V2DKx5s3V_Ikj83ChKd03X5NIoJ31VGI3SLci5QdfStV30ty4y7JcLN4BUxHyTCq5RidKPWe77-EKfhna7uaHT9czJeYVkrg-jihUwfx5hmrJhe0LcSj2IB-2mZmRU2oGRiHxg1o8f_qLsLrADCOPe2hpjqy2MSSBXY9ESJnkpC-q6nIfv8NBiETccamF-fdejJPyvbiYKzBXYK5YKQ1UFpWVxkqkFRUipKOE0rLIPlJhFeJdURIPEAyP2LFnAvmp_Fiw_Sa4qvYRvlNa5NktcJaArjR27c2WaTttQwvbbXFWAyPrfSd4kveCR8OW1RvMbnXsFuSqPsRmUVjGBPC2UnWIKPKhbqtSVwwHr410ze_YjkeBWYaZ7jiSxhXtdLQkJkadx2X_uDOitN_Eu3ew3vHIt1IG-vgzBXMBD4aVkMtQ02q-U8yx7Zbv5aRsceEC8dWsibZasdBKSTn4t5FskSzNeqduiu0v286ay2OmS6K7P0D-xweKFk2PXNeRHQHaIw_KgXCdDXJ9Pu1sWWenWv0kdgY7nHfOJRU8RB-daUp0DP9MxQrwGng3RcGdVQ6k8aZk9gAvyXlsVYmun-sSg6cCAtfuQ-LnpsvkCNJfoq_VzVzTOlJ7rynfIr_xZ1HOZvQp55BsUf3dH_61ThuNY9i9LYk3nGksJ2iw-Pv_r4P_4-n_rhOM8d53-H4Pdik_xvlbbReGNN0bp_xeqz60G6vv7EqStm_6Rjkmf4NJ3ibnt7Zll_WDC9cJRw_qD0fho93wca327ld_OxoPR2P46N3P__bu539_9_O_vvvTX0eHe3tY-_soHI-e1kuedqcl55kTR3nUIlTv5qA-xM72q3a9A8uxvYK9cDi6923-bT7e3Q87bLWVFb_Nj4LDEc8-48FWeDQGzUUUQ7BAnIPwyZivHu-O90I2WHd5qU8u1YPjrbC2P3wW1prbvExRk3xI067q6By1pbpmC3gEEtREkgt7908G_LYZ1Ds8N6hHdRNlE0LHkB5EucMtF6HuupQ0txpc-56oLN_xwd5h8AAi3zHbUbi3sijBXv8A",
+      "image": "assets/images/arcade/cube-maze-3d.png",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "sourceUrl": "https://x.com/haruka_apps/status/2116985055889551653",
+      "publishedAt": "2026-11-01T20:05:43.661Z",
+      "originalUrl": "https://kitao.dev/playload/app/#v1.dVhZV-NGFn6fX2F8Ep8q6Upos8FL2WOMmpAG3DGGXtTKHCNkQwIysUSv8DhP8zCPM78vv2S-W_IC3ZPDsWqvust3N7a3K38vroubtDK4v0grx5MvacXf_1syz_KikqjjSXFFhUrs_DqjFG0yzylDe_X5bl5QriKHXPJimi175Mc0UFFkuWS5MUXrhr8WNzGNlUiokKqbRE5sFPiYSeRyz-Wexz1cOVQiwj5KY8poRgMcyO3byZ3I-WQeG5lZcDMzU24GkkbqtFhcZzN7upjfDq4mi8H8MqUQ5N6C_CNuJ5-or7L0Y-XsOit2-4vF5LPwfCdwJO2pKKa34CNuT-cLcZOyAJx20vHqjXZimvJtlMQKn24XdAq3luAMT0UjETjNholx0ouwO25BGM_-YhZDe3qfJcX1PKtMhfy6EnEUt_mpQjkQsLN-GuN20fEb-OLp5e5UFT96DhRQbHvOgwP5u96uA0HsGmmpguevPmGkEbQTy2rLWdSPctNtOIYAI740xQ4YiWPTbJdvQHs71KA6BeRDny6usfP5ohBLpc2iIrZm4Fs-odUFrcFTSsdqgH3Q4fc0XU_Flii6rnx4mEXjWH79nsg1u_-X1jaffngYQFO9VKlxK5W1mhiyYvz4gUXS7eqd8jGx7-7zKxEVHa_XbDZb_KAhZtFO3PNbrmR0AVx8E41pGMvHx0empnw-q8ynEfMPep6JgCFrMXhLEZS7c-yuJBLc5bzyFRxFlDBw-WoaxSoHFJtN4NABBvcAdpqqPFlEgziaabFktVrSdWs100y7zV35lS9iBM6z4jq7Tx-fY6PuerVaWAodh_VJt1bI1fb2Soh7UcGQBWxG9iK9vE9SZiSjnE3QfBtlv6YgBjb0q1evG4LviMmR7awTQq6hYtMpICt-IIVldvr4YKWvUvlYkh2WxBoq3FBbUk-4AzgGqXyqc9YTIJjuEsahE8f23aSAlt1YjVgwssWSOdLk8n51RuCrl98txK4xo11jQHyMhrIlpnZytVB6iO78Rrm1o17EamxFQxprZZYiOF85nDXU2NLSjhsE7XSD2YxtMdEuBoihHF6Nz-jFCFqMVRLNTLfmx-28o9ItNca3VstKjBWmSK1cGmJgFXJbjNGXj5Iy8Abe7en1zY0oiMGcmqGwbTuTy9FROTJdUEy3cJ7alTrabWrfoW0IEgnQRd_6fpGdrM-r1jdH1tv12W-PrFcb5c3lkc2ucrG-WrSWTvz5cgMu_eeVhG_hGCIgqOe2vFiLMgHIDFFYbs3rWS6MTtKrtWfHiUZgJPBfhZnSp6ceP1eQqKdUJq0tmKhK4XL1SPjcwNmLieXKbQ9Wxa8CPj8zrCWM6xbizi4Ps8v0E1SZ8DNjrB3JrvbzQxHSiFJrRIU1klgU-cNAdpVTq-WdSa026Ex6ICSH6WYAU5_GYo9uo34MREpztBm6ejjTrzGjY_Gz6BPiQMguoOPAjj4qFoCWRAHPsZ2xsuGa6HTFLN6gKC8dBVMaZUZuJsbYLIyBlQL1mTGzEmOA8dhMDcRf9BPMFdiXGmOMx1jPMZ5h_yCmOWsjKn1bzleeilOxHlPEFLBbgzILslKy9Db6TWn58faoEOCCdZ6io5VdiEzqcSax94Vy7Z06_aR-E7a_S5btB5J-eKI_1bR3rJTZ2XVMF0Eq2c5ox7O4CymAaR32FvSSPtAV3dMJHdA17dMNHdIx_MZE-XSB3y_fhxA6w_o7_H5XzaWX-4cSbKsLjuH3al_dqAN1jR0nIBBHJB0qd6dJ6whcCAhDfs26H6KAfdkHxVJhXTzx6RHEAqc-W2kvSuzFJLuc3wp4w1j-RUzYhPZPeCSXCMyvRCoB4VeQZZv9_cODWMDnI1Z1OjnpGe6KJPJj06v5uJ5VAY8AlyCu1Af1kqUwgV8sP1oKjnxs_0PIpQTuGGh3N5zPUFQ9d71h_cRNZ1VC3x8GJ95sEC4H_omXJrof8EKSzoKBFzYOqrEO6_oSh6rjZuN453x3GFxOJ4PwYh-fg73L_WR2MfQnF8MA5y72L6SsStJHXNzYwOXNy0k64-klZW-YMjFRCYFa6NalO8Fu4Is2DQPewbc8A3i7BADVREel6qeqmWwSpuI6-R0509k6S0nURZHdCV9auvWQTOiOu5yAxlN1Kn6iY8vrnQqg1CPbcY0zSSeydSI53B5zsD7uelKfCJBEvBHHnaA3Md0WVKBn65xaAI6ynd7kKcfZ5bRcpMX9Iqu8EZPyso4nhWUddpSzJCWQ5Vlvc3bfVO52w6EDLBzAmZjKduF3XB4CrK_ElVRAyQc-yMwB5EfQhJsGlusY-1bdMW5Mu_4A7t51f4kmjFxu1DuQi60XFIoGTRg3kPOkW-8F4ETS9QaTX8R1-bATyPaJ-oihUzpqRCe2V3jda04H0hhxzGBPxQdKImFROuJvgYGtJ5duPKDmPCm1gbZWs6zf4QdZQjPYy23K8sOygOkiXe4E8isb8SoDzpTV_Danmq3emak5_Os9m5Q2J055ejOQ30I-ClfMqUuCwIOo0B50kZWITA1QveSa5kXE4o1rsLPiqYmivtHkHajoitgtElvxlroqszhOVoCqJewKkIBgw5kL5x2MIxWd0Kn4KOBLuWqBo-QVkINV3PbIuq8wINtXsIB7xYdXkx7nKOUgAbkTFUKFR8KHClnwbC588ikWL1RjaT5PUAsILjMMPMOyzFBkwROOlO03ticIecK36zCykcTo7Tpyfla2t2vs0Wsl9kyseUs2_2DLHK44pRfmZxJcmFlvJXYLrtZ0V35TKZV10lK467Ccr_KAuQh5JpUcoxOl7lnuR3iCM0PbbX6buk51VlGGLcTHESL9YJmeIVpyYPtBDMUR6MM2c2agRDUHBvIujunjZeovwvIBM8SHA_i2Z46shtEnjhjnSAVmkp2-KKPLC_z1eyEcccul-obBMmOc6HxxNZdjDglDO98wDVTmpZRQ5aZlL4RJIy6mOsieq7A08bbQnZcwhnNW7FTAP-liwQ58nCq_56hT6uTZdZzUgC45du1m3bSdhlEI262zV8NB5vuJ8STPjKeALMsczK63cJ2xVxZiiyjUNgG8bVjtw4qQGnfqJbui3_tspNtBy3Y8GujSt1e04ITGZd9poTzgzqj1WrevW0ivuj7y3t5Oy6MAiQBwPv6LgLlOEwErIdemVqxySrHEtqvz5UR_8eAK8eUsl4nlioUvEJbh_D6cLZylWW1VTbH_Y8PZdvUYfd1pH_fg_1GgFMJHqeui_hDoe-SBOXRcZ5fcgG-bruPsvFB_iIPeAfudK0k5D9FG04KSIoZ-5mID-AJ4N0XOjaUH0viiD3uxzoRhCutIdHdfaAxeChBceQGK7-HI0R2B-hu0laqZFbQD197xkbogWUVZlLEYA11mWHWq_vnff1Zpt3YGuTdAHDZMCywn_Kn--Z9_V_n8d9P_qnK996wORzxDNcrFONdqhxCk6T44ul4rC-3aps4uKWkEZmDoMQW73NU1-_LVBtIK8AcV7oB8r1d9NQrPD8PXlUq_dTruj8ZQUX8E3AyPjiqVvdYoHI_eVvXWRqsulw7znnVTJwRtv1ftY2fjU6PagsBYTIOjsD_aep-9z8aHx2GLhbUR3vvsdDAc8ew7HuyFp2P0OXby8H3Wb52Eb8Z4eHw4PgpZSu31kwGqsergbC-sHPffhRV_Xwsx8ikALY1l8Cyhqnk06wAh1I9UBuhBAXvR44SmV23xXK8aVU3ESpAcM-38XyPscMvFRmsHsFiKCvp8RijIOzs5Gg5egl7I6jSEqPrb75YChLd6_B8",
+      "adapted": true,
+      "compressedBytes": 2835,
+      "selectionReason": "立方体の面をまたいで移動すると盤面が回転する迷路。壁を読み、星への経路を選ぶ遊びと立体表現が一体になっている。",
+      "curation": "0.9.5対応の作者更新版へ置換。掲載中ゲームの品質を再選別したものではない。",
+      "observations": [
+        "公開投稿と共有URLのソースを実ブラウザで照合。掲載版を通常入力で操作し、CRTありの実画面を撮影。",
+        "操作説明の文字列だけ正規シンボルへ置換。難度・ルール・描画処理・入力処理は変更なし。原版と掲載版の補助検査結果は同一。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-02T09:19:04.771Z",
+        "method": "実ブラウザの通常入力と、実エンジンによる補助検査。ゲーム状態の強制変更なし。",
+        "limits": "全地形・全対局・全乱数・全難度を網羅した保証ではない。",
+        "labels": [
+          ["PREVIEW  A:START", "PREVIEW  ⒶSTART"],
+          ["ARW:ROLL  B:RETRY", "⬆⬇⬅➡ROLL ⒷRETRY"],
+          [" B:UNLOCK", " ⒷUNLOCK"],
+          ["ARW:SEL  A/Z:START", "⬆⬇⬅➡SEL ⒶSTART"],
+          ["A:NEXT B:TITLE", "ⒶNEXT ⒷTITLE"]
+        ],
+        "originalCompressedBytes": 2846,
+        "run": {
+          "frames": 7079,
+          "overflows": 0,
+          "stages": [
+            {
+              "size": 3,
+              "state": 3,
+              "rotations": 14,
+              "time": 47.54999999999858,
+              "pathLength": 44
+            },
+            {
+              "size": 4,
+              "state": 3,
+              "rotations": 14,
+              "time": 68.43333333333074,
+              "pathLength": 63
+            }
+          ],
+          "nextSize": 5
+        },
+        "browser": "通常の手操作で移動と面をまたぐ回転を確認。補助検査では3x3と4x4をクリアし5x5へ進行。"
+      }
+    },
     {
       "title": "Crossy Chicken Ver.12",
       "url": "/playload/app/#v1.rVhbc9tEFH7Xr9h6Jh4pkrEuju1ir7mUDC90YEqHIY_ClltPElsjK1gakpnIhpImlJRyKZM29EIomRbcDoUm4OTPdCvbeSo_gdnV6uYqJcyQF6119pw95-w533cUJpsFr5sNc0EDZ4xWu22DMxcb1XmtCT7QjFckmWEWNBNYsCgKNhSFOhSFNhSFmqbWoFgiwpqhdj7EG_BiDkpKXlhsfdxoXvA3fKS1Tbxmsllw9O3ecP0AOddHPw_cjW-J3NB0TTXPNxY1w1fxXr2lLag2lKgq6v2Cegeo9xg5_dFu_-jOD_itCMZXLrs3H4EskMCR8_V47yHIAhm4e9sgCxQw2tsa7z1k6kvNqtloNcGC2tTYDvcJAxp1tgOhyBmauWQ0gVjyXk1JEoTK8rK3yPliKSou-OKiL5aj4sCmUmJAaH6FhrGLej3UW0NO_9nhldFhP-Jc68IbJtsR5rF_JLewMyVDKL4mvZqRQmMsW5-u8Z3pnMjPT5_Oc1PSaZmXTstkkZFzSWe5h18j5xbqrrtrO25_Kzy01XyndYHtCLqFT623DBafPA_F0nxZLs3zPH5NvNFh6GCJAThg3eJzFain03hR1nk5SJhpLGklBqwETtfVhbbmezYerCfEX1WNhPiPCX4mz89PF4vclFTI81IhTxaZon_C0Y2Bd8ho_cnws43wENNQG833LqptWge-2TpOaIGbkoriCzYmHSU2sKu-ozq2B2OmS4lXSMqE7C7ngzrJSCIucrLfhESayYt0cw1CKdioyLw5nQuTIeXFDHnhX_gm6u6g7p-o-xh17w5v_D787lHo9pJeU03tTa1tsrQD2hXcnRxp0TaxEsbYqM6TbXWe952rqovwrGpefGVRtVhRsDM5jnp5CkMC9wnDAJDNAvezn9z1G-7n90ZXL3mFcsrDBG-HlxgLA4lNkAEQreHNVXdtGzn94frBs_0N5Dx0rzx2__oZOQ8oXABi6yOzqbMit7xMFjmOFCgANRviMgEghigRKCHCFW2hrQVWpIhy5j9ry4G2BXHl_TdtJaJ9EmU_TQGGPtv_FTn9o9UfR0-2wgRFzvCTxOboU6JPmT6JC-TkRp2NHF4RqWtRjzIZz0kSBRW_cA4X3kLME4lIMkkimeMi-YuJFCIqehXy8vRgpIn5NkEr0Qx6yULda-7mleH3t2lZ1exT0I_bjpU5X7M57xDKbFLEHta0Qk0rquktG01WmpEFi69Z3PF22qFiW_DOW6HthHrXMft1d1BvB3Og0x8OvkLdy8jZQM794OoJfKjGBc2cg6xUyLB2pqoucty0l0DsKObqssWRJ27r8G2FvvVumb6dK1N7RDYX05irxGRYL2IOQiud9iYC6O8jCQpngzC-SW6aQAwKGKata5Dwt80FmBGhuAfP_ryOnB-Rcw85n6Luhnv7d_fqGr0iogzldNqjO5tMKx_6HegBtR3jWnyXPKx5Ky9h-JffLVZZXF62KtKMzJFpSIqXmLu3jZwH46uHyLmDnFuTXpxKdCPJECGgXeT0x3e2R_edmCGJ6h1H2sDnbY9YbcrbILwmyt50Xdb5oq8YdYY2F22xAIcoOx7jnBLJ7Qv06N9gwIYVmBfTaY8YJbEYd9-n20Ar9L8Q-l_WeUU-gfs0BGwCc1aUFMnAwoDqQpsVyVm4wrq_kbnzNureJ4urqHcw-mZwtH2XCYzgU_Ulk1WEGSH19htnZ8G7H8yeSwkFQSQp92RFIfX-mXfPzYIU3xbyMZEkCqk3Z98_D1I8JmNBiUsVIfX02pOn1_bAudnz5-Z8w0zIhzmfD2doNeGhnYRvU_jzB_XgBxnWSx72eG_r_lY630_064uYirPpjSJ-6pInBNwRNx-5h3cxdm1ujr4ZhKMmNmWUpWLJiMyaHVhVF3mpkDFKzGT7d4LIY22AS5J8AOAfOG-iYAgpkPCH0yd5RgJKpq0ZmHL3tk9kJ5doRwns0A-Qk5iaCWHN00JO3__qeRCzABP-IhZCFsQAQr6PTuSATB3wb6YKxVK1LIulagAojTrLVvnOtMJNFfCXDrZZxTb_vvXF4xRXCluMlAMFsN4gxOneIBir_5dKoCBhQyPkucm6GA_WmZfiZBQmOwFMYnCqwEwhndbLUj6Yidq6weqCbuOgt66nSAkk4stkTQVJeH6wNdy9r6DeD3hWX3XGl39TTuJg9PsrhvwqFEtqWSmpE8hvQZ1Xp4sh6usWDciKRuSFZJGYnt744_n-ZkpQuJeD52Shj_c33bXPx7_ec79aZ47Dfdq6sY-goLAIbtQXWi2DrWeLHGHjaM7zOc_B1QPiYN53EMuKxURZEmMdrW4dOV8y_0o-ce7pRBmrklHklxTF5pfP9zcTH4nF4nfKxJjHEJsEtb3_rWDT9y55wVFqoh964zu7o52_GNrhYpRmKANhiSQLiSyzwvwD",
@@ -2072,15 +2192,16 @@
       "originalUrl": "https://kitao.dev/playload/app/#v1.bVjdchrJ9b_nKVpdq6k-9AF3z4BADD3YlmSvd1fI0VqKs9T8IwSNwEbDLLTWcgSpfGcvUpVUKqXkLg-Q--R9dJPbPMK_umcGkHehJE1Pnz4fv_PZevKEPDUTM9UknU8SwwIhBJSm2hAzGbxXjIGK7uzyUvUuSqVSKSIkJyWOlGSfpyS4wIIg2_f39_eJzCk4IaSyJs5IN6zqguzlvMoZCS9oC-IN3z0hBPG3qZ-UtimLg8HmSLNMytKvr7W1H7-0zd_qUkBAAsi4PCVEONX1WoeMhPnAg_Lelv05G6uMU2iLn-9w2hbgXvyIgdk2DbigXPAtcAu8cuCp5UB5zoQ7RQmpbMwvb5hJn3K_LjYWbSjX8NCAcruiglbnOtV9w3yA_EDgjtTyI8UBYTXIjCLVxXQy0EwQkh1CK6ZGiCyQXUuxi2raHx4lQ1ZDS-6ECEKI_IGZx30zrl5PElaKiJWHDkgnoW9P3W47b-uIXc5nN8nQRWC1VkjZy6RkZx4JWXw7NywzxvHf0_sFWUbVC1DYb1wqRdV3s0nCKNICobX7bJokygrNgcllJJxD6RNXb6KjHXSytRRCtIJHSbWlgih4Es_bBNBTsiRkueE6UixRbltFyQaXEcuB-9GEChrtejuAR_lQiJWiTIJyUAQDKW-p5BKcyHqhyv8Rj_BMm6iIdO6SWeSx-pT0SCBI_AhaIURMiv0Kz_OoStY_T9fa9AghdNA3NC5F1alOrsy4bGGDwiTrglslCnp2q5SsCwH8dstZBTNZBJXlNtfDm4FmrI-XoKJSKeqXLx1mTwkvuOfnEEmcSy9FmfwMAPw0k__7p3_RNSUpO1VyJP_3z798_whpQup7jfW2IOT20TbbEXxHcAvUlsyMeCfLgoJPIIQs-PxynezZbilK-_OFfmW1e_68SQHlXiki2_EZFTEDUIpGN8nATGYJGTG4K0VzbW7myToUre9W21mwtvzN50fkqHtIH9W5GBOh6HntpNaVYkAxtav9kyBbze1K-icNuzypDSh-pej53km9K4UeUPxM0eOGJah3g4G-OujWX1KcKYE3uMDv8ANe4Ry7eIrneKYEHqiKxI9K4ARP8Dle46ESOFJS-jhUAgeqIn08Uon-QI77Kb5wT19rg79QWkVfm_kkuaqO5rPrg3F_fjAbalZvBLUa14BvLUVP7_qi3ESmn_hiKaDcjPFru7GoTpLB9GaoF8UWToXdmFdHk2T4KhnqW2ZUZHoiVkoDToRybfZKfYdz9aF63U-ZFVCtVnUM2FVv2RXgqZq7HdbTMajoLdMAeK56sTVyhf2MyaI47Zq2UZYJJZuyLiAOR7M5m2rTSzGJZyMyB5ZmeiqlPY-ZXrrri1glEGbuJiaveRSqZj65ttUbVpC9vChdAL5UTKNRlFoz0hvDApR1ZDdcCskpoVxD3iQkFPVf1oBflC642XqBdRSwwm-cKS8ZPT3rEvLw13-zb4AiJYScdQ9PyMNf_8PeAgX8Vm0MtagP9e3JiGngMrRKCNT42HYUqHebHdM56dRbsiVaPmBBaTqGU9qihKLA_L3cz1i4Nyv80sm7UUzzyzytYbd4woX1xQf767J3E1cX6XRiHDwb00ez-VF_MGbMYGqhykKARtTzFtX0ZjFmKZeA1mnGqj3tDzSjEUVKId6cTnBajGV9lZZ9wafcl2GiFH1KO9-pfivZUZRQz_uQce31MYlhBSsonE-MEqFp74eGc_iWGQgngsEqHEwXTAKmg6vqf__0r2raN4ru1xp6WGvokd7rX2ohaIYNypr1CeX04f5va5SdWwkpXXC2hb1sOmfDZrzYAhllA-nD_a-2qdFHCfglE4DfMAitxj9xQZYBV1iRKBEm7bSchrbJOkSmSvNkN8W-MpwlT1Kbf8eK9aMogLKscTa1T-FRddxfsGNYLo-qC23YMfYEPvrGgEfVK7sFvb7XiJdK-s0oYlOvAfii2h8O2TGsVmFRIsufW_3A6SalXxm1teel0_5HJtF06LEfnDdPZLc-oC1byBonvqt7EObEIYxUNvP0bx0DjaOKD2g8jw02O7ZsDSrSB8CPEz0drtbyf8oy4blMJ1GKk71uYKWM-DBq-CGMKmovOxluquFRdTDV_TkDfK7EhuNIMO1Q7Rm01ULpPNiVkp6ne6Log-16pxegj7W41fNRYiPGqeqtSw15R2YjoqFYjpUIx-13-eHlcmccjrlKYJqF67s8Y8Y45glAOFXTYsZEPwuGvmqWTThUDT4tBoF-hRXPHdMSgC8ZfX36qvvmVfclzU4dK7Gufu9wbKvftKoTM5_oBYMsfp5ZUCpsvGFrIIokaqGe8e23a-NeKxm-bjfD10UIfqEC_q7c5-x1RULZhA7t8ufsC24yPd5YbGyWj7ey-hZvxHZsv1cifN9uhO85h3Rw1buNbTr2Xseei8P3nvcmg-sZvxHlPn9fNjbB7dFX6pjzXb9TkS2JQ6FeRaKjBa-1nlVq4Y-ESNCVAwo4cITPKrWWJQ7ZUFQGUH4VKREOuJJ--RW8UW-qo8nU6Dm7VRG7zQjEcvkTdotfYFpE5RqcW-v5N1Bsr1YFGEOb4K4Lb-Jt4OLtuZLOd89eH52SL54d71DUgE5lgW5E8LvBwBt4Vuehkj4WPOuf1reacAXOieHMtH0BZcaM50PZt7m1SOessceZ8WqAUoiKQfrwj19TbPwgu37G4G7oeSyT9VMG2yplWXZAXdCdnnVt1wU8URIXawd_u1EuK1vSd1Urw-tEice0lk7bODHzj3cvci0YdfMVxb5gACxRkc5i4OKzu2R1AbAa9M1gzBK4y_QcCJZUk_61Lpr5KgPnRqmicVUkpsoslz_IbaWyi2Yev64YYNph10oWppvOZ5w62_OBrPWZK1hu20d63jyprTe3BzcLlOlQOyK2nJQdcvDV0bPTrM13j96-Kfo-QOsbBhs__NyGyLWy09yXbBMXXwF-4h17yho7E1tjQi_GVF1xvXFFyBI1FSwFsHGecqXBZJgmEE5GbIfZcWhX7rflcpm2fbFcppGs7wPcnefd9Qqz0SzJhrYkhhjwiqstKTYLDMx7SdwTsd3J1dZlHUnPM9XF7FpbBl-znAg8b2e9qGiAzly0TFHgUtFKBKxWOM6Hx8mIXcPdzsTzLk2Sshp4Hpuon9sZDB75XqueQIk-BliPH0-klyZhBpzVZ0q3RUe0zrhE5jjWYbnUUeB5Z5Hc87zZbk0pAZ53nqvkeTsnnufAiNV5NZ2lbMs5gJZ5Pa-xRjmWAVTcXx9C43lW950Nt1x7A-BG-cKET_LbpbdjYqzFB8o49bucUuXm5kLgQaRE56Blle_oVkWGJlIi03kmWK_i26sgViTKuGfiTOZqDaXVjU3UzxjACo1wkwjY5HMTeYoJqCjlmx7dfLKH6_9f2MVbZqCXxJUUANYTA7kSDO5mnOPE8ybVRN8aBtXhLNFOmgAcCwZ4ncs_VL0A97COtbg3iyLfC9ztwAjWRXdBOM3UyWYkI5jBeS91sQT4sT1fQ_vLmSdtrnC-LmFnb2XdFjHXB_Ls3Rzp2MH47G1T2FYRsMHVwRWMDvoHV4eXh2An8Y9Kbdg_qi1r3ABPN73OzhOxQy1pf_Q8W4bthOGiXcZ44nmbPOiIVgOyUt3tiRi7PRlX2LXnzbxmJ7CNntrLNMWgKJpr5Ed8iFL6211hPzRtmYWNi4x0M1mN0JSbUDHlJiYbHtq-5fn7qUqi1POSdjPMrjkGWRKlHUoe7n_9cP-bh_vfPtz_7uH-9w_3f3i4_-PD_fe016ywaSdppRDbywVsDco47chWA6edRkvCJrJtrXjhWv4vmAHX9VU2iRoIXxSTWviI_qj6Xn9czzCpGnFmnsiau5eGaaQafoayX-NmV9bKTUzRcsdDWF1nW7Ny0NiVgY-zcmO31uR7NdsLf0_xMAPfl3yAUtQqbBBVpO_NwE7t39P1HN-wlz768Pc_U3zeCVqTjnXQXstvHS6XdXuByq-TV2IFDMLS_wM",
       "adapted": false,
       "compressedBytes": 2996,
-      "selectionReason": "ネコでJavaScriptの文字を押してコードを組み替え、実際に実行した結果をプリンターで見せるパズル。数式から文字列・型変換・Unicode・自動セミコロン挿入まで37問で扱い、コードの意味と押す順序の両方を考えさせる。",
-      "curation": "ユーザー指定の新作を動作・操作・画面確認後に採用。",
+      "selectionReason": "ネコを操作して文字を押し、コードを組み替えて問題を解くパズルゲーム。学習を題材にしていることを理由に除外しない。",
+      "curation": "掲載継続。ユーザー確認済みの既存ゲームの品質は再選別しない。",
       "observations": [
         "作者公開の原版2996bytesをそのまま掲載。操作案内は元からⒶ(Z)・Ⓑ(X)を使用。",
         "実ブラウザで下→右→右→上と移動して1問目の3をコード行に押し、Ⓑで一手戻し、再度押してⒶ実行。「3000! CLEAR」からⒶで2問目へ進行した。",
         "元の1問目をそのまま実行すると0を印刷して継続。9問目では3+000、23問目ではtrueが印刷され、誤答後も操作可能。文字を押した後の取り消しも確認。",
         "Ⓑ+➡の通常操作で後半まで移動し、5・9・18・23・32・37問目と38番目のTHE END画面を実ブラウザで確認。補助検査では37問と終了画面の初期表示を通して上限超過0。",
         "補助検査で構文を崩して実行し、PAPER JAM!/ReferenceErrorから入力可能な状態に戻ること、正答時のクリアを確認。",
-        "2026-11-01、ユーザー指摘により掲載画像を3問目の記号を運ぶ場面に差し替え。元の9問目の画像と選定判断はscreenshotHistoryへ保存。掲載URL・ソース・容量・採用日時は変更なし。"
+        "2026-11-01、ユーザー指摘により掲載画像を3問目の記号を運ぶ場面に差し替え。元の9問目の画像と選定判断はscreenshotHistoryへ保存。掲載URL・ソース・容量・採用日時は変更なし。",
+        "2026-11-02 ゲーム該当性の再確認: ネコを操作して文字を押し、コードを組み替えて問題を解くパズルゲーム。学習を題材にしていることを理由に除外しない。"
       ],
       "validation": {
         "checkedAt": "2026-11-01T04:09:26.434Z",
@@ -2111,12 +2232,13 @@
       "originalUrl": "https://kitao.dev/playload/app/#v1.jVnNUiPJEb7rKT4Oo-5GJdHdav2gRsI9QguEGQRIO-yYkCcaqZE6EFJvdzNIOxDhiyd82z-H12e_hA_2yb77IXgSR1b1r2Ad5oBUVZlZWVn5ZWaldnbwm9AN5w7CCe7s75xKYWcHwwN5bt9dT2wFRRysF3b5HO_s7xxYxy1Yvr98CHC3_ORgfO8HSx87sBAup9O5gwd7PscO3iJ4cMPxDNZxoTBeLoIQ3SO0IbsK2h0MQt9dTCs3_vKuO7P97nLiyLVG1TBQgquYEYd1ctgfoI0r6VxWFUBikM7lSk2JvzXFt4MPp1b5XBrFfINu77QnGAdDa3jcJaK3J_3ubzn54Kh_MURKbl1c9C8F-fOXH4ni-cvP4uMH8fFTSnzwDRGqDCpDWWPQRgwHH2iOj_i8mlBfog1NZ6CjayrDKdq4xDaOGAZD62KINnYbDId96wRt6LpZKMydEGdoYzpfXtvz4cwNKmf9k-PuB-zvQ2cY5Nf4WWlJYyBxarz1O4ukLJwHfO0uwqbl-_ZaPlUYrMNeZkGrpytHx4PhSx6jmVzIebR6nOHDNgyFoXfyym58LVGof_Bx8OsCaPni15Yju9grsiODvUYbTYYxjWsMYxrXTE7jeGQFRq45CB0vEKO5HYTxcHeX4drJj8NlaM8TeiEpWM4_OZMeyaO79R1rYnthMr62fd91_O7MXkydidhmOl8-DN07xxfDwHEm7-05Xa1Rb2pmDIWFswov7AUxyRwPspySJl-3odXrRk2voQRN1aq7qqHrVQWdTgeq-Ggq2IFWbzQaulaPDT2e23ekpPyJYb5kmAnMyZ-wh_kS-_SvhU_oYOZin_618IlMfHO_GIfucoHre3c-eWd7sjezA0fB5wJws_Qhk1lcbiG42MOpCbdUEuuA2J2uxMUbXDKsOeCxg0sFj2RVonpnnV25I7SxtcLjI5ETJMrQaLS1pv9rmjuK5_iohn1oaAkhT7E6YkcXyxtc6U2GqsZgqAxGlaG5y8hqIyXdUSNm9wby1oAEywOSrGEfW_ycaEGcV7DUd0fCF2KeaLqaTDvzwOFrXJBOMiODcUI9InzKWNZ3Aie05nNZGO28cuPO57KqmOidpN85VMSwrEXji3TZOuylAwKtGFVVhbQSIDEjkJgRIMwcIMwcIJqquQEI8wUgkIeDuQEH8xU4mHk4cBl5QKCEAbbRUPnNJF5H58gajXSzxqEcCKORE9JULDTxTDs6OPZgmLDJM-l2zq8CCiIowR6hg3RIQkZKLMsmWb4T3vtiR9JBONidvTrnwOQ4yvMLvUZZ9ASh41lTZxHKwfJ-MekvhNpCFpnTXmMbl6TPimHqO85kbaGdEWdGp7RFGOF3M176Dpl6l_5ip4wDiaxgD2pFbSqcJztP4TNGH3fYxFy34pJuhbluN4G8IFUDlHDw4ep2FGl88M3V7cjMUF0vF_dEeEYQqKJYxBY5_yIYYR_v7HBWuXMXMoHTOuzx6U4HuhJDOTHLGO2MZfl-3MRcfAly_khVfiRFSCBDBGN0Ujsp-JwzWjA2uV1uTR47npLbWBBW7JU4mD1iWKzF_fBT08TMDS-ppGlzTC_im1usRjx4mIWcuWLqfQRoIUPNYIeHS-75RNjmKT9l9p0H2leQ7EM3VLQywspVHS2UqTz434GYTEF2dkd0qaqqKhDDUok2i6-AAyfZPJz0fEIoKUGWlhM9SAtyfnkRKGR2rUZphxyqjCyqYneMNabgamOrnTh3sSjkBAoodynZaPf_-CUJvyWBNrFm3SSKAZlJm4d6vZk54dy-i6q2Rp2yQpNqtKuzkflr5iRRr-Q28qXeyZU7Sh3PiSmAc5FlePqV-YCsKay7DYebrqkwlHXKUboR-y-EzKwDkOFlB9ukOedrCFLhvQWIDJE_8iIwo4WL_ILvPMQXJFAaq_yaxZu5SJD4Z_AiqpxyCDK4E8KQH-8ovxZ7FAaf40Oo7U5Wo_jopBWtddpU08S7JtFlfhshz-d-S-m6WOTCtmhTBufm5pQkE-U-qdGiVXNDjnNzQ7VlRCzQl-BMsAqMCfNlFUxEcIxwQRwkm7ISrPCFV-CSFyrGWXehYQky7dPpQHvVUZ7yXsDrkgh0FPN46l-soty_WItwFyd-EQPSxC7GJCPyu8fHtEjoEIaSG8lWCzFJioGIvVhM2ffSgkLJ1RZ5biperhwPb2A0U2PIiZidyIH4y6qaDfjpnkldsgc1rwO9qJRs3eJ4VEqnQjZqlmIRqdi0vnlFblo66gZa0OqKkiuIHI-qVyPdqVSiMqwNrUaiBjxBxeUOVXgvqiftZUkmLj9fxm0We_m4mjUVbZmtxzSKdZQ54xrFm9trWWWQhrqh9mvvG2Nn2pWUOGU-FQpp8WoWOLVG1Jqu9qvvjXHTaU6bTlNRpNxbInTHt1G1y00eLjy5ppA29D6Vz-hGqM1QNTPFsdg0oTeUfBwWMWccp9fxKj0sLW21o9d1sYhoTCCNXgKEs9-3Yzfgqeczf1XLA6HLm9d04UBaJy46phKB66YRuvk3CnMa4w8XnZufP08j-lVMX03odUF_GdGnJWJ0vZlX_lfWYPjxbe-0e0TvIApUei53ZQK44C4WyQf3YNSieJ4WpVuvy6XK7VaJI0LiKUrqNOWyUHIeRO7l3Yey6IRIwwP5P_8gA_-uB-tYYqA8mxBpBqfi_ZyrsxFDI7sq0C31Tt-3JHoR8O7N1YCioYTemZjkDSPZ8ZSKZ08Goe2Hss4gqZLCqAOgKvnaKIJHIGqjYDOR332LdlyRMPrS4xUeL1ftlVypVHonleCeUGmvZZ7bGOIUZygRuGij8QxtSP_6u8RwMxXdietpXJUIW5LXBSPyeEH8_Jc_Saag1k1BrcXoTp6UPLVwL04ZBzFbI2IzXmcTzp5s99c_xnz1iK_6gu_uW_CyPEn7xCoaY1e5Z45Y5tKE2TrQVV7wpcGFqj2S11AV7KNBiZGGmqZiH_V4aNCohhaiMPmU02YP5WZ6hn__Eh_hFdUjNTQ1c-Y__C1mqMUM5GqBaEzoPIUHSWdCYRjP6ALp8hQzTq-B58v2CtvUapKJx14rYiQ9__K9lG33iGPWOS-xjbNs45Ttz_-UGKrCWTkydEZNPWkwzDt6knAz_l5lkED-3mBIAUgSaOVtbzDMSkjz7ysSapsSDAap248QKCcpswO6pGRYguR4ElqQymUSU98UU2OQrIMzoYicZkQhJx1vCjI2BdUjmwx2emcSN9EmwsOoXg-pYNcN-rKJ8pDib0jNqDpDyLtRIbWj6lFN4dn07r-KvDqR7K2FZG8t6mFv_bIgnhJNSAmoiRK8dQwM4veXD2_XoZMGgazsVSR7FcleZWUn0rniq1j6imEmuiZVDWVRNE2zxSSP2LxPxukeH5EZlaLW2pT326a84WY0xNQ6pa1qUU-sWIyIRK1CgovQFCWrJpJDPvK3FlWs3ipV6KmQ__TssOLdBzM5YlPS5wzgjadX3SM5dJVRRVyJZ4dmglmtihLCFUODPtcMgjbjxE-FTCap8o79j89ffn7-8sPzl59a5-WvTvqXeP7l-5Z12DsdShvuT0zGi3bufqbGkw6tYQ_8B4TeAawhemdabYu7L_8tofv1EP2z3mnvIFqh9ob0rv--h-7XF4P-BYZ9yBprKiWr3Tt9L20ghzQghxfxtmS1Lq2TE7xtUb5MnT-lbTBIM9u_v7U_2p4XSEk-LQBDUdVncjzl5I_0Owja-AzHyza7M43xTE-cJYjPdr2fqCH2Xw",
       "adapted": true,
       "compressedBytes": 2825,
-      "selectionReason": "学習した経路と試行回数のグラフを同時に見せ、壁の追加や環境変化に対する経路の学び直しと、4方式の違いを操作して観察できる強化学習デモ。",
-      "curation": "ユーザー指定の新作を動作・操作・画面確認後に採用。",
+      "selectionReason": "カーソルを動かし、壁を置く・消すことでAIの進路を妨害し、経路の変化を試して遊べる。学習の可視化という題材だけでは除外しない。",
+      "curation": "掲載継続。ユーザー確認済みの既存ゲームの品質は再選別しない。",
       "observations": [
         "原版2812bytes。操作案内2か所だけを「AT S Ⓐ:CHANGE ENV」「⬆⬇⬅➡+Ⓐ:WALL Ⓑ:ALGO」に置換し、20文字幅へ収めた。経路上の矢印はQ値の表示なので保持。",
         "実ブラウザで方向入力のカーソル移動、Ⓐの壁切替、ⒷのQ(.8)→DYNA-Q切替を確認。EP15で通路が閉じ、Q(.8)がEP34でSTEP16・BEST16・CONV12ep・ADPT9epとなる場面を確認。",
-        "補助検査では原版と掲載版で学習指標・音が一致。4方式×3環境の検証結果はvalidationに記録。45エピソードで学習が停止するデモの仕様をソースで確認。"
+        "補助検査では原版と掲載版で学習指標・音が一致。4方式×3環境の検証結果はvalidationに記録。45エピソードで学習が停止するデモの仕様をソースで確認。",
+        "2026-11-02 ゲーム該当性の再確認: カーソルを動かし、壁を置く・消すことでAIの進路を妨害し、経路の変化を試して遊べる。学習の可視化という題材だけでは除外しない。"
       ],
       "validation": {
         "checkedAt": "2026-11-01T04:09:26.434Z",
@@ -2832,10 +2954,11 @@
       "publishedAt": "2026-10-30T13:11:23.877Z",
       "adapted": false,
       "compressedBytes": 2949,
-      "selectionReason": "3KB内に8bit CPU・レジスタ・ALU・メモリの可視化と、電卓／ブロック崩しのROMを収めた操作可能なデモ。速度変更とステップ実行で仕組みも観察できる。",
-      "curation": "実ブラウザで手入力2+3=5、ROM切替、BRICKの発射・左右移動・ブロック破壊、STEPと27kHz間の速度変更を確認。起動時の自動電卓デモは撮影に使わない。",
+      "selectionReason": "BでBRICKへ切り替え、Aでボールを発射し、左右でパドルを動かしてブロックを壊すゲームを実際に遊べる。CPUの可視化という題材だけでは除外しない。",
+      "curation": "掲載継続。ユーザー確認済みの既存ゲームの品質は再選別しない。",
       "observations": [
-        "ⒷでCALC/BRICK切替。CALCは上下左右でキー選択、Ⓐで確定。BRICKは左右でパドル、Ⓐで動作、上下でCPU速度変更。STEP時のⒶ単ステップも確認。もともと正規シンボル。"
+        "ⒷでCALC/BRICK切替。CALCは上下左右でキー選択、Ⓐで確定。BRICKは左右でパドル、Ⓐで動作、上下でCPU速度変更。STEP時のⒶ単ステップも確認。もともと正規シンボル。",
+        "2026-11-02 ゲーム該当性の再確認: BでBRICKへ切り替え、Aでボールを発射し、左右でパドルを動かしてブロックを壊すゲームを実際に遊べる。CPUの可視化という題材だけでは除外しない。"
       ],
       "validation": {
         "checkedAt": "2026-10-31T03:07:20.561Z",
@@ -2971,19 +3094,6 @@
       }
     },
     {
-      "title": "rubble.",
-      "image": "assets/images/arcade/rubble.png",
-      "author": "haruka_apps",
-      "authorUrl": "https://x.com/haruka_apps",
-      "sourceUrl": "https://x.com/haruka_apps/status/2115644828570763612",
-      "publishedAt": "2026-10-29T03:20:08.000Z",
-      "adapted": false,
-      "observations": [],
-      "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
-      "compressedBytes": 2994,
-      "selectionReason": "文字・タイル表現から立体的な地形と夕景を描く映像デモ。3KBでの空間表現が明確な見どころ。"
-    },
-    {
       "title": "Dungeon Escape",
       "image": "assets/images/arcade/dungeon-escape.png",
       "author": "frenchbread（ふれんち）",
@@ -3038,19 +3148,6 @@
       "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
       "compressedBytes": 2972,
       "selectionReason": "地形を伴う横スクロール、武装と敵の展開を詰め込んだシューティング。"
-    },
-    {
-      "title": "Rose in RGB light",
-      "image": "assets/images/arcade/rose-in-rgb-light.png",
-      "author": "いけべ",
-      "authorUrl": "https://x.com/ikb",
-      "sourceUrl": "https://x.com/ikb/status/2115145985588617486",
-      "publishedAt": "2026-10-27T18:17:55.000Z",
-      "adapted": false,
-      "observations": [],
-      "curation": "After initialization, flower, petals, stem and leaves render with changing view/lighting. Initial sparse tiles are not the completed frame. Demo requires no input; full cycle not timed.",
-      "compressedBytes": 2920,
-      "selectionReason": "立体モデルの回転と色の変化を見せるデモ。制約内での立体・陰影表現に訴求力がある。"
     },
     {
       "title": "Hexenschuss",
@@ -3144,28 +3241,6 @@
         "noise": "通常戦闘およびボス攻撃でもspr超過あり。ボム時限定ではない。検査中最大191、408/2793更新、最長70連続更新。フレーム数を実時間と同一視しない。PCG変更なし。",
         "limits": "実ブラウザの通常プレイでは第二段階まで到達しゲームオーバー。クリアは無敵・状態改変なしの補助入力検査。"
       }
-    },
-    {
-      "title": "static.",
-      "image": "assets/images/arcade/static.png",
-      "author": "haruka_apps",
-      "authorUrl": "https://x.com/haruka_apps",
-      "sourceUrl": "https://x.com/haruka_apps/status/2115055477185032400",
-      "publishedAt": "2026-10-27T12:18:16.000Z",
-      "adapted": false,
-      "selectionReason": "テレビのチャンネル切替と幾何学模様を組み合わせたデモ。コードに明示的なノイズ発生処理があり、切替後は幾何学模様へ戻る。実ブラウザで複数チャンネルの正常な構図を確認し、ノイズ回数のみを根拠とした保留を撤回。",
-      "compressedBytes": 1881
-    },
-    {
-      "title": "shatter.",
-      "image": "assets/images/arcade/shatter.png",
-      "author": "haruka_apps",
-      "authorUrl": "https://x.com/haruka_apps",
-      "sourceUrl": "https://x.com/haruka_apps/status/2115051608677687505",
-      "publishedAt": "2026-10-27T12:02:53.000Z",
-      "adapted": false,
-      "selectionReason": "立方体の集合・分解・再構成を夕景と床面の上で見せるデモ。粒子とノイズ位置を制御する実装を確認し、実ブラウザで立方体の集合・分散と通常描画への復帰を確認。ノイズ回数のみを根拠とした保留を撤回。",
-      "compressedBytes": 2629
     },
     {
       "title": "E CARD",
@@ -3297,21 +3372,6 @@
       "selectionReason": "残高・弾・税金・買い物をシューティングと結びつけた独特な題材と演出。"
     },
     {
-      "title": "Cube Maze 3D",
-      "image": "assets/images/arcade/cube-maze-3d.png",
-      "author": "haruka_apps",
-      "authorUrl": "https://x.com/haruka_apps",
-      "sourceUrl": "https://x.com/haruka_apps/status/2114610483001164123",
-      "publishedAt": "2026-10-26T06:50:01.000Z",
-      "adapted": true,
-      "observations": [
-        "Rechecked centered preview at x=16; gameplay remains x=8 and screenshot updated."
-      ],
-      "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
-      "compressedBytes": 2879,
-      "selectionReason": "回転する立方体を使った迷路探索。立体表現と遊びが一体になっている。"
-    },
-    {
       "title": "SHOGI 9x9",
       "image": "assets/images/arcade/shogi.png",
       "author": "haruka_apps",
@@ -3387,9 +3447,14 @@
       "publishedAt": "2026-10-29T03:20:08.000Z",
       "author": "haruka_apps",
       "authorUrl": "https://x.com/haruka_apps",
-      "status": "採用",
-      "reason": "Existing catalog; previous initial rendering/input check, not full completion testing",
-      "title": "rubble."
+      "status": "対象外",
+      "reason": "ゲームとゲームミュージックに収録対象を限定。入力処理がなく、自動で進む瓦礫の映像を鑑賞する作品。 品質不足という判定ではない。",
+      "title": "rubble.",
+      "previousDecision": {
+        "status": "採用",
+        "reason": "Existing catalog; previous initial rendering/input check, not full completion testing"
+      },
+      "checkedAt": "2026-11-02T09:19:04.771Z"
     },
     {
       "index": 3,
@@ -3488,10 +3553,15 @@
       "publishedAt": "2026-10-27T18:17:55.000Z",
       "author": "いけべ",
       "authorUrl": "https://x.com/ikb",
-      "status": "採用",
-      "reason": "After initialization, flower, petals, stem and leaves render with changing view/lighting. Initial sparse tiles are not the completed frame. Demo requires no input; full cycle not timed.",
+      "status": "対象外",
+      "reason": "ゲームとゲームミュージックに収録対象を限定。花の鑑賞作品。回転・停止・スキップは鑑賞の操作で、フィールドを動き回る遊びではない。 品質不足という判定ではない。",
       "title": "Rose in RGB light — Playload",
-      "image": "assets/images/arcade/rose-in-rgb-light.png"
+      "image": "assets/images/arcade/rose-in-rgb-light.png",
+      "previousDecision": {
+        "status": "採用",
+        "reason": "After initialization, flower, petals, stem and leaves render with changing view/lighting. Initial sparse tiles are not the completed frame. Demo requires no input; full cycle not timed."
+      },
+      "checkedAt": "2026-11-02T09:19:04.771Z"
     },
     {
       "index": 13,
@@ -3528,9 +3598,14 @@
       "publishedAt": "2026-10-27T12:18:16.000Z",
       "author": "haruka_apps",
       "authorUrl": "https://x.com/haruka_apps",
-      "status": "採用",
-      "reason": "テレビのチャンネル切替と幾何学模様を組み合わせたデモ。コードに明示的なノイズ発生処理があり、切替後は幾何学模様へ戻る。実ブラウザで複数チャンネルの正常な構図を確認し、ノイズ回数のみを根拠とした保留を撤回。",
-      "title": "static."
+      "status": "対象外",
+      "reason": "ゲームとゲームミュージックに収録対象を限定。入力処理がなく、自動進行する映像・音楽デモ。 品質不足という判定ではない。",
+      "title": "static.",
+      "previousDecision": {
+        "status": "採用",
+        "reason": "テレビのチャンネル切替と幾何学模様を組み合わせたデモ。コードに明示的なノイズ発生処理があり、切替後は幾何学模様へ戻る。実ブラウザで複数チャンネルの正常な構図を確認し、ノイズ回数のみを根拠とした保留を撤回。"
+      },
+      "checkedAt": "2026-11-02T09:19:04.771Z"
     },
     {
       "index": 17,
@@ -3538,9 +3613,14 @@
       "publishedAt": "2026-10-27T12:02:53.000Z",
       "author": "haruka_apps",
       "authorUrl": "https://x.com/haruka_apps",
-      "status": "採用",
-      "reason": "立方体の集合・分解・再構成を夕景と床面の上で見せるデモ。粒子とノイズ位置を制御する実装を確認し、実ブラウザで立方体の集合・分散と通常描画への復帰を確認。ノイズ回数のみを根拠とした保留を撤回。",
-      "title": "shatter."
+      "status": "対象外",
+      "reason": "ゲームとゲームミュージックに収録対象を限定。入力処理がなく、自動進行する破壊映像の鑑賞作品。 品質不足という判定ではない。",
+      "title": "shatter.",
+      "previousDecision": {
+        "status": "採用",
+        "reason": "立方体の集合・分解・再構成を夕景と床面の上で見せるデモ。粒子とノイズ位置を制御する実装を確認し、実ブラウザで立方体の集合・分散と通常描画への復帰を確認。ノイズ回数のみを根拠とした保留を撤回。"
+      },
+      "checkedAt": "2026-11-02T09:19:04.771Z"
     },
     {
       "index": 18,
@@ -3752,9 +3832,15 @@
       "publishedAt": "2026-10-26T06:50:01.000Z",
       "author": "haruka_apps",
       "authorUrl": "https://x.com/haruka_apps",
-      "status": "採用",
-      "reason": "Existing catalog; previous initial rendering/input check, not full completion testing",
-      "title": "Cube Maze 3D"
+      "status": "重複／旧版",
+      "reason": "0.9.5対応の作者更新版を採用。旧版の記録はversionHistoryへ保存。",
+      "title": "Cube Maze 3D",
+      "previousDecision": {
+        "status": "採用",
+        "reason": "Existing catalog; previous initial rendering/input check, not full completion testing"
+      },
+      "relatedSourceUrl": "https://x.com/haruka_apps/status/2116985055889551653",
+      "checkedAt": "2026-11-02T09:19:04.771Z"
     },
     {
       "index": 39,
@@ -3881,9 +3967,15 @@
       "publishedAt": "2026-10-25T09:50:15.000Z",
       "author": "haruka_apps",
       "authorUrl": "https://x.com/haruka_apps",
-      "status": "保留",
-      "reason": "Rules screen readable. After the second A input, board/play view remains obscured by dense overflow corruption on local 0.9.5.",
-      "title": "3D REVERSI — Playload"
+      "status": "重複／旧版",
+      "reason": "旧版は表示崩れで保留。0.9.5対応の更新版を別途確認して採用したため旧版として保持。",
+      "title": "3D REVERSI — Playload",
+      "previousDecision": {
+        "status": "保留",
+        "reason": "Rules screen readable. After the second A input, board/play view remains obscured by dense overflow corruption on local 0.9.5."
+      },
+      "relatedSourceUrl": "https://x.com/haruka_apps/status/2117019390462071240",
+      "checkedAt": "2026-11-02T09:19:04.771Z"
     },
     {
       "index": 52,
@@ -4741,9 +4833,172 @@
       "publishedAt": "2026-11-01T07:36:38.269Z",
       "status": "採用",
       "reason": "道路の車、川の動く足場、踏切警告を見て進路とタイミングを選び、前進距離を得点として伸ばすミニゲーム。滑らかな移動とスクロール、失敗・再挑戦が揃っている。"
+    },
+    {
+      "index": 92,
+      "sourceUrl": "https://x.com/rukasufall/status/2117166777859805547",
+      "publishedAt": "2026-11-02T08:07:49.555Z",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "重複／旧版",
+      "reason": "同じBrumariaの作者返信。展開したコードが本投稿の原版と一致。追加・順位変更なし。",
+      "title": "Brumaria"
+    },
+    {
+      "index": 93,
+      "sourceUrl": "https://x.com/rukasufall/status/2117166709551300715",
+      "publishedAt": "2026-11-02T08:07:33.269Z",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "採用",
+      "title": "Brumaria",
+      "reason": "起伏のある立体フィールドを一人称で自由に歩き回り、跳び、地形・水辺・洞窟を探索できる。自動鑑賞でなくプレイヤーが移動を選ぶ遊びとして採用。"
+    },
+    {
+      "index": 94,
+      "sourceUrl": "https://x.com/haruka_apps/status/2117141898511196627",
+      "publishedAt": "2026-11-02T06:28:57.856Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "実画面とソースを確認。曲選択・スロー再生・リミックスを行うオルゴールで、操作してフィールドを遊ぶゲームではない。品質を理由にした除外ではない。",
+      "title": "music box."
+    },
+    {
+      "index": 95,
+      "sourceUrl": "https://x.com/haruka_apps/status/2117107825591919072",
+      "publishedAt": "2026-11-02T04:13:34.239Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "Playload研究ノートのQiita記事紹介。ゲーム作品の投稿ではない。"
+    },
+    {
+      "index": 96,
+      "sourceUrl": "https://x.com/haruka_apps/status/2117049139477569946",
+      "publishedAt": "2026-11-02T00:20:22.379Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "研究記事の予定についての返信。ゲーム作品の投稿ではない。"
+    },
+    {
+      "index": 97,
+      "sourceUrl": "https://x.com/haruka_apps/status/2117019390462071240",
+      "publishedAt": "2026-11-01T22:22:09.661Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "採用",
+      "title": "3D REVERSI",
+      "reason": "立体盤面で着手を選び、石を返してCPUと対戦するリバーシ。0.9.5対応更新で従来保留していた表示崩れが解消し、対局・終局・再戦が成立する。"
+    },
+    {
+      "index": 98,
+      "sourceUrl": "https://x.com/haruka_apps/status/2116985055889551653",
+      "publishedAt": "2026-11-01T20:05:43.661Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "採用",
+      "title": "Cube Maze 3D",
+      "reason": "立方体の面をまたいで移動すると盤面が回転する迷路。壁を読み、星への経路を選ぶ遊びと立体表現が一体になっている。"
+    },
+    {
+      "index": 99,
+      "sourceUrl": "https://x.com/_hnsol/status/2116756599738184173",
+      "publishedAt": "2026-11-01T04:57:55.470Z",
+      "author": "_hnsol",
+      "authorUrl": "https://x.com/_hnsol",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "重複／旧版",
+      "reason": "easy追加前の旧版。採用中のeasy対応版を維持。",
+      "title": "More Fish!"
+    },
+    {
+      "index": 100,
+      "sourceUrl": "https://x.com/WildKabocha/status/2116663245381767216",
+      "publishedAt": "2026-10-31T22:46:58.057Z",
+      "author": "WildKabocha",
+      "authorUrl": "https://x.com/WildKabocha",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "重複／旧版",
+      "reason": "採用済み原投稿を引用した英語紹介。同じ版のため順位変更なし。",
+      "title": "ローグライ塔"
+    },
+    {
+      "index": 101,
+      "sourceUrl": "https://x.com/haruka_apps/status/2116628275049144482",
+      "publishedAt": "2026-10-31T20:28:00.480Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "リンク先を実行しソースを確認。都市の自動飛行映像でbtn/btnpによる入力処理なし。自由移動ゲームとしては扱わない。",
+      "title": "skyline."
+    },
+    {
+      "index": 102,
+      "sourceUrl": "https://x.com/0_game_it/status/2116553004199633077",
+      "publishedAt": "2026-10-31T15:28:54.511Z",
+      "author": "0_game_it",
+      "authorUrl": "https://x.com/0_game_it",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "Playload Handheldのツール更新の紹介。Arcadeのゲーム作品ではない。"
+    },
+    {
+      "index": 103,
+      "sourceUrl": "https://x.com/haruka_apps/status/2116899429429195120",
+      "publishedAt": "2026-11-01T14:25:28.722Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "実画面と操作を確認。モデル設定と文字列の生成・穴埋め・修復を試す可視化作品。遊ぶフィールドやゲーム進行はなく、鑑賞・実験用の操作。学習という名称だけで除外したものではない。",
+      "title": "markov ebm."
+    },
+    {
+      "index": 104,
+      "sourceUrl": "https://x.com/haruka_apps/status/2116872778641224140",
+      "publishedAt": "2026-11-01T12:39:34.679Z",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "実画面と操作を確認。隠れ層選択と画像生成・補完・混合を試す可視化作品。遊ぶフィールドやゲーム進行はなく、鑑賞・実験用の操作。学習という名称だけで除外したものではない。",
+      "title": "neural gen."
+    },
+    {
+      "index": 105,
+      "sourceUrl": "https://x.com/withmydog1996/status/2116855407440433166",
+      "publishedAt": "2026-11-01T11:30:33.062Z",
+      "author": "withmydog1996",
+      "authorUrl": "https://x.com/withmydog1996",
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "status": "対象外",
+      "reason": "PyxelとPlayloadへの感想。ゲーム作品の投稿ではない。"
+    },
+    {
+      "index": 106,
+      "sourceUrl": "https://x.com/rukasufall/status/2117175817424015632",
+      "publishedAt": "2026-11-02T08:43:44.755Z",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "title": "GBC Music player",
+      "status": "保留",
+      "reason": "ゲームミュージック作品としては対象だが、画面にMINAKO HAMANO／Game boy Color 2000とあり、原曲名・権利者・利用許諾は未確認。既存ゲーム音楽の再現である可能性があるため権利確認待ち。侵害を断定したものではない。品質は保留理由ではない。",
+      "checkedAt": "2026-11-02T09:33:07.455Z",
+      "sharedLink": "https://t.co/tpsFGuQ16z",
+      "sourceSha256": "c4142d1b09bea26cde7ad2ad8e0d33c0848b4ddd2b4369e904d10976fa7c3e44"
     }
   ],
-  "criteria": "docs/design.mdに従う。3KBでの遊び・映像・音・演出と完成度を評価する。ノイズは回数のみで除外せず、文脈、制御、正常復帰、可読性・操作への影響で判断する。意図的でも仕上がりが不足すれば保留する。",
+  "criteria": "docs/design.mdに従う。操作して遊べるゲームとゲームミュージック作品を収録する。自由移動・探索・地形への干渉もゲームとして含む。一般の映像・音楽鑑賞デモは対象外。学習等の題材名で判断しない。既存掲載ゲームは品質通過済み、新規候補は明らかに品質が低ければ採用しない。ノイズは文脈、制御、正常復帰、操作への影響で判断する。 ゲームミュージックはオリジナル曲、または楽曲の権利・利用条件を確認できるものを対象とし、既存曲の許諾不明は掲載を保留する。",
   "held": [
     {
       "title": "block invaders.",
@@ -4990,6 +5245,58 @@
       "originalUrl": "/playload/app/#v1.tVbLbttGFN3zK042JhmN-bIqq6Zk1DGMpEAdAbaQjeAFRVM2HYoSJEoh1QjoH7SrdNl-QT8qX9BPKO4dDh-uYwQpKkDgzH3NuXfuY2wbP2RxlkR4lSzC9whXwfpeS6IMywRD_KwB-QkcoQFF-c13iiAXe5_l1-FiFWEIR26nZG6NISY3ih-lkVyuonUWLjZp1hDlvVTX4jTODNPXtNkmDbN4kUJSGE6Fi5H1uoKXxQlc15NrAuhaTsmoN3tfQxMm2iAhISpeuJhPFyUgYLZYwYh5ixgD9HzEnY5ZAmHug-Q-YAC36-OhZquDJjFewu2ig4ebygn6RWkwTaLbE2SrTSQqcn5CVjs4MvES_ZpenBCWDrotOrsH7DX5b0VVnm8lUXqX3bNDYbI2HNNXruUSfI4BPPoS-OUmM3IBV0D_-4-_ftNr6UJKF-Rq30ehpB2B4uul3e_b4k0sfYnF9R5hORbQP3_6RRf4zvS1fSNFsjh8X6ZIPINR3uUQjglOcIMBtViuiWUSFHF69wTTMxEmUbB6gnVk4i6YR4ttxNwmittV8EElKrko4Ajo1-ejqwvo6Mj0Y4vMLvnno8tXI-Zz1jHftisTdANXF9djlqjvlcXWy5WxTKxcYJlYFM3Pv_-qC_Tq8E-xmJUJoBKSvHkxtcq0MxEu0ixON5HMIDI5JYtTafDTn7pAlw3uH4Wc41p56wm4noD-5scxXo3fYjzC9fjsaqxXIZxm6dLomgpHUwmPflKpLkpXbldRtlmlfpnkMtztK1hFM2MrsN0JzONUYB7kdVrM4xSnkjRRXKrFyTzIWZ4bwSwJ7jDELEjWEeclqW4xIAGFfYshbSWq7Q5DXAbZvRVM18Z2V2Iv7VBVK8TS0mmNqrQU5A1Lh19lSoYCk9JZkrhphyKJ53FGwfjWQJRHMJx5kBssKXdxarDo1nwU_6qk-Czu97O8jqYiFa0A2zbidLnJuMFbOQVBgpe7DqeOcWTiELTwTGp9juUKHHqWI-BZsplREbSUi0rZVcrOM8o5OkOJQFkrCcVO4fwQJAklWRKxvxowqQow3wnylgJJadii9wXcrqzLiaxVNksKRUOhprs9Ac9xTB-2fR_Fd_eZ6_XL66OQfvxIquajSWXbWAa3t0nUxkhK7M4pXK-PgwMc0_DAQHp9cCC_1HKJXlUoqQwhD67DWycoU8xGcqtDjrpkg7VsW7XLVkUf_buitW9uWsRtgsrpsq3cpFlN3rUAM69gXj2jKW9pguljr-u8c71R760bvlZtSD0IOlUnUm-JzlCyFLWC2Mz56hEgJ_Jhwwr3xcaw5pFVvw1UtDy_ItURkwO_Yai8RPZcFVLrsvKd2TqYxYleyz8jzsEbyOB9KRfa5gtpviH_pPj-mYZejuFqzByXE-P8p4uzqxf_abiol-aXD68HfXV-rzT6-uzyAqN3F1f_C4R_AA",
       "reason": "基本的なブロック崩しとして成立するが、仕掛け・展開・演出の独自性が今回の厳選基準には不足すると判断して保留。",
       "category": "editorial-quality"
+    },
+    {
+      "title": "GBC Music player",
+      "author": "rukasufall",
+      "authorUrl": "https://x.com/rukasufall",
+      "sourceUrl": "https://x.com/rukasufall/status/2117175817424015632",
+      "publishedAt": "2026-11-02T08:43:44.755Z",
+      "compressedBytes": 2763,
+      "selectionReason": "ゲームミュージックを3音とドラムで再生し、各パートの音名・強さ・曲の進行を見せる作品。停止・再開・ミックス・音量の操作がまとまり、ゲームミュージックも対象に含むというユーザー方針で採用。",
+      "observations": [
+        "公開元投稿・共有URL・ソースを照合。原版2967bytes。操作案内のA/Bと方向記号のみ正規シンボルへ置換し、掲載版2763bytes。",
+        "掲載版を実ブラウザで再生し、Aの停止・再開、Bの再スタート、左右のミックス切替、上下の音量変更を操作。通常再生中の音名・レベル表示が見える場面を撮影。",
+        "実エンジンの補助検査で10000フレーム、停止・再開・ミックス・音量・再スタートと曲の一巡を確認。原版と掲載版の内部状態と音命令が全フレーム一致し、描画上限超過0。聴感による音楽品質の評価をこの補助検査の証明とは扱わない。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-02T09:26:05.523Z",
+        "method": "通常のボタン入力のみ。状態の強制変更なし。",
+        "labels": [
+          ["A PAUSE B RESTART", "ⒶPAUSE ⒷRESTART"],
+          ["A PLAY  B RESTART", "ⒶPLAY  ⒷRESTART"],
+          ["←→ MIX    ↑↓ VOL", "⬅➡ MIX    ⬆⬇ VOL"]
+        ],
+        "run": {
+          "frames": 10000,
+          "originalAndAdaptedStateAndSoundEqual": true,
+          "overflows": 0,
+          "maxLoop": 2,
+          "pausedFrames": 120,
+          "soundCommands": 11019,
+          "normalInputControls": [
+            "A pause/resume",
+            "B restart",
+            "left/right mix",
+            "up/down volume"
+          ],
+          "limits": "単一入力系列による補助検査。全操作タイミングや音楽の聴感品質を保証するものではない。"
+        }
+      },
+      "curation": "ゲームミュージック作品としては対象だが、画面にMINAKO HAMANO／Game boy Color 2000とあり、原曲名・権利者・利用許諾は未確認。既存ゲーム音楽の再現である可能性があるため権利確認待ち。侵害を断定したものではない。品質は保留理由ではない。",
+      "rightsReview": {
+        "checkedAt": "2026-11-02T09:33:07.455Z",
+        "status": "許諾未確認・掲載保留",
+        "observedCredit": ["MINAKO HAMANO", "Game boy Color 2000"],
+        "unresolved": ["原曲名", "権利者", "利用許諾・配信条件"],
+        "sources": [
+          "https://www.jasrac.or.jp/users/internet/audio/",
+          "https://www.nintendo.co.jp/networkservice_guideline/ja/index.html"
+        ],
+        "sourceScope": "JASRAC資料は一般的な音楽配信の説明。任天堂ガイドラインは仮に任天堂楽曲だった場合の確認資料であり、この曲の権利者を任天堂と特定したものではない。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/games-only-2026-11-02",
+        "payloadHandling": "楽曲を含む共有URL・画像はカタログおよび公開用台帳から除外。調査用データはローカルだけに保持。"
+      }
     }
   ],
   "editorialReview": {
@@ -5008,6 +5315,16 @@
     {
       "superseded": "3KBでここまでできるのかと感じる、独自の遊び・映像・音・演出と完成度を示す作品を厳選する。ゲームとデモを対象とし、作者の年齢やAI使用の推測で判定しない。spr/pcg上限超過ノイズが出る版は意図的な演出でも保留。動作するだけでは掲載理由としない。",
       "reason": "ユーザーがSHOOTERのボム演出を許容。一律の上限超過除外を撤回し個別評価へ。"
+    },
+    {
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "superseded": "docs/design.mdに従う。3KBでの遊び・映像・音・演出と完成度を評価する。ノイズは回数のみで除外せず、文脈、制御、正常復帰、可読性・操作への影響で判断する。意図的でも仕上がりが不足すれば保留する。",
+      "reason": "ユーザー指定でゲーム以外を除外。得点・勝敗は必須とせず、自由移動・探索・地形への干渉も含む。既存掲載ゲームの品質は通過済み、新規候補のみ明らかな品質不足を除外。"
+    },
+    {
+      "checkedAt": "2026-11-02T09:26:05.523Z",
+      "superseded": "docs/design.mdに従う。操作して遊べるゲームのみ収録し、自由移動・探索・地形への干渉も含む。自動鑑賞や鑑賞のためだけの操作は対象外。学習等の題材名で判断しない。既存掲載ゲームは品質通過済み、新規候補は明らかに品質が低ければ採用しない。ノイズは文脈、制御、正常復帰、操作への影響で判断する。",
+      "reason": "ユーザーがゲームミュージックもゲーム扱いで収録する方針を指定。一般の音楽・映像鑑賞デモまで対象には戻さない。GBC Music playerはゲームミュージックとして候補に含むが、後続の権利確認で掲載は保留。"
     }
   ],
   "noiseReassessment": {
@@ -5442,13 +5759,6 @@
         "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/10/29/01a185a0-adab-7ac3-89f8-631c4b34245e/roguelike-ish-tower-2026-10-31"
       },
       {
-        "title": "rubble.",
-        "image": "assets/images/arcade/rubble.png",
-        "sourceUrl": "https://x.com/haruka_apps/status/2115644828570763612",
-        "action": "retained",
-        "scene": "夕景の中の立体地形。地形と奥行きが読み取れる本編場面。"
-      },
-      {
         "title": "Dungeon Escape",
         "image": "assets/images/arcade/dungeon-escape.png",
         "sourceUrl": "https://x.com/kitao/status/2115590784489865606",
@@ -5486,27 +5796,6 @@
         "sourceUrl": "https://x.com/gaku_chang/status/2115356443587289445",
         "action": "retaken",
         "scene": "Aを長押しして通常戦闘。自機、発射弾、敵と地形を同時に写す。"
-      },
-      {
-        "title": "Rose in RGB light",
-        "image": "assets/images/arcade/rose-in-rgb-light.png",
-        "sourceUrl": "https://x.com/ikb/status/2115145985588617486",
-        "action": "retained",
-        "scene": "多色の立体モデルが重なりすぎず読める、本編の回転中の場面。"
-      },
-      {
-        "title": "static.",
-        "image": "assets/images/arcade/static.png",
-        "sourceUrl": "https://x.com/haruka_apps/status/2115055477185032400",
-        "action": "retaken",
-        "scene": "通常再生のCH5。多色の渦が形をなしている場面を保存。単純な市松模様から差し替え。"
-      },
-      {
-        "title": "shatter.",
-        "image": "assets/images/arcade/shatter.png",
-        "sourceUrl": "https://x.com/haruka_apps/status/2115051608677687505",
-        "action": "retaken",
-        "scene": "通常再生で立方体群が分散している場面。夕景と床の遠近、各立方体の陰影を見せる。"
       },
       {
         "title": "E CARD",
@@ -5574,13 +5863,6 @@
         "sourceUrl": "https://x.com/kurogedelic/status/2114631576827072688",
         "action": "retained",
         "scene": "残高や弾数、自機、弾、ショップ案内を同時に見せる通常戦闘。"
-      },
-      {
-        "title": "Cube Maze 3D",
-        "image": "assets/images/arcade/cube-maze-3d.png",
-        "sourceUrl": "https://x.com/haruka_apps/status/2114610483001164123",
-        "action": "retained",
-        "scene": "立方体の複数面と迷路が読み取れる通常探索中。"
       },
       {
         "title": "SHOGI 9x9",
@@ -5711,6 +5993,39 @@
         "scene": "15点の通常プレイ。自機と近くの車、前方の川・足場、線路が同時に見える場面。5・7・10・11点と比較し、自機と危険の関係が読みやすい構図を採用。",
         "method": "掲載版を実ブラウザで通常キーボード入力。Workerの描画結果とフレーム数だけを読み取って入力を選択。ゲームのソース変更・状態書き換え・強制配置・無敵化なし。CRTオンのScreenshot機能、640×576 PNG。撮影時のみアプリの再生を一時停止。画像加工なし。",
         "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/arcade-fish-crossing"
+      },
+      {
+        "title": "Brumaria",
+        "image": "assets/images/arcade/brumaria.png",
+        "sourceUrl": "https://x.com/rukasufall/status/2117166709551300715",
+        "url": "/playload/app/#v1.fThtc9pI0t_5FfYHq6Y1LayRkMBCLS7rXTapPWezzsttFcVWCSxF3BGJR5o4xoH__lSPEBDv1fkD6unu6en36fH19cU_9Eqvs4uf7j_evbp_8-ri0e3f9L2LVz_9cv_h1fvesiobffGavBH-i8rs28XHValHr-o63YpBMBoGHuCU7lJd9PN1VdX4M6nsxjaIOi0fqi8Cdi6-IaGxwJpcoEQob2hpkMob2QYuQKrQHw3sGu_PGb-vM31RttJXX76uhT8cDEPl3_i2lmE48sLAC327kMobDpQXquHQruXPeFrCXz_36kx_rcsf5JR_lUmSKP-cEztsCEmSuHv89Pagy0kTfV1jQ8V1jTlNRQmY0VQ0gCmVTo4VNU6Ga0rt1Ba-49kp4Ioqu2pXFRxUEfcixwxsoZy1-V2BvBe5VIxcnxCYSdVxrToORq3tFVwPvJvBTTj0boI9fnhtVAVKjI1fVqXwFE5FKEf2p7fGCm8IUo3awHxJn4SLB0I4AKc_CEB6LbFZlaKvlK1_xLg3dgEAeDvtjhrKQSd84AHefuoIwndtcaCoITj9AMC2Pby97zhGcuAeFbsxxN_fdcTvbc7VdC90kgywSJIBYEmeVU8cFSlsSFn1pIg05gbSUYEZlbE7UYEjVGA1EPEvpsSrHJzAEXWSeNYQeqtcZLG326Wxu9uliQ-H9HAPqV5RI4XvZGCXuKbcSXFlDllHFW4MVEVr3NLtVKxwA7ig23sDObefzJdPWMTkvhS8bPOv-b9aiwXgHR1D4eFUbJ0lSGU2H0P44XUr2EeDWmartdjKJYBzF5_pnVe14PTU5I51PBhrKWGVm91StP5Rnl0CbtolLyINkNxJ5Z3EHIDz0zkeeCfPciZzfIB9j49rnsjFZkudfR_u_xbAg4hOdJ2MLKuO1dCy7kVga6kUDu1C-nB1c0PkWpbQTvPE6SBF4TRbhhI_tKzL398ZSXt89bIJmcbB7mT8dF2lOhycU_r5ar0Wb9O30Mu_lku9qsqLX--MtJd6YklvWqDh8Boop9tPLZRxoA2U0kGdo-tLcsdl_HpcSgn_mhkhWMKcyrielImyrDKuHd-ycilKp2Gz4mziRoxVP2Kl8nY7wz0JWvrEi-p4NBlGKirj4SSMXE6SPM7Yi6zFlecTuZ01JakDfnLKmkaeci9zcgBHRVPROC-wUvUOKolzKwLYr3KRQmdtTe64jl-PaymhjlPLuuy4a5hPzmAKojqhlIOeyuBMKtNcMGlUUW3cOK7O5FSOgvkYKsdhW1_Nyjl5diXFh3uhHR8Lx4fdziw8LBwPJipyAS_PVXS8cR2TZ5Q8hcnxxiVjOVAHhzWkHe7nhVPyYR_uRYM5dNSMk4MRmFImB7KlXnnMeinqXQlnZ2bjOk7NieeG-sc0aSh1vHETUyrVuJESREMMt5FKF42oIfYs67gsIfaiM6I8pwzgzGMNzM_828CcBrDf71sjpn_-rTTfdBmvstDWsujdzer5JZWWJRiiEg9FAnt8f3YPrnKhaSo0YEFTUQCKmqaiBoiPDS9g39QJvT71lumfbb10KXrmnq45hEQll8Qeb0_HXYr3Qjt9DnLfwxp2u_dCyxdrQ5cv6O0a8CeauThCD5WLysMBqgGG6KNSqPAGVYBDVD4Gc_zlZWfxfHfgAv5KmpL3ul6Vn_t5XX25LdL6tnrIRDD0BwOpAX8zO-_SDb4js9Xwie_rrPysi8gLwj0KoKQVOzq0JBcAP_7tzCAE_CedLf6g2Rxvf__49gN1-03dbJ5ws8XNMxYLLHIsHrB4wmKLxTMWDW5TclGvyOmrEB-fycXPNbmY8883TeeXhhrr2Atcc218b57IC0KHG4gPV4HyuMN3mMBgDkEsTGE8YbM1l9bmmQqp-mGARXJjWUWsDm27ZTnLabNNsmBwih_TvZMovZYEizpL_7M_9u1l2uhDbhwGsqnYPHG7norNFsxQtnmGXrEgF4sH8sNeV8XHM9S15lo-WxeA1fm6BlyTjt122FhR0YEbqg-gicCWxDp2J5snp4xKqZzNE9gZLkisGLt1mqhh7BbsFJckNox9dvIoZ-wz2NWLm_smbGOwysU2XljWNl5ORPFAW9xKyrCUtMYiZ8saWkO0OJAXuJCUYiNpxWTF5BVETFriUlKFuaQNkzwmbQBzHn3yhF7vdsVD4oeHOuUwTv8UJTaAxcLUaInc7eb4TVtWSFQsLEuwc5mhq-7iiUosttTgY7V6EMUz5bA_xUyvlv8R8D2vpcRtKqnv-kNbLHQpPHD44wMgfwPg-391GoschcdhRKFeyb7rBe1Wt92qgP8OMdbtzmXViG3K7ek4u_KyPlH1ivvekapXwP2pzSSTR8AlEpLxwBmaf58dBTDvdTdHq_fEjVqlJt_0pO8OgqjvDoOo1XDi9N2gvbOb08SxeZLabrCkzVYWdtO7FTWWyOL77IduKfseTMTmiWrcbKmE6HN9Ijo_sqq-xx48MjNOwv7x2SGjlutHfVd5JpaPzzFPW4_PNvVHAeDjc-Ja1uWt6LqKfDRnGx4O9-ZZ0uPzwe62zByudlP7n2u6vHx_2JsDspLcEHLpcUNoJXDcNoLvrM_1bse-YfibPpxhVAyCqK9GplUB5vVVN50eq1jbNaZU2DVWxOO5o-0SV-QUdvliFlODgbnkT1evO25iFbrm3v3eGSI8u3FUcAPXKnTt_tDDDQk14OdaecJtKZOFncu1vcEFpY62c7myN7ikStb2pmf60hYXuGx78x0N2C9cLsVD7IfdeZrjvrW5V3PgFwzVtHmWS4ZyUqEtXKIi58cNP5szg_IOqJpRKQVciJN7kSeJhxn_FAu4UmFUPCTKm_w0G9jCt0qQwrcamEfmJXngwYouzZvIslRgZdzpipx7cO0Uz0l_ZOYadaj0O2pPFsp6NXsjzP0C80kaKzcqHmI1sixRWVbKzymXKAWYeFEQrSdBlMY3ExX5gN5R1hHl_yh-t7sUvpUDP8m8iR8pwMGR42B7GnuRe4D8KI2VMkcBBkfOqt2vIg8wPO2fCp9fslOhXLvgb15fqxEchmZWPpwMowHg8LiHTfMsiy2a-FEIyP7ILatouEjCS8M3aD9pPDB7Di5j09VRq3vRXclwpYaH43zDHwLWsXhlGox2-q6yTX8pDLgAmCeJMg9nvg2MuFMOsVgT9W2SeHAV9u6omqiIrTde0uxE_gwjjz9B5OH_VGV_bLP9gV08yC7hmsSdBJHjRcYBLBzwBhKTeYozT_FIwBc9ewD23Fk4B12DGMA-WzfZxSoXy8Q9qS-8AV9_18ueZn_q-MZlV02FMMWhuc3beQ3XI_aIMHXCSDc02BDgasgZK-5oCPtfZlykpWzmdLf_2E1W-Ee_Hb7o5fNYjcwl2yELcsdF7LnjgruCGbM6Gb0fnzujFy8JbjIj02LMrlmriBjZWtYgR3Yhy_lcyt5BApZ_G7paTdrdep60QM1jfE0aXujdMutL4t5aEtW73Yud5RwMSUOvQ-x2oqQajtfVbN77bwaYWSo_069tliPTKs_sKlu7mnmrRb4j5Y2SpIFewy-0fN911ab_72pVCn4z_9b_nGmRQ6_8ul5fUmZZ4uMsm5PiGG2-NoWYmYEOzaiB2Rz2ZrrlodPoc0ibiyq_-MNoOjvjxnROmlsWSyd-aYr0cGQGgAdsa6AmHk7JUVjTzQs_eEF48kRD3HhfJk4bgO9t0uQzPf_r3aycz3Tr0sKyMinHxRgKiwpHYSPlvok1jzTE_4gqAS8_zsq5ZWVxbUKcYUGleVlz2SRcknVMG_ieUoG_9R-ydaYz8c9ZOgfkX8rwt37DlmH637Pj3SxlhS6NenwFLz_PfhUpzPubVM_03OChx2yU48aher__yAt1-t_Xsp4V81k971X9ZVETb8eqv6zWNGuwnO_3mydqnmQ_4Bmj2TKw7aZpnZbecYZ3QnCO83wIaGAnNGN_-wQwMPR6_w8",
+        "action": "新規撮影",
+        "checkedAt": "2026-11-02T09:19:04.771Z",
+        "scene": "歩行・方向転換・ジャンプ後の、起伏・樹木・水辺のあるフィールド探索中。",
+        "method": "掲載版の通常操作。アプリScreenshotのダウンロード取得が利用できなかったため、表示領域を640×576に合わせてChromeの画面取得でキャンバス部分だけ撮影。CRTあり。取得JPEGをPNGへ形式変換しただけで、リサイズ・画像修正・強制状態なし。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/games-only-2026-11-02"
+      },
+      {
+        "title": "3D REVERSI",
+        "image": "assets/images/arcade/3d-reversi.png",
+        "sourceUrl": "https://x.com/haruka_apps/status/2117019390462071240",
+        "url": "/playload/app/#v1.dVh3b-pKFv9_P4Xhaa0ZfOy4UBJgYHkJyUVLighpQn6SY2yMHhcsbG7RJdKS7b333nvv9cNcf4H3EfbMGEOyRQqeetrvzDlnJjs70nvicTzxJOtA6rUv273zzrsmXiw57NiJAy0aTyFOu-4sgjDtOrcRBGn3KW7w1l3nBfjsPJ6PpyPNn8-e7gfOfH829CBiAx0MMMGCIpSgDBUbXDb1nksX42m825rPnZfEtPSiTmHG1sNSmWr-eDIhODlkA03TZjZ0mMMaOmPOclkR31JZNGULGzhlxIEYQvApa7wKG8wsynJYN4yyLLspMx-Msl4g4ZLpVPGIDvrSoWIuVAKCLaSTMaX0DhaMDJCjDYMAfBsiztafzQlHyGX60iMhCVRkEBJfRZLl0kAD9NqsztzaTFHoKXEUsaMw23HhQV8xIFY4kRgtdYhQ3HUmDqUhaFqZy0tlBTu7yNktRLVMfsB2a4Gq1mg2EeFExCfGvlDL0kpUCUkkOvUSfrKdIXMUnC_SgovQxqgV78-Wem1YZ0SMLTGmtaEwIgS0FFXmZHzJRZeAjxp32WBvD1SzBIYOJdFRi7zFPz6FX2z5Cm90G664A8MJdzDkL64R8Cv9tHRiDEfSxbWp81EZR75zgGPL5OPiieH4fHWXjyxclS6NEifi2w5bfISbTMf3hnktCifjmOSlPB04NoUx0-GCGdDCdsJMOMB-nxl7cM5UA25x9gnOXOKvh_1D_J3g7xn-XuBvxAY2TPlnn3-e46fmL6ZuPJ5NpbY4bAEVHvL4EgKfcwaxvQHal2b-QEWAdkGtAAo0oAK7sGenRBFi74PLWc8YoQgMIRU5oiqi7MsVSuumcHdtRqgsO4PIZsxSgxp1tXARBSSiECnMf7gcyLKXLmLAuPRu7sWL-VTy7ri8IxEfKMfBYEVZ6SAWcRZ7cxKyBjcqBJyaeNNRHFA4XsdUdhQD1l5PcHODbF9mscctRtEBIAzOwLNZWFvrENzBnHt_YIBpCwVi1CST7WCfsa3gLc5P10HtgZ_BdiRUF3hHGcFaCl-y1A2fpvo0nYAQ4Vd9UD1a3fOsAkGRdBCrhq2KnqnGtuAY1pmeygmZYRZIJkDNOG81zGxm5WLN45HHDZZlDBVGeBftaRpV1aCF7qBYCIjXaFhQUUVLqRKgsz0-xoZSm2ZAhXebGEc0pSiz2tGiydj1CK0dE0zAHIE0OaCN0WMbhSVuw0NlPIbR6jWYT2_nnvP29kRsAH6J9r_C_QfMgSliOwKHwjQz02DMaZKpNp66k8XQi0gf0xzps-lAtymPFFolPWbsYtegNW8SeRLy4lws1dmAdclwhPFmlUQo4WYTroiZEnD7ROJjczJC1ZmF6w5Hz6o6jbhZrJZw87pH77aav03oq9G6YJSL23oxGpgVm40GVtlmJh_tilHJzqL_hKmabqVJgOuDmvF4F4lJh3wfS8axVbo0MPsQgvnH2_cc71Z8Mens-_gdvXF7cDt6Az2XpymhAflLwzg1TywMLcfzfH84HI08z3FGI7ELt1ARiGfroGL6NqwqWlnVSpVSIV6fg8GurpTwADrqCd0JgFh7ZRXHIQ5UswyBfQdvMgfp99kx9xkcUNjPjj05Zw6mtgPgwB-geaaumIVsGTro8iY5ZEYRgTUorV4RXXwtereNvHjscoTdScRBdTfwthQFXuAhOFTZYQMzpsIQzAIhJmPjpqaXsVuR-1QUnqpmlQoO0XSz0KIUTRGHdtCFduptOGKGfCgCbxEj9kYJ8t3WyVE1r5CLZj5Z_TxZ_T25_3yy-kK-mm-fHHU750_yVMlL3cu8MlEG-Xe-_dl_5YE3fxfND76UtwcTDGyoUFgzLUPK7D5Z_SxZfTtZ_SpZ_Qa5vv7az5f7ZxdSsvpyskIZH0pW303uP4idZfL-zyb3f80tk9XvktUnk_tPJ6vP5pbvfPvTH3rM5uNIkuNMNiNMf8tWNXn_z5P3_4N_Vz-RxMIHUAracHN60ZP6F70TKZPef9I5eW_n5Gh51jo_zy0Peq0r6ah13E7F4X7pqnOS40JE75wLeP25Pz05vZL6p9JZt3WTp1nhW2LhGzefVcs2lDfmV0C4Jv_6Fx96_YsPv_7FB19_67sScji76GPzZ0Syul7b4UOEX0o34QpUwKBgIP06xXIkGZM29qFxX09WP0juV2iixBhegjS0bIMSmvkz1Jw7ZmlqOEjuP4c0v05WX0zu38fREbt_vpRSmD6S3H88uf9IbmlpReSLsErJPcr66Dvf_tynkA73IVFy_9Hk_hMoAYWiLqvk_d9P3v974bGilqw-xv_4Ch4e7tVPSKlvOKC5JbI467XPzzkG0nm_1evnEAGGVj3AVGIbW7gLHpvR77XO-IzUOZFaUrdz0kaeSHjY7ZzxFomEAdL-ae8Eb9USV15q9fi289ZhWzo8Fddtru3x6XmfEwjfSv9fw4c-1rBEtB03yIo4dzS_UpqAY1mO63vN6WIyqZYpBXIbT0OiY9oWHSPrlCjF-nDxFjNAhD88m42H6eYiX8HYhzHP0zik23LnMLNYc_BWjV9FSYtTzAjPX5iidoijmCh1h-cyCFlAdsWVOkYOp-SMqEXNwnmK1UM5gjPyaOiA0zB0vK0je32vWa5aFGfMUjpRkeWUA8Rb8k3fASwNWx33ag6vyAskcJBCp5B2dinvr_k4Gz7bvr48IzofGTboW6t9XuR9ZJlVY0xxvkhx4DKtpBCfF3WYsX2slEPvxalPfAqDISxsdkYicNPrymjg4-WPdHBxueRBKcu5W1k2GDuQ5W2RxWXKrR2qJqo0VEyh2AJ25RaiUqE1dzaNx9NFeq_rMh2umAEXjLPncm4buizPGtlNxkc3GMINxNTVW9UszOiOYXKn1g30dJdpu5ikLc0oFnyKvDyiGegWEmdzlCJ3v66Vmpb6pPqEcrmDCfThcm0edCn0uBju7gqUzJ3LpY4CuqgJGjJRezsWGjFR0haN4X64JoMJjvqKaUOPJ5mLZqX6YH4za1QroJULVxT8HDtfLrtYfjhXQ_BM4ekDOuBQlqMQXYbe7au7kH_9jT_kAc_jnZljYzz4GNE5drBcihepld1EN3dcfl7S4lVUiCE7FEifO1bB60fDQBQeLYeDWDFky97uymbSzY9uTeI4p1e2G37beBBQFo-nkginbDLGDXHdxE8WYyGLUl1RTYTIYyQAD_vprM87c2-4cD2C_pjBEDpwytyBeO-idxWfKruFWJnZSEOCui6j-qe2okCEUDIWvOXRer2izihwv3lENVJlO-LxHdlaNJvHm3yDzxw15E8sFIJYmmDZ26s8LndwzW5UCo66R4WC0eYt65EOvlUgF3FaV8nnYcGGm6g5FYGyqOPR5S2bbVbEm2aGsObITd0y8YAPFna9hXpml_8XilILXQwCUtT3ysqC2lroxMyFIe5kp3CjKHeciLWEZdcsanJVqlxdw7ab_FvtYB6orUsdhyolgKjJzxUiCAgmbCTANa2SyJ2juQiJ5gZztl17MD-bsME1cN42HkZa4_en5wNTR8fEqBq9Q2Ofa_7EiUmKF38QEZqVcB3yaR3i96IuJsNmXs8r3WqXKvm0MomVdrbSrrb5irQu3_zw01eclQUG4E0Ay0qv3e_d8PLf7_S7bax_vPI8-D8Qhs3_rB05zFn_s37U0sMs1iyqitbcvGoc3DthZKJgfaDvtpSs6Gzrzbj5uORUyZgZopvVpq1kvp3pKQt6l2Y8ipiqKkb4S3K5fYlsCSZs8kAuT7m0zwJStkRm7GN0pJuNVHe-K9PPRHoMe1nuq2o6Y3GOOEXrFZxVlK0db5L-VnpOUtVeViP5kwlCphreXu3RE2-a7vDY6METz4MAzBRUH594ODYAEx5wcsAfVQjaMGma_H7dUgJa5eWqEfIHKPMhZgG9e5PE-F5CVGv_Bg",
+        "action": "新規撮影",
+        "checkedAt": "2026-11-02T09:19:04.771Z",
+        "scene": "YOU09 / CPU07の対局中。石が複数手進んだ立体盤面と操作案内。",
+        "method": "掲載版の通常操作。アプリScreenshotのダウンロード取得が利用できなかったため、表示領域を640×576に合わせてChromeの画面取得でキャンバス部分だけ撮影。CRTあり。取得JPEGをPNGへ形式変換しただけで、リサイズ・画像修正・強制状態なし。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/games-only-2026-11-02"
+      },
+      {
+        "title": "Cube Maze 3D",
+        "image": "assets/images/arcade/cube-maze-3d.png",
+        "sourceUrl": "https://x.com/haruka_apps/status/2116985055889551653",
+        "url": "/playload/app/#v1.dVfXeuNGsr4_T8HhZ_PrBgoQAIKURLLJQ0EYWR6FMUVNgmF_FARBsiVQJnqydHdy3Lx7s-ne17vvM0-yfwEMmqTQXR2qu8JfVY21tdo_6wt9mdaC5ydpbX_yJq01t_8pmeaFriVqf6LPSavELi5yStEn04Jy9Oevr6eaChU55JIXUzanqBlToKLIcslyY4qWHbcWdzGNlUhIS9VPIic2NBoziVymXKY8UGjoUIkI-yiNKaeMAjAU9tXkWhTMWcRGbmruMjPlLpA0Ukd6dpFn9tlsehWcT2bB9DSlEOJeQfw97ievaKjy9GXt-CLXG8PZbPJaeE3HdyRtqSimpwridM-mM3GZsgGcbtLzWu1uYpryaZTECk2_DzmF20jAw1PRSPjOZtvEOBlE2B13YIz3fmOYAcc-zxN9Mc1rZ0K-XZg4irt8lVYODOwsr9agda_ZRmuai92p0l96DuVKr3nOjQP7u96GA0NsGClc8OGtdxVp-93Esroyi4ZRYbptxxBQpClNsQ5F4tg0u9Ud8N46talFPjXJIxfH2MV0psXcaVmkYyuD3vKOrC5k9e9KOlYB9tHhJ2S6OBP3hO678uYmi8axfPuRkCt1Pylrl7lvbgJ4apAqNe6kstEQhxHviW_YJP1-uVPeJvb18-JcRLrnDTY3Nzt8oSGyaD0eNDuuZHRRTnwSjekwlre3tyxNdX1em55FrD_kec8EDFkrQSO7q90FdtcSCe2KiFmgUUQJA5ePplGsCkBxcxM4dIDBLYCdzlSRzKIgjrLSLHmjkfTdRsM00_7mhnzLBymH_aIv8ufp7fvYaLleoxFWRgdzyek2tFxsn_szxVWaIQvYjOxZevo8SVmRnAoOQfNplH-XQhjE0Hdeq2UIPiMmR3bzXgi7hopDR8NWfEGKyOwN0WBlqFJ5W4kdVsIaKlxJW0lPOAM4hqjM1TseCAhM1wlwiPXYvp5oNcT1asSGkR22zF4pLu9XxwS9BsX1TGwYGW0YATEbHcqOOLOT85kqhyCnl8pt7A0idmMnOqRx6czKBI8WCWcJNY60tOf6fjddYTbnWEzKFAPEUIGsBp5qMQpwokqizHQbzbhb9FR6T43RNhp5hTFtitQqpCECS8s1MQYtbyXl0A2622cXl5dCE4M5NUNh23Yu56O9amS6kJiukDzLVAq1IrRlj5YTqA8StPXxooXVJq9aH7AstzPvhyyr1TboJUu1a7XYAr1iWd2w5I3p64WFr5AYIiBo4Ha8uDRlApAZQltuwxtYLoJO0sNlZgdH2zcS5C9tpvTqbsYvFCzqKZVL6x5CVKVIueVINLmjkRITy5VrHoWKbwV8vmZYSwTXFcydn-7mp-krgSP5mjHW9mS_zPOHIqQRpdaItDWSWBTFTSD7ymk0it6k0Qh6kwEEKSigHGAa0lhs0VU0jIFIaY5WQ7ccZuVtIuFLvhZDSiSFnAJ6jozppcJ8BSqNzLGWs7MTKelooSzuoKioEgVLGuVGYSbG2NRGYKVAfW5kVmIEpsZcahSUg04wp40C4zHGY6wXGGfYH8Q0ZW9EVW4r-MgjcSSWY4pYAk5rcKYmKyWr3EY_MFvO27FZJLJM2CmI0tla5JLH6LD3vnLt9RZ9pX4QdnODLLvpS_rijv_Upr1upazOhmO6KFLJWk7rnsWkBplXZW9GD-gFndNzOqAduqBtuqRd2lcOTVSTTvD_zcclhI6x_gz_P6rNeZb7XgmO1RnX8OdqW12qHXWBHQcQECySdpW7vknLCqwFjCHf5v0Xkc-57IViq2Dubk6PYBYk9WzhvSixZ5P8dHolJOlYfqYmrEr7K1xSSMrUQ5FKCtAlssv5_uZGzKKMa1WvVxBmKlIkUTM2vUYTx7MrTFciJYhz9UI9YCtMkBfLprKCI2-73ws5t8A1A-36kt8zFNUfud5h68BNszqBbh76B14WhPNB88BLk5L2eSFJMz_wwvZOPS7LenmIQ_XxZnt__dHGoX96NgnCk200O1un20l2cticnBz64DvZPpGyLqlkcXFiG4dvnk7SDNMLyZ6wZGKiEoK08K1L14LTwBtV5gZkh6blGYmkUwBQTcqqVH9VN5Puyl0XyY94Mx0vXymJOtH5tWhKq-w9PCZKwp1POJJSdSS-on3LGxwJoNQj23GNY0kHsnMgudzuS276niw5fDwinoj9nj-YmG4HLihnW5gVgKPsppdFynV2Pi1nqX4-y2tPxKQ6rOdJYVm7PeXMRfFlxeuteLdN5a61HdrBwg6SialsF3nH5SHA-lCcSwWUvGBGVg4g34Mn3NS3XMfYtlqOcWnarRsHK_1vogkjlzv1DOJi6wmFok2QX7KdJ_3WwIcmki5WmHwjLqqLHV92D9RLDJ0qUQtNKQPZxJQbR2lsaWkkzA2GSkhEVFnx70GBe3cOXWXAUvOk8gb6RsOyfuw5pYUyxMtVyvbDskDoSkp6vnwLavkCzpW1-eGbKlvck6kp8utzDqkynAQ_DTKI37EyTsX8dElQeCxXdoN-DnlzFZBWRSnzLGLzxg3Emb4bouekS_F2VHROnBaJo_ieOq9ecabJaF1AWUOEq4g3xPgnxpGKDuhIvBSRVX61OKR5BeJgFafdsu9rDMjuuUqQm5JoNenxG6UaJBB3okK4cE804UI2PIcLc97F4olqz8NnhVqG4PyF4cjSljmNOROOlN1sr01Q8kTTbiHIRhKjp8vK-VrZ3oaxRY-V2DKx5s3V_Ikj83ChKd03X5NIoJ31VGI3SLci5QdfStV30ty4y7JcLN4BUxHyTCq5RidKPWe77-EKfhna7uaHT9czJeYVkrg-jihUwfx5hmrJhe0LcSj2IB-2mZmRU2oGRiHxg1o8f_qLsLrADCOPe2hpjqy2MSSBXY9ESJnkpC-q6nIfv8NBiETccamF-fdejJPyvbiYKzBXYK5YKQ1UFpWVxkqkFRUipKOE0rLIPlJhFeJdURIPEAyP2LFnAvmp_Fiw_Sa4qvYRvlNa5NktcJaArjR27c2WaTttQwvbbXFWAyPrfSd4kveCR8OW1RvMbnXsFuSqPsRmUVjGBPC2UnWIKPKhbqtSVwwHr410ze_YjkeBWYaZ7jiSxhXtdLQkJkadx2X_uDOitN_Eu3ew3vHIt1IG-vgzBXMBD4aVkMtQ02q-U8yx7Zbv5aRsceEC8dWsibZasdBKSTn4t5FskSzNeqduiu0v286ay2OmS6K7P0D-xweKFk2PXNeRHQHaIw_KgXCdDXJ9Pu1sWWenWv0kdgY7nHfOJRU8RB-daUp0DP9MxQrwGng3RcGdVQ6k8aZk9gAvyXlsVYmun-sSg6cCAtfuQ-LnpsvkCNJfoq_VzVzTOlJ7rynfIr_xZ1HOZvQp55BsUf3dH_61ThuNY9i9LYk3nGksJ2iw-Pv_r4P_4-n_rhOM8d53-H4Pdik_xvlbbReGNN0bp_xeqz60G6vv7EqStm_6Rjkmf4NJ3ibnt7Zll_WDC9cJRw_qD0fho93wca327ld_OxoPR2P46N3P__bu539_9_O_vvvTX0eHe3tY-_soHI-e1kuedqcl55kTR3nUIlTv5qA-xM72q3a9A8uxvYK9cDi6923-bT7e3Q87bLWVFb_Nj4LDEc8-48FWeDQGzUUUQ7BAnIPwyZivHu-O90I2WHd5qU8u1YPjrbC2P3wW1prbvExRk3xI067q6By1pbpmC3gEEtREkgt7908G_LYZ1Ds8N6hHdRNlE0LHkB5EucMtF6HuupQ0txpc-56oLN_xwd5h8AAi3zHbUbi3sijBXv8A",
+        "action": "更新版で再撮影",
+        "checkedAt": "2026-11-02T09:19:04.771Z",
+        "scene": "通常の移動で開始地点から分岐まで進んだ3x3迷路。立方体の複数面、壁、現在地が見える。",
+        "method": "掲載版の通常操作。アプリScreenshotのダウンロード取得が利用できなかったため、表示領域を640×576に合わせてChromeの画面取得でキャンバス部分だけ撮影。CRTあり。取得JPEGをPNGへ形式変換しただけで、リサイズ・画像修正・強制状態なし。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/games-only-2026-11-02"
       }
     ],
     "correction": {
@@ -5826,6 +6141,37 @@
         }
       },
       "currentSourceUrl": "https://x.com/rukasufall/status/2116436926781653288"
+    },
+    {
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "title": "Cube Maze 3D",
+      "action": "0.9.5対応・最適化された作者更新版へ置換",
+      "previous": {
+        "title": "Cube Maze 3D",
+        "url": "/playload/app/#v1.ZVhLb-PIEb7nV9DEhuhmFyk2SdE2qZJiy5ynbc3KmidBBBJN2dyVm47Uk_HzuMkhhwB7SU4Bct9z8n_mlwRFSrZnAgPq6qp-1eurojsd4w-60ovSGH6elcbR9KY0goPfdTrGuF4sjGmxrFcrY7pYGJExnxblyqjnxtQIDoyC1l9Mb8otY2_8Pm6W78fjUi-vf1fUaqUNhUdTfQ4albuqFBSo3KJeQY3KPb--rDVUmHkgwc8hXVMQ5FBiljkSHJlD9jDQr0NDDktkCjTHvsq83NaZlwuVSaIkUT5Rfg4rZJkCDUUONaRQcuxX7sX0klW0s8rtWmgaUlHQUHKYoSq_GG8rpXf2lsvpNfN3djwOY2QaCqih4ti_nddLtii1kaJyL6ZXzAPlFmW1YEw7Pu-EnCdpL_QsK7RT4fewSFIh-CwLPbsWaY7VPZw0Bz49rEYvqXvbflILwW9b61Xo27WQZJo80c3LSSFSh7Y2i7ISljnqrBbSCvKk6GG1hcseVpaVupefV-dMCVY5BbdZ6SjeYUun4PyeQ-ouSnWmz_vSssZMuReVYq7rphxarVq6hoLf38MIs6xxj9e4wmtGDzxySpgDyZz_F5LjApI63215WN7s_X7LgzRqT263PK5qhd2N0FkHxrfiKM_hahMmo0zlmbT0QMZ-3thRYV_ZTDvS8geOjCXnsP8QLRz7UWgrsWNrUcCXp1FUoRbMR6y5s1VDiYVgspmxgAaYIZs4knd8GCPdCid4xRTUdPzInVfq9KU6La_o_iWj6IUT3vc4fMEVG8MMCmcG2plxjn1W3ZW8j55lVb2JZZW9ySBTUEEJdR5n-7BkX2CU7eeZn3MxE273znvkyUde2lzb3njF9kFxGGdeznsez-EFkiUak2js605Nflecw3SjNdQ5ZBWlDyzJMlltV0LZS6Ht0insFGo7dZRdCm0vRWFXUNulUHbqaLsShb2E2l46yq4cbadOYZc5HJNbsnVC0ZFTNmUPc8joBeDlHDJHg1OA0yyDA2wMScszzRQnh0PBFG-8rlnNm3nNcw7nKN3tLvwZD5gb7IDjBiGHl08cibtu6FACZjue8L2urTo1bEcOkbpTQ50nlJVD-Anewyk8gxu4hiN4BZ_gDSzQgwkG8BED-CPBlpfDGXrwAT34GXeTNnvnyChLh5jl8Axf4Se8xiP04KbZ0Ub1G5TbuzD_rApd1crQrICa39b991mYWxZ7j2QMcgFPCCjWsGDUc-Knubuql5rRNcpdTtVpfcG443b5BkAUfmEFVBxS3GcFhxL3meLJMCvzuzs2zNL8DmWvV0HDIZKpLMiFbwUcNJlbSM7v79kpvsef6N2Tfl-2P43WHr9P5oyvNb6kYLpcEGxCZr6T_qh7LMszE8x3MhiFx_7ZMF1PgmO_LBo6JEFRnoVDP42em3mmcp40h3hgTnajo-13O6PwdD4dprOD6TB9vn96UJzNRsF0NgqL8mx2MOPc5NBskWC-i0bB8e7ptDwj9vplP9LL2AQVzBmHBUq4ZJTze03428pmgePbisMPyBROyKDCvDKFSh59UxU_M357JsT6zAJnWl2ygDvN6PO7u4aQa4bHocYp-zMsev7ggLm-L1xpa-Z6vn3GwfWkfcbjRd8fTNkBc2V3zYIbHt_wpJqzBa_mBC8LzhznTQ-99Q0h55bFFuhzaOZdblk_sglPysWqNKo5AdSC31Zz9kqg7ETeZhlflvrzUhnN4mrOri2LXWd-LtCVvI-SpujBPjvliPvsPV1DGsKHh1Iny9CRnv3K6Xr2pwZgOHzo_zGbOAFFbEvgBw4fMYQFTvrBIIwDzuFoHZSUgjkeQYF77Ki92wt5coMvWItD6yxXNpNOwYXO6twu6IDMz9s3HqHH76s527q2rK2jx2B_RLpGX9V6hCluWY7zc89rdE7dVX1RspkmMfsZdzmoXshvKXEp5TV6UKCz-13CGenmnhSP2RV7RmlVU0ox1ZeDNPPy2EkJd20mLTWQsSN5UvYLy2IFlqCxat48zMi6uSV7Pf00TU9Bty7B7BQI_oCqwxaeElTffhKiidh16Gk8ZqOMFuRUQm54coTZDUzZC5Y5TevjAXVF0DREMqeYAi-_b-KDIjM5RQXPkE7YMH1-f9_S6xijmAoQF43_HgONLdBbRxrpNsG2dfi4bhsCmAjyFt3ydBeFQ5tzT46f8GTmzqvFgp7UqrYkuJxj4HY7E_j8UE3_hK6_Y8_hNbpS2nM4RDYXr0nyDl0_sufwnFJ5tTELnIt3wvV8YNQOOp-5PSdStmSLpuRthV6ielGiHruuoi3cM6w2ncIxK4hTc-oEFeIzctQs86j09ly5y4ta6Up9Ltc6tH1HW88ghTF6MMJy3b-lUFLNe8lWbAbnQoEWqV1DIUq74pwK_7Lt2zI2aq8Qo8xvqnzHF2MgtD9hI0ipzn355iZqGq4IX4CYxJIgXd9xA3vM4Yq5Xbt4EI0HfizBjR6kj6IU3MB2xpwnlPH0dw7nIKH7aLe2XZ003eqGV6GXVL1JUj3askRWtcY_QVa31Aj3qQ63Rf0FjghpfqKGY9RiDhzji0E3ng6CeDwosiCPZUJaSSjhBNwwsOfr32Pw3S6HqWUtLGvRCyxrYzoPmMLWxNLd7QrXiwh5ZZfwtYSTxs6ry7YFc0JoIqML5td__mLCjnU22I4j_k3RVd9ggEbVto5uN3a7kGIpmqzX9jz2OCzxpJ17saZoY6rn390x1fcHW1VcI1JUU1YMs1EDBWrQapjCEmifK-157AYU182UqJiYsDEJ-G7E4y-MdvypWfQ6PmzGw_g1jAfbsU-V-7597wVeD_YaqOexhLf4nF0PrgmyTjlojc_ZKYcVocpDzL_NVC6Y1pnKHaK5fdHgXaY01BoudU721TzZmPxSO263ic7bxrDaCaGmH_PrP_5uwjaH_2P_zaQGIuewXDcybbdOyOWQY_hDq57JnPENRJR609c_fD0VqPp9mRQ93QxC8DHVqsiDAgpshHd3BSIjOXfkQMYev4dCI3vVibw7jwszNgWTnifYq9-vOSZ3V4uqKAl4N-W41HSw32oTgA8_MC5M45kp2DMhuTA7kTGOTfFpo7GUEfhQaIg4LHoBv30KPYueb1mqJ_2dBoEui7PsTSfyhLzzcvdyqjPV74e5Jf2dfp9tW1TJWPMhyfwdwVS_H3AuZCQaWY7bPCk1k4EPMgzb66n5kFG8AzIIm07EfDNO371M3xvG11__Y5xM9sYTMza__vbL13_9--tvf_n621-N8ejwkMT_NcbpZPzRbPZFcZe39aHUjG6Q3lrBCEIPQqoU5t7hoRFehcbwMN0bpwdbZmyeTPaep4YpWjs1gi2TjLHe2w3AnLw8SmNTFFqYhjEeTb6xXwRRBObJcDSmNR-g-8Df3gFzPz2h5W3fsZHtwG4ArH0SaRlcBaTjr_8xjtMPE3qhSY8hDScvJ4cphWey0c0Hf61Z4MM2mMO3-6lxtPcpNYKDJo7JxF4IMvQ5ZAGE-aZt0WtQCSLRjWzt7NhMIU442QpU_-OAmsqBGRNzYGZkE8WFmZsxEc0K2QqjeJtvVJG-_E7N9dPfHh-Ohq_NR6VlIGHtSeMkPUyHk6dOhognzbfCkwgMIi9RjpM8wbXf-57tQ4GhzVTHp0SAevPF8vCX0z9u8u-qaBvDdVZlKsc2SosmSCXnQjeAyPN80z83hRCzbYigCyFQKtGH-zdIUGc6d-rmi4CuWVKBeWpshVhaFlu2ny6U271g0Oa4CKgP0zyORDPyB_hY4apYZq1ueUb65snKLc6XeKKXlTpz58v6Yng-XQ7r05JJzw89seSwcot6gVkJaX5_zxm__x8",
+        "image": "assets/images/arcade/cube-maze-3d.png",
+        "author": "haruka_apps",
+        "authorUrl": "https://x.com/haruka_apps",
+        "sourceUrl": "https://x.com/haruka_apps/status/2114610483001164123",
+        "publishedAt": "2026-10-26T06:50:01.000Z",
+        "originalUrl": "/playload/app/#v1.ZVjJcuPMDb7nKWhWwmqwQZpNUrJNCVK8cFbbmsialcVKSTRl8__lpiP1ZLwec8ohx-T58iQpkJLtmZSr1CDQG7YPaG9vW382lVmU1uH3WWmdTO9KKzr6w_a2Na4XC2taLOvVypouFlbXmk-LcmXVc2tqRUdWwfOvpnfllrU__pw00w-ScWmWt38oar0ylqaTqblEQ9pfVRoL0n5Rr7Am7V_eXtcGK8oCVBjmmK4pjHIsKcs8hZ7KMXsa-NfjIcclCY0GaKCzIHdNFuRSZ4opxVTIVJjjikSm0WCRY40plkCDyr-aXouKV1a5W0vDQyoLHkrAGenyh_Wx0mZ3f7mc3opwdzcAHJMwWGCNFdDgfl4vxaI0Vkrav5reiAC1X5TVQgjjhbAdA_TSfhw4TuymMuxT0UulhFkWB24t05yqRzxrNny5WU1Br-7vhL1aSrhvrVdR6NZSsWnynmluzgqxOry0mZSVuMzJZLVUTpT3ij5VW7TsU-U4qX_9fXUptBSVV4ArSk_Dtlh6BcAjYOovSn1hLgfKccZC-1eVFr7vp4CtVi1dYwGPjziiLGvcEzSuCJoxwICdEufIMu__hey4iKXeL0uepjdrf13yJO22O7dLnme1ws5G6K0D42dxN8_xZhMmo0znmXLMUCVh3thR00C7wnjKCYeeShQAHjxFC9CgG7ta7rpGFvjjZRRVZKQIiWrwtmosqZBCNV8i4gFnJCaegu0Qx8Sn4hndCI01bz_y55U-f6vPyxs-fyk4evEMBgHgD1qJMc6w8GZovBkADUT1UMKAAsep-hPHKfuTYaaxwhLrPMkOcCl-4Cg7yLMwBzmTfucheOapZ17aHNueeCMOUAOOsyCHfgA5viG2RGMSQwOzXbPfNQBON1pjnWNWcfrgki2T1W4ltbuUxi29wk2xdlNPu6U07lIWboW1W0rtpp5xK1m4S6zdpafdyjNu6hVumeMpuyVbJxRvORVT8fSNGd8Agxww8wx6BXrNNDyixpA8PTNCAzscC6Gh8boRNTTfNeSAl6T8nQ7-nY6EH-2i50cx4NsXjqQ9P_Y4AbPdQIZBx9XbNe50PSbNdo113uOsPMTf8DOe4yu8w1s8wXf4DT_gggKcUIRfKcK_MmwFOV5QgF8owN9pr9dm75wEZ-khZTm-onf0jW7phAK8a1a0Uf2B1M4ezr_rwlS1towosIb7evA5i3PHEZ-JjcEugB4DxRoWrHrO_DT3V_XSCD5G-8upPq-vBHh-BzYAoumHKLACTOlAFIAlHQgNvcOszB8exGGW5g-k-v0KGw6TQmdRLkMnAjRsbqkAHh_FOX2m3_jek8FAtT-N1gE89uYC1hpfczBdLxg2MbM_qXDUOVXlhY32JxWN4tPw4jBdf0SnYVk0dMyCoryID8O0-9rOM51Dr9kkQHuy1z3Z-bQ7is_n08N0djQ9TF8fnB8VF7NRNJ2N4qK8mB3NAGzAZolC-1N3FJ3unU_LC2avb_YXvpmYkMa5AFyQwmvBOb_fhL-rXRF5oasB_0hC04QNKu0bW-res2-q4ncB9xdSrvcsaGb0tYjAa8YQHh4aQq0ZAWBNU_F3XPTD4ZHww1D6yjXCD0L3AtAPlHsByWIQDqfiSPiqs2bhHSR30KvmYgHVnOFlAcLzPvQpWJ8QAziOWFAI2Hx3wHH-IibQKxer0qrmDFALuK_m4p0ktd0NNtNgWZrvS201k6u5uHUccZuFuSRfwYAUf1KAB-IciA7EZz6GNcQvT6VOlbGnAved1wncbw3AAH4Z_DWbeBFHbEvQF8CvFOOCJoNoGCcRAJ6sg5JTMKcTLGhfnLRnBzH07uiNaHFoneXaFcorQJqszt2CN8jCvL3jCQXwWM3F1q3jbJ08B_sz0jX66tYjQoPjeN7v_aDROfVX9VUpZobF4nfaA9T9GO45cTnlDQVYkLf3S8JZ6eaclE7FjXjFaVVzSgk9UMM0C_LESxl3XaEcPVSJp6BXDgrHEQWVaKhq7nyYsXVzR_X75mWanqNpXULZOTL8IVeHLTpnqL7_JmUTsevQM3QqRhlPyLmE3EHvhLI7nIo3IvOa1idA7oqwaYhUzjGFQf7YxAdHZu-cNL4i3mHDDOHxsaXXMcYxFREtGv89B5pYULCONNZtQm3r8HXdNkQ4kewtPuXlKg6HNudebD-B3syfV4sFX6lVbclwOafI72xP8PtTNf0b-eGuO8f35CvlzvGYxFy-Z8kn8sOuO8fXnMqrjVnwUn6SfhCi4HbQ-w7unEnVki2asrc1BT3d7_b0c9dVtIV7RtWmUzgVBXNq4E5QE71iR82ygEtv31d7UNTaVPp7udah7TvaeoYpjinAEZXr_i3FkmveW7ESM7yUGo1M3RoLWboVABf-Zdu3ZWLUHiFHWdhU-e1QjpHR_kyMMOU69-Onk7hpuGF8QWYyS6HyQ8-P3DHgjfA7bvEkGg_DRKHffZI-i1L0I9cbA_Q44_nvEi9RYefZbm27Omm61Q2voqBX9Se96tmWJYmqNf4ZibqlRnTAdbgt6m9oxEjzGzccoxZz8JTeDDvJdBgl42GRRXmieqyVwhLP0I8jd77-PcXQ7wBOHWfhOIt-5Dgb0wUoNLUmVv5eR_pBl5FXdRhfSzxr7Ly6blswL8YmMjpo__c__7Bx17kY7iRd-Kno6p8wwJBuW0e_k_gdTKmUTdYbd54EgEs6a7-DxHC0Cd0PHx6EHoTDrSqpiTiqOSsOs1EDBXrYapjiEnmdr9x54kcc180nUwkzcWMSDP0uJD8Er_hbM-l9ctyMx8l7HA93kpAr92N73yu6He43UA-Jwo_0WtwObxmyzgGNodfiHHDFqPIU8x8znUthTKZzj2lwrxq8y7TB2uC1ydm-Bnobk18bz-800XnfGNZ4Mdb8Y__33_-ycQfw_9j_tLmByAGX60am7dYZuTx2DDy16pnKBWwgojSbvv7p9VSQHgxUr-ibZpASxlyrugEWWFAjfHgoiATLwVNDlQTwiIUh8W67GzwEIO3ElkIFgRTv_rTm2OCvFlVRMvBuynFpeOOw1SbCEP8oQNrWK1uKV1KBtLe71jix5beNxkp1McTCYBdw0Y_g_iX0LPqh4-i-CncbBLouLrIP291Aqocg96-nJtODQZw7KtwdDMSOw5VMNA9JEe5KoQeDCECqrmxkOe1ArzRCRSGqOG6P30UVxU0LYn8Yp5_epp8taz85m-yPJ3ZiN8_20fGxxe_2dDL-ajdTu0kH2lpQGsG7qWCtTBfjAGOuCvb-8bEV38TW4XG6P06PtuzEPpvsv04tW7Y2aQRbNiu-XtuJ0J68PUkTWxZG2pY1Hk1-slUXu120zw5HY57zBTtP_J1dtA_SM57e9hgb2S7uRSjWV0qim4jVSk7TLxO-nc0XOUgmbyfHKQdhb6NViOFapyjEHbQPPx6k1sn-t9SKjppoZUMGMao4BMwijPNNc2LW0BF1ZafrGm_XFZpoAmwl1IOvQ24dh3bCzKGdsTU0SDu3EyaaGaoVdpMdePJSqH5RsLn4x9Pj0eF7-1lZFSls3HaWHlvW_va3tS-xC73mJfAivqJu0NOe13uBWn8KAzfEgmJX6O2QwxzrzXvk6S_nf8vkv9TINkLrrMp0Tm0MFk0IKgBpGriDPN90x02Zo2wHu9jBGDlR-Fn-U57Xmcm9uun3-Zgll4-XRtZEpeOIZfsw4cztR8M2g2XEXZaBpCubEZ7AYUWrYpm1uuUZ65v3Vn5xuaQzs6z0hT9f1leHl9PlYX1eChWEcSCXgCu_qBeUlZjmj48g4PF_"
+      },
+      "previousReview": {
+        "title": "Cube Maze 3D",
+        "image": "assets/images/arcade/cube-maze-3d.png",
+        "author": "haruka_apps",
+        "authorUrl": "https://x.com/haruka_apps",
+        "sourceUrl": "https://x.com/haruka_apps/status/2114610483001164123",
+        "publishedAt": "2026-10-26T06:50:01.000Z",
+        "adapted": true,
+        "observations": [
+          "Rechecked centered preview at x=16; gameplay remains x=8 and screenshot updated."
+        ],
+        "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
+        "compressedBytes": 2879,
+        "selectionReason": "回転する立方体を使った迷路探索。立体表現と遊びが一体になっている。"
+      },
+      "currentSourceUrl": "https://x.com/haruka_apps/status/2116985055889551653"
     }
   ],
   "targetedRechecks": [
@@ -6231,6 +6577,135 @@
       "scopeLimits": "指定された2投稿の採用版を確認した範囲。全乱数・全得点の網羅検査ではない。この記録は公開前の取り込み確認。",
       "validation": "npm run check合格（lint・整形・生成物照合・233 Nodeテスト・音の参照比較・47ブラウザテスト）。34作品のURL復号、3000bytes以内、共有URL長、画像640×576、台帳の採用版日時とURL、公開日時の降順を確認。既存32作品のカタログ項目は変更なし。",
       "visualReview": "ローカルArcadeを1280px幅と375px幅で実ブラウザ確認。先頭のCrossy Chicken Ver.12、More Fish!の画像・長いタイトル・容量・作者名が重ならず表示され、横スクロールなし。全34画像はlazy読み込み。ページ高さは1280px幅で4787px、375px幅で13069px。1ページの一覧を維持。"
+    },
+    {
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "scope": "ゲームとゲームミュージック収録への移行、既存34作品のゲーム該当性、Chromeで観測したX最新検索19投稿。既存ゲームの品質再選別なし。",
+      "search": {
+        "url": "https://x.com/search?q=playload%20since%3A2026-11-01%20until%3A2026-11-03&src=typed_query&f=live",
+        "observedPosts": 19,
+        "addedAuditRecords": 15,
+        "sources": [
+          "https://x.com/rukasufall/status/2117175817424015632",
+          "https://x.com/rukasufall/status/2117166777859805547",
+          "https://x.com/rukasufall/status/2117166709551300715",
+          "https://x.com/haruka_apps/status/2117141898511196627",
+          "https://x.com/haruka_apps/status/2117107825591919072",
+          "https://x.com/haruka_apps/status/2117049139477569946",
+          "https://x.com/haruka_apps/status/2117019390462071240",
+          "https://x.com/haruka_apps/status/2116985055889551653",
+          "https://x.com/_hnsol/status/2116756599738184173",
+          "https://x.com/Studio_In_se/status/2116733883727421586",
+          "https://x.com/haruka_apps/status/2116694074258522364",
+          "https://x.com/WildKabocha/status/2116663245381767216",
+          "https://x.com/haruka_apps/status/2116628275049144482",
+          "https://x.com/0_game_it/status/2116553004199633077",
+          "https://x.com/haruka_apps/status/2116899429429195120",
+          "https://x.com/haruka_apps/status/2116872778641224140",
+          "https://x.com/withmydog1996/status/2116855407440433166",
+          "https://x.com/wZIxOWeQRgt8ysA/status/2116796541252108516",
+          "https://x.com/_hnsol/status/2116777940226834663"
+        ],
+        "latestObserved": "https://x.com/rukasufall/status/2117175817424015632",
+        "limits": "表示された検索結果の観測。X全投稿や全作者の完全な網羅ではない。",
+        "refreshedAt": "2026-11-02T09:20:53.288Z"
+      },
+      "outcomes": [
+        "鑑賞中心のrubble.、Rose in RGB light、static.、shatter.を除外。旧データと理由はeligibilityHistoryへ保存。",
+        "td maze.は壁操作でAI経路に干渉して遊べるため継続。PL-8 CPUは操作可能なブロック崩しがあるため継続。print(3000)はパズルゲームとして継続。",
+        "Brumariaと修正版3D REVERSIを追加。Cube Maze 3Dを作者更新版へ差し替え。32作品、採用版の公開日時順。",
+        "music box.、skyline.、markov ebm.、neural gen.は実体・操作を確認したうえでゲーム以外として対象外。品質不足とはしていない。",
+        "GBC Music playerはゲームミュージックとして対象に含めたが、ユーザー指摘を受け原曲・権利者・許諾が未確認のため公開前に保留へ変更。品質不足ではない。一般の音楽作品music box.は対象外を継続。"
+      ],
+      "validation": {
+        "reversiAndMaze": {
+          "reversi": {
+            "frames": 2808,
+            "overflows": 0,
+            "moves": 30,
+            "state": 3,
+            "outcome": 5,
+            "black": 29,
+            "white": 35,
+            "retry": {
+              "state": 2,
+              "occupied": 4
+            }
+          },
+          "maze": {
+            "frames": 7079,
+            "overflows": 0,
+            "stages": [
+              {
+                "size": 3,
+                "state": 3,
+                "rotations": 14,
+                "time": 47.54999999999858,
+                "pathLength": 44
+              },
+              {
+                "size": 4,
+                "state": 3,
+                "rotations": 14,
+                "time": 68.43333333333074,
+                "pathLength": 63
+              }
+            ],
+            "nextSize": 5
+          }
+        },
+        "labelsOnly": true,
+        "originalAndAdaptedRunResultsEqual": true,
+        "gbc": {
+          "frames": 10000,
+          "originalAndAdaptedStateAndSoundEqual": true,
+          "overflows": 0,
+          "maxLoop": 2,
+          "pausedFrames": 120,
+          "soundCommands": 11019,
+          "normalInputControls": [
+            "A pause/resume",
+            "B restart",
+            "left/right mix",
+            "up/down volume"
+          ],
+          "limits": "単一入力系列による補助検査。全操作タイミングや音楽の聴感品質を保証するものではない。"
+        }
+      },
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/games-only-2026-11-02",
+      "finalValidation": {
+        "checkedAt": "2026-11-02T09:35:32.336Z",
+        "scope": "GBC Music playerを権利確認待ちで除外した公開対象32作品。",
+        "status": "pass",
+        "standardCheck": "最終32作品でnpm run check合格。lint・整形・生成物照合・233 Nodeテスト・音の参照比較・47ブラウザテスト成功。",
+        "catalog": "32作品の共有URL復号、3000bytes以内、640×576 PNG、日時降順、台帳のURL・日時・採用状態を照合。GBCの楽曲を含むURLと画像が公開対象から除かれていることを確認。",
+        "visual": "Arcadeブラウザ検査で320/375/768/1280pxの全32作品の画像読み込みと横はみ出しなしを確認。先頭はBrumaria、3D REVERSI、Cube Maze 3D。1ページを維持。新規2作品と迷路更新版の画像を実ブラウザと縮小一覧で確認。",
+        "dryRun": "32作品で既存のwranglerラッパーによるdeploy --dry-run成功。",
+        "publication": "ユーザーが32作品でのpush・deployを明示承認。この記録は公開前の検査結果。公開完了は実際の配信先とGit履歴で別途確認する。"
+      },
+      "visualReview": "Arcadeブラウザ検査で320/375/768/1280pxの全32作品の画像読み込みと横はみ出しなしを確認。先頭はBrumaria、3D REVERSI、Cube Maze 3D。1ページを維持。新規2作品と迷路更新版の画像を実ブラウザと縮小一覧で確認。",
+      "rightsReview": {
+        "checkedAt": "2026-11-02T09:33:07.455Z",
+        "status": "許諾未確認・掲載保留",
+        "observedCredit": ["MINAKO HAMANO", "Game boy Color 2000"],
+        "unresolved": ["原曲名", "権利者", "利用許諾・配信条件"],
+        "sources": [
+          "https://www.jasrac.or.jp/users/internet/audio/",
+          "https://www.nintendo.co.jp/networkservice_guideline/ja/index.html"
+        ],
+        "sourceScope": "JASRAC資料は一般的な音楽配信の説明。任天堂ガイドラインは仮に任天堂楽曲だった場合の確認資料であり、この曲の権利者を任天堂と特定したものではない。",
+        "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/games-only-2026-11-02",
+        "payloadHandling": "楽曲を含む共有URL・画像はカタログおよび公開用台帳から除外。調査用データはローカルだけに保持。"
+      },
+      "publicationApproval": {
+        "approved": true,
+        "scope": "GBC Music playerを除いた32作品をGitHub mainへpushしArcadeへdeploy",
+        "destination": [
+          "https://github.com/kitao/playload/tree/main",
+          "https://kitao.dev/playload/arcade/"
+        ],
+        "recordedBeforeDeploy": true
+      }
     }
   ],
   "replacements": [
@@ -6315,6 +6790,165 @@
       "method": "掲載版を実ブラウザで通常操作。CRTオン、アプリのScreenshot機能で640×576 PNGを取得。撮影時のみアプリの再生を一時停止。画像加工・強制配置なし。複数候補を比較して選定。",
       "supersededAt": "2026-11-01T04:25:07.578Z",
       "reason": "ユーザー指摘により撤回。コードと印刷結果だけでは、ネコで文字を押してコードを組み替える遊びが伝わりにくかった。"
+    },
+    {
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "action": "収録方針の変更とCube Maze 3D更新に伴う旧画像記録",
+      "items": [
+        {
+          "title": "rubble.",
+          "image": "assets/images/arcade/rubble.png",
+          "sourceUrl": "https://x.com/haruka_apps/status/2115644828570763612",
+          "action": "retained",
+          "scene": "夕景の中の立体地形。地形と奥行きが読み取れる本編場面。"
+        },
+        {
+          "title": "Rose in RGB light",
+          "image": "assets/images/arcade/rose-in-rgb-light.png",
+          "sourceUrl": "https://x.com/ikb/status/2115145985588617486",
+          "action": "retained",
+          "scene": "多色の立体モデルが重なりすぎず読める、本編の回転中の場面。"
+        },
+        {
+          "title": "static.",
+          "image": "assets/images/arcade/static.png",
+          "sourceUrl": "https://x.com/haruka_apps/status/2115055477185032400",
+          "action": "retaken",
+          "scene": "通常再生のCH5。多色の渦が形をなしている場面を保存。単純な市松模様から差し替え。"
+        },
+        {
+          "title": "shatter.",
+          "image": "assets/images/arcade/shatter.png",
+          "sourceUrl": "https://x.com/haruka_apps/status/2115051608677687505",
+          "action": "retaken",
+          "scene": "通常再生で立方体群が分散している場面。夕景と床の遠近、各立方体の陰影を見せる。"
+        },
+        {
+          "title": "Cube Maze 3D",
+          "image": "assets/images/arcade/cube-maze-3d.png",
+          "sourceUrl": "https://x.com/haruka_apps/status/2114610483001164123",
+          "action": "retained",
+          "scene": "立方体の複数面と迷路が読み取れる通常探索中。"
+        }
+      ]
+    }
+  ],
+  "eligibilityHistory": [
+    {
+      "checkedAt": "2026-11-02T09:19:04.771Z",
+      "policy": "ユーザー指定: ゲームとゲームミュージックを収録する。一般の鑑賞デモは不採用。既存ゲームの品質は通過済み。自由移動・探索・地形への干渉も遊びとして含む。",
+      "withdrawn": [
+        {
+          "entry": {
+            "title": "rubble.",
+            "url": "/playload/app/#v1.dVhrb-O4kv2-v8KjixZIsSSTlOT4RXmzzgPzoR_A7PQuwMu7YCtyrOm0aNDyzjTi_PdFUbaT6ZmNk5gs8VFVPKw6pfF49O992z81I3_48uWpyf6tdt2-H1n13vbbbN924Idm7fbghuann6EeWvbLHrqh-a3toD817R_QKK-qmhT5VTnNysQSIbPZdDZNPKXvBLRK68hGENURRLcRRNeRAR1tIgjSdQTRXZA8RHCR3gRJE0H0j8cIoi9hqjGwVlZVbfbN7ohXlc6yzJrQs6ry2hqa_ebajkQRfW3BXkV1HK8f43Vcx3X8GK_XEdypiHM-EkKMhJAjKeQoF3IkRB7aheRRtt89tT2JRhFdPDX96Aa2cA0bxeFe8cXm0NV967rRB-Lo8-DLWjnNTXqjuYFOOS2wLQz0ymmJbWmgUXViyZayPvFkSxe-6Q--03XopX14Bl3iyTVNm8SSawpN6LEu9MzLsNd7RbQFD85QVekpZ7NZYscOrmQ6myV-7MAZ2Kmu-X30a9v102vv7Xcic15wCrdKG3hUmpvFxnmC1lnFF3Ypy8nCMkYftTXqUduqEoYREVsKt9nusN8S_Uvv2-4x23j3be0emk-u7XpiWcFnEwp2pWU5MXPN4U8fA6kwdDGo_lmRoDlVla0Uj2O7FBMex2SnxYQnhB89ZYQfLTXK0VdPfx-mQU2fXZjnlqIo4niXbdqnJ1JDmO2OilPWEw64QpC50O2ImKDQU0pfLov-govS53ZDrPpALAWvPhBPwWppllkex8HNRmkP1gziKsvps78898oGDBLUTFWOEa9rkzqaEBydZjkdDy2cQykFq94PO70nnl5OwCkOjepIzlHLntTEI5qs5oYCdgR2BK7AxMItVbNwjNHPBEewN4MTN24AR7I3k4JQ0JcTfL4qvD0DKASnwy0KrlCVJiL2KzFPBU1IyfKkIZ5SmCU-lTBhQqKAzaih8KC0WeBK0SmqRCbbOH9r6-15tedX-ybFwqXpgu5qxFe2s712VZWbWMhpVZGr2NE4fjjhrEg8C6KxTEUBQqQEB9OxhIIb-nJG00ERD04VnE15QgjqysgmFUXB6XjGOX0n0qykaNckscSNp2wznnHKZIKD2RXFx5AVbLCKZXkYVlK8QZ8UqaFT9Xhy5NCr-t0kceOcZUImHduMp3hkOcu4TDrcwZKeJg1kOKJMOig480FkXmGMSG1hDftz2LhTX3X7TnADN6ohLcvpot2QeikDLNulkJyewoTgqHR7UlmWMOMJThE0Lc3iHNHXacF5QkR6gyDriACLFoeprAyTk9kp8vxUH492yVfd4elpru8QSh56gmvfJHcBv5wLmdjEUrhDUPlhnUlYx7y0GyKVqunzEEXad0KCV9kkIe1YyCOn4JTOg9520JujW4pBwiQf1kGTfaVykclkfzJ3xC-Xo1Z84Su-qBkDn6r87Lte1SsEqMgTy2p65HOxcLo3TBG0TCjVH48NuQpPq6w8wbojOXj6ctrGoRE5GnESHEgbzqAIhp2Dezsujxw61b4rE5m4cXly4aheioIn-5WeJZZ0lGVlQkRchxMKnbqqJEWrZ4kPA2SZEBnX1MxxK9y-fLP9p9P2kzfbW4VS8EqwfbJP8nPiwBuf-HDdEyLYnrIi2SMmwn5D3Ck4Tfw5cWzVg27N8agtadlmfIW4EBM2CXPwluPhDtr6vxthzlbvl1m52s71FjFjSUsTsh-gBdsQfIZeIpP8DFLYamlw2dexZ7U-vglIxfSHiPREOHjMI_R41BzSGWBM_KY0B51mJYishLyAK8gNaAEikyALmEFhgIOWICHnMIHSgM5BZiVICYLDxIAuQISehCuDi4lwraSAAqbmza3t2_oroc-b45Hsnux3wiH6TyH5-7yM2N2gKxIQVdmlXEWfI0aKxLIryqKPxQcRsTWJuJCCC5mf_0d0bpfFKvos5MeIEWaZpCz6UN7mN-vS5uubcp3b9dVdeYPtu_z25uof9-V_lLfRPPos-Mfiw-x2tp7ZmY3eEB8I6gmIPov8VTUYdKv4KvooP-SDPpzn-BvROQpndraZPcyavy4mIfr1vwvO_4t_fLvkmzXRQmIrsdpnvtk1tic5RYFcRXX8eB_-HuvH-_v7-2i-p3NkZOEnOo-fUjqPPszi4fNWh3Ogd2ozLqb8yKFWm7SY8sRBq2qUwUF90yFaH-L4gHg84H1oFzfqsNKWfKLJAcnXQecGCp76s8TM3UpPAyRKJnnSBuoisgJynrSpkOeg-rsih9VBFzghK-cym9CB2_2sDquCB243dyvJ50IutifO3NtOkoEO_kzh-q30dwid7fed68lpBIUTk-Fnk7-oKxmIHbmmYySBP9C1joiigC80cLZToPDqS2pZkQTWtkCgIu2x4JdXq8ncL8V0lc_9Mp-sxJzTl8uC4BUH7QBqo96TDyRQONEUBg-g4nHsl0IuPFOSWoX7pj7xNEmyEr4Tl1pwzMKX1KcCZOxXk_nVW23T6cIuleRBU1ulZRz_QnSaS-BQJhYv5rlJwS5n4XGRWOCQSo73NLQF5xca-Rtyj3ZD3FJS3ChIAyeujduMvtLz7o3ii2Y5WTSvTlqrpqoE7JWIm5AS4E4Rt6oTJIoixSTU0nmNZGOrtMgmcAfSwLXSFu7AG9gosmaCvsvhHlsSWzulUwH4ScWfwtfzGcAhxF0CqNNrw9Q-2eq1Aac3himbbPUGO_eYwXwlTvlqq-8NYKXxQhfkRq9Neq3Xhib7CicjBW7-t_HfsQ46M9Q4_u3EpMhOc4OBd6clfqNV5C0zs4qDV7ug8nu6sEir30LKKZ9tnmz__sRyAQtAr0mNHigwCGCts1T2J9UPjZV2gZTa1AXySXpkpyijY4JjBrmZa4MY7UiWZY4i7wjfFqP4BKRBI19eDD0liT_UlVIujlvM5D3JRAkilQlpA8ObC4TDx78Q0GFup56IQ3DAkFyR8CilulPSDaILZDzSjWW-8IhW7fEwOu2RSnu0xi3lSswzPj1jsQ-1w6IPvi9fXY-CwdeXapv0FGpV8OSPMR4VdApTeFqP5RHJJCbyU6dVdTVZTed1la-KeV2JrFzJuYC1ctUkjh-0N6urOWY0yGFidB77H-u5Nhzjd9JBx1pomAW7bKtKribzNYW2knH8nXSsTUkbKMp5lKDodApumf_gkwkPTrkg4wPRpOChRGCbccnpu4KnkgOZhipBUGbJZoxkgtJ304GveiapoQv3o7fc2VufEQfviaMwoYa-_Jbtne_P5_la6FxOOsBeGHLJFb--AiUvF79eakQOYiY5p0D-dCjaLE4WglOvpHOwWEyDxW-ZaL2UgYrSC7aEnPLEs2lSQ6_-Uv2-OZVJsbBYA_V6pzsWKlaLZQ3WOpYaw9jJhEbpK-QsUACesABu_uSGHvHYI-e4rN4qsWiXxaL9U6DTrYH93-jUbshPpK1EHJOfer02x6NjrFJCCkrp8181_lt9lVrHMdnjm4LcHNW5kLOULuzpVPfZ3n1rwhkxEcuyoKsGg8Oa9brBHFyJ1Ww2F_PZbAYt1OABn2OFhJf_5RLbR27kNhodQZ_d8Wj_H1QsXifUI7cZWYrVFD7BEkWDxfAFDdZgRtWwV7jvneJwo24xo2_Vvva6N7ozPyChFDKO9wP-8YUB-k7Entau69vu0FyIyq32-OYEarXOfPNwqBtUswasES171PW_MPzpzvxLlqFW8NQAZv3lHr2parhTnoLHDfBSLJFexDG5US4UCy6OsXpE6q_2i_P2LyhAdAYtrtUec3YuV8QzBriCYuwesPhGwhHqb4UcRq0H89FFc3Kr71D38_BzFx0bCN7Ok2nSwTTp4RpaOifbrN56dQ345vBJifhupRtAItVCEw6QEgr8ch3jGJcoAyW_vDWAKwp4Sw8h_5YQjexoa_3hq_0fu9vtRzvvHrJ_drV7aEbrJ3t4aEYfd4f9qMzKf3aj0ejRN02_n4--tr11EUjgFBjbVCqfFvhmaaM4ffk_",
+            "image": "assets/images/arcade/rubble.png",
+            "author": "haruka_apps",
+            "authorUrl": "https://x.com/haruka_apps",
+            "sourceUrl": "https://x.com/haruka_apps/status/2115644828570763612",
+            "publishedAt": "2026-10-29T03:20:08.000Z"
+          },
+          "previousReview": {
+            "title": "rubble.",
+            "image": "assets/images/arcade/rubble.png",
+            "author": "haruka_apps",
+            "authorUrl": "https://x.com/haruka_apps",
+            "sourceUrl": "https://x.com/haruka_apps/status/2115644828570763612",
+            "publishedAt": "2026-10-29T03:20:08.000Z",
+            "adapted": false,
+            "observations": [],
+            "curation": "Existing catalog; previous initial rendering/input check, not full completion testing",
+            "compressedBytes": 2994,
+            "selectionReason": "文字・タイル表現から立体的な地形と夕景を描く映像デモ。3KBでの空間表現が明確な見どころ。"
+          },
+          "reason": "入力処理がなく、自動で進む瓦礫の映像を鑑賞する作品。"
+        },
+        {
+          "entry": {
+            "title": "Rose in RGB light",
+            "url": "https://kitao.dev/playload/app/#v1.ZVjtetq4Ev7fq8j5USrZY2MbMAQQ3Xy1227bZJtsN60f765tCDgxYGxDbNr8OXdwbmmv7LySIU13n1J5ZiSNNN-jNJsHPxVxkUwOPi7zyUG8OPj4-vggiaez4lkyKb7m8aJ_SdEy75_QPCj71zQH5QNFkzjp_0Y3yXKZ9d_SrEqXRf8zXbzpv6GgCBb9I8I4619Rtlwvxv3zB_E-KGb0i_Ba1KG2Tx-F51lkU4tc6voE2MHEHrapjX9d36dfBVAXhC4IcknLN-dByuZixOa62eHNHqf3YGaT2cYP2_GVSAe7o0SwkgIKuRhds4A-sJBKzulCeD7loWD1lBd4lm-EGCjwbAnZEnIk5IDNONmv_MxM08xDhXF6lt8INqU5TQTDpE139Rf_v0J9B5hd0wbYlEUJQAjGcSe2IcMGyCkRFsV0S1hFGa0GN8uMxcIaxEPbHcS6zhNdjBN2w1is27xpu2RxumFxDfHBSvzGkqZpOfzJVrFSW7-uRdxcDTLQ5NwtvrfD3uAWU9mO65rYreTbNmzJdk23CuTYdM1s-o1lijd_wkBkisPXjbhtZppj2AMpaCCgEzDQTcuyIbFkZuxgTuFuljZqvj5qo-YxGwnYziGrtiuDOqCwwIt9LfRuBS7o8Oct3wi8W0mJfU4zocwQ8W_f7MGdUnGjcWGm63wm6VNFIblCsSzFqGzOOE1q-pw_PDzQswTGWdKUFnRPYyqE6e6tVooTNuW0FZfyEwErOOXACj7IYYrapGrpSqy1Bax_yd5oa65ppkup2Gj32mSQTYp1tvCWcCq91FbGVku1iJbSvcbaWlvrqZbrptPB4o22wYTj61tthbVY5z_AhXcH2YbZwhKtzR8Gz6Qh5MF3MMbdsIVBGkNSCnHXdA6hmzvNQQS8E2bL0U1XK-jeErbZ6RhmtwMsDYXZqyfSiQDvjm4jWIBmwjOtFu7U1gqfKuEZpi2hGO6ZPvEvt_3dvwCnIg01ZhtS_o6eTiAcbtAZZLVBMphMf4eF2iVL4UpVTa4eySeS_PDsH5rNxWPEaG6bYvGBuS16y3J4zFTkRkyBUKzlATqUKhGuTeFsirU8QJKrHfle3Fsak9KabgdX-QD_Xmu22eLam6aj3BDSvpOCmB1pSxhFIVAUp6VgptXWYYiCY1EtoTIKrURgRPoSTjDTYfm93VeQawLXR4rSlrTCiRMOq1pUJ4qdqOuhwBGOZLWBDn60bue7cQNY1cY618UdlEsGtUsG_3LJDHI48tQ1TAgLuogzIDC0I90O991optXdW8zs7W-caZGx0nKqEKSO8skMHrqqnfHfBpLMW4YDpa1hio32Zs8Hiupo6oIVKVjeUvF4dF-voqm_vPE8pEGzg5RtSAellun6fi3wUqb9CkmBfozGudhHlPRZuUlGFG7c3UfQju4_0cvTLTJF2VK87W4nkPXTvTJvqQWlL6-c3LAn2x_3PNnhI4mYPYJdTEetn9NUNw8JuQChRLDAnmr8SH2QJfbg4kq8SpZB0XKOsiyozJtsOWcXnH5HjUIKe_H3f5vWl-Pbnvvl7Pp4-PnNdf_4-pc_tJPrn6P_HF-fnhtnn44_9X66fnX9kr78_PHM-vL2r9Hwr9d__6893J6U5N4cv9il1ohiaINFIjKjWZCdLMeTo4Jxw0URet4xWi-jpmejEKsf2ZZl-R4m_H6k2ZYsd1EwFwXsXwhWPHdcy9LlwBXYdCxL1YJYvJUJcyoKBGkq7nBirN_pdos_t1taZ-8mssg7KP_t-nK3O7cKxO8XXspQhfRbH8GsMEshUY3UM-MacSSyY3kAp2eOFuosMgLEvA4kMDogtOHaY1AkraWFRmC0tEivKdqUP3DUgyi7l7KZhxpDaCDnI0qsQ9d125wjQWhai57N14Id0TGUeKQuncG3lByPMmRwFe0YA6qVnsFZgNg7xJGIIxHoMitkS1EXOyX4XPUwlnR5xbP-AvL9wRxJDD8xx178VPgPFALiZY3EasZQ2E4f8weCwVDlJjhkvmZZwSbytvJ0UGFmadTXYipGl0UWL6bK-U52rsFsy2lbOoIuXKNNKeYYliGGdCFR2bqkGwnJIQkwBGthk_clpE8hXYa-UPff1fU_xWgxuT946urM6fWkW52EQk79Fi-K3pMJOjqvI8DttDudbqfldttdt9VuAex0Djt2t9fqdZ2Ws3PvSIwio4MkkyZgYdGLK9d93_3knnc-dKLJ9Dg4OXt9g2Eanr7m_AUfqHU2vfjUO3c-HJ4EN1NFfnazXkRFvFwcFHF0x_jXfxZdp9EI10MkY5mfoRwk6TSaeq9ZuOa-mQaF-LWOtz8pk_EWrkcjlo3QFjZQzKDTb09IelsSbXnvsFikrI1WhgXrPwRyjyJ0JAHKZ4iquQwyrksu-A6SQBfBWpP5SmdYzFrckB-YFcT2QOYX79SiM7r6TK8oT32BCAYbTqeywUObcAo9e6c2ndl0ZRPl9n4JDqEsEciEeaojLTJ2Zhv1FGITPi2DYoB1ujrm4KMlMLkM6QzMoz13MEmvxBHrWc1XHOXX1a4Yqh0zTiOUiDMIcslyNIFcR_iBtcokcIniSphd7Yh1HbnvinVRu7GFXbIzvtt4IjciTs8kDxC4rmB2ZRtXn8ERfrDRhSpAamDplZEuuOHUaLoZFD_OF1dGkTzOF5tButCFXIYeHNgy1EWe1sLOxqIOpyype_oaK5LH6EoXdXhBu16AyLApcBDQoUWhTaEEI4simyI8LySv2Zg-SlMUJRUVFVtfzMb7FKMyxymnzb18zFS0VS8WSyv1wNYqPXBQy0KJhhINJRpJNJJoBNRHN_jL3iVj_php4T8xGhnrsP1Yu3u70i3LVG9fuqHLL6F5EycJsyeHfHCyQ6zvFR0F2xoshxdXZjJZTIvZYKmLXl3KS0tcXHlLdJQ1ILsy-ON2hzmyxEtpLCWOpeSxdCiiEqEih4oc1mSILyJFjhQ5qsnbQXzDtkO0c9FyUcSL9aS2VLwVr5pbSksBH0QNj7d47VBaCbiWUSnUoVmJ7hLlG21PjJJu40U5q2TD-UhquZzKAF5toQVNS2MmH5FlKLcdKoquKNXjksqYVZIgl3RtRdEVJRLoeTZInt9Vl1eiCgZ5NRRViA_SyeNMKUrMlENRYqbcd4NjkVcaUnNeKqlH4kvojf3vkoMYDa167aKs1dzyaVHVIN7Ii20NonkJxHtPwfK17W1K2lS0gf9t7tmixB6sla3mpoRHbSp41GarbUfWS8Pu2-iq39V-lSi_Uq82qYFcw2YtkX3TosIXTdNii6_jy8iMxL0ZL8aT8vyGXcsX2z2I0AkaXP3ei3xN3cf1H5RcYguHk99ItwefFLRJHr43yxV0WQ27zuCp5koQy2Ebw3elKZ2V8B_FVmrpPyc_Kk6ty0Vb2zZfUSGNaVouyVZ_nOMREKnXOvI7S2kFcdORsBqNFMc0GisFr3CPRgNcV_Ks1H_55RHsb588oVoOnlDC4VsjKFipH51DcWi85RfhwUdF0GgsI5lbL5XA12hl6rXwnorXuyREezpVhsN3EF7MfKTeK_Li0lIfWBvd9aGm1Cdb_2XUdNpcwxuLneL91zEQCPjILtbmT14iEHkQDVsuxr0iF7u6LjuUpIBKctkZhBLK6A7voDzKPLC3vqELip47lmzWHitiqDpQzA6HzrewgecXtCNXabKGjUa4ulo6FiNlnEZDaQDafckWniL5qLpJgSGf60LNkhp5H5VpkImP3gIONxILuFujsYdb_kurL0k7xO47_uBOJMWwhwkZ__m82fuGnFYnXparu-bKrkwty0e_eqGPR34_N-4ULGtzWHwT9nAYwocn6KszUTcHL18cvOijJygUeZkIT_HIPPmXFWmPc4YDr8FZapxzv5956JJ9wsf3Hx7-Dw",
+            "image": "assets/images/arcade/rose-in-rgb-light.png",
+            "author": "いけべ",
+            "authorUrl": "https://x.com/ikb",
+            "sourceUrl": "https://x.com/ikb/status/2115145985588617486",
+            "publishedAt": "2026-10-27T18:17:55.000Z"
+          },
+          "previousReview": {
+            "title": "Rose in RGB light",
+            "image": "assets/images/arcade/rose-in-rgb-light.png",
+            "author": "いけべ",
+            "authorUrl": "https://x.com/ikb",
+            "sourceUrl": "https://x.com/ikb/status/2115145985588617486",
+            "publishedAt": "2026-10-27T18:17:55.000Z",
+            "adapted": false,
+            "observations": [],
+            "curation": "After initialization, flower, petals, stem and leaves render with changing view/lighting. Initial sparse tiles are not the completed frame. Demo requires no input; full cycle not timed.",
+            "compressedBytes": 2920,
+            "selectionReason": "立体モデルの回転と色の変化を見せるデモ。制約内での立体・陰影表現に訴求力がある。"
+          },
+          "reason": "花の鑑賞作品。回転・停止・スキップは鑑賞の操作で、フィールドを動き回る遊びではない。"
+        },
+        {
+          "entry": {
+            "title": "static.",
+            "url": "/playload/app/#v1.hRbtbuO48X-fQkcoAimOZFIflmyLcgtv4h7QOAVuL3uAqi4YRo7VdSzBpoEeYv_qe7Vv1GcoKPmruC1qQ-RwZjgznC9yMLB-r2u9rqydlrpW_u9Us9lpS4pHqVf-rt6A6kHV7ED34J9_hFUPvdcbqE6g_DvYPbj6tW00tP1iuW6aLWxEUaAlAmRLBGiGAD2gEgpkvyK44u1PPbJCgN7M-sUM9x1SGfBMmKGyhLWQIkcLjmjBgEMAIQSnmXVQeMaW_rtssRK5LFRJ_L819QYjRGDZSwhPEhhcxssONZUFK33d_Ny21XYmdxUmY4O6EbMQSDmOmjuOoxzHmTtqjuBRIMaYxbn5ePcFnFthBwcWYwz5u3Zda4wsRCbrSltzwdOQx8M45SHMBJv0sfhsrMTzv4p5lvEQDJDnOU-gR8WAzZqRO0ngSWAJCjSsiMjxjArtr6vNm17Brt1eSGSy3G-UrpuN9YAl-aiX-AcsM07Ih2EzHkAW8rdVW0mNeZB6MyoJMAIzwYN0smy22BisjI2ZnChKycdnzOOQwGfMw8RMEbnwScEmMhtGE0kpMZTj8XixYHeywOjfVnq_3ZzOrUSr3gr073_8C5V-K_VFnBZsorMgHlI50ZQSVbBSsP9pVWdTFH3XJj5kN0YZfCMY1ILBu2BwLxA6GfMisAJNRP7Rr1fi_hy-ASJQCe1xyofu6uTvPA_AFquiyvOwPBwQglYoLzAs9pVl0h_YqnLBHKftxyy9sDiOcYFdtEZK54QicaoyzxMPJ05LHO44XZXJlx2OwiROXYnDxG3piLsVIXc8ez9eg91lAPm4-jEcson2vAk5ncoWRQkboe8C5qZeksJapC7Wg4AdGPESDkuxU9uiR5SF4Stv_J5OlBFmF6oUL3hDIxdzRxFY08DFKs85IdPRaDRusfw-lZy8vRAr7Pu-TeBRVCdoLmx_W73uVYX7RCYilwds9noLkj96C5JlWOc5z8JpNxMaGhWajIe0m00KT5a-Wm3FT3pbb9785bZ5n63kdta8VpizIGJ0TmDpq2Ytisd8NEqnyVgVj3fqFJESFhfs4ootj8fe8teuWHvrLpHRJKtwADxlLpaePyTkJmyKZCucMggYcyWBvcArqK6J1gq7Q8BGXLbgHtJyE-AKVoQ2Ax4zOhq5mtxhPQiJpwdDAmvRugpvTKNrXYk35JxvoxENXInXgxFtBiEj3Wo5SLxmEJ1W7YAHXjMIGDnCV3HpsBHEMCzhk8B9j_kwka8Er0bQduNGsLOWr_6y2d5LtcLry3GWwsbaS5grcTPAQ0Y5d9dG45rAyhsyVxl8wmhi0GvTqrJqiltRQSWWsBFrMl5mrePgVizJkUDrVVk4ZWNON0f40rU_0_okTVmeR4RiRZPAQA6H5zM5cm88qECSgaYn3Lp5w3bHRjnx6gE3foVvvyl_7sduA5VQNGX0VO6aBoxyczas6IoY590Uud2Vt52lfVWjxZP104_zxR_-ZFmowKZRkDvOT2Vun4u8Ig6fjsY6i9gUG2VkwIfMTQ5srLM4OBxOyDBw-DQdJxSrQcQcTo6TU_v8Z98-RRHEMfBg9N0viOOyu4TeRJEySILy2jZ0rb5h8tEcDrhdy18xA_SZB-wxjBF97C5KXMjSlGPGp-g5fYoWo-XIfh3Z1UihscyCKXoePUWIbjru9fXuHKNnHjwhiqmkAaFoEc9CWz6YsXpYJPYnA73YchHb9-HDPLZfwrl9vxjN0FUGgc4qDuiZh0_B1SbojcrZtNe7vNV7a-JvZAWAfv4lZOwLewpv5F0Fds-OxfmGDAnFMudTNHfmczXvf0ophcaLTpXT_28VkZsbXopmEKXswEAJXIvmLkoZ1HchE4IR0GJR1Hc8YIPEjw-shJWo7xI_zkzzL2RZBGXOJvUS3wu003JgnnGou7-YEJK8C1x7PDB5EzPY4tpk0iuuTaWPMRE5g4JBUhKo84g5Tp1xxhxnhzlzMWfMq8mBGWKQsu6B84A5mVTrXWV1t3ZC6iXe4mIPn-ALPMM32JeF9HgJRdc1IkggArNkEMKw6yAcEgg6TI_nHSXsXl9RCUVy4TMdx2CT0_5e3rDsVRB4Ms8TCAHN_mghWpxbVAKjkxExgdC44ePs6s6VQozYdDjmoEV3m4g5aFGY6H589xmh_Xa_W-Hivx455f995pwqfy4U6CPBKZnoS0_EhQJddk30yTQX6EoVVpmcRk4zTcbDMScE3sRbn35955LUD1ysC1YWqvQkMR54K1jppfBWcDMhiiA06M4ti_tfPluImg0wJKAcp85DZoIoybEL4spxkIN-EPpMwkghIfT0Acs8nvJoHJDxroMjNh6Sc-yzKGLTLd7D6e0clGS8xa8YR6nJGZNel8QyvI7T7jXmwCNA0lrJ7f6b_Crbdme12-bV_8vGslTzWo2tp3a_s2I_Npi3bVXp3dj6VmvZIEigy8SQdXnaCd3hyMW1FzJGyEQ6jswSQwsiQwqZi4PIqwkBSptchKnZghvByPE_",
+            "image": "assets/images/arcade/static.png",
+            "author": "haruka_apps",
+            "authorUrl": "https://x.com/haruka_apps",
+            "sourceUrl": "https://x.com/haruka_apps/status/2115055477185032400",
+            "publishedAt": "2026-10-27T12:18:16.000Z"
+          },
+          "previousReview": {
+            "title": "static.",
+            "image": "assets/images/arcade/static.png",
+            "author": "haruka_apps",
+            "authorUrl": "https://x.com/haruka_apps",
+            "sourceUrl": "https://x.com/haruka_apps/status/2115055477185032400",
+            "publishedAt": "2026-10-27T12:18:16.000Z",
+            "adapted": false,
+            "selectionReason": "テレビのチャンネル切替と幾何学模様を組み合わせたデモ。コードに明示的なノイズ発生処理があり、切替後は幾何学模様へ戻る。実ブラウザで複数チャンネルの正常な構図を確認し、ノイズ回数のみを根拠とした保留を撤回。",
+            "compressedBytes": 1881
+          },
+          "reason": "入力処理がなく、自動進行する映像・音楽デモ。"
+        },
+        {
+          "entry": {
+            "title": "shatter.",
+            "url": "/playload/app/#v1.lVjvjtu4Ef_ep3CFXYEURzJJ_bdNu8Fu4k_nPSDIXg46XqCl5awvjuSTuHcXZBfoxz5Ae_1a9EH6MHmSgpRsZze5AoUBa_jjcDgzHM6QHI9Hf9FbvatG3W2pddUGf1JN3emREt-U-jbotjXUPamaDnRPvt_WUA5k-Rs0PbnZNU0LnVBijpQoEQWNGCiMsac8FPrcUxhagWrQUEIjKBbzOnhf7hGqoTMNgnTRSb_GXkkQE6LDnkJhwCKvxF6DoTKynRVzSEGBAQcGX37NP5dWbi3mqqglDn5qtjVyHAzrXkLoEBW01b4qNcowLI9yjyhLMOxF4awdcDYOOKUjYSUK5-zGgQGU8EwUe1hBMXCAc-FIKBzlgFM54Lx1pIQb4aziy_Di7CZ-EZ7dXKzSi_hZ_GIVL8Pny_givHy-yi-d6a7So51gWcjiJM5YCFtB4bUo5LRfj5fWrbsfxW42YyEYYj6fsxR6KAZk2hSfKwx3AimwXsZijrZE6KDb77YaOT_UzskZwa6q3-pb6PbtkR_Dxg7GYv462N91t6iwa9s2d_UaKQyftWosMbwVtZhbsLzpUBSmcRbEnkKMB3mWZ16N8TmD74z2BYs89BYp7AcxhtB7ixRhGAaUcItL-L7nzXo07LkpHIBoYHtn2D5a5xQ1aCl-QQpP20rftfVog2o_Au1HGIqBkg9wKVChoZTQYDEvgiB41rblB9SMWRDeU9zHDOqghcowaD8iNWrH1eAoLwl4hr0GSj8i6isdXpBJDNcHB6pengJtGn5daInhm2NvQaVXF1QSVTBDMUNxQ3EJz4116hDE9dh6-PbDvtEoCAKFMbw6CCqG8Vz6w3gmYaCoweggc6CYwVjfK23cXQwx9svJpaNaXCMFFwWV2Ox6VMNFEcqDg4uMkjz3ephJPNaQcv-IcIto-QDf9qFoAnFYqwasg6VQsBb9Nu4dr8S8K5T0UO2nCR7nud_aZuknmWmSqlDS7NV1weSMLjTiFPymYHJsEDxh_LD8zcHz1tFkXdTSW-IH-CDq6tfRq22ts37peZZRDC9EUVB49JMwIOzwbxF2RMIjwiGECGJIIJUSrsQpsHh6iKlhperz0GcQxATV4_yeYkD12ESegSWG9wL1mZGRgHFP2yEoSD1NAhrbHGgGB5wbJPQUsjDRGNRjNgk_i6tgs93pqj3MzsI_ixr3-hR2v0sbPVD7LIhNC34zCpjN8XFX6WJYp58LfVwg5SEWZCSIPZPemd-ch3TMOMbHwOjMkKLzatSMY4r9ylM9Bd2BItWhV0Jhpyhai6RH_pRiaA_UwJ9a_g5aEkElH-AnUYSQGPf3UXwrKJyJQsKbU9b8VVhTpd2CHzdNiwxnKei0nEXTkhB8NmQ5RSKoSQRBZiKOmZxj_n3E3BKDhpBK_DDd3NVKb5t6pLfqHcIft4IOM2lxex7FCZ3q-3u035UfEAXnOrmKVvk6X1_nDrFxAXtY9d6sTol46DJ_X_Y514w75IbcGCq8ik2Vctab8tI5lKqoZ7qKDJuzyi-v01Ve5pt8nZ_d5GW-vk6uYqOG62CwqjFwrvMr3qtmxPd1ztY2U8rUUOPObpxeofXnyv4h7wHoxywfjflf_D3wFfDLyZ1VvjbmWdM2uTLmPTKNg_PqdUjpd_QqXOVu7jrEWcVKKXX0V2LEMOW67tJ11fB1j90ssv0OcZYnF2fYilmq5SO3r3JlJzn8VrkyqmC4EEgfc2kjtI0NaEWHUOPnCcVjTin2bZPlfGhDJQaEPuKwaWrMODUHGD2OKIWlsPtxzqIkd101M0MW_aZEymdRSvF5QseM4oma84xaJp6ndMGCeEIxaszZigfM09gLWAx7wTjhXku4V5mTjkJr7O3JEiKLVkQhPeYhxWQJte0z55_n6BqZLBjEhAWxGR3EXmVy4wpjuBHP0Sv0bMic8pQlVnADr9ANPMPwTD5gdIsBPSrnUEInxcX0sGVbQaftzPhh2hKCB8dWoj2PqBcRDmvBPdSOI3pPMWGwfFpatK0llW8cmed-aZtrP-W2tHS2tOyFb8rjeGkq6EqYz5PCu8QkoNxDzEXVfM5_XM_nDOPph6KV4kWhZLG0tcl197OQLvYzFrlug5At80tTfvd4zEmeY2JRblB-Ql02Wc0DvrAfmizCSSIfDi5QIkzoVPn-FB9rtDrn1OOgReQhNebGeChFX30ybArADlEMjcmIJzl0qmbZVBGCy6IplBQfioh6SBOkrD2kJoi5CktJSJ_eTNqVokghgRgiCPujtgy6ptWH-lIWtbR-tWGs2qJXSBZGSTmtAnXbipe63dZvg03bvL-4LduLZl0hRnlESRO01fpOVag_i5rCfY9qIVo8myE9n7NZuLBfTEKzABpPEmK_GCjGUAWq2YmihU4-PGCkZ4zThbYBMdGzMKF0EU70LIopXTCCDJRQPKF4SOA74yPG6Z-Fdt0otMT9_QalCeQJfuK9MLLuO67DT0XoKgmlMBtxoSbKz6ARPGOUcK-ESnxvDqfbDVIznuJjWjB2c-op06NnDVZNrbf1XWXbQjT44zv0HVLY6mh7HnpOElH8cTeUrtbywFWhJHQIab_B44hiCDHU8snQOc8j6rq9Hz4X8caMPokwbEPGSTzE_Ccg_oroWZ4Ya9VJqhX3iK83fC3e21Nxbzaj_Mm4FtmR616VPKH26jhO6FemVXOWHRxaCpP3SEI9kwJzPNWz0o_p4iB3bUZP9KxcnGYymhgmDBUg7ZckpngcU4hxzyxE6bq_oneowlA_tdhk7seqr7_iF5ZnXxi4ht9QCRr3Jho5f2TjQ7XrqmPE2BlDayBP8f8fN_GXcfO5Ig22R7WnkfOgZzxNTo4chvTebD7zpukwnIM3LTk2Bcxi4dGnjesajxqtdo-SyDfo2mbL4eZh7xy-AdUTEAebpn1eqtv-MGuOsgcZQxWxR-n-WgidyPNxM-3mSRAv0B3SfmRuceB8-v1vDtQYHkF_dyB9Av3DAYbx5IR183jhfPr9X87E-fTP_xgZD9jOj-FMnB2O3vYpxCR_ofobGLNkKIkIGIc72-mHtsOPwfn01387oIpIYvB9VcRybuIB6XnG7a5ljNL7ez0PWd8OzS523TsUZcAScA6PONYAPQ_Tni0KqalJdxqZ5xGnHN2W7d278k2533ejfdusgx_q0Ug162oyutrfdaM4iA3ytq0q3U1G77a6bBzQ84hHdMEmKVAjvj9W6BnPUuq6l-gXcxSITKEHHnDPBEBG868t1WZwlZGRWhV5nlF8SLK1CCn1lM05WWpyDqOeeQfC93Ramwq4QSzJvP4xoqzXzXuE_QxYzJ9ido-YxCWEPuQJJS5RkVFIEwmxKQB_qOD0pBGd1jOeTmtC8JuiluJbdGFO7KqoPTW8A4x5em-uCQiZKNxu0OuhA3_czhjPXNc8tZjbozM6HTd55m9NCbNz9aFrlGg2o9cHhbV4iVhqLCwP1NS-2vgaar804syKvETR00KV9IXK9DyY1yRTGjHcEvLwXw",
+            "image": "assets/images/arcade/shatter.png",
+            "author": "haruka_apps",
+            "authorUrl": "https://x.com/haruka_apps",
+            "sourceUrl": "https://x.com/haruka_apps/status/2115051608677687505",
+            "publishedAt": "2026-10-27T12:02:53.000Z"
+          },
+          "previousReview": {
+            "title": "shatter.",
+            "image": "assets/images/arcade/shatter.png",
+            "author": "haruka_apps",
+            "authorUrl": "https://x.com/haruka_apps",
+            "sourceUrl": "https://x.com/haruka_apps/status/2115051608677687505",
+            "publishedAt": "2026-10-27T12:02:53.000Z",
+            "adapted": false,
+            "selectionReason": "立方体の集合・分解・再構成を夕景と床面の上で見せるデモ。粒子とノイズ位置を制御する実装を確認し、実ブラウザで立方体の集合・分散と通常描画への復帰を確認。ノイズ回数のみを根拠とした保留を撤回。",
+            "compressedBytes": 2629
+          },
+          "reason": "入力処理がなく、自動進行する破壊映像の鑑賞作品。"
+        }
+      ]
+    }
+  ],
+  "historicalLimits": [
+    {
+      "scope": "以前のレビューから継承されていた制約。過去の時点の記録であり今回の状態ではない。",
+      "items": [
+        "3600フレームの定型入力検査は全ステージ・全入力・全乱数の保証ではない。特定のボス戦などは別途検査が必要。",
+        "THE PHASEのみ今回実ブラウザでCLEARまで確認。掲載23作品すべてのクリアや完成度を検証完了したという意味ではない。",
+        "AFTER LOAD HD、10SEC RACEは参照先未解決。",
+        "外部公開・デプロイはしていない。",
+        "今回の再評価では新しいX検索は実施していない。141投稿の探索記録は前回の確認結果を継承。",
+        "Hexenschussのボス戦の可読性・攻略可能性は再評価未完了。",
+        "全掲載画像を縮小一覧で比較した。全作品を今回新たにクリアまで操作したという意味ではない。"
+      ]
     }
   ]
 }
