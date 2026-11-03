@@ -1,16 +1,16 @@
 {
-  "checkedAt": "2026-11-03T05:59:49.292Z",
-  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。",
+  "checkedAt": "2026-11-03T06:11:03.281Z",
+  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。 同日の公開後、ユーザーの視覚的な品質判断によりPseudo 3D Racerも掲載を取り下げ。現在の掲載一覧は31作品。 同じ公開訂正で、ユーザー指定によりreveal.の画像を絵より陣取りが主役となる19%獲得の序盤へ差し替え。",
   "counts": {
-    "catalog": 32,
-    "adapted": 20,
+    "catalog": 31,
+    "adapted": 19,
     "normalSearchObserved": 140,
     "uniqueAuditedPosts": 177,
     "byStatus": {
       "重複／旧版": 30,
-      "保留": 30,
+      "保留": 31,
       "対象外": 70,
-      "採用": 32,
+      "採用": 31,
       "差し替え": 1,
       "参照先未解決": 3,
       "対象期間外": 10,
@@ -1946,29 +1946,24 @@
     },
     "scopeNote": "catalog等の既存項目は過去の検査記録。今回の最終状態はthisReview、targetedRechecks末尾と各更新作品のvalidationを参照。",
     "latestCatalogReview": {
-      "checkedAt": "2026-11-03T05:59:49.292Z",
+      "checkedAt": "2026-11-03T06:12:07.813Z",
       "command": "npm run check",
       "result": "pass",
       "unitTests": 233,
       "browserTests": 47,
-      "lint": "pass",
-      "format": "pass",
-      "generated": "pass",
-      "soundReference": "pass",
-      "catalog": {
-        "count": 32,
-        "newestFirst": ["SoukoBanChou", "Pseudo 3D Racer", "reveal."],
-        "allGameLinksMatch": true,
-        "unrelatedEntriesUnchanged": true,
-        "allImagesDecoded": true,
-        "removedImagesReturn404Locally": ["hollow.png", "brumaria.png", "3d-reversi.png"]
-      },
+      "catalogCount": 31,
+      "unrelatedEntriesUnchanged": true,
+      "removedPublicAsset": "assets/images/arcade/pseudo-3d-racer.png",
+      "publicationVerification": "公開結果はevidenceDirectory内のpublic-verification/result.jsonおよびpublic-catalog-visual.jsonへ記録。",
+      "updatedPublicAsset": "assets/images/arcade/reveal.png",
       "visualReview": {
         "widths": [1280, 375],
+        "catalogCount": 31,
+        "allImagesDecoded": true,
+        "linksMatchCatalog": true,
         "horizontalOverflow": false,
-        "reviewed": "追加3作品を一覧サイズで目視。作品名・容量・作者、画面の判読性、公開日時順を確認。"
-      },
-      "publication": "ローカル変更のみ。今回のcommit/push/deployは未実施。"
+        "scene": "reveal.は19%獲得・線引き中の序盤。絵より盤面を主役にした画像を一覧でも目視確認。"
+      }
     }
   },
   "limits": [
@@ -2029,136 +2024,6 @@
       }
     },
     {
-      "title": "Pseudo 3D Racer",
-      "url": "/playload/app/#v1.jVhLb-NIkr7Pr6AJm8hgBqlMvvSgUhqXrXoA5Qf8UFeB4KJEPWy5ZEpNpqvttnSYQ89lBhigD4M5ze6cZjBo7GGx6N3f4z-w-xMWSeplVx02D1IyGIyIjPwyHlmpaL-VYzkZaqf58G4w1dxD7azXH2a_qVS0p19-evrr37RcDoeZ9vTzr9pVL9eefv4vLcl6n4fa0y-_19KxzKa29mrYk1pNy8ZfepNcm34ZZpqrTXqzvKENeg-o5XdpPpSopeOra7nzm_40zaUmRcSQo4MueuhjgNUYEyFF61xm4_TKHmXT24PrXnYwHQwJkU3HD9p-1fW8Rr1e84BKwFTsZ1nvgTh-APZoPJkQBjgVkW3bKaof-7Y3I0RiCqI1619FCUmpYo7tWU_aN9NxSgBi7Il0-IN2OU5lbSnQZR4D7AsiMSm-li3BDEM2ecAMIykekib3PMMgvYgHzCRsngAlbC4hFilgrpZC5F5GM9jLcCT8AMeizjAT3HcYTkQUOYwhizHiPkObOWq2pKg3ls0cP8aotmRyFJO7nFnl9LkE7i9FWNvS4nB0l_bleJpqQyLhUYqcSAhH04wUOxElmMbTkTaBx_GIyGYC2VDeZamWmkc9eW3fjlPCUVY8hiSxJFQ8BqG0RLJY8rFFuaPXaslu-VE-Toksp6fvzKCSAf0GnXuVDPBIRF9DYU1xC0pQUBzk6CJDVvDE4WQotZk4ilgclibcikjXNE1LlkPNdVSkhC1HskWqviAlW6MkJc-GIiVBsCEEQaJIxSgkFWNN2gwd9fXrJXNJ0tZDkWK8UE5UCFZ4lQVQ4wLGS7LOuON6flDVS3IiWtLgTq3VStp6ojd0TYcS2boOgHciii6I_r__-sf_1AE5KoSUz__x_Pmf_9BB-Xv1_Kd_0wHdwu_l-7_rgFV0t-F0peBUOj4Rco_XGaai2NtekhPPrfo129_ggTt2vVavmQnAHg9XIGvajt9mDbW2uyjZ82Mk3EjavGFxMAm3fZpCvFjrPCmPJE7hMS2OYVoew14ZAGbRNEZ1HtMSb7e9e8JQncqvqRt0B4olAYCNnrOVHuxhLrjnrVY6EjJisT0Zplfy2pziWMjNQyYSa1RxcCJSaxyOR2SHZC0esPk8o6MmA1CnTqE2ESxMmmPDmNCkmYcJpSv5qZBRUpnOWRyumKVgoWyOQrnhykUayZJL1_QdkRtGn2RU4oQmOIv0RBcib_caNI9hsdgsa7CMaEsxU1FjlmeuVhDms4xMKceEcpTIAAsCJqhi6ELZcowPeI_n2MF9PMVdwfBA6Bc6dgXDS8HwRtg-HgqG7wTDN4Jt0PIdgccNF8NjwfFBqAh2LxieCxc7guGpiF4uvFYs_NSe3eXXJOIOrZsSbd83idxzLQ5o16vUN-VezbSZi5GHVQzQiSO558Xx1p7Kcf8zgcdDSgvDVeRYY-AYXbD4Ko5MNjC-hBa3OV4I_UwX4sAwHpoOU1urX6jnNulSteREpjPigWGQ7wgon5zpAI3ymzZ5aFkeM4wHy8KI1-vI3TpW67E9TvuTu8EwJw9gGLOJSj2oXzgeO3LcLndO_GO3r85pXYiHbzIEx35fKSI3prDrtW-bgRfwWLxgYBjnhrHTMQxyblnYESqXFGL5WuzlB48x9h078Y6rSjZ2DKNjWeEqbd-EN1R02jZzGolMiQdtm3GnYdmMeUo_8ZX6G0vYzAWcGMZNy_b8LVLx75vkmnRpQDlYxQQAb8S3Tmenze1qY_2G2w5Ky2Yc8AYAL6mwmeebRGl2wVJ_DsB26nLMG7CGhQ7zxuS24-PlRpPl2O5GmXq4BMB7SpXph3uBUEHmhYu6nJ3wY97XYVECYUccrI6UFF16ExJZyeYMWqRb_BvGCj2E0uOW2yYHQn-jI9l5M5_fN98oj70R94DrLeb-NgaGVwfH_ptio88p3eKqbbi44tIBALtCbtK7JrXpSDvdBOqcqABmdSFMWr4qY6qGsUa7jHhsXUKz2LGbloycWO2csH1TzYsj-hVeuF_gxSnACouVokJofzieENKlPlRqoI5NzUyaXVrduOuKJBDKZza4pQ1uYYPtlBbwbyt3S7Dy8iAsig05Uxsyn1_AV15QS6eiWEqhL-ulg-ktgaZCr2EQGXmxKGILWVYyK445A4sDoPKQwpxjkoK73VYUsIrfsNRe7vS-4PRUpSU5zFT6VrpbXVjGWsDDPa8A10v8cM-8mbOwWCnDTyvM7T6Wx80wLtqcNaqLk91HhxJZqc4ZLI757qPeHwxHV71Ej-ReNV58KtC5ToxeDHjccuB5cPVYEV1VnCfEd01p2Y75DvZ4wCgPWDFBt2rKPZ-h_vSHn3SsQviOiiHpquPkshfR2t2SV2VKnqvkOR6jjseKieUx5B6tmhL1p7_87n_--0-F0OdyeMC2E14iJH2HqeAe3SopkgqvAq1tEzwO841NiRhZaZg0R0WK7RfZb6Z2anFCmCoJcIQclrHtTpSRCD-IKMb3KhMpGZ8Fwx8Ew1eqDMDXxe9blTgvzTF-FONtwzERQZg0XfbM-FTFKDMJEyrScJV5uzTBnggqSfiD8uYUzNS0OcfPVPxgpvghkrH4jO_V36vlR5kY0Z5JajVrrMLnFKw7gLlqJmqM9syxST5bl6qgHpu9LateWTyULZEZhmpjQmlZG6-S16qkJ6-tTPVTbymZWG_BVJZ9pOTI-qjmIzGtuAZX4F55TaIPeEJSi9vcN3uY0uVE4qjtNqrlS0UvSU6DA-ZkCk1vqwZSLHMGlMhWixscwqSZ0p5ykwN9oqqOKoTDST7UxiMy2jrNiTYdRZbtumi7bgwnJFV-SVTfA1jOaTFXEhZZ85VhkFciA3wtMnwrJvhRHC1eOmhUeGZ7hUu3f_-8JtnEta6KaTVTNrv0K7jWTGl1MRWqSA6TlmsYqWF8vyxikqI9VbXJ_ytMuypMu4xtC7hFFSfRKQJSDIvv7XyaSdXtJiBaifpWCdhu9NYVrWr3vl-p6ougIjEX6xz4YRmhLI4v8_FkekVkJYDK-onbzFOxEcIzkmCN0b6C4Ycoj2lPYXFE-xvAdqksIItTs48pvo9UdVpa8UVB2H2ZxhXkzsgtfkHuOZSUxQQ3DMc4bPMGKzoWwM7LmFbsxAn5YlUpOaQS9lz8QqvWas49RiUeUmnwdtDYijx9wathv8XDvmWtZeaChbmq-fLN9o6ELO8WQLQY4Fgs3b68C6iZfSpVXMppEody3aitGrlRNFbohphSWIIsynASF1cXMn62k6Moia1RJGPAoRirZgZ2RNZ2fL_B8FpsCc-Gg7v-cHXfIf-FKCVpwV00iKly2BBUfLheXn6UHTTeiqk9TgfD-5MROYLwtskMg-yqKxfDSKOZSDdvVyBR-AWIm4dtcitmWN6u3JY3K-Iad6mo4TS6jcURNLbFr31AAs-4jgJDxm3HYw0Gc7ImcL_BAFYXNIC3pSkkVQIPAfN-FvXjKI_t_nUmlN5t0nQihu3Cn41oglm8RNiP5Y1MJWBgy-nr8f1wQDiEszupnIqftPf7p9ru47OOYFFxNe305Fzbfdyfz-uLSv2TPesNOumAOEz1w2VaLWVw_KTtPpbXV8TxmcrioNjPZS-TxIXF59vKtbb7qD_9-d91OxvOhj1JzmHxTGan7TaCpdxlizEg-ul55_LwpLif2z_onOkYBBis-4uivWgPyENLOKy9tGCr_HqwHAZq4dDQ35zs6FgNsOStNgJodFp1ZhgDoh-_uzhbvg6gQQaEcCH22-o64Pd6Q9eBkkjn5xc66s7xoY66e3aox9G-xeP5fJ_qF291oLp2-n7_oKOjX8MAcED0i3dHHU2nP5J7wKqH1YL4qnN-URDfANYUEdB1jMOiUt5R9dNg1WHpp2ed83N1Bak39Keff21oZ52Ls4861msqun9HIPw_",
-      "image": "assets/images/arcade/pseudo-3d-racer.png",
-      "author": "haruka_apps",
-      "authorUrl": "https://x.com/haruka_apps",
-      "sourceUrl": "https://x.com/haruka_apps/status/2117417244829557002",
-      "publishedAt": "2026-11-03T00:43:05.000Z",
-      "originalUrl": "/playload/app/#v1.jVhJb-PKEb7nV9CETXSxi1Q3Ny1US_HYmgUYL_CiNwOCwYhabHlkSo9sz7OfpUMOySUBHvAOQU5ZTgmCIIcgSPJ75g8kPyFoUps9c0gfpGaxWFVd_XUtXaloP5VjORlqp_nwbjDV3EPtrNcfZj-pVLTPf_3F59_9UcvlcJhpn3_8p3bVy7XPP_5LS7Lex6H2-a-_1NKxzKa29mLYk1pNy8afepNcm34aZpqrTXqzvKENeg-o5XdpPpSopeOra7nzk_40zaUmRcSQo4MueuhjgNUYEyFF61xm4_TKHmXT24PrXnYwHQwJkU3HD9p-1fW8Rr1e84BKwFTsZ1nvgTh-APZoPJkQBjgVkW3bKaof-7Y3I0RiCqI1619FCUmpYo7tWU_aN9NxSgBi7Il0-J12OU5lbSnQZR4D7AsiMSm-li3BDEM2ecAMIykekib3PMMgvYgHzCRsngAlbC4hFilgrpZC5F5GM9jLcCT8AMeizjAT3HcYTkQUOYwhizHiPkObOWq2pKg3ls0cP8aotmRyFJO7nFnl9KkE7i9FWNvS4nB0l_bleJpqQyLhUYqcSAhH04wUOxElmMbTkTaBx_GIyGYC2VDeZamWmkc9eW3fjlPCUVY8hiSxJFQ8BqG0RLJY8rFFuaPXaslu-VE-Toksp6dvzKCSAf0KnXuVDPBIRF9CYU1xC0pQUBzk6CJDVvDE4WQotZk4ilgclibcikjXNE1LlkPNdVSkhC1HskWqPiMlW6MkJU-GIiVBsCEEQaJIxSgkFWNN2gwd9fXrJXNJ0tZDkWK8UE5UCFZ4lQVQ4wLGS7LOuON6flDVS3IiWtLgTq3VStp6ojd0TYcS2boOgHciii6I_t_f__ofOiBHhZDy-e9Pn__yZx2Uv1fPP_xBB3QLv5fv_6QDVtHdhtOVglPp-ETIPV5nmIpib3tJTjy36tdsf4MH7tj1Wr1mJgB7PFyBrGk7fps11NruomTPj5FwI2nzhsXBJNz2aQrxYq3zpDySOIXHtDiGaXkMe2UAmEXTGNV5TEu83fbuCUN1Kr-kbtAdKJYEADZ6zlZ6sIe54J63WulIyIjF9mSYXslrc4pjITcPmUisUcXBiUitcTgekR2StXjA5vOMjpoMQJ06hdpEsDBpjg1jQpNmHiaUruSnQkZJZTpncbhiloKFsjkK5YYrF2kkSy5d03dEbhh9klGJE5rgLNITXYi83WvQPIbFYrOswTKiLcVMRY1ZnrlaQZjPMjKlHBPKUSIDLAiYoIqhC2XLMT7gPZ5jB_fxFHcFwwOhX-jYFQwvBcMbYft4KBi-EQxfCbZByzcEHjdcDI8FxwehIti9YHguXOwIhqcier7wWrHwU3t2l1-TiDu0bkq0fd8kcs-1OKBdr1LflHs102YuRh5WMUAnjuSeF8dbeyrH_Y8EHg8pLQxXkWONgWN0weKrODLZwPgSWtzmeCH0M12IA8N4aDpMba1-oZ7bpEvVkhOZzogHhkG-IaB8cqYDNMpv2uShZXnMMB4sCyNeryN361itx_Y47U_uBsOcPIBhzCYq9aB-4XjsyHG73Dnxj92-Oqd1IR6-yhAc-32liNyYwq7Xvm4GXsBj8YKBYZwbxk7HMMi5ZWFHqFxSiOVrsZfvPMbYN-zEO64q2dgxjI5lhau0fRPeUNFp28xpJDIlHrRtxp2GZTPmKf3EV-pvLGEzF3BiGDct2_O3SMW_b5Jr0qUB5WAVEwC8EV87nZ02t6uN9RtuOygtm3HAGwC8pMJmnm8SpdkFS_05ANupyzFvwBoWOswbk9uOj5cbTZZjuxtl6uESAO8pVaYf7gVCBZlnLupydsKPeV-HRQmEHXGwOlJSdOlNSGQlmzNokW7xbxgr9BBKj1tumxwI_ZWOZOfVfH7ffKU89krcA663mPvbGBheHRz7r4qNPqd0i6u24eKKSwcA7Aq5Se-a1KYj7XQTqHOiApjVhTBp-aqMqRrGGu0y4rF1Cc1ix25aMnJitXPC9k01L47oF3jhfoEXpwArLFaKCqH94XhCSJf6UKmBOjY1M2l2aXXjriuSQCif2OCWNriFDbZTWsC_rtwtwcrLg7AoNuRMbch8fgFfeEEtnYpiKYW-rJcOprcEmgq9hkFk5MWiiC1kWcmsOOYMLA6AykMKc45JCu52W1HAKn7DUnu50_uC01OVluQwU-lb6W51YRlrAQ_3vAJcz_HDPfNmzsJipQw_rDC3-1geN8O4aHPWqC5Odh8dSmSlOmewOOa7j3p_MBxd9RI9knvVePGhQOc6MXox4HHLgafB1WNFdFVxnhDfNaVlO-Yb2OMBozxgxQTdqin3fIb651_9QscqhG-oGJKuOk4uexat3S15VabkuUqe4zHqeKyYWB5D7tGqKVH__Nuf_-ffPxRCn8rhAdtOeImQ9A2mgnt0q6RIKrwKtLZN8DjMNzYlYmSlYdIcFSm2X2S_mdqpxQlhqiTAEXJYxrY7UUYifCeiGN-qTKRkfBQMvxMMX6gyAF8Wv69V4rw0x_hejLcNx0QEYdJ02RPjUxWjzCRMqEjDVebt0gR7Iqgk4XfKm1MwU9PmHD9S8Z2Z4rtIxuIjvlV_L5YfZWJEeyap1ayxCp9TsO4A5qqZqDHaM8cm-WhdqoJ6bPa2rHph8VC2RGYYqo0JpWVtvEpeqpKevLQy1U-9pmRivQZTWfaekiPrvZqPxLTiGlyBe-U1iT7gCUktbnPf7GFKlxOJo7bbqJYvFb0kOQ0OmJMpNL2tGkixzBlQIlstbnAIk2ZKe8pNDvSJqjqqEA4n-VAbj8ho6zQn2nQUWbbrou26MZyQVPklUX0PYDmnxVxJWGTNF4ZBXogM8KXI8LWY4HtxtHjuoFHhme0VLt3-7dOaZBPXuiqm1UzZ7NIv4FozpdXFVKgiOUxarmGkhvHtsohJivZU1Sb_V5h2VZh2GdsWcIsqTqJTBKQYFt_a-TSTqttNQLQS9a0SsN3orSta1e59u1LVF0FFYi7WOfDdMkJZHJ_n48n0ishKAJX1E7eZp2IjhGckwRqjfQXDd1Ee057C4oj2N4DtUllAFqdmH1N8G6nqtLTik4Kw-zyNK8idkVv8hNxzKCmLCW4YjnHY5g1WdCyAnecxrdiJE_LJqlJySCXsufiJVq3VnHuMSjyk0uDtoLEVefqCV8N-i4d9y1rLzAULc1Xz5ZvtHQlZ3i2AaDHAsVi6fXkXUDP7VKq4lNMkDuW6UVs1cqNorNANMaWwBFmU4SQuri5k_GQnR1ESW6NIxoBDMVbNDOyIrO34foPhtdgSng0Hd_3h6r5D_owoJWnBXTSIqXLYEFR8uF5efpQdNN6KqT1OB8P7kxE5gvC2yQyD7KorF8NIo5lIN29XIFH4BYibh21yK2ZY3q7cljcr4hp3qajhNLqNxRE0tsWvfUACz7iOAkPGbcdjDQZzsiZwv8EAVhc0gLelKSRVAg8B834W9eMoj-3-dSaU3m3SdCKG7cKfjWiCWbxE2PfljUwlYGDL6cvx_XBAOISzO6mcih-0t_un2u7jk45gUXE17fTkXNt93J_P64tK_YM96w066YA4TPXDZVotZXD8oO0-ltdXxPGZyuKg2M9lL5PEhcXH28q1tvuof_7N33Q7G86GPUnOYfFEZqftNoKl3GWLMSD66Xnn8vCkuJ_bP-ic6RgEGKz7i6K9aA_IQ0s4rL20YKv8erAcBmrh0NBfnezoWA2w5K02Amh0WnVmGAOiH7-5OFu-DqBBBoRwIfbb6jrgl3pD14GSSOfnFzrqzvGhjrp7dqjH0b7F4_l8n-oXr3Wgunb6dv-go6NfwwBwQPSLN0cdTaffk3vAqofVgviic35REF8B1hQR0HWMw6JS3lH102DVYemnZ53zc21fb-j7De2sc3H2Xsd6TUX2bwiE_wM",
-      "adapted": true,
-      "compressedBytes": 2934,
-      "selectionReason": "操舵・加速・ブレーキ・ニトロ、8台のライバルと3周のレースが成立。0.9.5対応版では旧版で保留理由となった描画上限超過が検証した走行系列で解消し、自車・ライバル・道路・HUDを判別できる。ユーザー指定で採用。",
-      "curation": "ユーザー指定投稿の個別確認。操作案内のAをⒶへ変更した以外、作品の動作・難度・描画は変更しない。",
-      "observations": [
-        "キー操作で加速・操舵・ニトロ・ブレーキを確認。通常入力系列の再生で昼の1周目と夕方の2周目を実画面確認。3周完走・夜・再挑戦は実エンジン補助検査で確認。",
-        "元版と掲載版の内部状態・音命令・描画上限超過信号が通常入力系列で一致。"
-      ],
-      "validation": {
-        "checkedAt": "2026-11-03T05:56:14.592Z",
-        "labels": [
-          ["PRESS A", "PRESS Ⓐ"],
-          ["A: RETRY", "Ⓐ: RETRY"]
-        ],
-        "originalSourceSha256": "81ce22e448dd4000e97c4a03bb00fa2c5b2143d4f0bef8747f5f44d388d43f4f",
-        "adoptedSourceSha256": "a6068ebff0e820bf69bbb1afde1340c06fc7dc43099a8de1e8d2ef0fa7580842",
-        "run": {
-          "id": "2117417244829557002",
-          "frames": 4093,
-          "overflowSignals": 0,
-          "statesAndSoundEqual": true,
-          "events": [
-            {
-              "event": "lap",
-              "frame": 0,
-              "lap": 1
-            },
-            {
-              "event": "lap",
-              "frame": 1622,
-              "lap": 2
-            },
-            {
-              "event": "lap",
-              "frame": 2834,
-              "lap": 3
-            },
-            {
-              "event": "finish",
-              "frame": 4091,
-              "state": {
-                "N": 4,
-                "y": -40,
-                "x": 3908,
-                "S": 0,
-                "E": 0,
-                "A": 3,
-                "C": "G",
-                "V": 4560.149987812101,
-                "U": 0.03093684037368465,
-                "j": 1.2,
-                "G": 3908
-              }
-            },
-            {
-              "event": "lap",
-              "frame": 4091,
-              "lap": 4
-            },
-            {
-              "event": "retry",
-              "frame": 4093,
-              "state": {
-                "N": 1,
-                "y": 200,
-                "x": 0,
-                "S": 3,
-                "E": 0,
-                "A": 9,
-                "C": "R",
-                "V": 0,
-                "U": 0,
-                "j": 0,
-                "G": 3908
-              }
-            }
-          ],
-          "cleared": true,
-          "brakeExercised": true,
-          "retryExercised": true
-        },
-        "browser": "Chromium 153.0.8010.12",
-        "browserErrors": [],
-        "screenshot": {
-          "scene": "夕方の2周目。自車と目前のライバル車、コース、ラップ・順位表示が同時に見える通常走行。",
-          "method": "掲載版URLを実ブラウザで通常入力系列により操作。ゲーム状態の書き換えなし。CRTオン、アプリScreenshot出力。",
-          "selected": "racer-replay-4095.png",
-          "width": 640,
-          "height": 576
-        },
-        "limits": "単一入力系列の補助検査とブラウザ操作。全局面・全端末での性能保証ではない。",
-        "cpuScreening": {
-          "rate": 4.36,
-          "calibrationBefore": [998.5, 998.5, 1001.5],
-          "calibrationAfter": [993, 995, 991.5],
-          "result": {
-            "title": "Pseudo 3D Racer",
-            "scene": "Normal-input replay: three laps and retry; CPU screening only",
-            "frames": 3854,
-            "setupMs": 4,
-            "meanMs": 4.179060716129797,
-            "p50Ms": 3.800000011920929,
-            "p95Ms": 5.899999976158142,
-            "maxMs": 205.4000000357628,
-            "max60TickMeanMs": 7.651666667064031,
-            "over16_67": 3,
-            "overflowSignals": 0,
-            "moves": 0,
-            "state": {
-              "N": 1,
-              "C": "R",
-              "V": 0,
-              "U": 0,
-              "j": 0
-            }
-          },
-          "scope": "校正したMid-tier相当のメインスレッドで作品更新と画素生成を計測。実際のWorkerのFPS、CRT/GPU、音声合成・録画、実Androidの測定ではない。"
-        },
-        "browserScope": "キー操作で加速・操舵・ニトロ・ブレーキを確認。通常入力系列の再生で昼の1周目と夕方の2周目を実画面確認。3周完走・夜・再挑戦は実エンジン補助検査で確認。"
-      }
-    },
-    {
       "title": "reveal.",
       "url": "/playload/app/#v1.tVnbbuu8cr7vUyRuI5DWWIsjypJsmXZz6kKBtRNg7zY3gi5kmXSM30s2bGWvkwP0GXrX2wJ9hfa-j_I_STHUwXZW_u7ix66I6EBS5Dcz3xzkfPhw8ffVqlrri53-s87X3t8Um3JfXWiFoQCjMAhgpUr95eKfV2UVX-92-Tem-4ZDaXv_pCvIFTOQQ8HV9McqzfvaNZkqoPTyxYL5os_y6VRylxm68Fco1B_y6tnbr0p4rG-LzR4qlWawo9OWTi9Kq-mfqt2qXHpmt_l8-5zvbjcLzYaRDAJX88RsdmytCSoB7Xl0RMIII7QoRCFiEQsRYVj3aNtDB4q3x1-xx4hISCEF1sMWlAjtGNoBag2oFigBQ2ln_f-A-os91EXqIizatgZ3ZJtpG8r4r4Pgjazh75YEO2wWqSTcvmhN3rZ33oxOHgIRCvMXUaLAyG8MTLYUQvpBhKY7BBoUo3fWkfVViiiOCllIjaLjQtNq3MWb9vNakRVYCDQ-PRqUhCAywuQmsFqIJUYnbLPWi4QvfBS-tSihF5EQqDHCaGRGC9RC4M97hVi0TRayiIroDDftgZ73BqQU5rxHCxNbbbdCWZO8I5mQUhrUJF49LWp842SOb-KgOHur1q0vhsceHwXmMuiQvmdZ-Qb2z3OOgmGjyOiUNFhE2pgzitQ-H5LE1hC1tf13yTdsCVsrMvppTiRFcALOdKLaI7BqifAtjX6n-59uL4VBYwFh3Vrvstt2yo9FTbxIS41tb3gMIL9F4Pe0QetIg7SJHY7OJhXCxFF4sgAFUBNiE5xaLUa_W_Y3hPUFxlFsqDVZA6OI0NlZaCRJXb9Ru30ne310QSektUQTX4L_a0h7y0wR-sf72LYT2Rvj_P6w391ZLhHm-HQcI3wb8n_mKkaNzNg0iVF8EsbiOsGdHUHbg3WQIr2GvjFGn7rUmzxhXbfZqyjihW1vVxZ43vN-Amj2bTSINedPw2Ykone8MuzebVCHiAXGTZQ00sg5yR4fE76NG_osHRUUyDrNxLUvh8YIeb6X0eZsd4zmgprp1mkCR41XC8KAsoia-NCsI4mlOiq65O2f-Sg1GXVSm9oWncdhm0TC6DwYEzPlCOcoj55Icp3VXyJCaSId6SjWLZ6ftfrbesbWdKTDvIsu2mLGGONayb7wRVxLcWpR8_PKvURPjLfW5bJ6TnjlbV_2z6zn9ZQyqc5mTLsupAIEpFnGx6lLvUBnFzNIPc-rS-CYZ97nfMvYCkquptt8t9f_WFbMePuX-b7aMe36rt8vweeAIeegXYVx9lPVGuGZL5Pmg1Mx6xYWxIwYY0mRqYgKjMOhJQuRrzOHFBSz6lYHiyD3pUa_aVabkaQioAlbtU3C4VHdTSKJAhRN8m_zwChHNF3TtLOU2BYU9k-KICjCljcYyxFxLlg09R3Gi4YFYRGZk5KcjmEcibBpTeYL_NBGCmHtK1AYMRT4to3mIRHfKqchn9Ti7DAoA__8NSEwKE7CQp25xPAk4kQmMiYeoR_apH70mKBO-2ET3kUg5LAJ037XRDj0mzrx1GPsInZiTdRo6MtO7WjLp9hvVN9uJ0Qs_ajL8n6to_w8UBYiHsaEYdQo1ertjO7EwRHf1ZxP3-Fsw9aa734GJ2yWNJDxpP48vFZpOhQgI4igd1IB24zYy6AZFNA7MYKlHA1GEUj_t96sB999M0vIc9awhA3MYQE3cAvf4QGe4E4J2CsBX5WAeyXgixLwrESD9pOyHj1AwAy-qZRuQIDIEvNSFtVqU158ZvzHyjOr9Zrh0UmN8oPETBTiKDGuy9v-kvrLiUI5TErX5avU9LVbZsoPlCoPB5RDe6VHczggjpQyM38sTt0_0RMM40S7Lj9-KusPGBwEd0Pp6isMeLJWsYAlIYCNEjCnb-OFSmMBEcnkha6Hw_4deMHQ9bB_l8ENTblVx1iFrv3I_rwq2R34vI1cGgxX09TMUA7HfgB-QBoaYMbhQQl4UihkYFX5WqvxI32Sb9f5N-YDfX-3uvuF8R9kgO9KWuV_Zvy1G_wDKdawS_Y8EZz_IPntaqkGk23MxZznhAQET-YNTx2HpWtYZmqeiiz1M15LvbE2HfgCPrLeE8pH-SD13-mLosdhMPg-Qcdh9wr563HzalUQuK-u-0bxgePsJ7tmP_f66CAu7F2Xb4tl-sIwjN09z7xtXqnj7Nku3ROq8XW6H7SdWSqzZGXY_eHwhc-rcssC7jiXpbdffdeOw77M2J3rkmb4-BfGeaLXe_2jVmupjJp296uULd1vqcl4X7ts7X6i2yzZ6eplV174SpWOwy43h0OrrSnyw-GSeqmzKllAv7FURHkEH2TmmVW5YFpNaVBzx6EzJ7R_3qwWF-JSqYp3-9OOVQaFIhRVlvhKrdLCsnvG1qqEpSpg4zitjtn_YlOfJ63lknb9935KKlTKxGGRYi003QoSmhZOii5ZNxiNKrztZst4UqYmOxxW9szoQSEUdXQzLoIZIBhXgxlozl9bAhQEZqL7Jims5xbZ4VDaM8tZcaWh-KAPApDDg-uehgKdmAkGsq9tKPAvVb1xOtDkNhpwoG2IAXrWQAWDt9981qR6oUiNxtUZPxxyZq40mGabboeSfkNTAh6V1fmyr911NhNj1KMTwKUijLmqUdbWyRzHeng-37NysOZu95QPlnzy6Dis-aHt_RlQ2zW3pHhWce1g_uPwAQu9vL3_2OPw8OFpqrxoyH98UXic4Ovlrbz374YfeyeSKJGUFjEFRyRNlZnj5Ky80lA2cr--kjMQaVlDEuQwb3JTCQXYGJBxyBk9yRZlAS3zr0Kl0HEIS_gYPmDR4_x1kfqZqzwRJR0tL8zFxpA7ZEeaL1KTuYvUuOS3xD5mZuXYUrDhIDMzouG45Dyb1TP7asC82PWCvlXfLi8XG-vStJoqX2-8l3L_vDIVW3j79arQTIDkHG4awKqLw20PoDylmEjMpB1KjKuCBnBK3KgydZOarJu-UwMUyW6i6Hyce7FVpfvIKt7fwYvK3cLeJpKYwsThpRFvy4k1jIOZ7bc7th1IeBkE0Pvv_-pBGoGEADBLzXTqZ3x8nDGE3q__8u89CJyvMzkOKdieqfni9qjjYwSifKMp16Qicz9RRW1SzNxvqc4yTlm30jtGVs8zrqaW1LkNOY7DyktlUj87HHK6kRnnSdmGYuPtt42eA_A8r0zZ1-k05FftDNpI1LvxMS1jl1ADBBKJxgbSjpJg_R74ztdZOJYcLjcnPmXnnTqNfWPJJ9JxmNXhEYcPsQCfYvDr5UmM7OzbaSsnbZU2ORrXnSo_5vOdzn9JSm-h17rSLG-rrULlVz4FhvyDLw4CdgqDPnscSO4WAwnX5D5rVaU7CkfNt4stlZZKNFUDvmFZbIPYj9Zb28FciSSfxElOg_XmFfEm7j-6xjIn7hduzumX-nXqZ6nJJpPcQT92HFSqSuaOoiuwaoqHw46TAQ8K_Xg6zTksD2oHm4OSSlWv17Wvl7wpLxbqhe043Kh9sUsfs7TIEsrDizoBX8ONVzzv1IKum7Waz9J1ihmsU5Fl43Q5o6fxZhaOIxAZbNNdpuYUY2Dnmc3uPi-eGbMJClb0wZbqzHGIBH5gK61-DH7gxl0FBnX-X3EwnMPXKxyJSew41-eLwSqrv_9Ssohxg_o_Hbq-OdmBFjfNml3dUXJYcW6puB5IWHbe9TwRM996mKhF4kBV0bOrnqdiNsAx1m-RrXufnnouu3ORu72LnssePjz1UQgqIntXFz239-u__UfP2-mtzitWB6D8KxPwnXOIONiSpStVeI14FIKA-1nv8en-jxe__ut_9sa920_313-8tA9wP5NjDK2rRPzVVoQCev-EKJ6Gj8HDKB-Z0XKkOe9xsKMIvaf40X-QeX6f5_cf7425Neb2_na5vFsu7_7hTusbrf_24039zi-MJ_8D",
       "image": "assets/images/arcade/reveal.png",
@@ -2173,7 +2038,8 @@
       "curation": "ユーザー指定投稿の個別確認。操作案内のAをⒶへ変更した以外、作品の動作・難度・描画は変更しない。",
       "observations": [
         "手動のキー操作で50%・73%の陣取りを確認。記録入力のブラウザ再生ではミスによる残機減少と線引きを確認。75%超クリアと次面は実エンジン補助検査で確認したもので、実ブラウザでのクリア確認とは区別。",
-        "元版と掲載版の内部状態・音命令・描画上限超過信号が通常入力系列で一致。"
+        "元版と掲載版の内部状態・音命令・描画上限超過信号が通常入力系列で一致。",
+        "2026-11-03のユーザー指摘で掲載画像を50%獲得の場面から19%獲得・線引き中の序盤へ変更。再撮影時には通常キー操作による84%クリアと2面進行も実ブラウザで確認。"
       ],
       "validation": {
         "checkedAt": "2026-11-03T05:56:14.592Z",
@@ -2208,11 +2074,15 @@
         "browser": "Chromium 153.0.8010.12",
         "browserErrors": [],
         "screenshot": {
-          "scene": "LV1・50%、残機2。絵が半分現れ、右側の未獲得領域で黄色の線を引いているプレイヤーと敵が見える通常プレイ。",
-          "method": "掲載版URLを実ブラウザで通常入力系列により操作。ゲーム状態の書き換えなし。CRTオン、アプリScreenshot出力。",
-          "selected": "reveal-replay-220.png",
+          "checkedAt": "2026-11-03T06:11:03.281Z",
+          "scene": "LV1・19%獲得の序盤。絵は左端に少し現れる程度で、広い未獲得領域、上辺から下へ引いている黄色の線と先端のプレイヤー、敵が見える。",
+          "method": "公開中と同じ掲載版URLを通常キー操作し、CRTオンでアプリのScreenshot機能から保存。画像加工なし。",
+          "selected": "reveal-line-middle.png",
           "width": 640,
-          "height": 576
+          "height": 576,
+          "reason": "ユーザー指定により、人物の絵を大きく見せる構図より、陣取りゲームとして何を操作するかが伝わる序盤を優先。",
+          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-early-screenshot-2026-11-03-c",
+          "sha256": "cd5a2aabfdfd82ff3153badda069e4f210ff8824ace15d4e77f70eb94c62938b"
         },
         "limits": "単一入力系列の補助検査とブラウザ操作。全局面・全端末での性能保証ではない。",
         "failureAndRetry": {
@@ -5281,9 +5151,9 @@
       "author": "haruka_apps",
       "authorUrl": "https://x.com/haruka_apps",
       "publishedAt": "2026-11-03T00:43:05.000Z",
-      "status": "採用",
-      "reason": "操舵・加速・ブレーキ・ニトロ、8台のライバルと3周のレースが成立。0.9.5対応版では旧版で保留理由となった描画上限超過が検証した走行系列で解消し、自車・ライバル・道路・HUDを判別できる。ユーザー指定で採用。",
-      "checkedAt": "2026-11-03T05:56:14.592Z",
+      "status": "保留",
+      "reason": "公開後にユーザーが画面の見た目を再評価し、想定より粗く掲載に適さないとして取り下げを指示。CPU計測やゲーム進行の確認が通過したこととは別の、視覚的な掲載品質の判断。",
+      "checkedAt": "2026-11-03T06:05:07.512Z",
       "workUrl": "https://kitao.dev/playload/app/#v1.jVhJb-PKEb7nV9CETXSxi1Q3Ny1US_HYmgUYL_CiNwOCwYhabHlkSo9sz7OfpUMOySUBHvAOQU5ZTgmCIIcgSPJ75g8kPyFoUps9c0gfpGaxWFVd_XUtXaloP5VjORlqp_nwbjDV3EPtrNcfZj-pVLTPf_3F59_9UcvlcJhpn3_8p3bVy7XPP_5LS7Lex6H2-a-_1NKxzKa29mLYk1pNy8afepNcm34aZpqrTXqzvKENeg-o5XdpPpSopeOra7nzk_40zaUmRcSQo4MueuhjgNUYEyFF61xm4_TKHmXT24PrXnYwHQwJkU3HD9p-1fW8Rr1e84BKwFTsZ1nvgTh-APZoPJkQBjgVkW3bKaof-7Y3I0RiCqI1619FCUmpYo7tWU_aN9NxSgBi7Il0-J12OU5lbSnQZR4D7AsiMSm-li3BDEM2ecAMIykekib3PMMgvYgHzCRsngAlbC4hFilgrpZC5F5GM9jLcCT8AMeizjAT3HcYTkQUOYwhizHiPkObOWq2pKg3ls0cP8aotmRyFJO7nFnl9KkE7i9FWNvS4nB0l_bleJpqQyLhUYqcSAhH04wUOxElmMbTkTaBx_GIyGYC2VDeZamWmkc9eW3fjlPCUVY8hiSxJFQ8BqG0RLJY8rFFuaPXaslu-VE-Toksp6dvzKCSAf0KnXuVDPBIRF9CYU1xC0pQUBzk6CJDVvDE4WQotZk4ilgclibcikjXNE1LlkPNdVSkhC1HskWqPiMlW6MkJU-GIiVBsCEEQaJIxSgkFWNN2gwd9fXrJXNJ0tZDkWK8UE5UCFZ4lQVQ4wLGS7LOuON6flDVS3IiWtLgTq3VStp6ojd0TYcS2boOgHciii6I_t_f__ofOiBHhZDy-e9Pn__yZx2Uv1fPP_xBB3QLv5fv_6QDVtHdhtOVglPp-ETIPV5nmIpib3tJTjy36tdsf4MH7tj1Wr1mJgB7PFyBrGk7fps11NruomTPj5FwI2nzhsXBJNz2aQrxYq3zpDySOIXHtDiGaXkMe2UAmEXTGNV5TEu83fbuCUN1Kr-kbtAdKJYEADZ6zlZ6sIe54J63WulIyIjF9mSYXslrc4pjITcPmUisUcXBiUitcTgekR2StXjA5vOMjpoMQJ06hdpEsDBpjg1jQpNmHiaUruSnQkZJZTpncbhiloKFsjkK5YYrF2kkSy5d03dEbhh9klGJE5rgLNITXYi83WvQPIbFYrOswTKiLcVMRY1ZnrlaQZjPMjKlHBPKUSIDLAiYoIqhC2XLMT7gPZ5jB_fxFHcFwwOhX-jYFQwvBcMbYft4KBi-EQxfCbZByzcEHjdcDI8FxwehIti9YHguXOwIhqcier7wWrHwU3t2l1-TiDu0bkq0fd8kcs-1OKBdr1LflHs102YuRh5WMUAnjuSeF8dbeyrH_Y8EHg8pLQxXkWONgWN0weKrODLZwPgSWtzmeCH0M12IA8N4aDpMba1-oZ7bpEvVkhOZzogHhkG-IaB8cqYDNMpv2uShZXnMMB4sCyNeryN361itx_Y47U_uBsOcPIBhzCYq9aB-4XjsyHG73Dnxj92-Oqd1IR6-yhAc-32liNyYwq7Xvm4GXsBj8YKBYZwbxk7HMMi5ZWFHqFxSiOVrsZfvPMbYN-zEO64q2dgxjI5lhau0fRPeUNFp28xpJDIlHrRtxp2GZTPmKf3EV-pvLGEzF3BiGDct2_O3SMW_b5Jr0qUB5WAVEwC8EV87nZ02t6uN9RtuOygtm3HAGwC8pMJmnm8SpdkFS_05ANupyzFvwBoWOswbk9uOj5cbTZZjuxtl6uESAO8pVaYf7gVCBZlnLupydsKPeV-HRQmEHXGwOlJSdOlNSGQlmzNokW7xbxgr9BBKj1tumxwI_ZWOZOfVfH7ffKU89krcA663mPvbGBheHRz7r4qNPqd0i6u24eKKSwcA7Aq5Se-a1KYj7XQTqHOiApjVhTBp-aqMqRrGGu0y4rF1Cc1ix25aMnJitXPC9k01L47oF3jhfoEXpwArLFaKCqH94XhCSJf6UKmBOjY1M2l2aXXjriuSQCif2OCWNriFDbZTWsC_rtwtwcrLg7AoNuRMbch8fgFfeEEtnYpiKYW-rJcOprcEmgq9hkFk5MWiiC1kWcmsOOYMLA6AykMKc45JCu52W1HAKn7DUnu50_uC01OVluQwU-lb6W51YRlrAQ_3vAJcz_HDPfNmzsJipQw_rDC3-1geN8O4aHPWqC5Odh8dSmSlOmewOOa7j3p_MBxd9RI9knvVePGhQOc6MXox4HHLgafB1WNFdFVxnhDfNaVlO-Yb2OMBozxgxQTdqin3fIb651_9QscqhG-oGJKuOk4uexat3S15VabkuUqe4zHqeKyYWB5D7tGqKVH__Nuf_-ffPxRCn8rhAdtOeImQ9A2mgnt0q6RIKrwKtLZN8DjMNzYlYmSlYdIcFSm2X2S_mdqpxQlhqiTAEXJYxrY7UUYifCeiGN-qTKRkfBQMvxMMX6gyAF8Wv69V4rw0x_hejLcNx0QEYdJ02RPjUxWjzCRMqEjDVebt0gR7Iqgk4XfKm1MwU9PmHD9S8Z2Z4rtIxuIjvlV_L5YfZWJEeyap1ayxCp9TsO4A5qqZqDHaM8cm-WhdqoJ6bPa2rHph8VC2RGYYqo0JpWVtvEpeqpKevLQy1U-9pmRivQZTWfaekiPrvZqPxLTiGlyBe-U1iT7gCUktbnPf7GFKlxOJo7bbqJYvFb0kOQ0OmJMpNL2tGkixzBlQIlstbnAIk2ZKe8pNDvSJqjqqEA4n-VAbj8ho6zQn2nQUWbbrou26MZyQVPklUX0PYDmnxVxJWGTNF4ZBXogM8KXI8LWY4HtxtHjuoFHhme0VLt3-7dOaZBPXuiqm1UzZ7NIv4FozpdXFVKgiOUxarmGkhvHtsohJivZU1Sb_V5h2VZh2GdsWcIsqTqJTBKQYFt_a-TSTqttNQLQS9a0SsN3orSta1e59u1LVF0FFYi7WOfDdMkJZHJ_n48n0ishKAJX1E7eZp2IjhGckwRqjfQXDd1Ee057C4oj2N4DtUllAFqdmH1N8G6nqtLTik4Kw-zyNK8idkVv8hNxzKCmLCW4YjnHY5g1WdCyAnecxrdiJE_LJqlJySCXsufiJVq3VnHuMSjyk0uDtoLEVefqCV8N-i4d9y1rLzAULc1Xz5ZvtHQlZ3i2AaDHAsVi6fXkXUDP7VKq4lNMkDuW6UVs1cqNorNANMaWwBFmU4SQuri5k_GQnR1ESW6NIxoBDMVbNDOyIrO34foPhtdgSng0Hd_3h6r5D_owoJWnBXTSIqXLYEFR8uF5efpQdNN6KqT1OB8P7kxE5gvC2yQyD7KorF8NIo5lIN29XIFH4BYibh21yK2ZY3q7cljcr4hp3qajhNLqNxRE0tsWvfUACz7iOAkPGbcdjDQZzsiZwv8EAVhc0gLelKSRVAg8B834W9eMoj-3-dSaU3m3SdCKG7cKfjWiCWbxE2PfljUwlYGDL6cvx_XBAOISzO6mcih-0t_un2u7jk45gUXE17fTkXNt93J_P64tK_YM96w066YA4TPXDZVotZXD8oO0-ltdXxPGZyuKg2M9lL5PEhcXH28q1tvuof_7N33Q7G86GPUnOYfFEZqftNoKl3GWLMSD66Xnn8vCkuJ_bP-ic6RgEGKz7i6K9aA_IQ0s4rL20YKv8erAcBmrh0NBfnezoWA2w5K02Amh0WnVmGAOiH7-5OFu-DqBBBoRwIfbb6jrgl3pD14GSSOfnFzrqzvGhjrp7dqjH0b7F4_l8n-oXr3Wgunb6dv-go6NfwwBwQPSLN0cdTaffk3vAqofVgviic35REF8B1hQR0HWMw6JS3lH102DVYemnZ53zc21fb-j7De2sc3H2Xsd6TUX2bwiE_wM",
       "compressedBytes": 2934,
       "sourceSha256": "81ce22e448dd4000e97c4a03bb00fa2c5b2143d4f0bef8747f5f44d388d43f4f"
@@ -5687,6 +5557,141 @@
       "withdrawnAt": "2026-11-03T05:56:14.592Z",
       "publicImageRemoved": true,
       "archivedImage": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/haruka-intake-2026-11-03/removed/3d-reversi.png"
+    },
+    {
+      "title": "Pseudo 3D Racer",
+      "url": "/playload/app/#v1.jVhLb-NIkr7Pr6AJm8hgBqlMvvSgUhqXrXoA5Qf8UFeB4KJEPWy5ZEpNpqvttnSYQ89lBhigD4M5ze6cZjBo7GGx6N3f4z-w-xMWSeplVx02D1IyGIyIjPwyHlmpaL-VYzkZaqf58G4w1dxD7azXH2a_qVS0p19-evrr37RcDoeZ9vTzr9pVL9eefv4vLcl6n4fa0y-_19KxzKa29mrYk1pNy8ZfepNcm34ZZpqrTXqzvKENeg-o5XdpPpSopeOra7nzm_40zaUmRcSQo4MueuhjgNUYEyFF61xm4_TKHmXT24PrXnYwHQwJkU3HD9p-1fW8Rr1e84BKwFTsZ1nvgTh-APZoPJkQBjgVkW3bKaof-7Y3I0RiCqI1619FCUmpYo7tWU_aN9NxSgBi7Il0-IN2OU5lbSnQZR4D7AsiMSm-li3BDEM2ecAMIykekib3PMMgvYgHzCRsngAlbC4hFilgrpZC5F5GM9jLcCT8AMeizjAT3HcYTkQUOYwhizHiPkObOWq2pKg3ls0cP8aotmRyFJO7nFnl9LkE7i9FWNvS4nB0l_bleJpqQyLhUYqcSAhH04wUOxElmMbTkTaBx_GIyGYC2VDeZamWmkc9eW3fjlPCUVY8hiSxJFQ8BqG0RLJY8rFFuaPXaslu-VE-Toksp6fvzKCSAf0GnXuVDPBIRF9DYU1xC0pQUBzk6CJDVvDE4WQotZk4ilgclibcikjXNE1LlkPNdVSkhC1HskWqviAlW6MkJc-GIiVBsCEEQaJIxSgkFWNN2gwd9fXrJXNJ0tZDkWK8UE5UCFZ4lQVQ4wLGS7LOuON6flDVS3IiWtLgTq3VStp6ojd0TYcS2boOgHciii6I_r__-sf_1AE5KoSUz__x_Pmf_9BB-Xv1_Kd_0wHdwu_l-7_rgFV0t-F0peBUOj4Rco_XGaai2NtekhPPrfo129_ggTt2vVavmQnAHg9XIGvajt9mDbW2uyjZ82Mk3EjavGFxMAm3fZpCvFjrPCmPJE7hMS2OYVoew14ZAGbRNEZ1HtMSb7e9e8JQncqvqRt0B4olAYCNnrOVHuxhLrjnrVY6EjJisT0Zplfy2pziWMjNQyYSa1RxcCJSaxyOR2SHZC0esPk8o6MmA1CnTqE2ESxMmmPDmNCkmYcJpSv5qZBRUpnOWRyumKVgoWyOQrnhykUayZJL1_QdkRtGn2RU4oQmOIv0RBcib_caNI9hsdgsa7CMaEsxU1FjlmeuVhDms4xMKceEcpTIAAsCJqhi6ELZcowPeI_n2MF9PMVdwfBA6Bc6dgXDS8HwRtg-HgqG7wTDN4Jt0PIdgccNF8NjwfFBqAh2LxieCxc7guGpiF4uvFYs_NSe3eXXJOIOrZsSbd83idxzLQ5o16vUN-VezbSZi5GHVQzQiSO558Xx1p7Kcf8zgcdDSgvDVeRYY-AYXbD4Ko5MNjC-hBa3OV4I_UwX4sAwHpoOU1urX6jnNulSteREpjPigWGQ7wgon5zpAI3ymzZ5aFkeM4wHy8KI1-vI3TpW67E9TvuTu8EwJw9gGLOJSj2oXzgeO3LcLndO_GO3r85pXYiHbzIEx35fKSI3prDrtW-bgRfwWLxgYBjnhrHTMQxyblnYESqXFGL5WuzlB48x9h078Y6rSjZ2DKNjWeEqbd-EN1R02jZzGolMiQdtm3GnYdmMeUo_8ZX6G0vYzAWcGMZNy_b8LVLx75vkmnRpQDlYxQQAb8S3Tmenze1qY_2G2w5Ky2Yc8AYAL6mwmeebRGl2wVJ_DsB26nLMG7CGhQ7zxuS24-PlRpPl2O5GmXq4BMB7SpXph3uBUEHmhYu6nJ3wY97XYVECYUccrI6UFF16ExJZyeYMWqRb_BvGCj2E0uOW2yYHQn-jI9l5M5_fN98oj70R94DrLeb-NgaGVwfH_ptio88p3eKqbbi44tIBALtCbtK7JrXpSDvdBOqcqABmdSFMWr4qY6qGsUa7jHhsXUKz2LGbloycWO2csH1TzYsj-hVeuF_gxSnACouVokJofzieENKlPlRqoI5NzUyaXVrduOuKJBDKZza4pQ1uYYPtlBbwbyt3S7Dy8iAsig05Uxsyn1_AV15QS6eiWEqhL-ulg-ktgaZCr2EQGXmxKGILWVYyK445A4sDoPKQwpxjkoK73VYUsIrfsNRe7vS-4PRUpSU5zFT6VrpbXVjGWsDDPa8A10v8cM-8mbOwWCnDTyvM7T6Wx80wLtqcNaqLk91HhxJZqc4ZLI757qPeHwxHV71Ej-ReNV58KtC5ToxeDHjccuB5cPVYEV1VnCfEd01p2Y75DvZ4wCgPWDFBt2rKPZ-h_vSHn3SsQviOiiHpquPkshfR2t2SV2VKnqvkOR6jjseKieUx5B6tmhL1p7_87n_--0-F0OdyeMC2E14iJH2HqeAe3SopkgqvAq1tEzwO841NiRhZaZg0R0WK7RfZb6Z2anFCmCoJcIQclrHtTpSRCD-IKMb3KhMpGZ8Fwx8Ew1eqDMDXxe9blTgvzTF-FONtwzERQZg0XfbM-FTFKDMJEyrScJV5uzTBnggqSfiD8uYUzNS0OcfPVPxgpvghkrH4jO_V36vlR5kY0Z5JajVrrMLnFKw7gLlqJmqM9syxST5bl6qgHpu9LateWTyULZEZhmpjQmlZG6-S16qkJ6-tTPVTbymZWG_BVJZ9pOTI-qjmIzGtuAZX4F55TaIPeEJSi9vcN3uY0uVE4qjtNqrlS0UvSU6DA-ZkCk1vqwZSLHMGlMhWixscwqSZ0p5ykwN9oqqOKoTDST7UxiMy2jrNiTYdRZbtumi7bgwnJFV-SVTfA1jOaTFXEhZZ85VhkFciA3wtMnwrJvhRHC1eOmhUeGZ7hUu3f_-8JtnEta6KaTVTNrv0K7jWTGl1MRWqSA6TlmsYqWF8vyxikqI9VbXJ_ytMuypMu4xtC7hFFSfRKQJSDIvv7XyaSdXtJiBaifpWCdhu9NYVrWr3vl-p6ougIjEX6xz4YRmhLI4v8_FkekVkJYDK-onbzFOxEcIzkmCN0b6C4Ycoj2lPYXFE-xvAdqksIItTs48pvo9UdVpa8UVB2H2ZxhXkzsgtfkHuOZSUxQQ3DMc4bPMGKzoWwM7LmFbsxAn5YlUpOaQS9lz8QqvWas49RiUeUmnwdtDYijx9wathv8XDvmWtZeaChbmq-fLN9o6ELO8WQLQY4Fgs3b68C6iZfSpVXMppEody3aitGrlRNFbohphSWIIsynASF1cXMn62k6Moia1RJGPAoRirZgZ2RNZ2fL_B8FpsCc-Gg7v-cHXfIf-FKCVpwV00iKly2BBUfLheXn6UHTTeiqk9TgfD-5MROYLwtskMg-yqKxfDSKOZSDdvVyBR-AWIm4dtcitmWN6u3JY3K-Iad6mo4TS6jcURNLbFr31AAs-4jgJDxm3HYw0Gc7ImcL_BAFYXNIC3pSkkVQIPAfN-FvXjKI_t_nUmlN5t0nQihu3Cn41oglm8RNiP5Y1MJWBgy-nr8f1wQDiEszupnIqftPf7p9ru47OOYFFxNe305Fzbfdyfz-uLSv2TPesNOumAOEz1w2VaLWVw_KTtPpbXV8TxmcrioNjPZS-TxIXF59vKtbb7qD_9-d91OxvOhj1JzmHxTGan7TaCpdxlizEg-ul55_LwpLif2z_onOkYBBis-4uivWgPyENLOKy9tGCr_HqwHAZq4dDQ35zs6FgNsOStNgJodFp1ZhgDoh-_uzhbvg6gQQaEcCH22-o64Pd6Q9eBkkjn5xc66s7xoY66e3aox9G-xeP5fJ_qF291oLp2-n7_oKOjX8MAcED0i3dHHU2nP5J7wKqH1YL4qnN-URDfANYUEdB1jMOiUt5R9dNg1WHpp2ed83N1Bak39Keff21oZ52Ls4861msqun9HIPw_",
+      "image": "assets/images/arcade/pseudo-3d-racer.png",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "sourceUrl": "https://x.com/haruka_apps/status/2117417244829557002",
+      "publishedAt": "2026-11-03T00:43:05.000Z",
+      "originalUrl": "/playload/app/#v1.jVhJb-PKEb7nV9CETXSxi1Q3Ny1US_HYmgUYL_CiNwOCwYhabHlkSo9sz7OfpUMOySUBHvAOQU5ZTgmCIIcgSPJ75g8kPyFoUps9c0gfpGaxWFVd_XUtXaloP5VjORlqp_nwbjDV3EPtrNcfZj-pVLTPf_3F59_9UcvlcJhpn3_8p3bVy7XPP_5LS7Lex6H2-a-_1NKxzKa29mLYk1pNy8afepNcm34aZpqrTXqzvKENeg-o5XdpPpSopeOra7nzk_40zaUmRcSQo4MueuhjgNUYEyFF61xm4_TKHmXT24PrXnYwHQwJkU3HD9p-1fW8Rr1e84BKwFTsZ1nvgTh-APZoPJkQBjgVkW3bKaof-7Y3I0RiCqI1619FCUmpYo7tWU_aN9NxSgBi7Il0-J12OU5lbSnQZR4D7AsiMSm-li3BDEM2ecAMIykekib3PMMgvYgHzCRsngAlbC4hFilgrpZC5F5GM9jLcCT8AMeizjAT3HcYTkQUOYwhizHiPkObOWq2pKg3ls0cP8aotmRyFJO7nFnl9KkE7i9FWNvS4nB0l_bleJpqQyLhUYqcSAhH04wUOxElmMbTkTaBx_GIyGYC2VDeZamWmkc9eW3fjlPCUVY8hiSxJFQ8BqG0RLJY8rFFuaPXaslu-VE-Toksp6dvzKCSAf0KnXuVDPBIRF9CYU1xC0pQUBzk6CJDVvDE4WQotZk4ilgclibcikjXNE1LlkPNdVSkhC1HskWqPiMlW6MkJU-GIiVBsCEEQaJIxSgkFWNN2gwd9fXrJXNJ0tZDkWK8UE5UCFZ4lQVQ4wLGS7LOuON6flDVS3IiWtLgTq3VStp6ojd0TYcS2boOgHciii6I_t_f__ofOiBHhZDy-e9Pn__yZx2Uv1fPP_xBB3QLv5fv_6QDVtHdhtOVglPp-ETIPV5nmIpib3tJTjy36tdsf4MH7tj1Wr1mJgB7PFyBrGk7fps11NruomTPj5FwI2nzhsXBJNz2aQrxYq3zpDySOIXHtDiGaXkMe2UAmEXTGNV5TEu83fbuCUN1Kr-kbtAdKJYEADZ6zlZ6sIe54J63WulIyIjF9mSYXslrc4pjITcPmUisUcXBiUitcTgekR2StXjA5vOMjpoMQJ06hdpEsDBpjg1jQpNmHiaUruSnQkZJZTpncbhiloKFsjkK5YYrF2kkSy5d03dEbhh9klGJE5rgLNITXYi83WvQPIbFYrOswTKiLcVMRY1ZnrlaQZjPMjKlHBPKUSIDLAiYoIqhC2XLMT7gPZ5jB_fxFHcFwwOhX-jYFQwvBcMbYft4KBi-EQxfCbZByzcEHjdcDI8FxwehIti9YHguXOwIhqcier7wWrHwU3t2l1-TiDu0bkq0fd8kcs-1OKBdr1LflHs102YuRh5WMUAnjuSeF8dbeyrH_Y8EHg8pLQxXkWONgWN0weKrODLZwPgSWtzmeCH0M12IA8N4aDpMba1-oZ7bpEvVkhOZzogHhkG-IaB8cqYDNMpv2uShZXnMMB4sCyNeryN361itx_Y47U_uBsOcPIBhzCYq9aB-4XjsyHG73Dnxj92-Oqd1IR6-yhAc-32liNyYwq7Xvm4GXsBj8YKBYZwbxk7HMMi5ZWFHqFxSiOVrsZfvPMbYN-zEO64q2dgxjI5lhau0fRPeUNFp28xpJDIlHrRtxp2GZTPmKf3EV-pvLGEzF3BiGDct2_O3SMW_b5Jr0qUB5WAVEwC8EV87nZ02t6uN9RtuOygtm3HAGwC8pMJmnm8SpdkFS_05ANupyzFvwBoWOswbk9uOj5cbTZZjuxtl6uESAO8pVaYf7gVCBZlnLupydsKPeV-HRQmEHXGwOlJSdOlNSGQlmzNokW7xbxgr9BBKj1tumxwI_ZWOZOfVfH7ffKU89krcA663mPvbGBheHRz7r4qNPqd0i6u24eKKSwcA7Aq5Se-a1KYj7XQTqHOiApjVhTBp-aqMqRrGGu0y4rF1Cc1ix25aMnJitXPC9k01L47oF3jhfoEXpwArLFaKCqH94XhCSJf6UKmBOjY1M2l2aXXjriuSQCif2OCWNriFDbZTWsC_rtwtwcrLg7AoNuRMbch8fgFfeEEtnYpiKYW-rJcOprcEmgq9hkFk5MWiiC1kWcmsOOYMLA6AykMKc45JCu52W1HAKn7DUnu50_uC01OVluQwU-lb6W51YRlrAQ_3vAJcz_HDPfNmzsJipQw_rDC3-1geN8O4aHPWqC5Odh8dSmSlOmewOOa7j3p_MBxd9RI9knvVePGhQOc6MXox4HHLgafB1WNFdFVxnhDfNaVlO-Yb2OMBozxgxQTdqin3fIb651_9QscqhG-oGJKuOk4uexat3S15VabkuUqe4zHqeKyYWB5D7tGqKVH__Nuf_-ffPxRCn8rhAdtOeImQ9A2mgnt0q6RIKrwKtLZN8DjMNzYlYmSlYdIcFSm2X2S_mdqpxQlhqiTAEXJYxrY7UUYifCeiGN-qTKRkfBQMvxMMX6gyAF8Wv69V4rw0x_hejLcNx0QEYdJ02RPjUxWjzCRMqEjDVebt0gR7Iqgk4XfKm1MwU9PmHD9S8Z2Z4rtIxuIjvlV_L5YfZWJEeyap1ayxCp9TsO4A5qqZqDHaM8cm-WhdqoJ6bPa2rHph8VC2RGYYqo0JpWVtvEpeqpKevLQy1U-9pmRivQZTWfaekiPrvZqPxLTiGlyBe-U1iT7gCUktbnPf7GFKlxOJo7bbqJYvFb0kOQ0OmJMpNL2tGkixzBlQIlstbnAIk2ZKe8pNDvSJqjqqEA4n-VAbj8ho6zQn2nQUWbbrou26MZyQVPklUX0PYDmnxVxJWGTNF4ZBXogM8KXI8LWY4HtxtHjuoFHhme0VLt3-7dOaZBPXuiqm1UzZ7NIv4FozpdXFVKgiOUxarmGkhvHtsohJivZU1Sb_V5h2VZh2GdsWcIsqTqJTBKQYFt_a-TSTqttNQLQS9a0SsN3orSta1e59u1LVF0FFYi7WOfDdMkJZHJ_n48n0ishKAJX1E7eZp2IjhGckwRqjfQXDd1Ee057C4oj2N4DtUllAFqdmH1N8G6nqtLTik4Kw-zyNK8idkVv8hNxzKCmLCW4YjnHY5g1WdCyAnecxrdiJE_LJqlJySCXsufiJVq3VnHuMSjyk0uDtoLEVefqCV8N-i4d9y1rLzAULc1Xz5ZvtHQlZ3i2AaDHAsVi6fXkXUDP7VKq4lNMkDuW6UVs1cqNorNANMaWwBFmU4SQuri5k_GQnR1ESW6NIxoBDMVbNDOyIrO34foPhtdgSng0Hd_3h6r5D_owoJWnBXTSIqXLYEFR8uF5efpQdNN6KqT1OB8P7kxE5gvC2yQyD7KorF8NIo5lIN29XIFH4BYibh21yK2ZY3q7cljcr4hp3qajhNLqNxRE0tsWvfUACz7iOAkPGbcdjDQZzsiZwv8EAVhc0gLelKSRVAg8B834W9eMoj-3-dSaU3m3SdCKG7cKfjWiCWbxE2PfljUwlYGDL6cvx_XBAOISzO6mcih-0t_un2u7jk45gUXE17fTkXNt93J_P64tK_YM96w066YA4TPXDZVotZXD8oO0-ltdXxPGZyuKg2M9lL5PEhcXH28q1tvuof_7N33Q7G86GPUnOYfFEZqftNoKl3GWLMSD66Xnn8vCkuJ_bP-ic6RgEGKz7i6K9aA_IQ0s4rL20YKv8erAcBmrh0NBfnezoWA2w5K02Amh0WnVmGAOiH7-5OFu-DqBBBoRwIfbb6jrgl3pD14GSSOfnFzrqzvGhjrp7dqjH0b7F4_l8n-oXr3Wgunb6dv-go6NfwwBwQPSLN0cdTaffk3vAqofVgviic35REF8B1hQR0HWMw6JS3lH102DVYemnZ53zc21fb-j7De2sc3H2Xsd6TUX2bwiE_wM",
+      "adapted": true,
+      "compressedBytes": 2934,
+      "selectionReason": "操舵・加速・ブレーキ・ニトロ、8台のライバルと3周のレースが成立。0.9.5対応版では旧版で保留理由となった描画上限超過が検証した走行系列で解消し、自車・ライバル・道路・HUDを判別できる。ユーザー指定で採用。",
+      "curation": "ユーザー指定投稿の個別確認。操作案内のAをⒶへ変更した以外、作品の動作・難度・描画は変更しない。",
+      "observations": [
+        "キー操作で加速・操舵・ニトロ・ブレーキを確認。通常入力系列の再生で昼の1周目と夕方の2周目を実画面確認。3周完走・夜・再挑戦は実エンジン補助検査で確認。",
+        "元版と掲載版の内部状態・音命令・描画上限超過信号が通常入力系列で一致。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-03T05:56:14.592Z",
+        "labels": [
+          ["PRESS A", "PRESS Ⓐ"],
+          ["A: RETRY", "Ⓐ: RETRY"]
+        ],
+        "originalSourceSha256": "81ce22e448dd4000e97c4a03bb00fa2c5b2143d4f0bef8747f5f44d388d43f4f",
+        "adoptedSourceSha256": "a6068ebff0e820bf69bbb1afde1340c06fc7dc43099a8de1e8d2ef0fa7580842",
+        "run": {
+          "id": "2117417244829557002",
+          "frames": 4093,
+          "overflowSignals": 0,
+          "statesAndSoundEqual": true,
+          "events": [
+            {
+              "event": "lap",
+              "frame": 0,
+              "lap": 1
+            },
+            {
+              "event": "lap",
+              "frame": 1622,
+              "lap": 2
+            },
+            {
+              "event": "lap",
+              "frame": 2834,
+              "lap": 3
+            },
+            {
+              "event": "finish",
+              "frame": 4091,
+              "state": {
+                "N": 4,
+                "y": -40,
+                "x": 3908,
+                "S": 0,
+                "E": 0,
+                "A": 3,
+                "C": "G",
+                "V": 4560.149987812101,
+                "U": 0.03093684037368465,
+                "j": 1.2,
+                "G": 3908
+              }
+            },
+            {
+              "event": "lap",
+              "frame": 4091,
+              "lap": 4
+            },
+            {
+              "event": "retry",
+              "frame": 4093,
+              "state": {
+                "N": 1,
+                "y": 200,
+                "x": 0,
+                "S": 3,
+                "E": 0,
+                "A": 9,
+                "C": "R",
+                "V": 0,
+                "U": 0,
+                "j": 0,
+                "G": 3908
+              }
+            }
+          ],
+          "cleared": true,
+          "brakeExercised": true,
+          "retryExercised": true
+        },
+        "browser": "Chromium 153.0.8010.12",
+        "browserErrors": [],
+        "screenshot": {
+          "scene": "夕方の2周目。自車と目前のライバル車、コース、ラップ・順位表示が同時に見える通常走行。",
+          "method": "掲載版URLを実ブラウザで通常入力系列により操作。ゲーム状態の書き換えなし。CRTオン、アプリScreenshot出力。",
+          "selected": "racer-replay-4095.png",
+          "width": 640,
+          "height": 576
+        },
+        "limits": "単一入力系列の補助検査とブラウザ操作。全局面・全端末での性能保証ではない。",
+        "cpuScreening": {
+          "rate": 4.36,
+          "calibrationBefore": [998.5, 998.5, 1001.5],
+          "calibrationAfter": [993, 995, 991.5],
+          "result": {
+            "title": "Pseudo 3D Racer",
+            "scene": "Normal-input replay: three laps and retry; CPU screening only",
+            "frames": 3854,
+            "setupMs": 4,
+            "meanMs": 4.179060716129797,
+            "p50Ms": 3.800000011920929,
+            "p95Ms": 5.899999976158142,
+            "maxMs": 205.4000000357628,
+            "max60TickMeanMs": 7.651666667064031,
+            "over16_67": 3,
+            "overflowSignals": 0,
+            "moves": 0,
+            "state": {
+              "N": 1,
+              "C": "R",
+              "V": 0,
+              "U": 0,
+              "j": 0
+            }
+          },
+          "scope": "校正したMid-tier相当のメインスレッドで作品更新と画素生成を計測。実際のWorkerのFPS、CRT/GPU、音声合成・録画、実Androidの測定ではない。"
+        },
+        "browserScope": "キー操作で加速・操舵・ニトロ・ブレーキを確認。通常入力系列の再生で昼の1周目と夕方の2周目を実画面確認。3周完走・夜・再挑戦は実エンジン補助検査で確認。"
+      },
+      "reason": "公開後にユーザーが画面の見た目を再評価し、想定より粗く掲載に適さないとして取り下げを指示。CPU計測やゲーム進行の確認が通過したこととは別の、視覚的な掲載品質の判断。",
+      "category": "editorial-withdrawal",
+      "withdrawnAt": "2026-11-03T06:05:07.512Z",
+      "publicImageRemoved": true,
+      "archivedImage": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/racer-withdrawal-2026-11-03/pseudo-3d-racer.png"
     }
   ],
   "editorialReview": {
@@ -7425,6 +7430,55 @@
         "publication": "ローカル変更のみ。今回のcommit/push/deployは未実施。"
       },
       "publication": "ローカル取り込み。今回のpush/deployは未実施。"
+    },
+    {
+      "checkedAt": "2026-11-03T06:05:07.512Z",
+      "scope": "ユーザー指定のPseudo 3D Racer取り下げとreveal.の序盤スクリーンショット差し替え。他の作品・掲載URLは変更しない。",
+      "withdrawals": [
+        {
+          "title": "Pseudo 3D Racer",
+          "sourceUrl": "https://x.com/haruka_apps/status/2117417244829557002",
+          "image": "assets/images/arcade/pseudo-3d-racer.png",
+          "reason": "公開後にユーザーが画面の見た目を再評価し、想定より粗く掲載に適さないとして取り下げを指示。CPU計測やゲーム進行の確認が通過したこととは別の、視覚的な掲載品質の判断。"
+        }
+      ],
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/racer-withdrawal-2026-11-03",
+      "publicationApproval": "直前のpush/deploy指示に続く、公開一覧の取り下げ訂正として反映。",
+      "finalValidation": {
+        "checkedAt": "2026-11-03T06:12:07.813Z",
+        "command": "npm run check",
+        "result": "pass",
+        "unitTests": 233,
+        "browserTests": 47,
+        "catalogCount": 31,
+        "unrelatedEntriesUnchanged": true,
+        "removedPublicAsset": "assets/images/arcade/pseudo-3d-racer.png",
+        "publicationVerification": "公開結果はevidenceDirectory内のpublic-verification/result.jsonおよびpublic-catalog-visual.jsonへ記録。",
+        "updatedPublicAsset": "assets/images/arcade/reveal.png",
+        "visualReview": {
+          "widths": [1280, 375],
+          "catalogCount": 31,
+          "allImagesDecoded": true,
+          "linksMatchCatalog": true,
+          "horizontalOverflow": false,
+          "scene": "reveal.は19%獲得・線引き中の序盤。絵より盤面を主役にした画像を一覧でも目視確認。"
+        }
+      },
+      "screenshotChanges": [
+        {
+          "title": "reveal.",
+          "image": "assets/images/arcade/reveal.png",
+          "checkedAt": "2026-11-03T06:11:03.281Z",
+          "scene": "LV1・19%獲得の序盤。絵は左端に少し現れる程度で、広い未獲得領域、上辺から下へ引いている黄色の線と先端のプレイヤー、敵が見える。",
+          "method": "公開中と同じ掲載版URLを通常キー操作し、CRTオンでアプリのScreenshot機能から保存。画像加工なし。",
+          "selected": "reveal-line-middle.png",
+          "width": 640,
+          "height": 576,
+          "reason": "ユーザー指定により、人物の絵を大きく見せる構図より、陣取りゲームとして何を操作するかが伝わる序盤を優先。",
+          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-early-screenshot-2026-11-03-c",
+          "sha256": "cd5a2aabfdfd82ff3153badda069e4f210ff8824ace15d4e77f70eb94c62938b"
+        }
+      ]
     }
   ],
   "replacements": [
@@ -7601,6 +7655,25 @@
           "height": 576
         }
       ]
+    },
+    {
+      "checkedAt": "2026-11-03T06:11:03.281Z",
+      "action": "ユーザー指定でreveal.を陣取りが主役の序盤画像へ差し替え",
+      "items": [
+        {
+          "title": "reveal.",
+          "image": "assets/images/arcade/reveal.png",
+          "checkedAt": "2026-11-03T06:11:03.281Z",
+          "scene": "LV1・19%獲得の序盤。絵は左端に少し現れる程度で、広い未獲得領域、上辺から下へ引いている黄色の線と先端のプレイヤー、敵が見える。",
+          "method": "公開中と同じ掲載版URLを通常キー操作し、CRTオンでアプリのScreenshot機能から保存。画像加工なし。",
+          "selected": "reveal-line-middle.png",
+          "width": 640,
+          "height": 576,
+          "reason": "ユーザー指定により、人物の絵を大きく見せる構図より、陣取りゲームとして何を操作するかが伝わる序盤を優先。",
+          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-early-screenshot-2026-11-03-c",
+          "sha256": "cd5a2aabfdfd82ff3153badda069e4f210ff8824ace15d4e77f70eb94c62938b"
+        }
+      ]
     }
   ],
   "eligibilityHistory": [
@@ -7730,6 +7803,19 @@
         }
       ],
       "note": "鑑賞作品と判断した除外ではない。CPU/RAMの強制レギュレーションも導入していない。"
+    },
+    {
+      "checkedAt": "2026-11-03T06:05:07.512Z",
+      "action": "公開後のユーザー判断でPseudo 3D Racerを掲載取り下げ",
+      "items": [
+        {
+          "title": "Pseudo 3D Racer",
+          "sourceUrl": "https://x.com/haruka_apps/status/2117417244829557002",
+          "image": "assets/images/arcade/pseudo-3d-racer.png",
+          "reason": "公開後にユーザーが画面の見た目を再評価し、想定より粗く掲載に適さないとして取り下げを指示。CPU計測やゲーム進行の確認が通過したこととは別の、視覚的な掲載品質の判断。"
+        }
+      ],
+      "note": "直前の公開コミット1b1e6edからの訂正。CPU性能の不合格やゲーム性の欠如による取り下げではない。"
     }
   ],
   "historicalLimits": [
