@@ -1,16 +1,16 @@
 {
-  "checkedAt": "2026-11-03T08:45:06.344Z",
-  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。 同日の公開後、ユーザーの視覚的な品質判断によりPseudo 3D Racerも掲載を取り下げ。現在の掲載一覧は31作品。 同じ公開訂正で、ユーザー指定によりreveal.の画像を絵より陣取りが主役となる19%獲得の序盤へ差し替え。 同日、ユーザー指定でPseudo 3D Racerを再掲載し、様子を見る。reveal.の19%画像はユーザーに不採用とされ、撮り直し候補を確認中。 同日、ユーザー承認済みのreveal.画像（67%、顔から胴がつながり、段差のある陣地と階段状の線）へ差し替え。 同日、ユーザー指定のMicro Unicorn Attack投稿2117522578797740035を個別確認して採用。X全件の再探索ではない。",
+  "checkedAt": "2026-11-03T11:31:26.207Z",
+  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。 同日の公開後、ユーザーの視覚的な品質判断によりPseudo 3D Racerも掲載を取り下げ。現在の掲載一覧は31作品。 同じ公開訂正で、ユーザー指定によりreveal.の画像を絵より陣取りが主役となる19%獲得の序盤へ差し替え。 同日、ユーザー指定でPseudo 3D Racerを再掲載し、様子を見る。reveal.の19%画像はユーザーに不採用とされ、撮り直し候補を確認中。 同日、ユーザー承認済みのreveal.画像（67%、顔から胴がつながり、段差のある陣地と階段状の線）へ差し替え。 同日、ユーザー指定のMicro Unicorn Attack投稿2117522578797740035を個別確認して採用。X全件の再探索ではない。 同日、指定された2DのREVERSI（2117561626719388123）とminesweeper ai.（2117548314698952871）を個別確認して取り込み。X全件の再探索ではない。",
   "counts": {
-    "catalog": 33,
-    "adapted": 21,
+    "catalog": 35,
+    "adapted": 22,
     "normalSearchObserved": 140,
-    "uniqueAuditedPosts": 178,
+    "uniqueAuditedPosts": 180,
     "byStatus": {
       "重複／旧版": 30,
       "保留": 30,
       "対象外": 70,
-      "採用": 33,
+      "採用": 35,
       "差し替え": 1,
       "参照先未解決": 3,
       "対象期間外": 10,
@@ -1946,22 +1946,22 @@
     },
     "scopeNote": "catalog等の既存項目は過去の検査記録。今回の最終状態はthisReview、targetedRechecks末尾と各更新作品のvalidationを参照。",
     "latestCatalogReview": {
-      "checkedAt": "2026-11-03T08:46:21.801Z",
+      "checkedAt": "2026-11-03T11:35:48.040681+00:00",
       "command": "npm run check",
       "result": "pass",
       "unitTests": 233,
       "browserTests": 47,
-      "catalogCount": 33,
-      "newestFirst": ["Micro Unicorn Attack", "SoukoBanChou", "Pseudo 3D Racer", "reveal."],
+      "catalogCount": 35,
+      "newestFirst": ["REVERSI", "minesweeper ai.", "Micro Unicorn Attack", "SoukoBanChou"],
       "existingEntriesUnchanged": true,
       "visualReview": {
         "widths": [1280, 375],
         "allImagesDecoded": true,
         "linksMatchCatalog": true,
         "horizontalOverflow": false,
-        "scene": "新規作品のジャンプ中の画像を一覧サイズで目視し、作品名・作者・容量と公開日時順を確認。"
+        "scene": "2Dリバーシの対局中とマインスイーパーのヒント付き盤面を一覧サイズで目視確認。"
       },
-      "publicationVerification": "公開結果はevidenceDirectory内のpublic-verification/result.jsonとpublic-catalog-visual.jsonへ記録。"
+      "publicationVerification": "公開後の検証結果はevidenceDirectory内のpublic-verification.jsonとpublic-catalog-visual.jsonへ記録。"
     }
   },
   "limits": [
@@ -1972,6 +1972,599 @@
     "GBC Music playerは原曲・権利者・利用許諾を特定できていないため掲載保留。違法性を断定したものではない。"
   ],
   "games": [
+    {
+      "title": "REVERSI",
+      "url": "/playload/app/#v1.dRhtb-NI-Tu_wjE6a6Z-7LWdtzbuJGTTbLeiO6nStN2VZVZuMk6jTZPKdpddNZFIuqwODjhuDzhYTlohDum4RYAA3Qkdgv9S_4H7CegZJ2l7B1KUeXve53kb37mjfCcZJEOhtJuHzfb-zrfu3FHa4qmI4oHyNFaSE6E09g4UkleG4qkYxtRUrj7-g3L16nPl7DxRrl59kR3gjo6r0_N40P3WUCQKZw-C5MSMByMQ2TQ4jiHKpqeDESSMs-p-Eg1GfTOMxqeNkyBqjHuCFMv5QkHnFELmWWCDA3koQBFKUPYhYISDoKwamqfBGYlwEoneeVcQkkBIWdVZS_RcTpBQX18jtsapUTaLEOGKV6t2tgwhomBRCrGkBxFlVeJovBZVS5VcRCcTRK0JXAnqhuOIZEoVXG4YLr046_a9hHDqm2dBwgLCgQiIIBMhJlzOqOvZYOaLvpSVZGxQp2wjZNWMTEFfX4v0wlqo3yKI5AIYUlaVRjt5fjZOSHRHQEI3S2ZhMgk1DVkhDKXUzYg59jephBAsxMKZpgkS0WrBLOIskTM6XWBbK1wLMtNAQlk1qjqaFm0WNS3BWbJZpC5aZAhjeMq8jQ0wnCLYFhTlxCjgiD_bwn8HbHkCNlg-NPDqz4bBc-KAevDQLllHVqvI7V5fOXjoWLgqcbsXBlvKwcO8g-sCt4MQT9dxled2Tzm0ixIpDLbu1eWqwJ0gFD3VjM-Gg4Soiko97lM4YhYcMgu2mAVt5sABs6HO7A14wAwbesyCfWbDgNlwyizoMAt2mAUt5vnQxL8R83y3Ox7FifKcecYGGOtglMGwwYYyrMOG74bno24yGI-UZ4RLk11k8CGiDkKS417kU_SjbD9QxqHynF6gDWMW6QEMmSX9zBWElLWYGiQ2Aq1M6aajadyLfcbyRuLSWGcBDHUdqQ7xAv8fdCLZuUN3aBg0NM_O4xMSGyyg00gk59FICafI_WQZUZ5pmvUoCp6TUoGaT8TzmFDfDAfDREQYaJlmgppDMeonJxS617Ej9UjYs8UGypYs4ZbBEyrjEHkkIHzKvdBnkbuQJJnCOfqEZ4OTxYZgVb7kzVmVM3aD8UM01cLga9-XPDMfv9D1h-84xcmEPB-IYS9z0ZidSA3lNcRLIgvOeJQ3VrRrRoYpqeYNAYlhgxGAEVJa2RD5NXJOOPWEYfuGnDmG8DN1N5lFF2awnTWyZGR8jcN1MglZqeCGmE3QGJpGEp0RaRcmanbFsOnaU6-wFpGwWs1D2ZAjpXpEylqI67IWUurTayMuKUfoXPHSubgZDwddQajbJbG8wSxy2bWu8dd1dYfVUNNIyIZSubDKAnocieDJte-sPP6MCHpxwAQ02QlpLQzdXKprozakaQ5G3eF5T8Skjsm1zpqe5VOMM1ohp8xehx1mw5CtrpVk4gtm2GIDIta64Q05vrTmJpaIEtiW77UN269tbFTahu2OJfmVpRO0RzMjGLLWDXuEkICT2SO4YY8QbIhAcjYEpTppbzo1p7jGyZae0IpF3aAqNI0IFsCYJXQ6JZS6YhgLZRAStMLNGx8wtG6P5Ysyk8AOc6BBnAwBhfI4CJ-dkxZ1j1gedhi6ey1f4VVRK1SK0CCLGZ3KkL3HLHjMLOgzC44ZuVVUlpmVw72aqlbUjqp7GyWwHQvs0sJMuqcebrSKvBjwfONYDqIvh37Iy4IX-zzf2OLFJs9vNXhxi-eP-7x8_D_gG1u8LKGOV3DFb_ePeblJqQrq4Xorz4tBM2iGjbDR3e5u97f6W8s1zsVdcZdS1cc8Ta-z6BNCL1rsOhuFg-GQWBRanlP2WcvLl3zm4Gpdror-rYwurdxjlntMqHtGbCqt9ggzzMWIdUkLOBxQd7QMevKAcdhnB4A3dQA95li6s7Y8Bs-CMhRLUMr7127MaY10WN6CBrEprTSIJf_zdOo-IZlH7cHd68Kxy5bVlJUhZPYi4UaL3iCSFXrPc6w1oXM98JknC7dP4f4SM6viy54oQ4wXSEToJMb2hupcJ7YWU595CYn0mCKeT2F7mecPa6LCr02dDLpo7S1dh47BOlXLzTodCwRaMBmRAp1McCzSGnk8mbDjZHRGChT6y3mR0gqe9Kmmkcea1q-Re99jNhwTPODsMQjWp_CY9ZklTeOhSJnD77HrupMvYfch7YGKqooKZbCz_GozdkQvyGFNZUxJL9-ml_9KL98q6ey36eyTdD5LZy8UxiYT27x6_TadzdPZZ-nsjXL1-rPG3sFXbz751cQxr15_ls5fKensL-nsl-n8B-nsU0VCv50oSjp7L529m87fS-fv5iZ5s4B0Z39W0vnb9PJHX7159bN09hcJ92k6_1E6_4nk8EJJL2fp5e_Ty7-n83_mJgUznf1Y_l4o6ezLdPYynf0ko_27r968_zI3mSjYLVcyKX6Nks_fy6kVlTGm3G8dKZ2Wsrdbf6SwlTaPWgfKbUU67foe7ig7XKkruzu8OVEQ8d7uzh6OV6_fShWURqvNm-19BcVX6m0E26_fayr3WrLjR3kftPY7iKAc7XAEXMi4127u72eS7nfq7U5Opcu2aqJSMxxHzaB7QhY-tUtsEHoBOAhNE5sbtXKlRKlLpHtYmf9gIE4mAn3kEL1DhozLNY08IdijYVIsUDqVWfG64y4tW-6sHLQ87kPCRuZg1BPPWiGRDwULXaRXtbA9XdbhxQvkNHhGLIiIDcSxjJ7hrCX0ju1gtmG8amK7tGmug2B80yzW8sZ-Zd9dAjJW0rRlo3q4gV1pV6XT-8RZI2WNU3DkoyJPdRtEDdv4UC-sEbHp0IoFDmbxcsWCIqLYZXCgABbYFHaJXYICbBP1UetABXXlryqVh2UoQqirKgWJtw4FDIQFnm2B2tg7UBeQtg0BgrrZYQHU3UNVb0NpeV4ET_3qzQf_VgGHL-Xwya_UrBQgmgUWYGCtpEhnf05nf03nH169fjvBB2A6-yidfSid-Xfp_Ifp7OUkvfxAOnw6-1s6-2k6fz-dfZCboPvcJoOOn0Miq5VpmhP0q1UQYxjKoxfp7CO1gjZpK52DNleW_Dv3d_h3d_j2ZK--v5-bbLXrR8p2_UEzY4jxcbTDc5KNdOMlixvxdMt9vaPaTqXkQylTH6-GsaPaNlGvPv4Dvm73Djrydbt7uHra3t1-oMLiXAb4-wiRXv4pvfwNZqKbcLSCpF5-cPXywztXr76o7Nb5tnL18udXL19Vdg-RzPWZNOyn6eyvS4AVSZXKzOfkMPPdCAiXb9q2y3WdovAcVNU8C3rNUY_YGHQYi2XItHn1eaXd7LQfoaiVzk5nt4nM0fjzubzOF3ijsz_K83T-n3T-SXr5ruSNKqB1l98GpN-8_1JJLz9LL3-ONzf_QqULN4MNdGZUs9Lk27s7-_elVy80q6Szt5gM5x-ms1-o_zsv5I407eu5QfayWYnJU0OODnUjTSNtRtp6pDv0nbyeQctiI7PJUe12QqmQI0mxgG9k5IIwzMp4TJdNW69qUcPoTSZnZLDozIRk1P4ai6wWHdCLOotIKQ83kkwdPzIsNDIWKiLTheSaVtbqmlY3DHehk6aRslanm2VNq-s6Sv-I1G9kwKx14OxMROE4Og1GXWGOxt_H_kLTvrFp8E3HLLp0aI7Es4RQszceoQ5DrLqGcbppa1puiDzGdDqd7mWVNkvgi-dqxOJu5Ik7jjWxfE-841i-y3VVzbG7nsA3Cg4MdyAyuycR457l43Q8XL0zbEqndNH1xNmrrrRIlzjJ8uW6fBVj1GlarqdpmUmbyxY2E8cTEPkMey03PosIFphIL4D8SgGlFZesfcaXhXu7OYpYFfF49iUooiBwFmGbBPJDSUTh1sukVqrkKZ2uJHsgi8ktJg8yWbhekAUvkyVPoaB1NG11YhQwVfxDRSmn_wU",
+      "image": "assets/images/arcade/reversi.png",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "sourceUrl": "https://x.com/haruka_apps/status/2117561626719388123",
+      "publishedAt": "2026-11-03T10:16:48.000Z",
+      "adapted": true,
+      "compressedBytes": 2927,
+      "selectionReason": "2D盤面で石・合法手・手番・石数を読み取りやすいCPU対戦リバーシ。3段階のCPU、石が返る演出、日本語説明があり、旧3D版から見やすさが改善している。",
+      "curation": "ユーザー指定の2作品を個別確認。リバーシは残っていた説明内のA/BをⒶ/Ⓑへ置換した以外、ゲーム・AI・BGMを変更しない。",
+      "observations": [
+        "投稿本文・作者・作品URL・公開日時を公開投稿APIで照合。",
+        "実画面の読みやすさと通常入力を確認。性能は思考・生成処理を含めた補助検査で確認。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-03T11:31:26.207Z",
+        "originalCompressedBytes": 2986,
+        "compressedBytes": 2927,
+        "labels": [
+          ["A:", "Ⓐ:"],
+          ["B:", "Ⓑ:"]
+        ],
+        "originalSourceSha256": "499f0930bcc4ec1b13444ecfcceefbc161bac8b436da8934f49050810655b309",
+        "adoptedSourceSha256": "2345b1bcec8100679b6ca7ca1594f38f62dbfeaac74a5709d1870593088927c5",
+        "browser": "153.0.8010.12",
+        "browserErrors": [],
+        "browserScope": "日本語ルール、着手とCPU応手、盤面中盤、レベル変更、BGM切替を通常入力で確認。LV3終局・パス・再挑戦は補助検査。",
+        "functionalChecks": {
+          "id": "2117561626719388123",
+          "frames": 2200,
+          "statesAndSoundsEqual": true,
+          "overflowSignals": 0,
+          "levels": [2, 3],
+          "phases": [0, 1, 2, 3],
+          "musicToggles": 2,
+          "method": "Actual engine original/adapted comparison using normal input and identical deterministic clock for AI scheduling; excludes text cells that intentionally differ. Real clock CPU evaluation is separate."
+        },
+        "screenshot": {
+          "scene": "中盤、黒12・白10、LV2。石の配置・合法手・カーソルと手番、石数が見える。",
+          "method": "掲載版を実ブラウザで通常キー操作し、CRTオンでアプリScreenshotから保存。画像加工・ゲーム状態の書き換えなし。",
+          "selected": "reversi-midgame.png",
+          "width": 640,
+          "height": 576,
+          "sha256": "7c98fea7f7b3bc45bbb0a33f91a56b996360970718d66fb0b3adf49c7d217ae0"
+        },
+        "cpuScreening": {
+          "rate": 3.37,
+          "calibrationBefore": [814.5, 770.5, 932.5],
+          "calibrationAfter": [999.5, 896.5, 964.5],
+          "results": [
+            {
+              "name": "reversi",
+              "rngSeed": 42,
+              "complete": true,
+              "frames": 2140,
+              "overflowSignals": 0,
+              "passes": 2,
+              "phases": {
+                "play": {
+                  "frames": 1582,
+                  "meanMs": 0.4210493046550172,
+                  "p95Ms": 0.7999999523162842,
+                  "maxMs": 4,
+                  "over12ms": 0,
+                  "totalMs": 666.0999999642372
+                },
+                "cpu": {
+                  "frames": 468,
+                  "meanMs": 0.7882478630695587,
+                  "p95Ms": 3.300000011920929,
+                  "maxMs": 4.100000023841858,
+                  "over12ms": 0,
+                  "totalMs": 368.8999999165535
+                },
+                "cpu-endgame": {
+                  "frames": 90,
+                  "meanMs": 0.7966666671964857,
+                  "p95Ms": 3,
+                  "maxMs": 3.299999952316284,
+                  "over12ms": 0,
+                  "totalMs": 71.70000004768372
+                }
+              },
+              "events": [
+                {
+                  "event": "finished",
+                  "frame": 2140,
+                  "counts": [3, 61],
+                  "level": 3
+                }
+              ]
+            }
+          ],
+          "scope": "Calibrated main-thread CPU comparison: actual engine and unchanged adopted game source with normal button inputs chosen from read-only inspection. Reversi LV3 to completion; minesweeper ten seeds through generation and automatic clear. Includes game tick and software raster, excludes CRT/GPU, Worker and audio synthesis. Not actual Android FPS.",
+          "calibrationNote": "初回は目標1000に対して1400台で速すぎたため再測定。再測定は前770.5〜932.5・後896.5〜999.5と同等〜遅い側だが変動がある。厳密に校正が収束した端末相当値とは扱わない。計測範囲では12ms超過・描画上限超過なし。"
+        },
+        "limits": "リバーシは一つのLV3対局、マインスイーパーは10シードの生成と自動クリア等を確認。全対局・全乱数・実Androidの性能保証ではない。"
+      },
+      "originalUrl": "/playload/app/#v1.dFTBbuM2EL3vVzABKnCsoSLKkh1HodIgSYE9LLdImmwAQQfVJmOhim2QdHaNOD-x5177C-3_5EsKSvam3aKAIM2QnPdmHmd0dER-dI1rFbm-uru6vnn_7uiIXKsnZWxDnixxc0Uufr4ldEha9aRaCxF5_f0P8vr1T7JaO_L69a9-w6-E3ntc22b6rlWOSPGhdvPINgtUvVn_atH05mOzQCekKG6caRYPkTbLx4t5bS6WM0Wz8TBNQwmoRRkjxwSHmGKGIxxXWAsqUYEodPRYr6jxhlGz9VRR6lCDKJKBCw8OFNXh8YDyQAIbRxka78mi4L2r0QDGAGg7PDQgCpoE8swUo5MDA9utDz1T3lOQ66WhfVFpLhnL4Xk1fSgdlVBFq9qJmkqkCg32KVgqOwvykmM0zKouV9rT-Jr6BS2KHiYNjwcmTAc6_Begh6uxBVF0os03q6Wj5kihg9NRlG63Ogg8lT8DAHkPlvD_omisd2l5KwgUNVCkUeYt11nwsouOv8XG2EuDDkRhiiQIzGkWBM5b7jSD3CvS4hKfRDmZIEsy5DFmncFS__UPj_07Qd7tIMe4wgt_9au23tAED2_v-Sj-FH_MJJ89kNv7JPbeSPKZri_J7f0w8X4qea397rH3hpLPyB3PuiBdX_503nmpTGqtZoeRXbWNo4fkEEpZAX4SMd6JGC9FjNciwVvB8VzwCX4QjONMxHgjODaC46OI8RcR43sR40dRVnjlXwtRVvl0ubCObETJJsiOkY2RceQ4xmOcVLleL6auWS7IFyo7yZ7789qHNpoeyNJU4PuoX6_JUpMNPHsNrTBhja2Iuz7LFaXjwAKjltXBGOA0CQJZ2kqIIXM52FDU2IahR239Bf7fadfR5W3eMgY6Wq3tnFomangxyq3NgugXzz7fT1QZRdG5MfWGjlKIflMbS6GKdNM6Zfyg9ZUpiFq1eHBzwOnb7HR1OPFlt-Bzc_tz--HRZKk9h0NVgSx1JUy-y8S94Nr3RMkx6WdDiULuuaUopBD_IL73Uu0EH3zuOPsefw7D-x-SbLulm0a1s75FrZh3FXbXYPcgO2a_NWTfsM9YH9mhDplCxziyGpkGOJmo4YCuqYRSMV6xzkqYqvpyT0UMOxl4MqB7IvYdw9vPRItRmmv_N_FiBAF1oaCdLkKd8RPGYfBUpgNDdVEMccy6L0Bo6DjQ3h8HGqCCNxH3yMY3l903l4xs20wVhXxKbXeD_eSKt1rt97XmbfE3m1XU2rgRhP_KWgWzG02CZFl2bGdiHFvOGXIrYzsJwajBTla6EDcJtu8pClR2OO6ao4WDlpI-hNJ7OGLoPfSptL8m-wfyE8pKdpxAwWh3rZnVzLfffjN-Ok19HMTJ-ZvYY_2h6J0uufPE-Asq2OUuCnDwDXXnQDuLdE2VDXXWTs6OBm-PxYhWlLhW0OkaHlP3jBXpd2iuQwNNGODTsdIkfIGrpijAEN1nbEjxBZobqkTkwDS8bmvV9MqFQrG1apbO4-2fkB4rPJxkQx_dZ3j4MIZMgkfvGR4-mDCE-MurgjGdtjYy5Yy9wmlNH7OiwUq9TZFOU4E9OMcxu7qijJXEYCTIiU8VCs9P_AQVusdo2bGSQAMzUKWZxEEF1eUgPHxLXVbaRwsaqOhetop8U5SzRRuqdD5jV_GVraMBh2hAgAb0kb4oKgtl5VAva1pR62h6t5ADM2OAmZvDpHe1vYJrc7vHrWo_HkQQD4HP84LbAbeqNW473KpVuV3jVj_g-f7_2FdrPB9b9Z_s7G-CPs87jGmg7a27Frd7Ts_xq371aPtoO6gFtcVazcWW2GJM85ROs6WKnlJ26eJSjfyTwYAaDNxuJu-h27VyHmbUaj1e2d4LRY9RPkaj1KesdEFNFqN2oBTm8gyPqAscdlnpbHHp6Wvk0MZdUCe1C8eYMfTMyuI1dA3Ig52DnOUtacxZmXbQMqBKTcaKVWrET4tdlU5pwqgmbC0Lxw4uqinmwUdzLrjDeW8wjCt0s5sxVoTO9Z6H3bhwewxeLTyTKr7oiRLH0dyJCp2OVHvDdK5TMz1iHnbHdKiPmPLzGGwvdH6vLIp8CfX45EihXdN16KxiZ9MoJZ2OAUIhOD6jWRaGarRZmR6GIfbHZxc0yyBYzG3GiupNwNJpephOB2Va_xZN6FP1guMhCAwYHGKARgxNV4WUEL6Jy7pj5VT3EeOhEtWIBnkwE301EffZJd0ra4hETmdy-q-czoiMfpPRZzmJZHRNEMPQXHu4ncloIqN7Gd2Rh9v7anP38e7zL2Fm7eH2Xk4-ERl9ldHPcvK9jL6Q2HoWEiKjGxm9l5MbOXmfCq21rNo3-pPIyUxOPzzeffpRRl9juy9y8kFOPsZfuCZyGsnpH3L6l5z8nQqzazL6If5dExn9I6N3MvqY7P37491P71JhSEilmMTwq4p7cpPSihoiklfuPum4pLlTOSD4lMuBu0teptFpVZrqH9LgpEJ2GtwJiXKs7zSaany4ncUJkKrb4k6rTVTwpNJSZu1K3SF1N-73VbSv3XZHOZD9BleG8wibLafdVnG2O5VWJ6WxRUsVamzNPx86vaM3dM6nHWqC0LPAQaTTYqNQzhdzjJVoTA0j4Y66hGH4XxvW19q4EcS_ir1wy240UiRZtnOSFaNcjWPqKMF_CcYPIVbo0cQOSqCB2g-yr6YvJZem9GgplMIV2l4pRyn0odB-F-8X6Ecosyu59rVPK3t2d2Z2Z37zm40wPnoYGTJdvJBS9iFDfoaA6HA-k4j4L9suZXRblYLjQTiEW39sPB-PorvjCyabBBPDY7RvIjXNanDafVyd3TETYmYBs019pNs7t3zXshFp_HDfQKpUMfYg8sOKUawW9Lbb9rKJvl-iNCOpvafISM8Jnx0ye4eVacjBlg1FgWsWRFWk8Beas8Oiis1dE2xE8LJrQhGXWGWwwQETLA5NZpXAgTojp8ddAmQdq4RLYRmKcKERwkGu2wMHkyBdZ5lAnp10STrTsuAMp3pK6ABp9ojWglImL8KA_P3tw58EcPhDDq-_JKoM4DITTMCkWlshkl9E8lbMH1dfv5li8yeSVyJ5lIH8nZh_IpLlVCweZLCL5FeRfCbm9yJ5yE8xeLa3waDP4ybrX4ZhTAN3nb6YgFLwQiSviIsn0sp1uq0wl2nvHDbC9xthfXoStNv56XutoJ-rB0c1pQ5zo98I81KJDGGlYCOTtkJ30K823NIQSsp1vBbf71frjKy--R672pNuR3a1zd66pT2oHxFI5TKx73GGWPwsFl8hAm3O4y5utXxYLR93D9xmENZzq-XL1fJzt9nDTTKJPNAfRPI2E6-3I1yinZ1HtNtIBC-sWJYXahpHw0MgxLg-G9XGI2ZhsmEOlkF6EritWqd1mjtwO41Os0aABK6Yz-UFvsA7TH7MHbhi_peYvxaLT6VONBvPM3sHkHFyv8yJxU9i8RLvav474WlYwVMMXnTOrYX1ZqN9KKM49cgVyRsEvvmjSL4g_48D-T6l72KB5K2qnBS4LkebezGlrOWzlhZrNn9S0NRsWVgkevSr2wDisr7c0cF-GLXgHN9UOmYZQRvtm1zXR9PpNXuesrBIKmq9o0LVnS7_OPBjVirABqgE-KCQeqSnLqLS1HJKyzSgNNB1L_WJUlamAa-UKQ00Da0_ZcEG4imaEPrXUXwxia_OxueRMZ58hFyC0v_8qYcV2yh6_NIYR3e3jBujyRh9uMQKq-tXFYvS_CXqmPDZbHaiqqoC7LQ1jf2b83gQ7drm1BwOoie2OfRCjZC8fzCIsB_Bwcd_IDbOP4j9cGAO8XNyue4pLM5nPGU4N6qDK6XwiB8KH_dkB4yZRml-RKk60lpGV5U5gwjioY-8yru5jhkWlFhzQL5IQGmtRVFl7CK8bSIU-_u4LlSvPjGHCL9ipEQgH0ViDltdSLXkFjifrS07ksVjS8mRsiXUHFnglC0FDg7tULqW6A7Cw28ErZz9Aw"
+    },
+    {
+      "title": "minesweeper ai.",
+      "url": "/playload/app/#v1.dVfrbts6Ev5_nkIWEIITjRXKt6SSGa-bJj3BtvYiyRYLCFpAtilbiEwJEp02qP0S5_f-3VfYfZ8-yYKUfDnZFgJIakjN9ZsZ6uLC-otKVSasdSpF9VWIQpRWnLq_XVxYk9xabkRVpXLpW2olrPG9NV-J-XNliRdRvlqzPC4X1jyW1kxYVZ69iIU1e7WyfJnOXevHv_5t_fjjP1ZeCGn9-OO_VpLFS01x9Mv43sqT5GKVSnURb1T-2zyXlbIUV_z6UZWpXLpJma9vVnF5ky8E7V92ez1HQRDaibhix4cxG-1EzNjsajafsZjNrgyJsX6ve3U57171e6w5lVx5xydJ7MhdxwWlEgXw62K-DBUVELlFrLiEoNZI8g5DwTtXDEve62PGQ9d1x2UZv5rDhoMyHL7XX5Q8jIIkL2kmtEEsUMN3gXIcaPYzLs6ko866bQ9zTsWF3DJwqLrobhm0vUC1e4Rk15wRkg0lIblZ5kOvR0jpFptqRfNz6WSwK4XalNIqd6AZ1Up8jtXKXcffqFnEs4qqM9kWZxLwQKHKyGw3sgECrWqCc0yxwhgLXOEaZ7jBJWc45u_wlV_igjOccoYTzvCes8Y_nzkFfr33h5ukWUYZBMlGzlWaS-uJwveEf6aAczOmZqzMGJux4GvOcMY3nO1qnl80Cr5rF-5jEKookG4m5FKtgr0jFZdukRcUgjRU0XZL9cQ9rPTEcG6IsvaY67pZqCKA3Q5vuBRfrXuprvZqG_vvGos-auma1Yj5sZ48_yZUET5oumbiGvhTrWOa0JY-Ck0oPMNJcg0ZFhwtKK08sYwCB90_0hICNWQj4Ti-dLjah1MOuVadED0OuXTEDvBRx1dCLVJyrhpnbLeOc3fdEd2jBrUAwVUoozcqhAy9CNKE3oQi4iU-UAGEPGrWjgdHFs3CnGp7yHaHeJ4_U7W3QfIwwkoPxR59VIwqX4Kbynm2WYiKKthu90QTCAVvckOY3EgTE70ja-PoJM2UKLWnjZcJaemAAArjofabM2ZvDxIxEpzvIUOINImq-HVBFXoA_p8IDKCB3upP6e0-i9eKwq8VWfOyHZ_sqoP8NKHr0Zrz1UGF1VsVVm9UQLXdtuheZ6dqFrB3iuCrE1HG-CpfC9rAFeAt4IR2a0seo1ECIa3q9B00nm7qtG17gDdhGXGvnYRlhHecYYs-mK8eqTg1s8VLQnKqsIRhH9wqLxVtAFpT2zmVWAIg0wAoaImaJaACgFkp4ufgNRXZYteAPpRYRbsDyL5qkGljggC-J_uigulhFR8LTQMmyVkgh-WhOJTclLsylot8TeFcbFmQ0xIVXHuEtLQ2hNDEmIvScWBnOO3rubZkHsqIqxOzkxOAAX7RWK7NaISGEkXEDeX8WSun3X8MqDgEtPaAzmQj7wug2GMhNjUMsNPtc57-DFr7NP2JN4xOu12D5RdTmjucF4TQGV8S8kyXww7ghjPAb7qcFcOu8YKKRrTgXVxxhUUWv1KG9hevM-1MBnMbwNd8Ad_XDH-pGSG04L2agYf2k9dnmkl_0p2L5Y3d9Jlb_KQ7ZK3jB1PXUGDJL4Ff6-QTTVMVmAG_vg077Fw6yskiHgosdQE7dheVzp8pfL93nBPsK16IMsnLdSznwpX5VwrBjJD_I7bVsHPSTGauFN8UhUC5i1wK4zOGG67clzjbCNilCfWMM1szY2kHXygAbgjZhF70NoBLjbMNIbX_788GQ-8oaxMyXVTk4lBSACU3bA5U3cYgkI43opVGomfE-crxCKE6IMdIXU0HE29uA76nYE7taqlrx8EFnylJdRrq2WvmTjN3YbRwPJ-hNm2x3S6uvQ4hi7Pe0ANC6JjTsVOfa9efORLOJL5y-urU_No1e8frwZnX21-bcv56Lp1xoDd7jaw-jOh0u9X6FLQHONmv-wC-3plokVNCJiO65HTpeHDWrY0urjujJwr-lJBWoaHq4Yx_pTmA3-B7OkrDPBplYX5arauTjOV8HuYRIeZIE6zK3BHq68M3jXG_CnOzzsFPzZJqyj-5d-rt_sRb2gC4l03Ir0MBOOUTnXC3J62lO2D7u6NGvW3ZeKmRjR8oQ4aKeoBd_dZBhmW7-lm2ObatTwyQof1k2U59ba7vfetU0nfv3uH6YsD0Dc8t4sWjiktFu6bTfKBeV383vvdtJ7Snd3c22r_fT55stMd_f5raUbiMcDka-JdvS6wI5PEuK_iGkOXIwPnQVSSM-r7B8imp6y-HHe19-aZtjQZ-x-8Et6F0eiziaSijUahr70gPjm372j0hwx72sYsDvKyfyByKkEUaHoQk5kNFO4AMJeerUdfvNHuV2bP_YWMXO5EfKpNSI89ngGYlht1R12f-JYpop4PgDTC09f_L09R6fBo_aM98Hv_1fvLRGlt34_sH6_10_PDBRttG-_10-rll_nbGH8f3Exvtm0-344dTUhQWEQ7qAHuXaFhP_3Y7Mb9Gd5_GH09-jWzA29NGdHB2NS9DedFhWxaF8qzDokA5tt3in0Kpu9kn07Ac20bhzlclVyGL9DLPuHKrLJ0L6gHsAKuipFfnY7w6f3W8ASraBRzA7olC8D8",
+      "image": "assets/images/arcade/minesweeper-ai.png",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "sourceUrl": "https://x.com/haruka_apps/status/2117548314698952871",
+      "publishedAt": "2026-11-03T09:23:55.000Z",
+      "adapted": false,
+      "compressedBytes": 1937,
+      "selectionReason": "マインスイーパーとして開く・旗・連鎖開き・敗北・クリア・再挑戦が成立。論理で解けるか盤面を検査して採用し、任意のヒント・自動プレイも備える。",
+      "curation": "元版のコード・URL・操作表示を変更せず採用。自動プレイは任意で、通常は手動操作できるゲームとして評価。",
+      "observations": [
+        "投稿本文・作者・作品URL・公開日時を公開投稿APIで照合。",
+        "実画面の読みやすさと通常入力を確認。性能は思考・生成処理を含めた補助検査で確認。"
+      ],
+      "validation": {
+        "checkedAt": "2026-11-03T11:31:26.207Z",
+        "originalCompressedBytes": 1937,
+        "compressedBytes": 1937,
+        "labels": [],
+        "originalSourceSha256": "714de5f01ac6acc1deeb7838b3cbb5170591a5954e1f7dc4ba4357fbdd793fa0",
+        "adoptedSourceSha256": "714de5f01ac6acc1deeb7838b3cbb5170591a5954e1f7dc4ba4357fbdd793fa0",
+        "browser": "153.0.8010.12",
+        "browserErrors": [],
+        "browserScope": "通常入力で初回生成、開いた盤面、ヒント・自動プレイへの切替、CLEAR表示を確認。旗の設置／解除・意図的な地雷での敗北・再挑戦は補助検査で確認。",
+        "functionalChecks": {
+          "frames": 806,
+          "overflowSignals": 0,
+          "events": [
+            "first-click-safe",
+            "flag-set",
+            "flag-cleared",
+            "mine-game-over",
+            "retry",
+            "safe-and-mine-hints-correct",
+            "auto-clear",
+            "restart-after-clear"
+          ],
+          "method": "Actual unchanged engine source. Normal button inputs; read-only board inspection selects a mine deliberately for flag/loss tests. No game state mutation."
+        },
+        "screenshot": {
+          "scene": "途中まで開いた盤面でAI:HINT。数字、旗、未開放マスと安全候補・地雷候補の色が見える。",
+          "method": "掲載版を実ブラウザで通常キー操作し、CRTオンでアプリScreenshotから保存。画像加工・ゲーム状態の書き換えなし。",
+          "selected": "minesweeper-ai-hint-midgame.png",
+          "width": 640,
+          "height": 576,
+          "sha256": "1e944e331d25d81942481f30c732edf67be8702db1c339ed4efd0cb5897df6e3"
+        },
+        "cpuScreening": {
+          "rate": 3.37,
+          "calibrationBefore": [814.5, 770.5, 932.5],
+          "calibrationAfter": [999.5, 896.5, 964.5],
+          "results": [
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 42,
+              "complete": true,
+              "frames": 738,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 2.5,
+                  "p95Ms": 3.700000047683716,
+                  "maxMs": 3.700000047683716,
+                  "over12ms": 0,
+                  "totalMs": 5
+                },
+                "generation": {
+                  "frames": 7,
+                  "meanMs": 2.9714285731315613,
+                  "p95Ms": 3.399999976158142,
+                  "maxMs": 3.399999976158142,
+                  "over12ms": 0,
+                  "totalMs": 20.80000001192093
+                },
+                "auto": {
+                  "frames": 729,
+                  "meanMs": 0.49026063088690464,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 2.600000023841858,
+                  "over12ms": 0,
+                  "totalMs": 357.3999999165535
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 738,
+                  "opened": 235,
+                  "flags": 25,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 1337,
+              "complete": true,
+              "frames": 618,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 2.0499999821186066,
+                  "p95Ms": 3.5,
+                  "maxMs": 3.5,
+                  "over12ms": 0,
+                  "totalMs": 4.099999964237213
+                },
+                "generation": {
+                  "frames": 4,
+                  "meanMs": 2.75,
+                  "p95Ms": 3.100000023841858,
+                  "maxMs": 3.100000023841858,
+                  "over12ms": 0,
+                  "totalMs": 11
+                },
+                "auto": {
+                  "frames": 612,
+                  "meanMs": 0.4712418300264022,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 2,
+                  "over12ms": 0,
+                  "totalMs": 288.39999997615814
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 618,
+                  "opened": 235,
+                  "flags": 26,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 2026,
+              "complete": true,
+              "frames": 552,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.2999999821186066,
+                  "p95Ms": 2.099999964237213,
+                  "maxMs": 2.099999964237213,
+                  "over12ms": 0,
+                  "totalMs": 2.599999964237213
+                },
+                "generation": {
+                  "frames": 1,
+                  "meanMs": 2.5,
+                  "p95Ms": 2.5,
+                  "maxMs": 2.5,
+                  "over12ms": 0,
+                  "totalMs": 2.5
+                },
+                "auto": {
+                  "frames": 549,
+                  "meanMs": 0.4621129331258694,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 1.4000000357627869,
+                  "over12ms": 0,
+                  "totalMs": 253.7000002861023
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 552,
+                  "opened": 235,
+                  "flags": 19,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 7,
+              "complete": true,
+              "frames": 750,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.4500000178813934,
+                  "p95Ms": 2.100000023841858,
+                  "maxMs": 2.100000023841858,
+                  "over12ms": 0,
+                  "totalMs": 2.900000035762787
+                },
+                "generation": {
+                  "frames": 2,
+                  "meanMs": 2.949999988079071,
+                  "p95Ms": 3.199999988079071,
+                  "maxMs": 3.199999988079071,
+                  "over12ms": 0,
+                  "totalMs": 5.899999976158142
+                },
+                "auto": {
+                  "frames": 746,
+                  "meanMs": 0.4343163541270964,
+                  "p95Ms": 0.7999999523162842,
+                  "maxMs": 1.5999999642372131,
+                  "over12ms": 0,
+                  "totalMs": 324.00000017881393
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 750,
+                  "opened": 235,
+                  "flags": 28,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 19,
+              "complete": true,
+              "frames": 594,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.399999976158142,
+                  "p95Ms": 2.199999988079071,
+                  "maxMs": 2.199999988079071,
+                  "over12ms": 0,
+                  "totalMs": 2.799999952316284
+                },
+                "generation": {
+                  "frames": 1,
+                  "meanMs": 2.5,
+                  "p95Ms": 2.5,
+                  "maxMs": 2.5,
+                  "over12ms": 0,
+                  "totalMs": 2.5
+                },
+                "auto": {
+                  "frames": 591,
+                  "meanMs": 0.44805414593966075,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 1.300000011920929,
+                  "over12ms": 0,
+                  "totalMs": 264.8000002503395
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 594,
+                  "opened": 235,
+                  "flags": 22,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 101,
+              "complete": true,
+              "frames": 648,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.2999999821186066,
+                  "p95Ms": 2.399999976158142,
+                  "maxMs": 2.399999976158142,
+                  "over12ms": 0,
+                  "totalMs": 2.599999964237213
+                },
+                "generation": {
+                  "frames": 5,
+                  "meanMs": 2.7200000047683717,
+                  "p95Ms": 3.300000011920929,
+                  "maxMs": 3.300000011920929,
+                  "over12ms": 0,
+                  "totalMs": 13.600000023841858
+                },
+                "auto": {
+                  "frames": 641,
+                  "meanMs": 0.44430577243546054,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 1.0999999642372131,
+                  "over12ms": 0,
+                  "totalMs": 284.8000001311302
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 648,
+                  "opened": 235,
+                  "flags": 20,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 555,
+              "complete": true,
+              "frames": 666,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 2.0000000298023224,
+                  "p95Ms": 3.400000035762787,
+                  "maxMs": 3.400000035762787,
+                  "over12ms": 0,
+                  "totalMs": 4.000000059604645
+                },
+                "generation": {
+                  "frames": 3,
+                  "meanMs": 2.5,
+                  "p95Ms": 3,
+                  "maxMs": 3,
+                  "over12ms": 0,
+                  "totalMs": 7.5
+                },
+                "auto": {
+                  "frames": 661,
+                  "meanMs": 0.49621785164961474,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 2.399999976158142,
+                  "over12ms": 0,
+                  "totalMs": 327.99999994039536
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 666,
+                  "opened": 235,
+                  "flags": 23,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 999,
+              "complete": true,
+              "frames": 558,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.300000011920929,
+                  "p95Ms": 1.800000011920929,
+                  "maxMs": 1.800000011920929,
+                  "over12ms": 0,
+                  "totalMs": 2.600000023841858
+                },
+                "generation": {
+                  "frames": 3,
+                  "meanMs": 3.0666666626930237,
+                  "p95Ms": 3.399999976158142,
+                  "maxMs": 3.399999976158142,
+                  "over12ms": 0,
+                  "totalMs": 9.199999988079071
+                },
+                "auto": {
+                  "frames": 553,
+                  "meanMs": 0.49819168130484887,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 2.699999988079071,
+                  "over12ms": 0,
+                  "totalMs": 275.4999997615814
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 558,
+                  "opened": 235,
+                  "flags": 14,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 12345,
+              "complete": true,
+              "frames": 582,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.3499999940395355,
+                  "p95Ms": 2.300000011920929,
+                  "maxMs": 2.300000011920929,
+                  "over12ms": 0,
+                  "totalMs": 2.699999988079071
+                },
+                "generation": {
+                  "frames": 2,
+                  "meanMs": 2.949999988079071,
+                  "p95Ms": 3.099999964237213,
+                  "maxMs": 3.099999964237213,
+                  "over12ms": 0,
+                  "totalMs": 5.899999976158142
+                },
+                "auto": {
+                  "frames": 578,
+                  "meanMs": 0.46003460244736455,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 2.5,
+                  "over12ms": 0,
+                  "totalMs": 265.9000002145767
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 582,
+                  "opened": 235,
+                  "flags": 27,
+                  "mines": 45
+                }
+              ]
+            },
+            {
+              "name": "minesweeper-ai",
+              "rngSeed": 65536,
+              "complete": true,
+              "frames": 582,
+              "overflowSignals": 0,
+              "passes": 0,
+              "phases": {
+                "start": {
+                  "frames": 2,
+                  "meanMs": 1.4000000357627869,
+                  "p95Ms": 1.7000000476837158,
+                  "maxMs": 1.7000000476837158,
+                  "over12ms": 0,
+                  "totalMs": 2.8000000715255737
+                },
+                "generation": {
+                  "frames": 2,
+                  "meanMs": 2.449999988079071,
+                  "p95Ms": 2.599999964237213,
+                  "maxMs": 2.599999964237213,
+                  "over12ms": 0,
+                  "totalMs": 4.899999976158142
+                },
+                "auto": {
+                  "frames": 578,
+                  "meanMs": 0.4653979233598214,
+                  "p95Ms": 0.800000011920929,
+                  "maxMs": 2.899999976158142,
+                  "over12ms": 0,
+                  "totalMs": 268.9999997019768
+                }
+              },
+              "events": [
+                {
+                  "event": "clear",
+                  "frame": 582,
+                  "opened": 235,
+                  "flags": 17,
+                  "mines": 45
+                }
+              ]
+            }
+          ],
+          "scope": "Calibrated main-thread CPU comparison: actual engine and unchanged adopted game source with normal button inputs chosen from read-only inspection. Reversi LV3 to completion; minesweeper ten seeds through generation and automatic clear. Includes game tick and software raster, excludes CRT/GPU, Worker and audio synthesis. Not actual Android FPS.",
+          "calibrationNote": "初回は目標1000に対して1400台で速すぎたため再測定。再測定は前770.5〜932.5・後896.5〜999.5と同等〜遅い側だが変動がある。厳密に校正が収束した端末相当値とは扱わない。計測範囲では12ms超過・描画上限超過なし。"
+        },
+        "limits": "リバーシは一つのLV3対局、マインスイーパーは10シードの生成と自動クリア等を確認。全対局・全乱数・実Androidの性能保証ではない。"
+      }
+    },
     {
       "title": "Micro Unicorn Attack",
       "url": "/playload/app/#v1.dTjLUiNJknd9BciqZBEZHkFEvpSk0qWhKQaKGqAaCqqqtWltQmSinFZlqqWggEYy2_vexuY-t_2Enft-Sn_BfsJaROoB04yKkjzcPcI9_J25s_MnXehxtnXyfv_8bOvy9P3-2fnp1t6nT3v7Hxr5XTnURVVuaUKf7tGXcIhtCUf4AS_xC_6EEr7jPQ_gGFUEH7H_9BDztoT72PMlPMZRCLNYLlL4jP0UvpqvXwhdDKtyprdyPBnokZhWd-UNVPViWM2grMGP7yGroXxcVVOY1otZUcIMiYYcKopdi_s2eCA51GBRkgo0pVBYJopdzWo5g_Km-kaoQ3KuKQxRY_dCT4vyVuTT6tv-aDDdr24yErQ932eawtioOzFfA_M1wr4HIQTgp3CC_aZ4_RM24Y8kZSniFZLXVkKF4hWS57XbbdVW_47UVi93KaWU5xmSMsQVyfOUWbdrilDt9mqXF4bttm9Ivm9PU7WsMPB9oXxLMgy-1d6QDEEYUv3x7VI8V0OtPiutmukmiB6NQ1BChWP6NM70VomV-DaYkNoNVBTlTfZwli_XRFPaKHJSJpKaH6zEOCtv9QgqMbmbjYimkNPJ8LY_JDkraSomA426Mc303bTcqpGLtXRz3tOStjedDh6t28lTfWYcLYDUIbVUTTbyakoMnKPs5EnUyRmjJbpOyba3tWVeySoXzwTdLYPzyey3od4vIYMpzNIq39J0NpmSnE2hYjMoIaOLlZzfkPud3xL0O78xRlfYH5BHnR8SFXZ-YIxO6qs_kluyDO-8iz-w3xy941NKG3Vq7WFtaordSd_1HTIjOXAffMp8ymYkM7bjEaiAsiiFM-z3lQTlgkHZPw-UgVOwBM_-BaDaFvBrStvsqNkjA7qqxgegFLgWIy2oQLlpurbnO5Sdd0m7844x-lQr_Gd8xSUqXACh2LUk4vpU5MV4TJqiSekmqq6JhgqWFq6NboQUKDtFgsrtFM-MOUTZGSY46wyfIccoO2ODHG8UmmFONCMl19QpdpRL2RgmmJOKkYxXK9zQxOef-5OUmq_-LMXpYu3ONyg7bxK_82Zz6s_4pttVoDVGLHJ-hn6uodJQash0imd98i7xe-9ijzLy5q3bk7GiLS8Vs3ExzIjv_Ay-8zPzaWMTWVMNM23iyvD3-wqUdYxM09isZJrSa6I1KAm1LLuBwjV5JnqJXGteaGM8nSjVKfRz6xn8UCeu3xkafJEbZ2zjSb_QaX-ojRmW0Aa3DMm_vOZh118A0VCunPwqNTM5ufKKMZCMfcR3PS7cIBZuAAVmXLkwxJIrBWPMiXJZ4VRkRtnQmZIZpdZ3ES_sig0tjcKgbimD6xnJuFIiWCf0uyTsGZf2RH-czudN0YwHCSmTqFfuuHGZKL_nSl7G5Y7LXdpqDbolV-1e2c1Y1AvjdtwUzQWl8CP2N3E_1qg6Y51EnfFzq06MVSc68TqT5-iBQQ8MeqA3ETTSuM78v_QjZ6JZnvYjZ6CZThHH2pbMkRaz6ltGNHY1pT_WNaP_SEamrWkw7GD2pnQxqIk_rrryKT6SvgIPPFMQ2uAGPuxKiFxQfphS-GTobhDA-r9Jby8Eaf6lFB6eX_nEXOJEJ7udk2eXeNSYkXW7dl2uQmdKTvTOrlNSWK3JiWaKWhyljYf1Jdb310nYauWI2foIEjonmmm6E_hmF380g8CjuaZRZh8lXKGEA_TgHCVcoAc3KOE9SrhHM9uY0UbCB5RwiRK-oIR6xJHrAefZKLMM7L-u5wzxyLSYOTMzYIgHkKDF_bNC9Qupq1PnoxhowhUVD2wN3if3zHdlZ2UijSsS5KjFA9PiHioDJbIn44wURIJPKZT49BDnjPRdaVwWueD6ab9KmWFQPqXOxtBiF1yhWL4TZR6F-7ggypPgKknhMf6rvQbrS_Aj4G4Erlyew0MIKcxiD7Gqs04uTJR9rF1SUtiuNnqX4oEVJAigFPfcC2jjc8329BBrK6YETU2-6lgu6KLIibeNFX3GVd-WuS48xmvljXpLCoVSPFLuSdCxWtDFpvV-s3dY94AKZadKwk7FGP36Qosc8rgg3AWXQlVDikIZuxKG8ahfvfXT5y39V0KfipxsH9ALzuE9rqfO93BD4QAveip24RxDCd_IPVMuHLKIwmRs-hY0r5Q880_VrZcFw-azY3Ux_KU--Yox2E_GywFncwOTPqbetlobakcbZjML2NFnfzn4jPv76ap8fa-Km63heEb82sCIB1bMtS4nxKfzuQUCSg9Q1lpKaH5Svrzyz4JTb-hl3m0w8IzCN94wuKW0SRfZeJZt1VZ4dlar9SFx6RF-6HFPeDH3RAgfGLMJtL5_dBaeqmF227TVaSm81dr-Qi9NXn1BL4Sf0KvTb71r9yw4Vbf7B4f1tu1rXVqBRwl3RUiP0Pw0VnH3hzC_t2HukMueEmFsE-mQqRAqvIcSt49are0PjXuGevkMc8NQBI6GI4aXPRkfJbLVqkX2hNyNhXEqHm1675beqvKtj6vIz9CEqHG-1faeqairxUOrdc_CZBW5RU6OuihbrTzBjLmtFjEqdTGbz0tKD00jC1c1qLEyeMVUlKA965ApzxSaVuswMfXGDemvpG7cz3T6bORsa5G1WusGp8UDv-fKownRQveUilWbvqA_8kMercgyViE1x2ih5_NLqkWGypjIUN0gVtKEuilzWjy-jPTa1ftNWl_gV2Ltcdhd17pHpkJJl_hLesm5Ab7QLzXwE_2J88YxQ3LIA5cfU4ccJbInZBALGVHzBAkf8aMZBnU2tT2utm73O1cBhc_4-SXN4N1WyxhkE8VqlRPbW5yfU01MHss1-Q-ZsmoWS8Z_DYOv1CiBWuTGIAaoQIuKoZARaFFy3viKX1_oVa6m9cx0lAJn5Bi4sauSkjZeVgAVdV6MDGZiSFzZmWya6gAjZwIjjBwNJ_idDeAOhXRDhwyYUG3nO4Uz9NpcBc6U3FHedqbEde4oFypwCrjGGcmJUNJ3iOGpDI_yncoyUVo_PjSM9FPcI2d8BNem2fuwj-1_mxSFCVv-HSZY2A52hyfMt93x2qbLCeXHcFWDzKf8mCmPqV0zppG7HbNDgqJmKjjAnPgO0WJm6KWhGR3trx0QipwMWJRgMZ8PujiZz0dmdc3d-XzUxSsW0GFV6qK8y-wlzuECblDZbYnZw6LuhJ6jnS_qB8EBy7tYtFoDlieTVmvEqq7V9DsbsJzyY4tKrszE4kNG1_k6Sq6ZS89xj1zzERi1tTDj5g16Gx4Wda8szxUfwQGFC9yuM35puRJzQkb8mitFd5RHG6dozm33PsV75JopxZTnlMx3pkTI0LljJd0IY2I3dKo1gRpHlW_dnoo92LeQFyvTGc6p1feMRa0WuZjPz7dxSCSlNjMurDnG_XMxXL4c2dNEUm7fkKT2yV1j1w0C8z5laQPzcDuAEZzDzTLXTvEcHvCi58c3sI8XvZvYX46aVzgbTvs67U_SxpUYjqZ4CldiWI2x_wD76ZJrgrsBF8r5_tYN5b-kxe6LrKif0z37nL60YoUTFjraeLnq8qjVqhJTe4yWFag2ezDiVcpyLmTkFGDXMoVRP09fL6s2nru2oFgwUW3XWkuL-tHeYrlvygA_5j40_-8f__1fTfCW8XFHBv0whZrLTEGWzTSNVzf_7z-b0P6DJl-Xj4R8VaONTnKt0fKGderZo-qDtBjaPDl46yHKzch22VPxUcJF0PPjo64IekFMrnaCuaRvfVuRuwF9aXhy2XNjRV8xv2_Nb8RHjuYeHPJj5rEcmr___T-btV0bxgY6hcAQuUcXhtsHH07FNJtkA00uKKhVdTzB5esgOb-x2tuzJfedk9X7IB9OzPhmxxxDleD60HztjWbT8FlxPigVQvP3v_3P1vHlycf_KH__2z_XTO1NMqvVob4PvgvN04Mvn7Y-v784Mketudw1lwQvgubh3snB1tnVwflaoBdC4EPz6P1WkxE5f0_Xmkhoy1qR84NP51_NjoUm9P8B",
@@ -5373,6 +5966,34 @@
       "originalUrl": "/playload/app/#v1.dTjbUuNIsu98hXF0O6pUWUWVbhay0j4MzULTC_RAQ1-8igljJKwdt-SxiwYGO-K87-u-79v-wnk_n3K-4HzCRpV8gR3WTdtZmVmVWXmXdnb-Sxd6nDVO3u-fnzUuT9_vn52fNvY-fdrb_7CV35VDXVRlQxP6dI--hENsSzjCD3iJX_AbSviB9zyAY1QRfMT-00PM2xLuY8-X8BhHIcxiuUjhM_ZT-Gq-fiV0MazKmW7keDLQIzGt7sobqOrFsJpBWYMf30NWQ_m4qqYwrRezooQZEg05VBS7Fvd98EByqMGiJBVoSqGwTBS7mtVyBuVN9Z1Qh-RcUxiixu6Fnhblrcin1ff90WC6X91kJGh7vs80hbFRd2K-BuZrhH0PQgjAT-EE-03x-idswh9JylLEKySvrYQKxSskz2u326qt_hOprV7uUkopzzMkZYgrkucps27XFKHa7dUuLwzbbd-QfN-epmpZYeD7QvmWZBh8q70hGYIwpPrj26V4roZafVZaNdNNED0ah6CECsf0aZzpRomV-D6YkNoNVBTlTfZwli_XRFO6VeSkTCQ1P1iJcVbe6hFUYnI3GxFNIaeT4W1_SHJW0lRMBhr11jTTd9OyUSMXa-nmvKclbW86HTxat5On-sw4WgCpQ2qpmtzKqykxcI6ykydRJ2eMlug6Jdve1pZ5JatcPBN0twzOJ7Pfhnq_hAymMEurvKHpbDIlOZtCxWZQQkYXKzm_I_c7vyfod35njK6wPyGPOj8lKuz8xBid1Fd_JLdkGd55F39ivzt6x6eUbtWptYe1qSl2J33Xd8iM5MB98CnzKZuRzNiOR6ACyqIUzrDfVxKUCwZl_zxQBk7BEjz7F4BqW8CvKW2zo2aPDOiqGh-AUuBajLSgAuWm6dqe71B23iXtzjvG6FOt8J_wFZeocAGEYteSiOtTkRfjMWmKJqWbqLomGipYWrg2uhFSoOwUCSq3Uzwz5hBlZ5jgrDN8hhyj7IwNcrxRaIY50YyUXFOn2FEuZWOYYE4qRjJerXBDE59_6k9Sar76sxSni7U736DsvEn8zpvNqb_gm25XgdYYscj5Bfq5hkpDqSHTKZ71ybvE772LPcrIm7duT8aKtrxUzMbFMCO-8wv4zi_Mp1ubyJpqmGkTV4a_31egrGNkmsZmJdOUXhOtQUmoZdkNFK7JM9FL5FrzQhvj6USpTqGfW8_ghzpx_c7Q4IvcOGMbT_qFTvtDbcywhDa4ZUj--TUPu_4CiIZy5eRXqZnJyZVXjIFk7CO-63HhBrFwAygw48qFIZZcKRhjTpTLCqciM8qGzpTMKLW-i3hhV2xoaRQGdUsZXM9IxpUSwTqh3yVhz7i0J_rjdD5vimY8SEiZRL1yx43LRPk9V_IyLndc7tJWa9AtuWr3ym7Gol4Yt-OmaC4ohZ-xv4n7sUbVGesk6oyfW3VirDrRideZPEcPDHpg0AO9iaCRxnXm_7kfORPN8rQfOQPNdIo41rZkjrSYVd8zorGrKf25rhn9RzIybU2DYQezN6WLQU38edWVT_GR9BV44JmC0AY38GFXQuSC8sOUwidDd4MA1v9NenshSPMvpfDw_Mon5hInOtntnDy7xKPGjKzbtetyFTpTcqJ3dp2SwmpNTjRT1OIo3XpYX2J9f52ErVaOmK2PIKFzopmmO4FvdvFHMwg8mmsaZfZRwhVKOEAPzlHCBXpwgxLeo4R7NLONGW0kfEAJlyjhC0qoRxy5HnCejTLLwP7res4Qj0yLmTMzA4Z4AAla3D8rVL-Sujp1PoqBJlxR8cDW4H1yz3xXdlYm0rgiQY5aPDAt7qEyUCJ7Ms5IQST4lEKJTw9xzkjflcZlkQuun_arlBkG5VPqbAwtdsEViuU7UeZRuI8LojwJrpIUHuO_2muwvgQ_Au5G4MrlOTyEkMIs9hCrOuvkwkTZx9olJYXtaqN3KR5YQYIASnHPvYBufa7Znh5ibcWUoKnJVx3LBV0UOfG2saLPuOrbMteFx3itvFFvSaFQikfKPQk6Vgu62LTe7_YO6x5QoexUSdipGKNfX2iRQx4XhLvgUqhqSFEoY1fCMB71q7d--ryl_0boU5GT7QN6wTm8x_XU-R5uKBzgRU_FLpxjKOE7uWfKhUMWUZiMTd-C5pWSZ_6puvWyYNh8dqwuhr_WJ18xBvvJeDngbG5g0sfU21ZrQ-1ow2xmATv67C8Hn3F_P12Vrx9VcdMYjmfErw2MeGDFXOtyQnw6n1sgoPQAZa2lhOYn5csr_yw49YZe5t0GA88ofOMNg1tKm3SRjWdZo7bCs7NarQ-JS4_wQ497wou5J0L4wJhNoPX9o7PwVA2z26atTkvhrdb2F3pp8uoLeiF8Q69Ov_Wu3bPgVN3uHxzW27avdWkFHiXcFSE9QvOztYq7P4T5vQ1zh1z2lAhjm0iHTIVQ4T2UuH3Uam1_2LpnqJfPMDcMReBoOGJ42ZPxUSJbrVpkT8jdWBin4tGm9zZ0o8obH1eRn6EJUeN8q-09U1FXi4dW656FySpyi5wcdVG2WnmCGXNbLWJU6mI2n5eUHppGFq5q0NbK4BVTUYL2rEOmPFNoWq3DxNQbN6S_kbpxP9Pps5GzrUXWaq0bnBYP_J4rjyZEC91TKlZt-oL-yA95tCLLWIXUHKOFns8vqRYZKmMiQ3WDWEkT6qbMafH4MtJrV-83aX2B34i1x2F3XesemQolXeIv6SXnBvhCv9TAN_qN861jhuSQBy4_pg45SmRPyCAWMqLmCRI-4kczDOpsantcbd3uD64CCp_x80uawbutljHIJorVKie2G5yfU01MHss1-Q-ZsmoWS8Z_D4Ov1CiBWuTGIAaoQIuKoZARaFFyvvUVv77Qq1xN65npKAXOyDFwY1clJd16WQFU1HkxMpiJIXFlZ7JpqgOMnAmMMHI0nOAPNoA7FNINHTJgQrWdHxTO0GtzFThTckd525kS17mjXKjAKeAaZyQnQknfIYanMjzKdyrLRGn9-LBlpJ_iHjnjI7g2zd6HfWz_x6QoTNjyHzDBwnawOzxhvu2O1zZdTig_hqsaZD7lx0x5TO2aMY3c7ZgdEhQ1U8EB5sR3iBYzQy8Nzehof-2AUORkwKIEi_l80MXJfD4yq2vuzuejLl6xgA6rUhflXWYvcQ4XcIPKbkvMHhZ1J_Qc7XxRPwgOWN7FotUasDyZtFojVnWtpj_YgOWUH1tUcmUmFh8yus7XUXLNXHqOe-Saj8CorYUZN2_Q2_CwqHtlea74CA4oXOB2nfFLy5WYEzLi11wpuqM8unWK5tx271O8R66ZUkx5Tsl8Z0qEDJ07VtKNMCZ2Q6daE6hxVPnW7anYg30LebEyneGcWn3PWNRqkYv5_Hwbh0RSajPjwppj3D8Xw-XLkT1NJOX2DUlqn9w1dt0gMO9TljYwD7cDGME53Cxz7RTP4QEven58A_t40buJ_eWoeYWz4bSv0_4k3boSw9EUT-FKDKsx9h9gP11yTXA34EI5P966ofy3tNh9kRX1c7pnn9OXVqxwwkJHGy9XXR61WlViao_RsgLVZg9GvEpZzoWMnALsWqYw6ufp62XVxnPXFhQLJqrtWmtpUT_aWyz3TRngx9yH5v__459_a4K3jI87MuiHKdRcZgqybKZpvLr5f_-nCe0_aPJ1-UjIVzXa6CTXGi1vWKeePao-SIuhzZODtx6i3Ixslz0VHyVcBD0_PuqKoBfE5GonmEv61rcVuRvQl4Ynlz03VvQV8_vW_EZ85GjuwSE_Zh7Lofl_f__vZm3XLWMDnUJgiNyjC8Ptgw-nYppNsoEmFxTUqjqe4PJ1kJzfWO3t2ZL7zsnqfZAPJ2Z8s2OOoUpwfWi-9kazafisOB-UCqH5LW4cX558_Ev5JV6ztDeprFZH-j74LjRPD758anx-f3FkDlpzuWsuCV4EzcO9k4PG2dXB-VqcF0LgQ_PofaPJiJy_p2s9JLQlNL81Pp01zg8-nX81Wxaa0H8B",
       "compressedBytes": 2997,
       "sourceSha256": "57e77c4079b41af554105833930d7b5b280571a29ffdb6548f1b8977c3b7edab"
+    },
+    {
+      "index": 111,
+      "sourceUrl": "https://x.com/haruka_apps/status/2117561626719388123",
+      "title": "REVERSI",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "publishedAt": "2026-11-03T10:16:48.000Z",
+      "status": "採用",
+      "reason": "2D盤面で石・合法手・手番・石数を読み取りやすいCPU対戦リバーシ。3段階のCPU、石が返る演出、日本語説明があり、旧3D版から見やすさが改善している。",
+      "checkedAt": "2026-11-03T11:31:26.207Z",
+      "workUrl": "/playload/app/#v1.dRhtb-NI-Tu_wjE6a6Z-7LWdtzbuJGTTbLeiO6nStN2VZVZuMk6jTZPKdpddNZFIuqwODjhuDzhYTlohDum4RYAA3Qkdgv9S_4H7CegZJ2l7B1KUeXve53kb37mjfCcZJEOhtJuHzfb-zrfu3FHa4qmI4oHyNFaSE6E09g4UkleG4qkYxtRUrj7-g3L16nPl7DxRrl59kR3gjo6r0_N40P3WUCQKZw-C5MSMByMQ2TQ4jiHKpqeDESSMs-p-Eg1GfTOMxqeNkyBqjHuCFMv5QkHnFELmWWCDA3koQBFKUPYhYISDoKwamqfBGYlwEoneeVcQkkBIWdVZS_RcTpBQX18jtsapUTaLEOGKV6t2tgwhomBRCrGkBxFlVeJovBZVS5VcRCcTRK0JXAnqhuOIZEoVXG4YLr046_a9hHDqm2dBwgLCgQiIIBMhJlzOqOvZYOaLvpSVZGxQp2wjZNWMTEFfX4v0wlqo3yKI5AIYUlaVRjt5fjZOSHRHQEI3S2ZhMgk1DVkhDKXUzYg59jephBAsxMKZpgkS0WrBLOIskTM6XWBbK1wLMtNAQlk1qjqaFm0WNS3BWbJZpC5aZAhjeMq8jQ0wnCLYFhTlxCjgiD_bwn8HbHkCNlg-NPDqz4bBc-KAevDQLllHVqvI7V5fOXjoWLgqcbsXBlvKwcO8g-sCt4MQT9dxled2Tzm0ixIpDLbu1eWqwJ0gFD3VjM-Gg4Soiko97lM4YhYcMgu2mAVt5sABs6HO7A14wAwbesyCfWbDgNlwyizoMAt2mAUt5vnQxL8R83y3Ox7FifKcecYGGOtglMGwwYYyrMOG74bno24yGI-UZ4RLk11k8CGiDkKS417kU_SjbD9QxqHynF6gDWMW6QEMmSX9zBWElLWYGiQ2Aq1M6aajadyLfcbyRuLSWGcBDHUdqQ7xAv8fdCLZuUN3aBg0NM_O4xMSGyyg00gk59FICafI_WQZUZ5pmvUoCp6TUoGaT8TzmFDfDAfDREQYaJlmgppDMeonJxS617Ej9UjYs8UGypYs4ZbBEyrjEHkkIHzKvdBnkbuQJJnCOfqEZ4OTxYZgVb7kzVmVM3aD8UM01cLga9-XPDMfv9D1h-84xcmEPB-IYS9z0ZidSA3lNcRLIgvOeJQ3VrRrRoYpqeYNAYlhgxGAEVJa2RD5NXJOOPWEYfuGnDmG8DN1N5lFF2awnTWyZGR8jcN1MglZqeCGmE3QGJpGEp0RaRcmanbFsOnaU6-wFpGwWs1D2ZAjpXpEylqI67IWUurTayMuKUfoXPHSubgZDwddQajbJbG8wSxy2bWu8dd1dYfVUNNIyIZSubDKAnocieDJte-sPP6MCHpxwAQ02QlpLQzdXKprozakaQ5G3eF5T8Skjsm1zpqe5VOMM1ohp8xehx1mw5CtrpVk4gtm2GIDIta64Q05vrTmJpaIEtiW77UN269tbFTahu2OJfmVpRO0RzMjGLLWDXuEkICT2SO4YY8QbIhAcjYEpTppbzo1p7jGyZae0IpF3aAqNI0IFsCYJXQ6JZS6YhgLZRAStMLNGx8wtG6P5Ysyk8AOc6BBnAwBhfI4CJ-dkxZ1j1gedhi6ey1f4VVRK1SK0CCLGZ3KkL3HLHjMLOgzC44ZuVVUlpmVw72aqlbUjqp7GyWwHQvs0sJMuqcebrSKvBjwfONYDqIvh37Iy4IX-zzf2OLFJs9vNXhxi-eP-7x8_D_gG1u8LKGOV3DFb_ePeblJqQrq4Xorz4tBM2iGjbDR3e5u97f6W8s1zsVdcZdS1cc8Ta-z6BNCL1rsOhuFg-GQWBRanlP2WcvLl3zm4Gpdror-rYwurdxjlntMqHtGbCqt9ggzzMWIdUkLOBxQd7QMevKAcdhnB4A3dQA95li6s7Y8Bs-CMhRLUMr7127MaY10WN6CBrEprTSIJf_zdOo-IZlH7cHd68Kxy5bVlJUhZPYi4UaL3iCSFXrPc6w1oXM98JknC7dP4f4SM6viy54oQ4wXSEToJMb2hupcJ7YWU595CYn0mCKeT2F7mecPa6LCr02dDLpo7S1dh47BOlXLzTodCwRaMBmRAp1McCzSGnk8mbDjZHRGChT6y3mR0gqe9Kmmkcea1q-Re99jNhwTPODsMQjWp_CY9ZklTeOhSJnD77HrupMvYfch7YGKqooKZbCz_GozdkQvyGFNZUxJL9-ml_9KL98q6ey36eyTdD5LZy8UxiYT27x6_TadzdPZZ-nsjXL1-rPG3sFXbz751cQxr15_ls5fKensL-nsl-n8B-nsU0VCv50oSjp7L529m87fS-fv5iZ5s4B0Z39W0vnb9PJHX7159bN09hcJ92k6_1E6_4nk8EJJL2fp5e_Ty7-n83_mJgUznf1Y_l4o6ezLdPYynf0ko_27r968_zI3mSjYLVcyKX6Nks_fy6kVlTGm3G8dKZ2Wsrdbf6SwlTaPWgfKbUU67foe7ig7XKkruzu8OVEQ8d7uzh6OV6_fShWURqvNm-19BcVX6m0E26_fayr3WrLjR3kftPY7iKAc7XAEXMi4127u72eS7nfq7U5Opcu2aqJSMxxHzaB7QhY-tUtsEHoBOAhNE5sbtXKlRKlLpHtYmf9gIE4mAn3kEL1DhozLNY08IdijYVIsUDqVWfG64y4tW-6sHLQ87kPCRuZg1BPPWiGRDwULXaRXtbA9XdbhxQvkNHhGLIiIDcSxjJ7hrCX0ju1gtmG8amK7tGmug2B80yzW8sZ-Zd9dAjJW0rRlo3q4gV1pV6XT-8RZI2WNU3DkoyJPdRtEDdv4UC-sEbHp0IoFDmbxcsWCIqLYZXCgABbYFHaJXYICbBP1UetABXXlryqVh2UoQqirKgWJtw4FDIQFnm2B2tg7UBeQtg0BgrrZYQHU3UNVb0NpeV4ET_3qzQf_VgGHL-Xwya_UrBQgmgUWYGCtpEhnf05nf03nH169fjvBB2A6-yidfSid-Xfp_Ifp7OUkvfxAOnw6-1s6-2k6fz-dfZCboPvcJoOOn0Miq5VpmhP0q1UQYxjKoxfp7CO1gjZpK52DNleW_Dv3d_h3d_j2ZK--v5-bbLXrR8p2_UEzY4jxcbTDc5KNdOMlixvxdMt9vaPaTqXkQylTH6-GsaPaNlGvPv4Dvm73Djrydbt7uHra3t1-oMLiXAb4-wiRXv4pvfwNZqKbcLSCpF5-cPXywztXr76o7Nb5tnL18udXL19Vdg-RzPWZNOyn6eyvS4AVSZXKzOfkMPPdCAiXb9q2y3WdovAcVNU8C3rNUY_YGHQYi2XItHn1eaXd7LQfoaiVzk5nt4nM0fjzubzOF3ijsz_K83T-n3T-SXr5ruSNKqB1l98GpN-8_1JJLz9LL3-ONzf_QqULN4MNdGZUs9Lk27s7-_elVy80q6Szt5gM5x-ms1-o_zsv5I407eu5QfayWYnJU0OODnUjTSNtRtp6pDv0nbyeQctiI7PJUe12QqmQI0mxgG9k5IIwzMp4TJdNW69qUcPoTSZnZLDozIRk1P4ai6wWHdCLOotIKQ83kkwdPzIsNDIWKiLTheSaVtbqmlY3DHehk6aRslanm2VNq-s6Sv-I1G9kwKx14OxMROE4Og1GXWGOxt_H_kLTvrFp8E3HLLp0aI7Es4RQszceoQ5DrLqGcbppa1puiDzGdDqd7mWVNkvgi-dqxOJu5Ik7jjWxfE-841i-y3VVzbG7nsA3Cg4MdyAyuycR457l43Q8XL0zbEqndNH1xNmrrrRIlzjJ8uW6fBVj1GlarqdpmUmbyxY2E8cTEPkMey03PosIFphIL4D8SgGlFZesfcaXhXu7OYpYFfF49iUooiBwFmGbBPJDSUTh1sukVqrkKZ2uJHsgi8ktJg8yWbhekAUvkyVPoaB1NG11YhQwVfxDRSmn_wU",
+      "compressedBytes": 2927,
+      "sourceSha256": "499f0930bcc4ec1b13444ecfcceefbc161bac8b436da8934f49050810655b309"
+    },
+    {
+      "index": 112,
+      "sourceUrl": "https://x.com/haruka_apps/status/2117548314698952871",
+      "title": "minesweeper ai.",
+      "author": "haruka_apps",
+      "authorUrl": "https://x.com/haruka_apps",
+      "publishedAt": "2026-11-03T09:23:55.000Z",
+      "status": "採用",
+      "reason": "マインスイーパーとして開く・旗・連鎖開き・敗北・クリア・再挑戦が成立。論理で解けるか盤面を検査して採用し、任意のヒント・自動プレイも備える。",
+      "checkedAt": "2026-11-03T11:31:26.207Z",
+      "workUrl": "/playload/app/#v1.dVfrbts6Ev5_nkIWEIITjRXKt6SSGa-bJj3BtvYiyRYLCFpAtilbiEwJEp02qP0S5_f-3VfYfZ8-yYKUfDnZFgJIakjN9ZsZ6uLC-otKVSasdSpF9VWIQpRWnLq_XVxYk9xabkRVpXLpW2olrPG9NV-J-XNliRdRvlqzPC4X1jyW1kxYVZ69iIU1e7WyfJnOXevHv_5t_fjjP1ZeCGn9-OO_VpLFS01x9Mv43sqT5GKVSnURb1T-2zyXlbIUV_z6UZWpXLpJma9vVnF5ky8E7V92ez1HQRDaibhix4cxG-1EzNjsajafsZjNrgyJsX6ve3U57171e6w5lVx5xydJ7MhdxwWlEgXw62K-DBUVELlFrLiEoNZI8g5DwTtXDEve62PGQ9d1x2UZv5rDhoMyHL7XX5Q8jIIkL2kmtEEsUMN3gXIcaPYzLs6ko866bQ9zTsWF3DJwqLrobhm0vUC1e4Rk15wRkg0lIblZ5kOvR0jpFptqRfNz6WSwK4XalNIqd6AZ1Up8jtXKXcffqFnEs4qqM9kWZxLwQKHKyGw3sgECrWqCc0yxwhgLXOEaZ7jBJWc45u_wlV_igjOccoYTzvCes8Y_nzkFfr33h5ukWUYZBMlGzlWaS-uJwveEf6aAczOmZqzMGJux4GvOcMY3nO1qnl80Cr5rF-5jEKookG4m5FKtgr0jFZdukRcUgjRU0XZL9cQ9rPTEcG6IsvaY67pZqCKA3Q5vuBRfrXuprvZqG_vvGos-auma1Yj5sZ48_yZUET5oumbiGvhTrWOa0JY-Ck0oPMNJcg0ZFhwtKK08sYwCB90_0hICNWQj4Ti-dLjah1MOuVadED0OuXTEDvBRx1dCLVJyrhpnbLeOc3fdEd2jBrUAwVUoozcqhAy9CNKE3oQi4iU-UAGEPGrWjgdHFs3CnGp7yHaHeJ4_U7W3QfIwwkoPxR59VIwqX4Kbynm2WYiKKthu90QTCAVvckOY3EgTE70ja-PoJM2UKLWnjZcJaemAAArjofabM2ZvDxIxEpzvIUOINImq-HVBFXoA_p8IDKCB3upP6e0-i9eKwq8VWfOyHZ_sqoP8NKHr0Zrz1UGF1VsVVm9UQLXdtuheZ6dqFrB3iuCrE1HG-CpfC9rAFeAt4IR2a0seo1ECIa3q9B00nm7qtG17gDdhGXGvnYRlhHecYYs-mK8eqTg1s8VLQnKqsIRhH9wqLxVtAFpT2zmVWAIg0wAoaImaJaACgFkp4ufgNRXZYteAPpRYRbsDyL5qkGljggC-J_uigulhFR8LTQMmyVkgh-WhOJTclLsylot8TeFcbFmQ0xIVXHuEtLQ2hNDEmIvScWBnOO3rubZkHsqIqxOzkxOAAX7RWK7NaISGEkXEDeX8WSun3X8MqDgEtPaAzmQj7wug2GMhNjUMsNPtc57-DFr7NP2JN4xOu12D5RdTmjucF4TQGV8S8kyXww7ghjPAb7qcFcOu8YKKRrTgXVxxhUUWv1KG9hevM-1MBnMbwNd8Ad_XDH-pGSG04L2agYf2k9dnmkl_0p2L5Y3d9Jlb_KQ7ZK3jB1PXUGDJL4Ff6-QTTVMVmAG_vg077Fw6yskiHgosdQE7dheVzp8pfL93nBPsK16IMsnLdSznwpX5VwrBjJD_I7bVsHPSTGauFN8UhUC5i1wK4zOGG67clzjbCNilCfWMM1szY2kHXygAbgjZhF70NoBLjbMNIbX_788GQ-8oaxMyXVTk4lBSACU3bA5U3cYgkI43opVGomfE-crxCKE6IMdIXU0HE29uA76nYE7taqlrx8EFnylJdRrq2WvmTjN3YbRwPJ-hNm2x3S6uvQ4hi7Pe0ANC6JjTsVOfa9efORLOJL5y-urU_No1e8frwZnX21-bcv56Lp1xoDd7jaw-jOh0u9X6FLQHONmv-wC-3plokVNCJiO65HTpeHDWrY0urjujJwr-lJBWoaHq4Yx_pTmA3-B7OkrDPBplYX5arauTjOV8HuYRIeZIE6zK3BHq68M3jXG_CnOzzsFPzZJqyj-5d-rt_sRb2gC4l03Ir0MBOOUTnXC3J62lO2D7u6NGvW3ZeKmRjR8oQ4aKeoBd_dZBhmW7-lm2ObatTwyQof1k2U59ba7vfetU0nfv3uH6YsD0Dc8t4sWjiktFu6bTfKBeV383vvdtJ7Snd3c22r_fT55stMd_f5raUbiMcDka-JdvS6wI5PEuK_iGkOXIwPnQVSSM-r7B8imp6y-HHe19-aZtjQZ-x-8Et6F0eiziaSijUahr70gPjm372j0hwx72sYsDvKyfyByKkEUaHoQk5kNFO4AMJeerUdfvNHuV2bP_YWMXO5EfKpNSI89ngGYlht1R12f-JYpop4PgDTC09f_L09R6fBo_aM98Hv_1fvLRGlt34_sH6_10_PDBRttG-_10-rll_nbGH8f3Exvtm0-344dTUhQWEQ7qAHuXaFhP_3Y7Mb9Gd5_GH09-jWzA29NGdHB2NS9DedFhWxaF8qzDokA5tt3in0Kpu9kn07Ac20bhzlclVyGL9DLPuHKrLJ0L6gHsAKuipFfnY7w6f3W8ASraBRzA7olC8D8",
+      "compressedBytes": 1937,
+      "sourceSha256": "714de5f01ac6acc1deeb7838b3cbb5170591a5954e1f7dc4ba4357fbdd793fa0"
     }
   ],
   "criteria": "docs/design.mdに従う。操作して遊べるゲームとゲームミュージック作品を収録する。自由移動・探索・地形への干渉もゲームとして含む。一般の映像・音楽鑑賞デモは対象外。学習等の題材名で判断しない。既存掲載ゲームは品質通過済み、新規候補は明らかに品質が低ければ採用しない。ノイズは文脈、制御、正常復帰、操作への影響で判断する。 ゲームミュージックはオリジナル曲、または楽曲の権利・利用条件を確認できるものを対象とし、既存曲の許諾不明は掲載を保留する。",
@@ -6654,6 +7275,14 @@
         "selectionReason": "回転する立方体を使った迷路探索。立体表現と遊びが一体になっている。"
       },
       "currentSourceUrl": "https://x.com/haruka_apps/status/2116985055889551653"
+    },
+    {
+      "checkedAt": "2026-11-03T11:31:26.207Z",
+      "title": "REVERSI",
+      "action": "作者が3D版から作り直した2D版を別途採用",
+      "previousSourceUrl": "https://x.com/haruka_apps/status/2117019390462071240",
+      "adoptedSourceUrl": "https://x.com/haruka_apps/status/2117561626719388123",
+      "note": "旧3D版を再評価して復活させたものではない。旧3D版の見た目を理由とした取り下げ履歴は維持する。"
     }
   ],
   "targetedRechecks": [
@@ -7718,6 +8347,602 @@
         },
         "publicationVerification": "公開結果はevidenceDirectory内のpublic-verification/result.jsonとpublic-catalog-visual.jsonへ記録。"
       }
+    },
+    {
+      "checkedAt": "2026-11-03T11:31:26.207Z",
+      "scope": "ユーザー指定の2作品を取り込み。旧3D REVERSIの取り下げと他の33作品は維持。",
+      "outcomes": [
+        {
+          "title": "REVERSI",
+          "sourceUrl": "https://x.com/haruka_apps/status/2117561626719388123",
+          "status": "採用",
+          "reason": "2D盤面で石・合法手・手番・石数を読み取りやすいCPU対戦リバーシ。3段階のCPU、石が返る演出、日本語説明があり、旧3D版から見やすさが改善している。",
+          "validation": {
+            "checkedAt": "2026-11-03T11:31:26.207Z",
+            "originalCompressedBytes": 2986,
+            "compressedBytes": 2927,
+            "labels": [
+              ["A:", "Ⓐ:"],
+              ["B:", "Ⓑ:"]
+            ],
+            "originalSourceSha256": "499f0930bcc4ec1b13444ecfcceefbc161bac8b436da8934f49050810655b309",
+            "adoptedSourceSha256": "2345b1bcec8100679b6ca7ca1594f38f62dbfeaac74a5709d1870593088927c5",
+            "browser": "153.0.8010.12",
+            "browserErrors": [],
+            "browserScope": "日本語ルール、着手とCPU応手、盤面中盤、レベル変更、BGM切替を通常入力で確認。LV3終局・パス・再挑戦は補助検査。",
+            "functionalChecks": {
+              "id": "2117561626719388123",
+              "frames": 2200,
+              "statesAndSoundsEqual": true,
+              "overflowSignals": 0,
+              "levels": [2, 3],
+              "phases": [0, 1, 2, 3],
+              "musicToggles": 2,
+              "method": "Actual engine original/adapted comparison using normal input and identical deterministic clock for AI scheduling; excludes text cells that intentionally differ. Real clock CPU evaluation is separate."
+            },
+            "screenshot": {
+              "scene": "中盤、黒12・白10、LV2。石の配置・合法手・カーソルと手番、石数が見える。",
+              "method": "掲載版を実ブラウザで通常キー操作し、CRTオンでアプリScreenshotから保存。画像加工・ゲーム状態の書き換えなし。",
+              "selected": "reversi-midgame.png",
+              "width": 640,
+              "height": 576,
+              "sha256": "7c98fea7f7b3bc45bbb0a33f91a56b996360970718d66fb0b3adf49c7d217ae0"
+            },
+            "cpuScreening": {
+              "rate": 3.37,
+              "calibrationBefore": [814.5, 770.5, 932.5],
+              "calibrationAfter": [999.5, 896.5, 964.5],
+              "results": [
+                {
+                  "name": "reversi",
+                  "rngSeed": 42,
+                  "complete": true,
+                  "frames": 2140,
+                  "overflowSignals": 0,
+                  "passes": 2,
+                  "phases": {
+                    "play": {
+                      "frames": 1582,
+                      "meanMs": 0.4210493046550172,
+                      "p95Ms": 0.7999999523162842,
+                      "maxMs": 4,
+                      "over12ms": 0,
+                      "totalMs": 666.0999999642372
+                    },
+                    "cpu": {
+                      "frames": 468,
+                      "meanMs": 0.7882478630695587,
+                      "p95Ms": 3.300000011920929,
+                      "maxMs": 4.100000023841858,
+                      "over12ms": 0,
+                      "totalMs": 368.8999999165535
+                    },
+                    "cpu-endgame": {
+                      "frames": 90,
+                      "meanMs": 0.7966666671964857,
+                      "p95Ms": 3,
+                      "maxMs": 3.299999952316284,
+                      "over12ms": 0,
+                      "totalMs": 71.70000004768372
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "finished",
+                      "frame": 2140,
+                      "counts": [3, 61],
+                      "level": 3
+                    }
+                  ]
+                }
+              ],
+              "scope": "Calibrated main-thread CPU comparison: actual engine and unchanged adopted game source with normal button inputs chosen from read-only inspection. Reversi LV3 to completion; minesweeper ten seeds through generation and automatic clear. Includes game tick and software raster, excludes CRT/GPU, Worker and audio synthesis. Not actual Android FPS.",
+              "calibrationNote": "初回は目標1000に対して1400台で速すぎたため再測定。再測定は前770.5〜932.5・後896.5〜999.5と同等〜遅い側だが変動がある。厳密に校正が収束した端末相当値とは扱わない。計測範囲では12ms超過・描画上限超過なし。"
+            },
+            "limits": "リバーシは一つのLV3対局、マインスイーパーは10シードの生成と自動クリア等を確認。全対局・全乱数・実Androidの性能保証ではない。"
+          }
+        },
+        {
+          "title": "minesweeper ai.",
+          "sourceUrl": "https://x.com/haruka_apps/status/2117548314698952871",
+          "status": "採用",
+          "reason": "マインスイーパーとして開く・旗・連鎖開き・敗北・クリア・再挑戦が成立。論理で解けるか盤面を検査して採用し、任意のヒント・自動プレイも備える。",
+          "validation": {
+            "checkedAt": "2026-11-03T11:31:26.207Z",
+            "originalCompressedBytes": 1937,
+            "compressedBytes": 1937,
+            "labels": [],
+            "originalSourceSha256": "714de5f01ac6acc1deeb7838b3cbb5170591a5954e1f7dc4ba4357fbdd793fa0",
+            "adoptedSourceSha256": "714de5f01ac6acc1deeb7838b3cbb5170591a5954e1f7dc4ba4357fbdd793fa0",
+            "browser": "153.0.8010.12",
+            "browserErrors": [],
+            "browserScope": "通常入力で初回生成、開いた盤面、ヒント・自動プレイへの切替、CLEAR表示を確認。旗の設置／解除・意図的な地雷での敗北・再挑戦は補助検査で確認。",
+            "functionalChecks": {
+              "frames": 806,
+              "overflowSignals": 0,
+              "events": [
+                "first-click-safe",
+                "flag-set",
+                "flag-cleared",
+                "mine-game-over",
+                "retry",
+                "safe-and-mine-hints-correct",
+                "auto-clear",
+                "restart-after-clear"
+              ],
+              "method": "Actual unchanged engine source. Normal button inputs; read-only board inspection selects a mine deliberately for flag/loss tests. No game state mutation."
+            },
+            "screenshot": {
+              "scene": "途中まで開いた盤面でAI:HINT。数字、旗、未開放マスと安全候補・地雷候補の色が見える。",
+              "method": "掲載版を実ブラウザで通常キー操作し、CRTオンでアプリScreenshotから保存。画像加工・ゲーム状態の書き換えなし。",
+              "selected": "minesweeper-ai-hint-midgame.png",
+              "width": 640,
+              "height": 576,
+              "sha256": "1e944e331d25d81942481f30c732edf67be8702db1c339ed4efd0cb5897df6e3"
+            },
+            "cpuScreening": {
+              "rate": 3.37,
+              "calibrationBefore": [814.5, 770.5, 932.5],
+              "calibrationAfter": [999.5, 896.5, 964.5],
+              "results": [
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 42,
+                  "complete": true,
+                  "frames": 738,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 2.5,
+                      "p95Ms": 3.700000047683716,
+                      "maxMs": 3.700000047683716,
+                      "over12ms": 0,
+                      "totalMs": 5
+                    },
+                    "generation": {
+                      "frames": 7,
+                      "meanMs": 2.9714285731315613,
+                      "p95Ms": 3.399999976158142,
+                      "maxMs": 3.399999976158142,
+                      "over12ms": 0,
+                      "totalMs": 20.80000001192093
+                    },
+                    "auto": {
+                      "frames": 729,
+                      "meanMs": 0.49026063088690464,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 2.600000023841858,
+                      "over12ms": 0,
+                      "totalMs": 357.3999999165535
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 738,
+                      "opened": 235,
+                      "flags": 25,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 1337,
+                  "complete": true,
+                  "frames": 618,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 2.0499999821186066,
+                      "p95Ms": 3.5,
+                      "maxMs": 3.5,
+                      "over12ms": 0,
+                      "totalMs": 4.099999964237213
+                    },
+                    "generation": {
+                      "frames": 4,
+                      "meanMs": 2.75,
+                      "p95Ms": 3.100000023841858,
+                      "maxMs": 3.100000023841858,
+                      "over12ms": 0,
+                      "totalMs": 11
+                    },
+                    "auto": {
+                      "frames": 612,
+                      "meanMs": 0.4712418300264022,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 2,
+                      "over12ms": 0,
+                      "totalMs": 288.39999997615814
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 618,
+                      "opened": 235,
+                      "flags": 26,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 2026,
+                  "complete": true,
+                  "frames": 552,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.2999999821186066,
+                      "p95Ms": 2.099999964237213,
+                      "maxMs": 2.099999964237213,
+                      "over12ms": 0,
+                      "totalMs": 2.599999964237213
+                    },
+                    "generation": {
+                      "frames": 1,
+                      "meanMs": 2.5,
+                      "p95Ms": 2.5,
+                      "maxMs": 2.5,
+                      "over12ms": 0,
+                      "totalMs": 2.5
+                    },
+                    "auto": {
+                      "frames": 549,
+                      "meanMs": 0.4621129331258694,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 1.4000000357627869,
+                      "over12ms": 0,
+                      "totalMs": 253.7000002861023
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 552,
+                      "opened": 235,
+                      "flags": 19,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 7,
+                  "complete": true,
+                  "frames": 750,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.4500000178813934,
+                      "p95Ms": 2.100000023841858,
+                      "maxMs": 2.100000023841858,
+                      "over12ms": 0,
+                      "totalMs": 2.900000035762787
+                    },
+                    "generation": {
+                      "frames": 2,
+                      "meanMs": 2.949999988079071,
+                      "p95Ms": 3.199999988079071,
+                      "maxMs": 3.199999988079071,
+                      "over12ms": 0,
+                      "totalMs": 5.899999976158142
+                    },
+                    "auto": {
+                      "frames": 746,
+                      "meanMs": 0.4343163541270964,
+                      "p95Ms": 0.7999999523162842,
+                      "maxMs": 1.5999999642372131,
+                      "over12ms": 0,
+                      "totalMs": 324.00000017881393
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 750,
+                      "opened": 235,
+                      "flags": 28,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 19,
+                  "complete": true,
+                  "frames": 594,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.399999976158142,
+                      "p95Ms": 2.199999988079071,
+                      "maxMs": 2.199999988079071,
+                      "over12ms": 0,
+                      "totalMs": 2.799999952316284
+                    },
+                    "generation": {
+                      "frames": 1,
+                      "meanMs": 2.5,
+                      "p95Ms": 2.5,
+                      "maxMs": 2.5,
+                      "over12ms": 0,
+                      "totalMs": 2.5
+                    },
+                    "auto": {
+                      "frames": 591,
+                      "meanMs": 0.44805414593966075,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 1.300000011920929,
+                      "over12ms": 0,
+                      "totalMs": 264.8000002503395
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 594,
+                      "opened": 235,
+                      "flags": 22,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 101,
+                  "complete": true,
+                  "frames": 648,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.2999999821186066,
+                      "p95Ms": 2.399999976158142,
+                      "maxMs": 2.399999976158142,
+                      "over12ms": 0,
+                      "totalMs": 2.599999964237213
+                    },
+                    "generation": {
+                      "frames": 5,
+                      "meanMs": 2.7200000047683717,
+                      "p95Ms": 3.300000011920929,
+                      "maxMs": 3.300000011920929,
+                      "over12ms": 0,
+                      "totalMs": 13.600000023841858
+                    },
+                    "auto": {
+                      "frames": 641,
+                      "meanMs": 0.44430577243546054,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 1.0999999642372131,
+                      "over12ms": 0,
+                      "totalMs": 284.8000001311302
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 648,
+                      "opened": 235,
+                      "flags": 20,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 555,
+                  "complete": true,
+                  "frames": 666,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 2.0000000298023224,
+                      "p95Ms": 3.400000035762787,
+                      "maxMs": 3.400000035762787,
+                      "over12ms": 0,
+                      "totalMs": 4.000000059604645
+                    },
+                    "generation": {
+                      "frames": 3,
+                      "meanMs": 2.5,
+                      "p95Ms": 3,
+                      "maxMs": 3,
+                      "over12ms": 0,
+                      "totalMs": 7.5
+                    },
+                    "auto": {
+                      "frames": 661,
+                      "meanMs": 0.49621785164961474,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 2.399999976158142,
+                      "over12ms": 0,
+                      "totalMs": 327.99999994039536
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 666,
+                      "opened": 235,
+                      "flags": 23,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 999,
+                  "complete": true,
+                  "frames": 558,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.300000011920929,
+                      "p95Ms": 1.800000011920929,
+                      "maxMs": 1.800000011920929,
+                      "over12ms": 0,
+                      "totalMs": 2.600000023841858
+                    },
+                    "generation": {
+                      "frames": 3,
+                      "meanMs": 3.0666666626930237,
+                      "p95Ms": 3.399999976158142,
+                      "maxMs": 3.399999976158142,
+                      "over12ms": 0,
+                      "totalMs": 9.199999988079071
+                    },
+                    "auto": {
+                      "frames": 553,
+                      "meanMs": 0.49819168130484887,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 2.699999988079071,
+                      "over12ms": 0,
+                      "totalMs": 275.4999997615814
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 558,
+                      "opened": 235,
+                      "flags": 14,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 12345,
+                  "complete": true,
+                  "frames": 582,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.3499999940395355,
+                      "p95Ms": 2.300000011920929,
+                      "maxMs": 2.300000011920929,
+                      "over12ms": 0,
+                      "totalMs": 2.699999988079071
+                    },
+                    "generation": {
+                      "frames": 2,
+                      "meanMs": 2.949999988079071,
+                      "p95Ms": 3.099999964237213,
+                      "maxMs": 3.099999964237213,
+                      "over12ms": 0,
+                      "totalMs": 5.899999976158142
+                    },
+                    "auto": {
+                      "frames": 578,
+                      "meanMs": 0.46003460244736455,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 2.5,
+                      "over12ms": 0,
+                      "totalMs": 265.9000002145767
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 582,
+                      "opened": 235,
+                      "flags": 27,
+                      "mines": 45
+                    }
+                  ]
+                },
+                {
+                  "name": "minesweeper-ai",
+                  "rngSeed": 65536,
+                  "complete": true,
+                  "frames": 582,
+                  "overflowSignals": 0,
+                  "passes": 0,
+                  "phases": {
+                    "start": {
+                      "frames": 2,
+                      "meanMs": 1.4000000357627869,
+                      "p95Ms": 1.7000000476837158,
+                      "maxMs": 1.7000000476837158,
+                      "over12ms": 0,
+                      "totalMs": 2.8000000715255737
+                    },
+                    "generation": {
+                      "frames": 2,
+                      "meanMs": 2.449999988079071,
+                      "p95Ms": 2.599999964237213,
+                      "maxMs": 2.599999964237213,
+                      "over12ms": 0,
+                      "totalMs": 4.899999976158142
+                    },
+                    "auto": {
+                      "frames": 578,
+                      "meanMs": 0.4653979233598214,
+                      "p95Ms": 0.800000011920929,
+                      "maxMs": 2.899999976158142,
+                      "over12ms": 0,
+                      "totalMs": 268.9999997019768
+                    }
+                  },
+                  "events": [
+                    {
+                      "event": "clear",
+                      "frame": 582,
+                      "opened": 235,
+                      "flags": 17,
+                      "mines": 45
+                    }
+                  ]
+                }
+              ],
+              "scope": "Calibrated main-thread CPU comparison: actual engine and unchanged adopted game source with normal button inputs chosen from read-only inspection. Reversi LV3 to completion; minesweeper ten seeds through generation and automatic clear. Includes game tick and software raster, excludes CRT/GPU, Worker and audio synthesis. Not actual Android FPS.",
+              "calibrationNote": "初回は目標1000に対して1400台で速すぎたため再測定。再測定は前770.5〜932.5・後896.5〜999.5と同等〜遅い側だが変動がある。厳密に校正が収束した端末相当値とは扱わない。計測範囲では12ms超過・描画上限超過なし。"
+            },
+            "limits": "リバーシは一つのLV3対局、マインスイーパーは10シードの生成と自動クリア等を確認。全対局・全乱数・実Androidの性能保証ではない。"
+          }
+        }
+      ],
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/board-intake-2026-11-03",
+      "publication": "ユーザーからpush・deployの明示承認あり。公開後の結果はevidenceDirectoryへ記録。",
+      "finalValidation": {
+        "checkedAt": "2026-11-03T11:35:48.040681+00:00",
+        "command": "npm run check",
+        "result": "pass",
+        "unitTests": 233,
+        "browserTests": 47,
+        "catalogCount": 35,
+        "newestFirst": ["REVERSI", "minesweeper ai.", "Micro Unicorn Attack", "SoukoBanChou"],
+        "existingEntriesUnchanged": true,
+        "visualReview": {
+          "widths": [1280, 375],
+          "allImagesDecoded": true,
+          "linksMatchCatalog": true,
+          "horizontalOverflow": false,
+          "scene": "2Dリバーシの対局中とマインスイーパーのヒント付き盤面を一覧サイズで目視確認。"
+        },
+        "publicationVerification": "公開後の検証結果はevidenceDirectory内のpublic-verification.jsonとpublic-catalog-visual.jsonへ記録。"
+      }
     }
   ],
   "replacements": [
@@ -7952,6 +9177,32 @@
           "width": 640,
           "height": 576,
           "sha256": "f376b39a234dea386e163f2c239b0db82fac39db0520d86f5f6fd22e6d2fecdf"
+        }
+      ]
+    },
+    {
+      "checkedAt": "2026-11-03T11:31:26.207Z",
+      "action": "REVERSIとminesweeper ai.の掲載画像を追加",
+      "items": [
+        {
+          "title": "REVERSI",
+          "image": "assets/images/arcade/reversi.png",
+          "scene": "中盤、黒12・白10、LV2。石の配置・合法手・カーソルと手番、石数が見える。",
+          "method": "掲載版を実ブラウザで通常キー操作し、CRTオンでアプリScreenshotから保存。画像加工・ゲーム状態の書き換えなし。",
+          "selected": "reversi-midgame.png",
+          "width": 640,
+          "height": 576,
+          "sha256": "7c98fea7f7b3bc45bbb0a33f91a56b996360970718d66fb0b3adf49c7d217ae0"
+        },
+        {
+          "title": "minesweeper ai.",
+          "image": "assets/images/arcade/minesweeper-ai.png",
+          "scene": "途中まで開いた盤面でAI:HINT。数字、旗、未開放マスと安全候補・地雷候補の色が見える。",
+          "method": "掲載版を実ブラウザで通常キー操作し、CRTオンでアプリScreenshotから保存。画像加工・ゲーム状態の書き換えなし。",
+          "selected": "minesweeper-ai-hint-midgame.png",
+          "width": 640,
+          "height": 576,
+          "sha256": "1e944e331d25d81942481f30c732edf67be8702db1c339ed4efd0cb5897df6e3"
         }
       ]
     }
