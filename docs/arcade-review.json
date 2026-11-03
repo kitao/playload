@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-11-03T06:20:34.047Z",
-  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。 同日の公開後、ユーザーの視覚的な品質判断によりPseudo 3D Racerも掲載を取り下げ。現在の掲載一覧は31作品。 同じ公開訂正で、ユーザー指定によりreveal.の画像を絵より陣取りが主役となる19%獲得の序盤へ差し替え。 同日、ユーザー指定でPseudo 3D Racerを再掲載し、様子を見る。reveal.の19%画像はユーザーに不採用とされ、撮り直し候補を確認中。",
+  "checkedAt": "2026-11-03T06:58:15.147Z",
+  "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。 同日の公開後、ユーザーの視覚的な品質判断によりPseudo 3D Racerも掲載を取り下げ。現在の掲載一覧は31作品。 同じ公開訂正で、ユーザー指定によりreveal.の画像を絵より陣取りが主役となる19%獲得の序盤へ差し替え。 同日、ユーザー指定でPseudo 3D Racerを再掲載し、様子を見る。reveal.の19%画像はユーザーに不採用とされ、撮り直し候補を確認中。 同日、ユーザー承認済みのreveal.画像（67%、顔から胴がつながり、段差のある陣地と階段状の線）へ差し替え。",
   "counts": {
     "catalog": 32,
     "adapted": 20,
@@ -1946,25 +1946,23 @@
     },
     "scopeNote": "catalog等の既存項目は過去の検査記録。今回の最終状態はthisReview、targetedRechecks末尾と各更新作品のvalidationを参照。",
     "latestCatalogReview": {
-      "checkedAt": "2026-11-03T06:24:01.662Z",
+      "checkedAt": "2026-11-03T06:59:09.006Z",
+      "command": "npm run check",
       "result": "pass",
-      "command": "npm run check (browser tests rerun with local network permission)",
       "unitTests": 233,
       "browserTests": 47,
-      "lint": "pass",
-      "format": "pass",
-      "generated": "pass",
-      "soundReference": "pass",
       "catalogCount": 32,
-      "restoredTitle": "Pseudo 3D Racer",
-      "unrelatedEntriesUnchanged": true,
+      "updatedPublicAsset": "assets/images/arcade/reveal.png",
+      "sha256": "a6a765adf552410b0a211aac8133b68790cd21af0043495e76329e05a31fd532",
+      "catalogAndGameCodeUnchanged": true,
       "visualReview": {
         "widths": [1280, 375],
         "allImagesDecoded": true,
         "linksMatchCatalog": true,
-        "horizontalOverflow": false
+        "horizontalOverflow": false,
+        "scene": "承認済みの67%画像。顔から胴がつながり、不規則な境界と階段状の線が見える。"
       },
-      "publicationVerification": "公開結果はevidenceDirectory内に記録。"
+      "publicationVerification": "公開後の証跡はevidenceDirectory内のpublic-verification/result.jsonとpublic-catalog-visual.jsonへ記録。"
     }
   },
   "limits": [
@@ -2206,15 +2204,15 @@
         "browser": "Chromium 153.0.8010.12",
         "browserErrors": [],
         "screenshot": {
-          "checkedAt": "2026-11-03T06:11:03.281Z",
-          "scene": "LV1・19%獲得の序盤。絵は左端に少し現れる程度で、広い未獲得領域、上辺から下へ引いている黄色の線と先端のプレイヤー、敵が見える。",
-          "method": "公開中と同じ掲載版URLを通常キー操作し、CRTオンでアプリのScreenshot機能から保存。画像加工なし。",
-          "selected": "reveal-line-middle.png",
+          "checkedAt": "2026-11-03T06:58:15.147Z",
+          "scene": "LV1・67%。顔から肩・胴までつながる右側の陣地。左上の境界に段差があり、左下で階段状に黄色い線を引いている。先端付近に敵。",
+          "method": "掲載版を通常キー操作しアプリScreenshotから保存。CRTオン。ゲーム状態や画像の加工なし。",
+          "selected": "0-irregular.png",
           "width": 640,
           "height": 576,
-          "reason": "ユーザー指定により、人物の絵を大きく見せる構図より、陣取りゲームとして何を操作するかが伝わる序盤を優先。",
-          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-early-screenshot-2026-11-03-c",
-          "sha256": "cd5a2aabfdfd82ff3153badda069e4f210ff8824ace15d4e77f70eb94c62938b"
+          "reason": "ユーザーが候補画像を確認して採用を承認。顔の途中切れや頭だけの構図を避け、顔から胴のつながりと不規則な陣地・線を同時に見せる。",
+          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-candidates-2026-11-03-n",
+          "sha256": "a6a765adf552410b0a211aac8133b68790cd21af0043495e76329e05a31fd532"
         },
         "limits": "単一入力系列の補助検査とブラウザ操作。全局面・全端末での性能保証ではない。",
         "failureAndRetry": {
@@ -7509,6 +7507,46 @@
         },
         "publicationVerification": "公開結果はevidenceDirectory内に記録。"
       }
+    },
+    {
+      "checkedAt": "2026-11-03T06:58:15.147Z",
+      "scope": "承認されたreveal.のスクリーンショット差し替えのみ。作品数32、作品URL・掲載順・ゲームのコードは変更しない。",
+      "screenshotChanges": [
+        {
+          "title": "reveal.",
+          "image": "assets/images/arcade/reveal.png",
+          "checkedAt": "2026-11-03T06:58:15.147Z",
+          "scene": "LV1・67%。顔から肩・胴までつながる右側の陣地。左上の境界に段差があり、左下で階段状に黄色い線を引いている。先端付近に敵。",
+          "method": "掲載版を通常キー操作しアプリScreenshotから保存。CRTオン。ゲーム状態や画像の加工なし。",
+          "selected": "0-irregular.png",
+          "width": 640,
+          "height": 576,
+          "reason": "ユーザーが候補画像を確認して採用を承認。顔の途中切れや頭だけの構図を避け、顔から胴のつながりと不規則な陣地・線を同時に見せる。",
+          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-candidates-2026-11-03-n",
+          "sha256": "a6a765adf552410b0a211aac8133b68790cd21af0043495e76329e05a31fd532"
+        }
+      ],
+      "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-approved-2026-11-03",
+      "publicationApproval": "提示した67%の候補画像に対するユーザーの「じゃあこれで勧めて」に基づきpush・deploy。",
+      "finalValidation": {
+        "checkedAt": "2026-11-03T06:59:09.006Z",
+        "command": "npm run check",
+        "result": "pass",
+        "unitTests": 233,
+        "browserTests": 47,
+        "catalogCount": 32,
+        "updatedPublicAsset": "assets/images/arcade/reveal.png",
+        "sha256": "a6a765adf552410b0a211aac8133b68790cd21af0043495e76329e05a31fd532",
+        "catalogAndGameCodeUnchanged": true,
+        "visualReview": {
+          "widths": [1280, 375],
+          "allImagesDecoded": true,
+          "linksMatchCatalog": true,
+          "horizontalOverflow": false,
+          "scene": "承認済みの67%画像。顔から胴がつながり、不規則な境界と階段状の線が見える。"
+        },
+        "publicationVerification": "公開後の証跡はevidenceDirectory内のpublic-verification/result.jsonとpublic-catalog-visual.jsonへ記録。"
+      }
     }
   ],
   "replacements": [
@@ -7709,6 +7747,26 @@
       "checkedAt": "2026-11-03T06:20:34.047Z",
       "action": "reveal.の19%スクリーンショットをユーザーが不採用と判断。撮り直し候補を用意。",
       "note": "面白さ・ゲーム内容が伝わらないという指摘。候補はまだ掲載画像に反映しない。 39%の候補もユーザーが不採用としたため、別構図を撮影。"
+    },
+    {
+      "checkedAt": "2026-11-03T06:58:15.147Z",
+      "action": "ユーザー承認済みの不規則な陣取りの画像へreveal.を差し替え",
+      "items": [
+        {
+          "title": "reveal.",
+          "image": "assets/images/arcade/reveal.png",
+          "checkedAt": "2026-11-03T06:58:15.147Z",
+          "scene": "LV1・67%。顔から肩・胴までつながる右側の陣地。左上の境界に段差があり、左下で階段状に黄色い線を引いている。先端付近に敵。",
+          "method": "掲載版を通常キー操作しアプリScreenshotから保存。CRTオン。ゲーム状態や画像の加工なし。",
+          "selected": "0-irregular.png",
+          "width": 640,
+          "height": 576,
+          "reason": "ユーザーが候補画像を確認して採用を承認。顔の途中切れや頭だけの構図を避け、顔から胴のつながりと不規則な陣地・線を同時に見せる。",
+          "evidenceDirectory": "/Users/takashi/.codex/visualizations/2026/11/01/01a19547-e5fc-7552-8f09-bbacd800074f/reveal-candidates-2026-11-03-n",
+          "sha256": "a6a765adf552410b0a211aac8133b68790cd21af0043495e76329e05a31fd532"
+        }
+      ],
+      "reviewNotes": "19%・39%の案はゲーム内容の伝わり方、50%の案は顔の途中切れ、46%の案は頭だけに見えるため不採用。64%案から境界と線を不規則にした67%案を承認。"
     }
   ],
   "eligibilityHistory": [
