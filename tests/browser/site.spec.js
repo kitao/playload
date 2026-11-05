@@ -213,12 +213,14 @@ test('the introduction and the app run under their own content policies without 
   await page.locator('.introduction:visible .badges').scrollIntoViewIfNeeded();
   await page.evaluate(() => document.fonts.ready);
   expect(await policyViolations(page)).toEqual([]);
-  // Games run from blob workers with eval, so only the app's own policy admits them.
+  // Game evaluation belongs to the opaque host; the app only needs its audio worklet blob.
   const app = expectSharedPolicy(
     (await page.goto('/playload/app/' + legacy)).headers()['content-security-policy'],
   );
-  expect(app['script-src']).toEqual(expect.arrayContaining(["'unsafe-eval'", 'blob:']));
-  expect(app['worker-src']).toEqual(["'self'", 'blob:']);
+  expect(app['script-src']).not.toContain("'unsafe-eval'");
+  expect(app['script-src']).toContain('blob:');
+  expect(app['worker-src']).toEqual(["'self'"]);
+  expect(app['frame-src']).toEqual(["'self'"]);
   expect(app['style-src']).toEqual(["'self'"]);
   await page.locator('#start-game').click();
   await expect(page.locator('#pause')).toBeEnabled();

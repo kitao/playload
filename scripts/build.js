@@ -1,4 +1,5 @@
 import { build, formatMessages } from 'esbuild';
+import { createHash } from 'node:crypto';
 import { realpathSync } from 'node:fs';
 import {
   cp,
@@ -15,6 +16,7 @@ import { basename, dirname, join, parse, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { formatPayloadSize } from '../src/payload.js';
+import { glyphs } from '../src/engine/glyphs.js';
 import { escapeHTML, renderReference } from './reference.js';
 
 // Module URLs keep the letter case they were loaded with. Native realpath
@@ -57,6 +59,43 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     const unicodeNotice = await notice('data/fonts/unicode-LICENSE.txt'),
       prismNotice = await notice('node_modules/prismjs/LICENSE'),
       prettierNotice = await notice('node_modules/prettier/LICENSE');
+    const artworkNotice =
+      '/*!\n' +
+      unicodeNotice +
+      '\nTwemoji color reference: Twitter and contributors.\n' +
+      'https://github.com/jdecked/twemoji\n' +
+      'Used to derive emoji colors. Licensed under CC BY 4.0, provided as-is:\n' +
+      'https://creativecommons.org/licenses/by/4.0/\n*/';
+    // Bundle the engine normally, then embed it in the opaque host. No script
+    // URL needs to be allowed by the host's policy, even during worker startup.
+    const worker = await build({
+      ...options,
+      stdin: {
+        contents: `import { startGameWorker } from './src/app/game-worker.js';
+          startGameWorker(${JSON.stringify(glyphs.map(({ ch, rows, ink, paper }) => ({ ch, rows, ink, paper })))});`,
+        resolveDir: root,
+      },
+      format: 'iife',
+      write: false,
+      banner: { js: '"use strict";\n' + artworkNotice },
+    });
+    const host = await build({
+      ...options,
+      entryPoints: ['src/app/game-host.js'],
+      define: { GAME_WORKER_SOURCE: JSON.stringify(worker.outputFiles[0].text) },
+      format: 'iife',
+      write: false,
+    });
+    const hostScript = host.outputFiles[0].text;
+    if (/<\/script/i.test(hostScript)) throw new Error('Unsafe inline game host script.');
+    const hostHash = createHash('sha256').update(hostScript).digest('base64');
+    const sandboxPolicy = `default-src 'none'; script-src 'sha256-${hostHash}' 'unsafe-eval'; worker-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'`;
+    await mkdir(new URL('playload/app/sandbox/', output), { recursive: true });
+    // Keep the restrictions when served without custom HTTP headers too.
+    await writeFile(
+      new URL('playload/app/sandbox/index.html', output),
+      `<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${sandboxPolicy}"><script>${hostScript}</script>`,
+    );
     // Each bundle carries the notices for the third-party material it contains.
     // Let every build settle before the stage can be removed, even after a failure.
     const builds = await Promise.allSettled([
@@ -70,17 +109,13 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
         },
         format: 'esm',
         loader: { '.woff': 'file', '.woff2': 'file' },
-        banner: {
-          js:
-            '/*!\n' +
-            unicodeNotice +
-            '\nPrism: https://prismjs.com/\n' +
-            prismNotice +
-            '\nTwemoji color reference: Twitter and contributors.\n' +
-            'https://github.com/jdecked/twemoji\n' +
-            'Used to derive emoji colors. Licensed under CC BY 4.0, provided as-is:\n' +
-            'https://creativecommons.org/licenses/by/4.0/\n*/',
-        },
+        banner: { js: artworkNotice },
+      }),
+      build({
+        ...options,
+        entryPoints: { highlighter: 'src/app/highlighter.js' },
+        format: 'esm',
+        banner: { js: '/*!\nPrism: https://prismjs.com/\n' + prismNotice + '\n*/' },
       }),
       build({
         ...options,
@@ -93,7 +128,11 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
     ]);
     const failure = builds.find(({ status }) => status === 'rejected');
     if (failure) throw failure.reason;
-    const warnings = builds.flatMap(({ value }) => value.warnings);
+    const warnings = [
+      ...worker.warnings,
+      ...host.warnings,
+      ...builds.flatMap(({ value }) => value.warnings),
+    ];
     if (warnings.length)
       throw new Error((await formatMessages(warnings, { kind: 'warning' })).join(''));
 
@@ -104,7 +143,12 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
       );
     // The .txt extension gives the license its text/plain type without a Content-Type rule.
     await cp(new URL('../LICENSE', import.meta.url), new URL('playload/LICENSE.txt', output));
-    await cp(new URL('../src/site/_headers', import.meta.url), new URL('_headers', output));
+    await writeFile(
+      new URL('_headers', output),
+      fill(await readFile(new URL('../src/site/_headers', import.meta.url), 'utf8'), {
+        SANDBOX_CSP: sandboxPolicy,
+      }),
+    );
 
     // The introduction keeps its screenshot; app/game links identify the tool with its logo.
     const preview = 'assets/images/example-glyph-quest.png';

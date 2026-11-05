@@ -13,7 +13,7 @@ import { download } from './capture.js';
 import { Playback } from './playback.js';
 import { createDisplay, createFrameRenderer } from './display.js';
 import { createCRT } from './crt.js';
-import { highlightJavaScript } from './editor-highlighter.js';
+import { EditorHighlighter } from './editor-highlighter.js';
 import { EditorHistory } from './editor-history.js';
 import { latinLetter } from './keys.js';
 import { starter, exampleLinks } from './examples.js';
@@ -588,7 +588,7 @@ async function copy(text, target) {
 
 function gameTitle(code) {
   for (const comment of code.matchAll(/\s*(?:\/\/([^\r\n\u2028\u2029]*)|\/\*([\s\S]*?)\*\/)/gy)) {
-    const title = /^[ \t]*\*?[ \t]*@title(?:[ \t]+([^\r\n\u2028\u2029]*))?$/m.exec(
+    const title = /^[ \t]*(?:\*[ \t]*)?@title(?:[ \t]+([^\r\n\u2028\u2029]*))?$/m.exec(
       comment[1] ?? comment[2],
     );
     if (title) return title[1]?.trim() || '';
@@ -641,12 +641,13 @@ function scheduleURL(delay = 250) {
 
 // Editor
 
+const highlighter = new EditorHighlighter($('editor-highlight'), $('editor'));
+let editorLineCount = 1,
+  editorLineRange = '';
+
 function highlightEditor() {
-  const editor = $('editor'),
-    preview = $('editor-highlight');
-  preview.innerHTML = highlightJavaScript(editor.value) + '\n';
+  highlighter.update($('editor').value);
   updateEditorLines();
-  syncEditorScroll();
 }
 
 function syncFormatPosition(entry) {
@@ -674,17 +675,42 @@ function syncFormatPosition(entry) {
 }
 
 function updateEditorLines() {
-  const count = $('editor').value.split('\n').length;
-  $('workbench').style.setProperty('--line-number-digits', Math.max(2, String(count).length));
-  $('editor-line-numbers').innerHTML = Array.from({ length: count }, (_, i) =>
-    i + 1 === editorErrorLine ? `<span class="editor-line-error">${i + 1}</span>` : String(i + 1),
-  ).join('\n');
+  editorLineCount = $('editor').value.split('\n').length;
+  editorLineRange = '';
+  $('workbench').style.setProperty(
+    '--line-number-digits',
+    Math.max(2, String(editorLineCount).length),
+  );
+  syncEditorScroll();
 }
 
 function syncEditorScroll() {
-  $('editor-highlight').scrollTop = $('editor').scrollTop;
-  $('editor-highlight').scrollLeft = $('editor').scrollLeft;
-  $('editor-line-numbers').style.transform = `translateY(${-$('editor').scrollTop}px)`;
+  const editor = $('editor'),
+    numbers = $('editor-line-numbers'),
+    lineHeight = parseFloat(getComputedStyle(editor).lineHeight),
+    // Some native controls accumulate rounding over millions of pixels. In
+    // that case, use matching full text layout to keep the gutter aligned.
+    rounded =
+      editor.clientHeight > 0 && editor.scrollHeight + lineHeight < editorLineCount * lineHeight,
+    first = rounded ? 0 : Math.max(0, Math.floor(editor.scrollTop / lineHeight) - 1),
+    last = rounded
+      ? editorLineCount
+      : Math.min(editorLineCount, first + Math.ceil(editor.clientHeight / lineHeight) + 3),
+    range = `${first}:${last}:${editorErrorLine}`;
+  // Normally only visible line numbers need layout. The textarea always keeps
+  // the complete editable text, including highly compressed blank-line runs.
+  if (range !== editorLineRange) {
+    numbers.innerHTML = Array.from({ length: last - first }, (_, i) => {
+      const line = first + i + 1;
+      return line === editorErrorLine
+        ? `<span class="editor-line-error">${line}</span>`
+        : String(line);
+    }).join('\n');
+    editorLineRange = range;
+  }
+  $('editor-highlight').scrollTop = editor.scrollTop;
+  $('editor-highlight').scrollLeft = editor.scrollLeft;
+  numbers.style.transform = `translateY(${first * lineHeight - editor.scrollTop}px)`;
 }
 
 $('editor').onscroll = syncEditorScroll;
@@ -1469,7 +1495,10 @@ $('divider').onkeydown = (event) => {
 };
 const gameLayout = new ResizeObserver(() => requestAnimationFrame(fitGame));
 gameLayout.observe($('picture'));
-const editorLayout = new ResizeObserver(([entry]) => syncFormatPosition(entry));
+const editorLayout = new ResizeObserver(([entry]) => {
+  syncFormatPosition(entry);
+  syncEditorScroll();
+});
 editorLayout.observe($('editor'));
 window.addEventListener('resize', () => {
   dismissCopy();
@@ -1492,11 +1521,15 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 window.addEventListener('pagehide', (event) => {
+  highlighter.stop();
   startKeys.clear();
   release();
   playback.pagehide(event.persisted);
 });
-window.addEventListener('pageshow', (event) => playback.pageshow(event.persisted));
+window.addEventListener('pageshow', (event) => {
+  playback.pageshow(event.persisted);
+  if (event.persisted) highlightEditor();
+});
 window.addEventListener('hashchange', () => {
   playback.navigate();
   location.reload();

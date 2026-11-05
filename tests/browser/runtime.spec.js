@@ -293,9 +293,9 @@ test('keyboard labels and physical key releases work through the built app', asy
   await page.addInitScript(() => {
     window.inputMask = 0;
     window.pickerOpens = 0;
-    const post = Worker.prototype.postMessage;
-    Worker.prototype.postMessage = function (message, ...args) {
-      if (message.type === 'input') window.inputMask = message.mask;
+    const post = MessagePort.prototype.postMessage;
+    MessagePort.prototype.postMessage = function (message, ...args) {
+      if (message?.type === 'input') window.inputMask = message.mask;
       return post.call(this, message, ...args);
     };
     window.showOpenFilePicker = async () => {
@@ -507,9 +507,9 @@ test('external file changes restart the game and update code, title and URL with
 }) => {
   await page.addInitScript(() => {
     window.gameLoads = 0;
-    const post = Worker.prototype.postMessage;
-    Worker.prototype.postMessage = function (message, ...args) {
-      if (message.type === 'load') window.gameLoads++;
+    const post = MessagePort.prototype.postMessage;
+    MessagePort.prototype.postMessage = function (message, ...args) {
+      if (message?.type === 'load') window.gameLoads++;
       return post.call(this, message, ...args);
     };
   });
@@ -702,13 +702,12 @@ test('a shared game does not steal editor focus chosen while its worker is start
   );
   await page.goto('about:blank');
   await page.addInitScript(() => {
-    const GameWorker = window.Worker;
-    window.Worker = class extends GameWorker {
-      postMessage(message, ...args) {
-        if (message.type === 'load')
-          window.finishInitialLoad = () => super.postMessage(message, ...args);
-        else super.postMessage(message, ...args);
-      }
+    if (window !== top) return;
+    const post = MessagePort.prototype.postMessage;
+    MessagePort.prototype.postMessage = function (message, ...args) {
+      if (message?.type === 'load')
+        window.finishInitialLoad = () => post.call(this, message, ...args);
+      else post.call(this, message, ...args);
     };
   });
   await page.goto('/playload/app/' + hash);

@@ -345,6 +345,10 @@ header::after {
   overflow: auto scroll;
 }
 
+#editor.plain {
+  color: #d1cbd5;
+}
+
 #editor-highlight {
   color: #d1cbd5;
   position: absolute;

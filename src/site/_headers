@@ -5,7 +5,11 @@
 
 /playload/app/
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-eval' blob: https://static.cloudflareinsights.com; worker-src 'self' blob:; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' blob: https://static.cloudflareinsights.com; worker-src 'self'; frame-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://cloudflareinsights.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+
+/playload/app/sandbox/
+  ! Content-Security-Policy
+  Content-Security-Policy: {{SANDBOX_CSP}}; frame-ancestors 'self'
 
 # Browsers style an image or text opened on its own with inline styles, which the policy above
 # blocks.

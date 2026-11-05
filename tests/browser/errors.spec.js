@@ -1,5 +1,19 @@
 import { test, expect } from './fixtures.js';
 
+test('a timer error retains its message while the game is paused between frames', async ({
+  page,
+}) => {
+  await page.goto('/playload/app/');
+  await page
+    .locator('#editor')
+    .fill('setTimeout(() => { throw Error("Timer failed"); }, 1000); function tick() { cls(4); }');
+  await page.locator('#run').click();
+  await expect(page.locator('#pause')).toBeEnabled();
+  await page.locator('#pause').click();
+  await expect(page.locator('#error')).toContainText('Timer failed');
+  await expect(page.locator('iframe')).toHaveCount(0);
+});
+
 test('a game error keeps its picture, displays literal text, and selects its source line', async ({
   page,
 }) => {

@@ -118,7 +118,11 @@ test('cached pages restore the watchdog and prior pause state, then close resour
     { running: true, paused: false, active: false },
     { running: true, paused: true, active: true, awaitingStart: true },
   ]) {
-    const runtime = new Runtime(() => {}, assert.fail);
+    const runtime = new Runtime(
+      () => {},
+      assert.fail,
+      () => new globalThis.Worker(),
+    );
     runtime.load('function tick() {}');
     const worker = runtime.worker;
     const audio = new Sound(assert.fail);

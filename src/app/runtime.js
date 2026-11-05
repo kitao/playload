@@ -1,32 +1,25 @@
-import { createEngine } from '../engine/engine.js';
-import { compileScore, AY } from '../engine/sound.js';
-import { glyphs } from '../engine/glyphs.js';
+import { AY } from '../engine/sound.js';
+import { GameSandbox } from './game-sandbox.js';
+import { MAX_FRAME_STEPS, readGameReply } from './game-messages.js';
 
-export const MAX_FRAME_STEPS = 5;
+export { MAX_FRAME_STEPS } from './game-messages.js';
 // Starting a game also starts its worker, parses the engine and presets and runs
 // the game's top-level code, so slow or busy devices get longer than for a frame.
 export const START_TIMEOUT = 5000;
 export const FRAME_TIMEOUT = 1500;
 
-// Catalog names and author metadata stay in the UI; workers only need artwork.
-const workerPresets = JSON.stringify(
-  glyphs.map(({ ch, rows, ink, paper }) => ({ ch, rows, ink, paper })),
-);
-
 // Games run off the UI thread. A stuck game can be terminated without losing the editor.
 export class Runtime {
-  constructor(onFrame, onError) {
+  constructor(onFrame, onError, createWorker = () => new GameSandbox()) {
+    this.createWorker = createWorker;
     this.onFrame = onFrame;
     this.onError = onError;
   }
 
   load(source) {
     this.stop();
-    const code = `(${gameWorker})(${workerPresets},${createEngine},${compileScore},${MAX_FRAME_STEPS});`;
     try {
-      if (typeof Worker !== 'function') throw new Error('This browser cannot run games.');
-      this.workerURL = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
-      this.worker = new Worker(this.workerURL);
+      this.worker = this.createWorker();
     } catch (error) {
       this.fail({ message: String(error?.message ?? error) });
       return;
@@ -35,43 +28,15 @@ export class Runtime {
     this.pending = true;
     this.starting = true;
     this.worker.onmessage = ({ data }) => {
-      if (data?.type === 'error') {
-        this.fail({
-          message: String(data.message),
-          line: Number.isInteger(data.line) ? data.line : null,
-        });
+      try {
+        if (!this.pending && data?.type !== 'error') throw new Error('Invalid game frame.');
+        data = readGameReply(data, this.starting, this.pendingSteps);
+      } catch {
+        this.fail({ message: 'Invalid game frame.' });
         return;
       }
-
-      const steps = data?.type === 'ready' ? 1 : (data?.steps ?? 1);
-      // Game code can post messages too, so accept only the reply being awaited.
-      if (
-        !this.pending ||
-        data?.type !== (this.starting ? 'ready' : 'frame') ||
-        !Number.isInteger(steps) ||
-        steps < 1 ||
-        steps > MAX_FRAME_STEPS ||
-        (data.type === 'frame' && steps !== this.pendingSteps) ||
-        !(data.pixels instanceof Uint8Array) ||
-        data.pixels.length !== 160 * 144 ||
-        data.pixels.some((c) => c > 7) ||
-        !Array.isArray(data.sounds) ||
-        // The engine's play() allows 256 sounds per tick.
-        data.sounds.length > 256 * steps ||
-        !data.sounds.every(
-          (command) =>
-            Number.isInteger(command?.ch) &&
-            command.ch >= 0 &&
-            command.ch <= 2 &&
-            (command.frame === undefined ||
-              (Number.isInteger(command.frame) && command.frame >= 0 && command.frame < steps)) &&
-            command.score &&
-            Array.isArray(command.score.code) &&
-            command.score.code.length <= 16384 &&
-            command.score.code.every((event) => validEvent(event, command.score.code.length)),
-        )
-      ) {
-        this.fail({ message: 'Invalid game frame.' });
+      if (data.type === 'error') {
+        this.fail({ message: data.message, line: data.line });
         return;
       }
 
@@ -81,7 +46,7 @@ export class Runtime {
       this.onFrame(data.pixels, data.sounds, data.type === 'ready');
     };
     this.worker.onerror = (event) => {
-      event.preventDefault();
+      event.preventDefault?.();
       this.fail({ message: event.message });
     };
 
@@ -133,8 +98,6 @@ export class Runtime {
     clearTimeout(this.watchdog);
     this.worker?.terminate();
     this.worker = null;
-    if (this.workerURL) URL.revokeObjectURL(this.workerURL);
-    this.workerURL = null;
     this.pending = false;
     this.starting = false;
     this.pendingSteps = 1;
@@ -298,88 +261,4 @@ export class Sound {
   close() {
     this.context?.close();
   }
-}
-
-function gameWorker(presets, engineFactory, compiler, maxSteps) {
-  let engine, tick;
-  async function step() {
-    const delayFrames = engine.step(tick);
-    if (delayFrames) await new Promise((resolve) => setTimeout(resolve, (delayFrames * 1000) / 60));
-  }
-  self.onmessage = async ({ data }) => {
-    try {
-      switch (data.type) {
-        case 'load': {
-          engine = engineFactory(presets, compiler);
-          const api = engine.api;
-          tick = new Function(
-            ...Object.keys(api),
-            data.source +
-              '\n;return typeof tick === "function" ? tick : null;\n//# sourceURL=playload-game.js',
-          )(...Object.values(api));
-          if (!tick) throw new Error('Define function tick()');
-          await step();
-          postMessage({ type: 'ready', pixels: engine.pixels, sounds: engine.sounds() });
-          break;
-        }
-
-        case 'input':
-          engine?.input(data.mask);
-          break;
-
-        case 'frame': {
-          const steps = data.steps;
-          if (!Number.isInteger(steps) || steps < 1 || steps > maxSteps)
-            throw new Error('Invalid game step count.');
-
-          const sounds = [];
-          // Keep tick() at 60 Hz, but rasterize and transfer only the last
-          // state. Intermediate ticks still consume btnp and emit sound.
-          for (let frame = 0; frame < steps; frame++) {
-            await step();
-            for (const command of engine.sounds()) sounds.push({ ...command, frame });
-          }
-
-          postMessage({ type: 'frame', pixels: engine.pixels, sounds, steps });
-          break;
-        }
-      }
-    } catch (error) {
-      const line = /playload-game\.js:(\d+):/.exec(error?.stack ?? '');
-      // WebKit gives anonymous Function bodies a line but no source URL in their stack.
-      const gameLine = line
-        ? Number(line[1])
-        : !error?.sourceURL && Number.isInteger(error?.line)
-          ? error.line
-          : null;
-      postMessage({
-        type: 'error',
-        message: String(error?.message ?? error),
-        line: gameLine === null ? null : Math.max(1, gameLine - 2),
-      });
-    }
-  };
-}
-
-function validEvent(event, length) {
-  if (!event || typeof event !== 'object') return false;
-  if (event.op === 'note')
-    return (
-      Number.isFinite(event.frequency) &&
-      event.frequency >= 0 &&
-      Number.isFinite(event.beats) &&
-      event.beats > 0
-    );
-  if (event.op === 'repeat')
-    return (
-      Number.isInteger(event.start) &&
-      event.start >= 0 &&
-      event.start < length &&
-      (event.count === 0 || event.count === 2)
-    );
-  if (event.op === 'U' || event.op === 'H') return true;
-  const range = { V: [0, 15], W: [0, 7], X: [0, 65535], T: [60, 240], M: [1, 63] }[event.op];
-  return (
-    !!range && Number.isInteger(event.value) && event.value >= range[0] && event.value <= range[1]
-  );
 }

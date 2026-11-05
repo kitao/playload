@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { runInNewContext } from 'node:vm';
+import { build } from 'esbuild';
+import { glyphs } from '../src/engine/glyphs.js';
 import {
   Runtime,
   Sound,
@@ -11,6 +13,59 @@ import {
 import { compileScore } from '../src/engine/sound.js';
 import { latinLetter } from '../src/app/keys.js';
 import { EditorHistory } from '../src/app/editor-history.js';
+
+function createRuntime(onFrame, onError) {
+  return new Runtime(onFrame, onError, () => {
+    if (typeof globalThis.Worker !== 'function') throw new Error('This browser cannot run games.');
+    return new globalThis.Worker();
+  });
+}
+
+const workerSource = (
+  await build({
+    entryPoints: [new URL('../src/app/game-worker.js', import.meta.url).pathname],
+    bundle: true,
+    write: false,
+    format: 'iife',
+    globalName: 'GameWorker',
+  })
+).outputFiles[0].text;
+
+function createGameWorker({ setTimeout = globalThis.setTimeout, initial = '' } = {}) {
+  const messages = [];
+  class MessageEvent {
+    constructor(data, ports = []) {
+      this.value = data;
+      this.ports = ports;
+    }
+    get data() {
+      return this.value;
+    }
+  }
+  class MessagePort {
+    postMessage(message) {
+      messages.push(structuredClone(message));
+    }
+  }
+  let connect;
+  const scope = {
+    addEventListener(type, listener) {
+      connect = listener;
+    },
+    removeEventListener() {},
+  };
+  runInNewContext(
+    '"use strict";\n' +
+      initial +
+      '\n' +
+      workerSource +
+      '\nGameWorker.startGameWorker(glyphs, scope);',
+    { MessageEvent, MessagePort, setTimeout, glyphs, scope },
+  );
+  const port = new MessagePort();
+  connect(new MessageEvent(null, [port]));
+  return { messages, send: (data) => port.onmessage(new MessageEvent(data)) };
+}
 
 function mockWorker(t) {
   const originalWorker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
@@ -124,40 +179,27 @@ test('failed sound setup closes its context and preserves the original error', a
   }
 });
 
-test('worker source remains readable until the worker is replaced or stopped', async (t) => {
+test('reloading and stopping release the previous isolated game', (t) => {
   mockWorker(t);
-  const runtime = new Runtime(() => {}, assert.fail);
+  const runtime = createRuntime(() => {}, assert.fail);
   t.after(() => runtime.stop());
-
   runtime.load('function tick() {}');
   const first = runtime.worker;
-  assert.match(await (await fetch(first.url)).text(), /gameWorker/);
-
   runtime.load('function tick() { cls(1); }');
   const second = runtime.worker;
   assert.equal(first.terminated, true);
-  await assert.rejects(fetch(first.url), TypeError);
-  assert.match(await (await fetch(second.url)).text(), /gameWorker/);
-
+  assert.deepEqual(second.messages, [{ type: 'load', source: 'function tick() { cls(1); }' }]);
   runtime.stop();
   assert.equal(second.terminated, true);
-  await assert.rejects(fetch(second.url), TypeError);
 });
 
-test('unavailable or denied workers report an error, release their URL, and allow retry', async (t) => {
+test('unavailable or denied workers report an error and allow retry', (t) => {
   mockWorker(t);
   const SupportedWorker = globalThis.Worker,
-    createURL = URL.createObjectURL.bind(URL),
-    urls = [],
     errors = [],
     frames = t.mock.fn(),
-    runtime = new Runtime(frames, (error) => errors.push(error));
+    runtime = createRuntime(frames, (error) => errors.push(error));
   t.after(() => runtime.stop());
-  t.mock.method(URL, 'createObjectURL', (blob) => {
-    const url = createURL(blob);
-    urls.push(url);
-    return url;
-  });
   for (const Worker of [
     undefined,
     class {
@@ -169,15 +211,12 @@ test('unavailable or denied workers report an error, release their URL, and allo
     Object.defineProperty(globalThis, 'Worker', { value: Worker, configurable: true });
     assert.doesNotThrow(() => runtime.load('function tick() {}'));
     assert.equal(runtime.worker, null);
-    assert.equal(runtime.workerURL, null);
     assert.equal(runtime.pending, false);
   }
   assert.deepEqual(
     errors.map((error) => error.message),
     ['This browser cannot run games.', 'Game workers are blocked.'],
   );
-  assert.equal(urls.length, 1);
-  await assert.rejects(fetch(urls[0]), TypeError);
   Object.defineProperty(globalThis, 'Worker', { value: SupportedWorker, configurable: true });
   runtime.load('function tick() {}');
   runtime.worker.onmessage({
@@ -192,10 +231,10 @@ test('invalid sound frames stop the worker and valid playback recovers after loa
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const frames = t.mock.fn();
   const errors = t.mock.fn();
-  const runtime = new Runtime(frames, errors);
+  const runtime = createRuntime(frames, errors);
   t.after(() => runtime.stop());
   const pixels = new Uint8Array(160 * 144);
-  const sound = (event) => ({ ch: 0, score: { code: [event] } });
+  const sound = (event) => ({ ch: 0, score: { code: [event], fixedVolume: false } });
   const malformed = [
     ['negative channel', { ch: -1, score: compileScore('c') }],
     ['high channel', { ch: 3, score: compileScore('c') }],
@@ -220,7 +259,6 @@ test('invalid sound frames stop the worker and valid playback recovers after loa
     assert.equal(frames.mock.callCount(), 0, name);
     assert.equal(worker.terminated, true, name);
     assert.equal(runtime.worker, null, name);
-    assert.equal(runtime.workerURL, null, name);
     assert.equal(runtime.pending, false, name);
     assert.deepEqual(errors.mock.calls.at(-1).arguments, [{ message: 'Invalid game frame.' }]);
   }
@@ -240,7 +278,7 @@ test('invalid sound frames stop the worker and valid playback recovers after loa
     worker.messages.map((message) => message.type),
     ['load', 'frame'],
   );
-  worker.onmessage({ data: { type: 'frame', pixels, sounds } });
+  worker.onmessage({ data: { type: 'frame', pixels, sounds, steps: 1 } });
   assert.deepEqual(frames.mock.calls[1].arguments, [pixels, sounds, false]);
   assert.equal(runtime.pending, false);
   t.mock.timers.tick(FRAME_TIMEOUT);
@@ -248,11 +286,11 @@ test('invalid sound frames stop the worker and valid playback recovers after loa
   assert.equal(worker.terminated, undefined);
 });
 
-test('the runtime accepts only the reply it is waiting for, as game code can post messages', (t) => {
+test('the runtime accepts only the reply it is waiting for', (t) => {
   mockWorker(t);
   const frames = t.mock.fn();
   const errors = t.mock.fn();
-  const runtime = new Runtime(frames, errors);
+  const runtime = createRuntime(frames, errors);
   t.after(() => runtime.stop());
   const pixels = new Uint8Array(160 * 144);
   const reply = (type) => runtime.worker.onmessage({ data: { type, pixels, sounds: [] } });
@@ -274,11 +312,34 @@ test('the runtime accepts only the reply it is waiting for, as game code can pos
   assert.equal(frames.mock.callCount(), 3);
 });
 
+test('an asynchronous error is reported between frames while malformed errors stay rejected', (t) => {
+  mockWorker(t);
+  const errors = [];
+  const runtime = createRuntime(
+    () => {},
+    (error) => errors.push(error),
+  );
+  t.after(() => runtime.stop());
+  for (const message of ['Timer failed', { toString: null, valueOf: null }]) {
+    runtime.load('function tick() {}');
+    runtime.worker.onmessage({
+      data: { type: 'ready', pixels: new Uint8Array(160 * 144), sounds: [] },
+    });
+    assert.equal(runtime.pending, false);
+    runtime.worker.onmessage({ data: { type: 'error', message } });
+    assert.equal(runtime.worker, null);
+  }
+  assert.deepEqual(errors, [
+    { message: 'Timer failed', line: null },
+    { message: 'Invalid game frame.' },
+  ]);
+});
+
 test('a starting game gets the longer start budget, then each frame the short one', (t) => {
   mockWorker(t);
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const errors = t.mock.fn();
-  const runtime = new Runtime(() => {}, errors);
+  const runtime = createRuntime(() => {}, errors);
   t.after(() => runtime.stop());
   const pixels = new Uint8Array(160 * 144);
   assert(START_TIMEOUT > FRAME_TIMEOUT);
@@ -444,18 +505,9 @@ test('the serialized worklet freezes synthesis during pause and fades pause, res
   }
 });
 
-test('batched worker ticks match individual ticks, rasterize once, and consume a press only once', async (t) => {
-  mockWorker(t);
-  const runtime = new Runtime(() => {}, assert.fail);
-  t.after(() => runtime.stop());
-  runtime.load('function tick() {}');
-  const source = await (await fetch(runtime.worker.url)).text();
-
+test('batched worker ticks match individual ticks, rasterize once, and consume a press only once', async () => {
   const create = async () => {
-    const messages = [];
-    const context = { self: {}, postMessage: (message) => messages.push(structuredClone(message)) };
-    runInNewContext(source, context);
-    const send = (data) => context.self.onmessage({ data });
+    const { messages, send } = createGameWorker();
     await send({
       type: 'load',
       source: `
@@ -492,21 +544,11 @@ test('batched worker ticks match individual ticks, rasterize once, and consume a
   );
 });
 
-test('each overflow kind adds one frame of wait, regardless of count, including setup and catch-up ticks', async (t) => {
-  mockWorker(t);
-  const runtime = new Runtime(() => {}, assert.fail);
-  t.after(() => runtime.stop());
-  runtime.load('function tick() {}');
-  const source = await (await fetch(runtime.worker.url)).text();
-  const messages = [],
-    waits = [];
-  const context = {
-    self: {},
-    postMessage: (message) => messages.push(structuredClone(message)),
+test('each overflow kind adds one frame of wait, regardless of count, including setup and catch-up ticks', async () => {
+  const waits = [];
+  const { messages, send } = createGameWorker({
     setTimeout: (callback, delay) => waits.push({ callback, delay }),
-  };
-  runInNewContext(source, context);
-  const send = (data) => context.self.onmessage({ data });
+  });
   const starting = send({
     type: 'load',
     source: `
@@ -558,20 +600,9 @@ test('each overflow kind adds one frame of wait, regardless of count, including 
   assert.equal(messages.length, 3);
 });
 
-test('serialized workers reset limits and feedback on every tick, including batched ticks', async (t) => {
-  mockWorker(t);
-  const runtime = new Runtime(() => {}, assert.fail);
-  t.after(() => runtime.stop());
-  runtime.load('function tick() {}');
-  // Compare batching with identical noise in both worker contexts.
-  const source = 'Math.random = () => 0.5;\n' + (await (await fetch(runtime.worker.url)).text());
-  const messages = [];
-  const context = {
-    self: {},
-    postMessage: (message) => messages.push(structuredClone(message)),
-    setTimeout: (callback) => callback(),
-  };
-  runInNewContext(source, context);
+test('workers reset limits and feedback on every tick, including batched ticks', async () => {
+  const options = { initial: 'Math.random = () => 0.5;', setTimeout: (callback) => callback() };
+  const { messages, send } = createGameWorker(options);
   const load = {
     data: {
       type: 'load',
@@ -596,8 +627,8 @@ test('serialized workers reset limits and feedback on every tick, including batc
     `,
     },
   };
-  await context.self.onmessage(load);
-  await context.self.onmessage({ data: { type: 'frame', steps: MAX_FRAME_STEPS } });
+  await send(load.data);
+  await send({ type: 'frame', steps: MAX_FRAME_STEPS });
   assert.deepEqual(
     messages.map((message) => message.type),
     ['ready', 'frame'],
@@ -609,25 +640,18 @@ test('serialized workers reset limits and feedback on every tick, including batc
     const changed = message.pixels.filter((color, i) => color !== normal[i]).length;
     assert(changed > 0 && changed <= 14 * 160 + 64);
   }
-  const individual = [],
-    other = {
-      self: {},
-      postMessage: (message) => individual.push(structuredClone(message)),
-      setTimeout: (callback) => callback(),
-    };
-  runInNewContext(source, other);
-  await other.self.onmessage(load);
-  for (let i = 0; i < MAX_FRAME_STEPS; i++)
-    await other.self.onmessage({ data: { type: 'frame', steps: 1 } });
-  assert.deepEqual(messages.at(-1).pixels, individual.at(-1).pixels);
-  await context.self.onmessage({ data: { type: 'frame', steps: 1 } });
+  const other = createGameWorker(options);
+  await other.send(load.data);
+  for (let i = 0; i < MAX_FRAME_STEPS; i++) await other.send({ type: 'frame', steps: 1 });
+  assert.deepEqual(messages.at(-1).pixels, other.messages.at(-1).pixels);
+  await send({ type: 'frame', steps: 1 });
   assert(messages.at(-1).pixels.every((color) => color === 0));
 });
 
 test('runtime refuses extra outstanding batches and rejects invalid catch-up sound positions', (t) => {
   mockWorker(t);
   const errors = t.mock.fn();
-  const runtime = new Runtime(() => {}, errors);
+  const runtime = createRuntime(() => {}, errors);
   t.after(() => runtime.stop());
   const pixels = new Uint8Array(160 * 144);
   for (const frame of [-1, 2, 0.5]) {

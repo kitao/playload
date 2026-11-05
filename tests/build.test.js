@@ -40,7 +40,7 @@ test('the complete publication stays under Playload and every local document lin
     const output = await files(directory);
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|(?:app|arcade)\/index\.html|LICENSE\.txt|assets\/(?:(?:arcade-)?logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card|arcade\/[a-z0-9-]+)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|(?:app|arcade|app\/sandbox)\/index\.html|LICENSE\.txt|assets\/(?:(?:arcade-)?logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card|arcade\/[a-z0-9-]+)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
           path,
         ),
       ),
@@ -118,7 +118,8 @@ test('the complete publication stays under Playload and every local document lin
     );
     // Each bundle retains the original notices for the material it contains, and only those.
     for (const [name, included] of [
-      ['app', ['data/fonts/unicode-LICENSE.txt', 'node_modules/prismjs/LICENSE']],
+      ['app', ['data/fonts/unicode-LICENSE.txt']],
+      ['highlighter', ['node_modules/prismjs/LICENSE']],
       ['formatter', ['node_modules/prettier/LICENSE']],
       ['site', []],
     ]) {
@@ -275,6 +276,11 @@ async function fixtureRepository(parent) {
     'dir',
   );
   await mkdir(join(fixture, 'src'));
+  await mkdir(join(fixture, 'src/engine'));
+  await cp(
+    new URL('../src/engine/glyphs.js', import.meta.url),
+    join(fixture, 'src/engine/glyphs.js'),
+  );
   await cp(new URL('../src/payload.js', import.meta.url), join(fixture, 'src/payload.js'));
   await writeFile(join(fixture, 'src/keep.txt'), 'Original source');
   return fixture;
