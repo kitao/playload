@@ -506,6 +506,27 @@ test('PCG feedback counts rejected bytes, including partial patterns and color p
   }
 });
 
+test('setup sprites appear in the first frame and share its 128-character limit', () => {
+  const engine = createEngine([{ ch: 'X', rows: [128, 0, 0, 0, 0, 0, 0, 0] }]);
+  const { spr } = engine.api;
+  spr(0, 0, 'X', 3);
+  for (let i = 0; i < 126; i++) spr(-64, -64, 'X', 1);
+  const delay = engine.step(() => {
+    spr(8, 0, 'X', 4);
+    spr(-64, -64, 'X', 2);
+  });
+  assert.equal(delay, 1);
+  assert.equal(engine.pixels[0], 3);
+  assert.equal(engine.pixels[8], 4);
+  assert.equal(
+    engine.step(() => spr(16, 0, 'X', 5)),
+    0,
+  );
+  assert.equal(engine.pixels[0], 0);
+  assert.equal(engine.pixels[8], 0);
+  assert.equal(engine.pixels[16], 5);
+});
+
 test('initialization feedback survives the first tick and does not alter screen or sprite data', () => {
   const engine = feedbackEngine(),
     reference = feedbackEngine(),

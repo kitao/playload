@@ -2,7 +2,7 @@ import { palette, createEngine } from '../engine/engine.js';
 import { glyphs } from '../engine/glyphs.js';
 import {
   encode,
-  decode,
+  decodePayload,
   gameURL,
   formatPayloadSize,
   fitsURLLimit,
@@ -49,11 +49,13 @@ let pendingSource = '',
   pendingFocus,
   filename = '',
   loadedSource = starter,
+  loadedEditorValue = starter,
   declinedFileSource = null,
   reading = false,
   crt = true;
 let view = 'play',
   reference = 'about',
+  initialPayload,
   payload,
   columns = 12;
 let category = 'emoji';
@@ -89,10 +91,11 @@ const runtime = new Runtime(
     release();
     gameError = error.message || 'Game error';
     updateError();
-    editorErrorLine = $('editor').value === pendingSource ? error.line : null;
+    const matchesSource = editorSource() === pendingSource;
+    editorErrorLine = matchesSource ? error.line : null;
     updateEditorLines();
     $('error-line').hidden = !error.line;
-    $('error-line').disabled = $('editor').value !== pendingSource;
+    $('error-line').disabled = !matchesSource;
     $('error-line').textContent = 'Line ' + error.line;
     $('error-line').setAttribute('aria-label', 'Edit line ' + error.line);
     $('error-line').onclick = () => {
@@ -313,7 +316,7 @@ function runCurrentSource(takeFocus = false) {
   if (reading) return;
   toolsOpen = false;
   unlockSound();
-  run($('editor').value, takeFocus);
+  run(editorSource(), takeFocus);
 }
 
 function unlockSound() {
@@ -325,7 +328,7 @@ function unlockSound() {
 
 function startGame(takeFocus = true) {
   if (!playback.awaitingStart) return;
-  run($('editor').value, takeFocus);
+  run(editorSource(), takeFocus);
   unlockSound();
   if (takeFocus) focusGame(false);
   fitGame();
@@ -602,16 +605,16 @@ let urlTimer,
 function scheduleURL(delay = 250) {
   clearTimeout(urlTimer);
   const version = ++urlRevision,
-    code = $('editor').value,
+    code = editorSource(),
     writeURL = !!initialHash || editRevision > 0 || code !== starter;
   const title = writeURL ? gameTitle(code) : null;
   document.title = title ? `${title} — Playload` : 'Playload';
   urlTimer = setTimeout(async () => {
     try {
-      const encoded = await encode(code);
-      if (version !== urlRevision || code !== $('editor').value) return;
-      const original = initialHash && editRevision === 0 && code === loadedSource,
-        url = new URL(gameURL(location.href, original ? initialHash : encoded.hash));
+      const original = editRevision === 0 && code === loadedSource && initialPayload;
+      const encoded = original || (await encode(code));
+      if (version !== urlRevision || code !== editorSource()) return;
+      const url = new URL(gameURL(location.href, encoded.hash));
       payload = encoded;
       $('size-current').textContent = formatPayloadSize(encoded.bytes);
       $('size').title = encoded.bytes + ' bytes · ' + url.href.length + ' URL characters';
@@ -784,9 +787,24 @@ async function formatCurrentSource() {
 
 // File loading
 
+// Textareas normalize line endings. Keep the original text for running and sharing
+// as long as the editable text still matches what we loaded.
+function setLoadedSource(source) {
+  loadedSource = source;
+  const editor = $('editor');
+  editor.value = source;
+  loadedEditorValue = editor.value;
+  editorHistory.reset();
+}
+
+function editorSource() {
+  const value = $('editor').value;
+  return value === loadedEditorValue ? loadedSource : value;
+}
+
 function discard() {
   return (
-    $('editor').value === loadedSource ||
+    editorSource() === loadedSource ||
     confirm('The code was edited in the browser. Replace it with a file?')
   );
 }
@@ -805,9 +823,7 @@ async function readFile(file, request, handle = null) {
   fileHandle = handle;
   fileError = '';
   declinedFileSource = null;
-  loadedSource = text;
-  $('editor').value = loadedSource;
-  editorHistory.reset();
+  setLoadedSource(text);
   filename = file.name;
   editRevision++;
   highlightEditor();
@@ -866,7 +882,7 @@ async function refreshFile() {
       return;
     }
 
-    if (editor.value !== loadedSource && editor.value !== text) {
+    if (editor.value !== loadedEditorValue && editor.value !== text.replace(/\r\n?/g, '\n')) {
       if (text === declinedFileSource) return;
       if (!confirm('The code was edited in the browser. Replace it with a file?')) {
         declinedFileSource = text;
@@ -875,9 +891,7 @@ async function refreshFile() {
     }
 
     declinedFileSource = null;
-    loadedSource = text;
-    editor.value = text;
-    editorHistory.reset();
+    setLoadedSource(text);
     changed();
     run(text);
   } catch (error) {
@@ -1562,14 +1576,13 @@ requestAnimationFrame(animate);
 if (initialHash) {
   const initialEdit = editRevision,
     initialFocus = focusRevision;
-  decode(initialHash)
-    .then((code) => {
+  decodePayload(initialHash)
+    .then(({ source, bytes }) => {
       if (initialEdit !== editRevision) return;
-      loadedSource = code;
-      $('editor').value = code;
-      editorHistory.reset();
+      initialPayload = { hash: initialHash, bytes };
+      setLoadedSource(source);
       highlightEditor();
-      run(code, view === 'play', initialFocus, true);
+      run(source, view === 'play', initialFocus, true);
     })
     .catch((error) => {
       if (initialEdit !== editRevision) return;

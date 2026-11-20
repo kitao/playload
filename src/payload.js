@@ -35,6 +35,10 @@ export async function encode(source) {
 }
 
 export async function decode(hash) {
+  return (await decodePayload(hash)).source;
+}
+
+export async function decodePayload(hash) {
   const match = /^#(?:v1|1)\.([A-Za-z0-9_-]+)$/.exec(hash);
   if (!match) throw new Error('Invalid game URL');
   const body = match[1];
@@ -66,7 +70,10 @@ export async function decode(hash) {
     bytes.set(chunk, offset);
     offset += chunk.length;
   }
-  return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+  return {
+    source: new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes),
+    bytes: binary.length,
+  };
 }
 
 export function gameURL(base, hash) {

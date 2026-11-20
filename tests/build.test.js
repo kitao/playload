@@ -14,12 +14,13 @@ import {
   symlink,
   writeFile,
 } from 'node:fs/promises';
-import { execFile } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join, parse } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { runInNewContext } from 'node:vm';
+import { deflateRawSync } from 'node:zlib';
 import { buildSite } from '../scripts/build.js';
 import { decode } from '../src/payload.js';
 
@@ -31,6 +32,13 @@ async function files(directory, prefix = '') {
   }
   return result;
 }
+
+test('a script on standard input can import the site builder', () => {
+  const url = new URL('../scripts/build.js', import.meta.url);
+  execFileSync(process.execPath, ['--input-type=module', '-'], {
+    input: `import { buildSite } from ${JSON.stringify(url.href)};\n`,
+  });
+});
 
 test('the complete publication stays under Playload and every local document link resolves', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'playload-build-test-'));
@@ -285,6 +293,43 @@ async function fixtureRepository(parent) {
   await writeFile(join(fixture, 'src/keep.txt'), 'Original source');
   return fixture;
 }
+
+test('an Arcade build rejects unreadable and over-budget links before replacing the site', async (t) => {
+  const parent = await mkdtemp(join(tmpdir(), 'playload-arcade-build-'));
+  t.after(() => rm(parent, { recursive: true, force: true }));
+  const fixture = await fixtureRepository(parent);
+  await mkdir(join(fixture, 'assets'));
+  for (const path of [
+    'src',
+    'assets/logo.svg',
+    'assets/arcade-logo.svg',
+    'assets/favicon.svg',
+    'data/reference.json',
+    'LICENSE',
+  ])
+    await cp(new URL('../' + path, import.meta.url), join(fixture, path), { recursive: true });
+  const { buildSite } = await import(pathToFileURL(join(fixture, 'scripts/build.js')));
+  const [game] = JSON.parse(
+    await readFile(new URL('../data/arcade.json', import.meta.url), 'utf8'),
+  );
+  const directory = join(fixture, 'dist');
+  await mkdir(directory);
+  await writeFile(join(directory, 'keep.txt'), 'Previous publication');
+  // This stored deflate block is 3001 bytes. A legacy reader still accepts it.
+  const oversized = deflateRawSync(' '.repeat(2996), { level: 0 });
+  assert.equal(oversized.length, 3001);
+  for (const [hash, reason] of [
+    ['#v1.A', /unreadable game URL/],
+    ['#1.' + oversized.toString('base64url'), /exceeds the shared game limit/],
+  ]) {
+    await writeFile(
+      join(fixture, 'data/arcade.json'),
+      JSON.stringify([{ ...game, url: '/playload/app/' + hash }]),
+    );
+    await assert.rejects(buildSite({ directory }), reason);
+    assert.equal(await readFile(join(directory, 'keep.txt'), 'utf8'), 'Previous publication');
+  }
+});
 
 test('build rejects source directories and preserves existing output when source compilation fails', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'playload-build-failure-'));

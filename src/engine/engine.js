@@ -478,13 +478,15 @@ export function createEngine(presets = [], compileScore = (s) => s) {
       held = mask;
     },
     step(tick) {
-      // Setup overflow belongs to the first frame, just like its PCG writes.
-      if (!firstFrame && (spriteOverflow || pcgOverflow)) {
-        glitches.fill(0);
-        spriteOverflow = pcgOverflow = false;
+      // Setup and the first tick are drawn together and share the same budgets.
+      if (!firstFrame) {
+        sprites.length = 0;
+        if (spriteOverflow || pcgOverflow) {
+          glitches.fill(0);
+          spriteOverflow = pcgOverflow = false;
+        }
       }
       firstFrame = false;
-      sprites.length = 0;
       try {
         tick();
       } finally {

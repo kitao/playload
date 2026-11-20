@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.7
+
+- Opening or running a shared game now preserves the original game data in its URL and shows its actual compressed size until you edit the code.
+- Fixed an unnecessary overwrite prompt when a file with Windows line endings changed on disk and the editor had no unsaved edits.
+- Sprites drawn before the first `tick()` now appear in the first frame and count toward its 128-character limit.
+- Reduced rendering time and memory use when CRT is turned off.
+
+## 0.9.6
+
+- Isolated running games from the editor's storage and network access.
+- Moved syntax highlighting off the main thread to keep large programs editable.
+
 ## 0.9.5
 
 - Added Playload Arcade, a curated community gallery with screenshots, compressed sizes, and author links, accessible from the homepage and Info's Examples tab.

@@ -1,6 +1,6 @@
 import { build, formatMessages } from 'esbuild';
 import { createHash } from 'node:crypto';
-import { realpathSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import {
   cp,
   lstat,
@@ -15,7 +15,12 @@ import {
 import { basename, dirname, join, parse, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
-import { formatPayloadSize } from '../src/payload.js';
+import {
+  decodePayload,
+  fitsURLLimit,
+  formatPayloadSize,
+  MAX_COMPRESSED_BYTES,
+} from '../src/payload.js';
 import { glyphs } from '../src/engine/glyphs.js';
 import { escapeHTML, renderReference } from './reference.js';
 
@@ -189,7 +194,8 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
       )
         throw new Error(`Arcade entry ${game.title} needs a valid UTC publishedAt date.`);
     games.sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
-    const cards = games.map((game, index) => {
+    const cards = [];
+    for (const [index, game] of games.entries()) {
       for (const field of ['title', 'url', 'image', 'author', 'authorUrl'])
         if (typeof game[field] !== 'string' || !game[field].trim())
           throw new Error(`Arcade entry ${index + 1} needs ${field}.`);
@@ -205,9 +211,13 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
         throw new Error(`Arcade entry ${index + 1} needs an X profile URL.`);
       if (!/^assets\/images\/arcade\/[a-z0-9-]+\.png$/.test(game.image))
         throw new Error(`Arcade entry ${index + 1} needs a local PNG screenshot.`);
+      const { bytes } = await decodePayload(url.hash).catch((cause) => {
+        throw new Error(`Arcade entry ${index + 1} has an unreadable game URL.`, { cause });
+      });
+      if (bytes > MAX_COMPRESSED_BYTES || !fitsURLLimit(url.href))
+        throw new Error(`Arcade entry ${index + 1} exceeds the shared game limit.`);
       images.add(game.image);
-      const bytes = Buffer.from(url.hash.split('.')[1], 'base64url').length;
-      return `<li>
+      cards.push(`<li>
         <a class="game-link" href="${escapeHTML(url.pathname + url.hash)}" target="_blank" rel="noopener">
           <img src="${escapeHTML(base + game.image)}" alt="" width="160" height="144" loading="lazy" decoding="async" />
           <span class="game-heading">
@@ -218,8 +228,8 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
         <div class="game-meta">
           <p class="game-author">by <a href="${escapeHTML(game.authorUrl)}" target="_blank" rel="noopener">${escapeHTML(game.author)}</a></p>
         </div>
-      </li>`;
-    });
+      </li>`);
+    }
     await page('src/arcade/index.html', 'arcade/index.html', {
       PREVIEW_IMAGE: escapeHTML(new URL(appPreview, homepage).href),
       GAMES: cards.join('\n'),
@@ -309,7 +319,11 @@ async function outputDirectory(path) {
   return directory;
 }
 
-if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  existsSync(process.argv[1]) &&
+  realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   const [directory = join(root, 'dist'), ...extra] = process.argv.slice(2);
   if (extra.length) throw new Error('Usage: node scripts/build.js [output directory]');
   await buildSite({ directory });

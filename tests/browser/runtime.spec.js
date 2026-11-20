@@ -1,6 +1,7 @@
 import { test, expect } from './fixtures.js';
+import { deflateRawSync } from 'node:zlib';
 
-import { encode } from '../../src/payload.js';
+import { decode, encode } from '../../src/payload.js';
 
 import { WebMBuffer } from '../../src/app/webm.js';
 
@@ -158,6 +159,35 @@ test('the untouched starter keeps a plain URL until one character changes, inclu
     )
     .toBe(starter);
   expect(new URL(page.url()).hash).not.toBe('');
+});
+
+test('an untouched legacy URL keeps its own bytes and line endings until edited', async ({
+  page,
+}) => {
+  // A valid older game can fit the reader's 3072 bytes while exceeding the new share limit.
+  // Its repetitive text would be much smaller if the browser compressed it again.
+  const source = '// ' + 'a'.repeat(2980) + '\r\nfunction tick() { cls(3) }\r\n';
+  const bytes = deflateRawSync(source, { level: 0 });
+  expect(bytes.length).toBeGreaterThan(3000);
+  expect(bytes.length).toBeLessThanOrEqual(3072);
+  const hash = '#1.' + bytes.toString('base64url');
+  await openGame(page, '/playload/app/' + hash);
+  const editor = page.locator('#editor');
+  await expect(editor).toHaveValue(source.replaceAll('\r\n', '\n'));
+  await expect(page.locator('#size')).toHaveAttribute(
+    'title',
+    new RegExp('^' + bytes.length + ' bytes'),
+  );
+  await expect(page.locator('#error')).toHaveText('Code exceeds 3 KB compressed.');
+  await page.locator('#start-game').click();
+  await expect(page.locator('#pause')).toBeEnabled();
+  expect(new URL(page.url()).hash).toBe(hash);
+  const edited = 'function tick() { cls(4) }';
+  await editor.fill(edited);
+  await expect(page.locator('#error')).toBeHidden();
+  const updated = new URL(page.url()).hash;
+  expect(updated).toMatch(/^#v1\./);
+  expect(await decode(updated)).toBe(edited);
 });
 
 test('Load and Run shortcuts work; the address follows edits and restores a bookmark', async ({
@@ -513,7 +543,7 @@ test('external file changes restart the game and update code, title and URL with
       return post.call(this, message, ...args);
     };
   });
-  await loadFileHandle(page, '// @title Original\nfunction tick() { cls(4) }');
+  await loadFileHandle(page, '// @title Original\r\nfunction tick() { cls(4) }');
   const initialLoads = await page.evaluate(() => window.gameLoads);
   await page.locator('#crt').click();
   await expect.poll(() => pixel(page)).toEqual([80, 140, 215, 255]);
@@ -521,9 +551,9 @@ test('external file changes restart the game and update code, title and URL with
   const editor = page.locator('#editor');
   await editor.click();
   await expect(editor).toBeFocused();
-  const source = '// @title Modified\nfunction tick() { cls(5) }';
+  const source = '// @title Modified\r\nfunction tick() { cls(5) }';
   await page.evaluate((source) => (window.testFileSource = source), source);
-  await expect(editor).toHaveValue(source);
+  await expect(editor).toHaveValue(source.replaceAll('\r\n', '\n'));
   await expect(page).toHaveTitle('Modified — Playload');
   await expect
     .poll(() =>
