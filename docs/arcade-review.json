@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-27T14:31:59Z",
+  "checkedAt": "2026-11-27T14:43:51Z",
   "scope": "Xのplayload通常検索（最新）を公開初日の2026-10-21まで遡り、リンク付き検索・提示された投稿・作者別確認と照合。X全投稿の網羅保証ではなく、実際に観測した投稿の監査。 2026-10-31はユーザー指定の5投稿を個別確認（X全件の再検索ではない）。 2026-11-01はユーザー指定の2投稿のみを個別確認。X全件・作者の全投稿の再探索ではない。 2026-11-01はさらにユーザー指定のMore Fish!・Crossy Chicken Ver.12の2投稿を確認して採用。X全件の再探索ではない。 2026-11-02はChromeでXの最新検索 playload since:2026-11-01 until:2026-11-03 を閲覧し、実際に観測した18投稿を照合。検索結果の網羅保証ではない。既存作品のゲーム該当性も見直した。 同じ最新検索を再読み込みしGBC Music playerの1投稿も追加確認（計19投稿）。 同日、ユーザー指定でゲームミュージックも収録対象に加え、GBC Music playerを採用。 GBC Music playerはユーザーの著作権に関する指摘を受け、原曲・許諾が未確認のため公開前に保留へ変更。現在の採用一覧は32作品。 2026-11-03はユーザー指定のhide3「SoukoBanChou」1投稿を個別確認して追加。X全件・作者の全投稿の再探索ではない。現在33作品。 同日、ユーザー指定のharuka_appsの2投稿を個別確認し、reveal.とPseudo 3D Racerの0.9.5対応版を採用。ユーザーの掲載判断によりhollow.・Brumaria・3D REVERSIを取り下げ。3D系は慎重に採用する方針を記録。最終掲載数は32作品。 同日の公開後、ユーザーの視覚的な品質判断によりPseudo 3D Racerも掲載を取り下げ。現在の掲載一覧は31作品。 同じ公開訂正で、ユーザー指定によりreveal.の画像を絵より陣取りが主役となる19%獲得の序盤へ差し替え。 同日、ユーザー指定でPseudo 3D Racerを再掲載し、様子を見る。reveal.の19%画像はユーザーに不採用とされ、撮り直し候補を確認中。 同日、ユーザー承認済みのreveal.画像（67%、顔から胴がつながり、段差のある陣地と階段状の線）へ差し替え。 同日、ユーザー指定のMicro Unicorn Attack投稿2117522578797740035を個別確認して採用。X全件の再探索ではない。 同日、指定された2DのREVERSI（2117561626719388123）とminesweeper ai.（2117548314698952871）を個別確認して取り込み。X全件の再探索ではない。 2026-11-04、ユーザー指定のPAC-MAN v0.6（2117884144399073486）を個別確認してローカル取り込み。 2026-11-05、ユーザー指定の美術館めぐり（2118169835700191383）を個別確認してローカル取り込み。 2026-11-06、登竜門（2118337460849848643）をユーザーの実機報告と既存の実画面確認に基づき取り込み。CPU参考値のみの保留提案を撤回。 2026-11-21、保留していたBrumariaの作者版v0.9.8について、11月10日UTCの更新告知と作品URLの返信を照合して採用。 2026-11-21、利用者が指定した「たまひろい」「きねんスタンプ」を追加し、「rubble.」「shatter.」「Rose in RGB light」を作品別に再採用。 同日、利用者指定のPLAYLOAD OSを追加。 2026-11-25は#Playloadの期間別X最新検索と公開投稿一覧を照合し、haruka_appsの11月1日以降の投稿、rukasufallの音楽投稿、TO THE MOONの投稿を個別確認。今回登録した新規15投稿はいずれも独立ブラウザで起動し、画面・基本操作・自動進行を確認。全作者・全投稿を網羅したとの主張ではない。 2026-11-25T12:14:01ZにYahooリアルタイム検索の#Playload結果113投稿（2026-10-20～11-24）を照合し、未記録32投稿を追加。検索サービスの取得範囲であり、Xの全件保証ではない。 2026-11-25、利用者が花摘み・noise run.を不採用、Athletic - SNES Music player・百合ヶ丘ソルシエール・おもちとコイン・CLOCK TOWERを採用と個別判断。 同日、利用者が9x9 go.を採用し、mahjong.を麻雀としての成立を条件に採用。CPU応答とコード上の局進行を確認して掲載用に追加。 同日、利用者がGBC Music playerを試聴し採用指定。既存ゲーム曲の再現も候補として評価。 同日、利用者が百合ヶ丘ソルシエールの採用を撤回し、言葉中心の画面表現を理由に不採用とした。 2026-11-25、公開Xの作者別投稿一覧を照合し、10SEC RACEとpayload.の原投稿、およびTewi Runnerの共有URLを新たに記録。AFTER LOAD HDへの言及・10SEC RACEへの感想・URLなしの先行投稿を作品投稿と誤分類していたため対象外に訂正。 2026-11-26、利用者判断によりpayload.はグリッチ表現、Tewi Runnerは内容の単純さを理由に不採用。 2026-11-26、利用者が10SEC RACEを実プレイし、実験的で分かりにくいグラフィックスとゲーム内容の単純さを理由に不採用。 2026-11-27は前回と重複する11月24日以降を対象に、公開Yahooリアルタイムの#Playload（先頭40件、総件数表示91）・playload通常検索（先頭40件、総件数表示113）、既知作者72アカウントの公開X投稿一覧先頭ページを照合。新作Brake & Go、花摘み更新版と作品以外の4投稿を記録。Brake & GoはYahoo検索の先頭結果に現れず、作者投稿一覧から発見した。検索の全件・全作者の網羅保証ではない。 同日、利用者指定で花摘み更新版を不採用、Brake & Goを採用。操作説明4文字列だけを正規シンボルへ変更した掲載版と通常走行の橋の画像をローカル一覧へ追加。外部公開は行っていない。",
   "counts": {
     "catalog": 56,
@@ -2008,12 +2008,12 @@
         "scope": "掲載版を独立ヘッドレスChromiumで通常キー操作。B長押しでブレーキ解放、下の単押し5回でP5、走行40秒、左で警笛、速度超過減点、橋と通常走行の描画を確認。ページエラー0、error noticeなし、CRT有効。 掲載画像を再撮影：P5で15秒加速後に上5回でP0へ戻し、制限60内の約50km/hで惰行。橋と対向列車の描画を通常速度のブラウザーで確認。",
         "engineScope": "元版と掲載版で同一入力19242フレームの全入力系列・内部状態（表示メッセージ以外）・イベントが一致。4駅停車、昼夕夜の進行、上限超過0。別途元版9587フレームで非常制動、右解除、時間切れ、A再挑戦。実ブラウザーでの4駅完走・全状況の検査ではない。",
         "screenshot": {
-          "scene": "川の橋を走行中に対向列車が右側へ接近する場面。速度51km/h、制限60、次駅まで627m、RIVER BRIDGE表示。橋・列車・線路の奥行きが同時に見える。",
-          "method": "掲載版を通常キー操作。B長押しで解放、下を5回単押しして15秒加速、上を5回単押しして惰行へ移行。14秒後から1.1秒間隔で10枚をアプリScreenshotから保存し比較。4枚目を採用。コード変更・状態強制・画像加工なし。CRT有効。",
-          "capturedAt": "2026-11-27T14:31:59Z",
+          "scene": "起動直後のAoba駅。左のホーム・駅舎、中央から奥へ続く線路、遠景の山と町並み、速度0・制限45・次駅まで1000m・ブレーキ解放の操作案内が見える。",
+          "method": "掲載版を独立Chromiumで起動し、操作開始前にCRT有効のアプリScreenshotから保存した原画像を使用。画像加工・状態の強制変更なし。",
+          "capturedAt": "2026-11-27T14:25:38Z",
           "width": 640,
           "height": 576,
-          "sha256": "4a43462775e50334e0a1c106826e03bf468282f7e75c3543ab7f8d2efdf8caf1"
+          "sha256": "b9dc8372c4ed0da3fb276a8fb3029cfc79b242f16c3d034eb24ef20e3d1d2426"
         },
         "checks": {
           "build": "pass",
@@ -12274,6 +12274,28 @@
       "width": 640,
       "height": 576,
       "sha256": "4a43462775e50334e0a1c106826e03bf468282f7e75c3543ab7f8d2efdf8caf1"
+    },
+    {
+      "checkedAt": "2026-11-27T14:43:51Z",
+      "title": "Brake & Go",
+      "sourceUrl": "https://x.com/rukasufall/status/2126201350832689441",
+      "url": "/playload/app/#v1.bVfdctrKsr7nKfBUmZphWvLMSCOEwqAt24pjxxYOtll7heICC4EVY0RAVOLYXO469_s5zvU577OeZNeMcMJae-ELS909re5v-vfoqP6PMi_nWf14NX7M6o36WVGbZ2V9DDEsIYEeDKAPE1jDDE7hHo7hFp7hAe7gBF7W-SI4h7RYB08wnRfFKriCVbFZTIJLGN-vgxt4yhfBV3gafw_OIM3yeVD7vlVX4_IBPqjhCD6qIYqK-zECdJX_2CwKBOjmIV-NH8ffNPFDsX7In3I0gvcqV938kGcOXKux6jqseY7HR7607BaB35TF4UIxqD0qBj_UkAEbwWeF_vj3_9f78WUc3cToXW26WaRlXizqG1xCBjlMVQsixcjLclO-kSAi29oUkz3xdI_3Mi1WWCM0V-zdvCPezSklLwazjZIebzndrm_5zXlDSAmF2jQ8KR3Z6XDP-o6518yPpmQnAqla4YzOSW2ZzobpyF6OS2M7FLu_jfbDGEfnwD1IIQJGtlvzvW-qsouoLkaIlsRejic35XhVYk2FL2o42vOizNNHTF7yKT54JAdvZPzT-HFZ3GN0_Onu7PjToJ_-8-Ju8P74U_r--FO0_zv34ofz203RO50VH6M__z6dH0dRT8YPH2_i25Ni_TGaRX_ze_666n0pVlFxdTIrjh8HZ_27z_ngt8lgMEjvLh4-_TNSCpHaG9KZYu-yjmDvMg21pmjchMNp9kuoug5pruMXmsM5FSO1sdOH8eqkmGRRiWWzQnyjUeIupJB13LAVZB0_9IKsw6sX3gpl4AAn2y0mtXyK9wDLp3jdUYyssnKzWtTvy8USu6TRmFaSd5YFF-oMM7iwOAHDFoS8LOfjZ8wA3XLBBu2em8jJQCbOZCASPkEEDJ8DGnCumbNBK3FmAyfhM0SgZrhCc5nm3g-8xLnX3HtE4EJJZrKgVsEzx-_xmBAolNOc0VRblTYatweqILeqgAVGH3r9pH7cS-5uEAiy1cdWKsNMn8kwN46cGlf7VPEjj4EjlDolP41s9WTizDJkJA_qlnVKIkzgWeFnysmhAzlGp_F11L89QMAlI7UKrm0-xQYSh5B8ipdkqVgtm6-zeqKY1rU00H3FEpYUHySNhpHmhBDLPDHtF0mMVGJVlq6MpUvFwFcqaTTirmsLssAovor7Z3Fy8jsCS5Baor7iNiSUE23GwcVbOOnPLPUxW4RfMXfgCtue24wJCSxu0DtQv5HdFaQdFiIUoIHXQxQLeoXToxYhFCVtRFE6yaaz8T0apoetEUWEIF2fUv29B6U-NxoHCbmrPO2_viadNtkBXBtQhRNrQJq4rVQS2jywmSMJ9KiymZRNjJOQBbZwm8sjzKnNhDbQ6pG3BNY64x16woeY4p5lc180B5btNzV9YPnEsplwLO5nlmzGzdhq2z5v4pnq2ow7zSc8O-KsraVYq3mOZ0dSEqKD6cjTyNfijs1c2WgkJK68GFMV6_g4uCA_M7ZeTIcMhO2O9B3jMc3IIfc6eFM9kF0q4CxEA4kCdCsEG7QQoeiKuz2R8LSKq3vl2F4z7pZ4TKgT3lMeMPCkUvfkXjEdx71B3L-5juNTBBYHT5pj_e6E8kbDY0pRekzWlgXHiu1yg2dOc2YZsA7iRuMGp6SjuF-FQq70O0wVzjuK2zL0g7yjZOgGnFB8g_vWhHSUEzoBI7Wl6ikGiRooD04V941BN7e96zqiuV0W7_Pv2QRzQtETgilw5u8lua_zJ5sl8gSRrYl_HWYdi_smj2o73_p3Sb2OwPKNY6bsxKrKdXgrCYhsMYHHQ0cp9vpqZP6rvmdK0yF_cx-m6hIbcAlESuMLT8rEnRMkoReI2gbrToQiRL_h2SFnDAQghggwkAQ22AEGGNUR_TjEM4uTQ3dkOlC8mOA2gRZwLcWFbme4T6DfnYRO0CJgNHMJ3_AUHEJRHcG0G1HnJ9fVXK05MkxP6_GrE_gG56QjWbiPb3CJc1Kh7BHIO1yy0Nvp4jtl14guYRnKQBirWhX1GNEq2VCMgoTAk2Yy3WnR6V2sgXc1RWpKgSc6_lPMJQjJYQlSA5Fi7oOQDiTQhh2AXpWSK6WrcOVuywT7H__-v3o_vu3_joK7LgsfgtMQnfZ6_Zt67zpOULDqqlbLaTRWHd-TIbo8v6q7sn6e1BG9xL4nrZVxM9CBm4Sfg5p-OFiG6I___Z_6de-3uI-CvMM5C6s4vIr6H-vRhzg61XQhpKZHt-e95I06xyvgRCv4V133BBTUVl3l-cwYwfwQ3d4lSXxpbBNtQ3Z9FqL--SDu14_756dnsS6G0eVl_Hv98jyJ0c8w4B6BLHSC01C-XYenofiGdTFaE4rWBuF1h3MD267XHuDHQ0H-O4hLdY3HlBPrWsdroWdCn9G2aGKsGXnFIEe5VRJI1InFRbMPPxRiXDiu9FqMc8cVnscY51xwF9nreZ5muOY3n6uBaW_q8JtXesQk1H-XdcZUOHoCUf5bz8hMEmV6Jq19sTeL9UM-LfEwPWoLKEwRgexQuCFnNDsUMrA4s_QDZCOy_fPYwpm7N0euldu25pYtIVKWEP7RGjZqTCNYqY2ZgAeqwNFf5yPu7Q1IOaQKZ7qXRMYc9RWbunaDU8uxPUkIzFRG26xZaryjDqvOFeoMt8GR1o1OacbIkSC1XK27RSiUeg5ZsO46PHSDVrDuFpYtZBMXVpuE-l1S1zQMLknoBsIUtRetPlerrvD9t9BxA21L1w-R9KSLhrp_cp_QK7w5cn3ScEaBBKxlX19X3bYjSaOhC6PtNxpp1-KM5CrtWsIWpk7p9r8fsSRXpmUXHW7rlxtcWHaL-6Rzhm3WguiIt6S2WAuIRiPqCLfR2BxyW3RsJ-SB2H4Yco815zQbqR_DfLR9g3pYwgYKWEF_VEzrXyrMIiVs16frX1CmxaLMF5ts13BwBkszpf-EmMGlboVHpbmHr5h7FWWpKZXtM_LBnubzOdYGQGVOsfs_I1sjtPO6MF4b5b9mJ84sbnvNiBDIlMOsCHItrVQRioDiqOOQWoqtDCxtG6R4aVaJ6tKMBRr-oqvajmeGq6irXA2Wa0u6PuKCpNhq6xbvWxFUU5hmGrpre2C5tgutX62t6CoTA1oxqzR2pO2TFHvg2QKc3bd3iY6LjmBMW-A7jOir1Z22DL9iR_smmhEJog4PbSED25VN3LIiY0SKV1YCK5pAGUZd01SCqCuqyl-a6yZahoMufNsqgf5knNaCs9fX_qHLlNIff7PUcmwfoq60ZZiFni0CWwQ6n0yRE7vRQ8-f_U5CXUcfdGxfkhQL2wEJUdexnbCyhwdRl9vCVMbt1mwZ-_WuKgSPofADLv-6Cr2l-s8Ao7zVfCSHwmNQqvRQ6Eav00owAnMVrVbjZ-yTKqAYgcmO5Lk_aXuf8Nx3mWW9e6sIVTJgv5lTnHW7DiHUb5YUtxoZGdXmw2JEKUyGfrPY8Uevigu_2zUS20rJ3M4Xk-x7b4rPsG3bc0LMyd1QtlHzYWsUtoK_EdPtYD7cjF5f045ok2pTzynXA4LekYlZHnbRv8KpJdra58musvvNDfjNDfUJ3KubcpUvZvZ0VTyd7DbC6jNm1jxQX4bp6Nd69zON9T65rLbzOehhUsup--0vW5a6LhBzi_BI6fbX1r0wO_ojeVlTlUGOSz3SaKBYiCgKECI0M23wkeydijB5mWlYVZ_6LtSOFYMTpbsZHVOfsz3RDKe7QCjUD2NXucApdUmo3_TAvFu86lypwqQ0l41GcSiV2tdT6CXqTXSRfaufjssMO8LNJNUz4xVeEWKXxcVNL8Fkhy7nwNv7hq_2tfwd3LLluC5d7Z8p9ZnqCF4d6gGV7Gq_0lOQK_8yenhMEyQzBK_FQimD1r4rucZcccHIy4Mq4U5le8y5YbK3L9bLruCSimbWaJQd0WYhD8quxyQ1BM9noQj2lU_1MDJWsdLTf1-dqnt1rJ7VjyHTzYKPdhtBG9bKkTBTHCbKd-FWD-wnyucMcvwZHMbItvYf",
+      "image": "assets/images/arcade/brake-and-go.png",
+      "previousScreenshot": {
+        "scene": "川の橋を走行中に対向列車が右側へ接近する場面。速度51km/h、制限60、次駅まで627m、RIVER BRIDGE表示。橋・列車・線路の奥行きが同時に見える。",
+        "method": "掲載版を通常キー操作。B長押しで解放、下を5回単押しして15秒加速、上を5回単押しして惰行へ移行。14秒後から1.1秒間隔で10枚をアプリScreenshotから保存し比較。4枚目を採用。コード変更・状態強制・画像加工なし。CRT有効。",
+        "capturedAt": "2026-11-27T14:31:59Z",
+        "width": 640,
+        "height": 576,
+        "sha256": "4a43462775e50334e0a1c106826e03bf468282f7e75c3543ab7f8d2efdf8caf1"
+      },
+      "reason": "利用者が走行中の画像を画面が汚いとして不採用とし、起動時の画面の方が綺麗で分かりやすいと指摘。列車の有無を優先した選定を訂正し、起動直後の整った構図へ差し替える。",
+      "scene": "起動直後のAoba駅。左のホーム・駅舎、中央から奥へ続く線路、遠景の山と町並み、速度0・制限45・次駅まで1000m・ブレーキ解放の操作案内が見える。",
+      "method": "掲載版を独立Chromiumで起動し、操作開始前にCRT有効のアプリScreenshotから保存した原画像を使用。画像加工・状態の強制変更なし。",
+      "capturedAt": "2026-11-27T14:25:38Z",
+      "width": 640,
+      "height": 576,
+      "sha256": "b9dc8372c4ed0da3fb276a8fb3029cfc79b242f16c3d034eb24ef20e3d1d2426"
     }
   ],
   "eligibilityHistory": [
