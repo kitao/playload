@@ -39,6 +39,62 @@
   min-width: 0;
 }
 
+.arcade-pagination {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 10px;
+  max-width: 240px;
+  margin: 0 auto 24px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.games + .arcade-pagination {
+  margin-top: 28px;
+  margin-bottom: 0;
+}
+
+.arcade-page-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.arcade-pagination a,
+.arcade-pagination span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+}
+
+.arcade-pagination a:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+.arcade-pagination a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.arcade-pagination [aria-current='page'] {
+  color: var(--background);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.arcade-pagination [aria-disabled='true'] {
+  color: var(--muted);
+  border-color: transparent;
+  opacity: 0.5;
+}
+
 .arcade .badges {
   display: flex;
   flex-wrap: wrap;

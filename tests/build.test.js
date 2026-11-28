@@ -48,7 +48,7 @@ test('the complete publication stays under Playload and every local document lin
     const output = await files(directory);
     assert(
       output.every((path) =>
-        /^(?:_headers|playload\/(?:index\.html|(?:app|arcade|app\/sandbox)\/index\.html|LICENSE\.txt|assets\/(?:(?:arcade-)?logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card|arcade\/[a-z0-9-]+)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
+        /^(?:_headers|playload\/(?:index\.html|(?:app|arcade(?:\/page\/[1-9]\d*)?|app\/sandbox)\/index\.html|LICENSE\.txt|assets\/(?:(?:arcade-)?logo\.svg|favicon\.svg|images\/(?:(?:example-glyph-quest|info-api|info-emoji|info-examples)(?:@2x)?|app-card|arcade\/[a-z0-9-]+)\.png|bundles\/[^/]+\.(?:js|css|woff2?))))$/.test(
           path,
         ),
       ),
@@ -271,7 +271,12 @@ test('a failed output replacement restores every previous publication file', asy
 async function fixtureRepository(parent) {
   const fixture = join(parent, 'repository');
   await mkdir(join(fixture, 'scripts'), { recursive: true });
-  for (const path of ['scripts/build.js', 'scripts/reference.js', 'package.json'])
+  for (const path of [
+    'scripts/build.js',
+    'scripts/reference.js',
+    'scripts/arcade-pages.js',
+    'package.json',
+  ])
     await cp(new URL('../' + path, import.meta.url), join(fixture, path));
   await mkdir(join(fixture, 'data/fonts'), { recursive: true });
   await cp(
@@ -329,6 +334,44 @@ test('an Arcade build rejects unreadable and over-budget links before replacing 
     await assert.rejects(buildSite({ directory }), reason);
     assert.equal(await readFile(join(directory, 'keep.txt'), 'utf8'), 'Previous publication');
   }
+});
+
+test('an Arcade catalog crossing a page boundary builds linked static documents', async (t) => {
+  const parent = await mkdtemp(join(tmpdir(), 'playload-arcade-pages-'));
+  t.after(() => rm(parent, { recursive: true, force: true }));
+  const fixture = await fixtureRepository(parent);
+  for (const path of ['src', 'assets', 'data/reference.json', 'LICENSE'])
+    await cp(new URL('../' + path, import.meta.url), join(fixture, path), { recursive: true });
+  const { ARCADE_PAGE_SIZE } = await import('../scripts/arcade-pages.js');
+  const [game] = JSON.parse(
+    await readFile(new URL('../data/arcade.json', import.meta.url), 'utf8'),
+  );
+  const games = Array.from({ length: ARCADE_PAGE_SIZE + 1 }, (_, i) => ({
+    ...game,
+    title: `Game ${i + 1}`,
+  }));
+  await writeFile(join(fixture, 'data/arcade.json'), JSON.stringify(games));
+  const { buildSite: buildFixture } = await import(
+    pathToFileURL(join(fixture, 'scripts/build.js'))
+  );
+  const directory = join(parent, 'dist');
+  await buildFixture({ directory });
+  const first = await readFile(join(directory, 'playload/arcade/index.html'), 'utf8');
+  const second = await readFile(join(directory, 'playload/arcade/page/2/index.html'), 'utf8');
+  assert.equal((first.match(/class="game-link"/g) || []).length, ARCADE_PAGE_SIZE);
+  assert.equal((second.match(/class="game-link"/g) || []).length, 1);
+  assert.match(first, /href="\/playload\/arcade\/page\/2\/" rel="next"/);
+  assert.match(second, /href="\/playload\/arcade\/" rel="prev"/);
+  assert.match(second, /<title>Playload Arcade — Page 2<\/title>/);
+  assert.match(second, /rel="canonical" href="https:\/\/kitao.dev\/playload\/arcade\/page\/2\/"/);
+  assert.match(
+    second,
+    /property="og:url" content="https:\/\/kitao.dev\/playload\/arcade\/page\/2\/"/,
+  );
+  assert.equal((second.match(/aria-current="page"/g) || []).length, 2);
+  assert.match(second, new RegExp(`game-title">Game ${ARCADE_PAGE_SIZE + 1}<`));
+  assert(!existsSync(join(directory, 'playload/arcade/page/1')));
+  assert(!existsSync(join(directory, 'playload/arcade/page/3')));
 });
 
 test('build rejects source directories and preserves existing output when source compilation fails', async () => {

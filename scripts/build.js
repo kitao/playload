@@ -23,6 +23,7 @@ import {
 } from '../src/payload.js';
 import { glyphs } from '../src/engine/glyphs.js';
 import { escapeHTML, renderReference } from './reference.js';
+import { arcadePages, arcadeNavigation } from './arcade-pages.js';
 
 // Module URLs keep the letter case they were loaded with. Native realpath
 // canonicalizes it, like the fs/promises realpath used for build outputs.
@@ -230,10 +231,19 @@ export async function buildSite({ directory = join(root, 'dist') } = {}) {
         </div>
       </li>`);
     }
-    await page('src/arcade/index.html', 'arcade/index.html', {
-      PREVIEW_IMAGE: escapeHTML(new URL(appPreview, homepage).href),
-      GAMES: cards.join('\n'),
-    });
+    const pages = arcadePages(cards);
+    for (const [index, current] of pages.entries()) {
+      const navigation = arcadeNavigation(pages, index);
+      await page('src/arcade/index.html', current.path + 'index.html', {
+        PREVIEW_IMAGE: escapeHTML(new URL(appPreview, homepage).href),
+        ARCADE_URL: escapeHTML(new URL(current.path, homepage).href),
+        ARCADE_TITLE: index === 0 ? 'Playload Arcade' : `Playload Arcade — Page ${current.number}`,
+        PAGE_NAVIGATION: navigation
+          ? `<nav class="arcade-pagination" aria-label="Arcade pages">${navigation}</nav>`
+          : '',
+        GAMES: current.cards.join('\n'),
+      });
+    }
     const introduction = marked
       .parse(await readFile(new URL('../src/site/index.md', import.meta.url), 'utf8'))
       .replace(

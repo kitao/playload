@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Play community games in Playload Arcade." />
-    <title>Playload Arcade</title>
-    <meta property="og:title" content="Playload Arcade" />
+    <title>{{ARCADE_TITLE}}</title>
+    <meta property="og:title" content="{{ARCADE_TITLE}}" />
     <meta property="og:description" content="Play community games in Playload Arcade." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ARCADE_URL}}" />
@@ -67,9 +67,11 @@
             decoding="async"
         /></a>
       </p>
+      {{PAGE_NAVIGATION}}
       <ul class="games" aria-label="Games">
         {{GAMES}}
       </ul>
+      {{PAGE_NAVIGATION}}
     </main>
   </body>
 </html>

@@ -17,6 +17,7 @@
       "LICENSE",
       "package.json",
       "scripts/build.js",
+      "scripts/arcade-pages.js",
       "scripts/reference.js",
     ],
   },
